@@ -1,0 +1,468 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		891A4D8114579B3C00A2CF47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8014579B3C00A2CF47 /* UIKit.framework */; };
+		891A4D8314579B3C00A2CF47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8214579B3C00A2CF47 /* Foundation.framework */; };
+		891A4D8514579B3C00A2CF47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8414579B3C00A2CF47 /* CoreGraphics.framework */; };
+		891A4D8B14579B3C00A2CF47 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D8914579B3C00A2CF47 /* InfoPlist.strings */; };
+		891A4D8D14579B3C00A2CF47 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D8C14579B3C00A2CF47 /* main.m */; };
+		891A4D9114579B3C00A2CF47 /* PartyAssistantAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D9014579B3C00A2CF47 /* PartyAssistantAppDelegate.m */; };
+		891A4D9414579B3C00A2CF47 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9214579B3C00A2CF47 /* MainStoryboard.storyboard */; };
+		891A4D9714579B3C00A2CF47 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D9614579B3C00A2CF47 /* FirstViewController.m */; };
+		891A4D9914579B3C00A2CF47 /* first.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9814579B3C00A2CF47 /* first.png */; };
+		891A4D9B14579B3C00A2CF47 /* first@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9A14579B3C00A2CF47 /* first@2x.png */; };
+		891A4D9E14579B3C00A2CF47 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D9D14579B3C00A2CF47 /* SecondViewController.m */; };
+		891A4DA014579B3C00A2CF47 /* second.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9F14579B3C00A2CF47 /* second.png */; };
+		891A4DA214579B3C00A2CF47 /* second@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A4DA114579B3C00A2CF47 /* second@2x.png */; };
+		891A4DAA14579B3D00A2CF47 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4DA914579B3C00A2CF47 /* SenTestingKit.framework */; };
+		891A4DAB14579B3D00A2CF47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8014579B3C00A2CF47 /* UIKit.framework */; };
+		891A4DAC14579B3D00A2CF47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8214579B3C00A2CF47 /* Foundation.framework */; };
+		891A4DAD14579B3D00A2CF47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8414579B3C00A2CF47 /* CoreGraphics.framework */; };
+		891A4DB514579B3D00A2CF47 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 891A4DB314579B3D00A2CF47 /* InfoPlist.strings */; };
+		891A4DB814579B3D00A2CF47 /* PartyAssistantTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4DB714579B3D00A2CF47 /* PartyAssistantTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		891A4DAE14579B3D00A2CF47 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 891A4D7314579B3B00A2CF47 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 891A4D7B14579B3C00A2CF47;
+			remoteInfo = PartyAssistant;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		891A4D7C14579B3C00A2CF47 /* PartyAssistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PartyAssistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		891A4D8014579B3C00A2CF47 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		891A4D8214579B3C00A2CF47 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		891A4D8414579B3C00A2CF47 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		891A4D8814579B3C00A2CF47 /* PartyAssistant-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PartyAssistant-Info.plist"; sourceTree = "<group>"; };
+		891A4D8A14579B3C00A2CF47 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		891A4D8C14579B3C00A2CF47 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		891A4D8E14579B3C00A2CF47 /* PartyAssistant-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PartyAssistant-Prefix.pch"; sourceTree = "<group>"; };
+		891A4D8F14579B3C00A2CF47 /* PartyAssistantAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PartyAssistantAppDelegate.h; sourceTree = "<group>"; };
+		891A4D9014579B3C00A2CF47 /* PartyAssistantAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PartyAssistantAppDelegate.m; sourceTree = "<group>"; };
+		891A4D9314579B3C00A2CF47 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
+		891A4D9514579B3C00A2CF47 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
+		891A4D9614579B3C00A2CF47 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		891A4D9814579B3C00A2CF47 /* first.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = first.png; sourceTree = "<group>"; };
+		891A4D9A14579B3C00A2CF47 /* first@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "first@2x.png"; sourceTree = "<group>"; };
+		891A4D9C14579B3C00A2CF47 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
+		891A4D9D14579B3C00A2CF47 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
+		891A4D9F14579B3C00A2CF47 /* second.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = second.png; sourceTree = "<group>"; };
+		891A4DA114579B3C00A2CF47 /* second@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "second@2x.png"; sourceTree = "<group>"; };
+		891A4DA814579B3C00A2CF47 /* PartyAssistantTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PartyAssistantTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		891A4DA914579B3C00A2CF47 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		891A4DB214579B3D00A2CF47 /* PartyAssistantTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "PartyAssistantTests-Info.plist"; sourceTree = "<group>"; };
+		891A4DB414579B3D00A2CF47 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		891A4DB614579B3D00A2CF47 /* PartyAssistantTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PartyAssistantTests.h; sourceTree = "<group>"; };
+		891A4DB714579B3D00A2CF47 /* PartyAssistantTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PartyAssistantTests.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		891A4D7914579B3C00A2CF47 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				891A4D8114579B3C00A2CF47 /* UIKit.framework in Frameworks */,
+				891A4D8314579B3C00A2CF47 /* Foundation.framework in Frameworks */,
+				891A4D8514579B3C00A2CF47 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		891A4DA414579B3C00A2CF47 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				891A4DAA14579B3D00A2CF47 /* SenTestingKit.framework in Frameworks */,
+				891A4DAB14579B3D00A2CF47 /* UIKit.framework in Frameworks */,
+				891A4DAC14579B3D00A2CF47 /* Foundation.framework in Frameworks */,
+				891A4DAD14579B3D00A2CF47 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		891A4D7114579B3B00A2CF47 = {
+			isa = PBXGroup;
+			children = (
+				891A4D8614579B3C00A2CF47 /* PartyAssistant */,
+				891A4DB014579B3D00A2CF47 /* PartyAssistantTests */,
+				891A4D7F14579B3C00A2CF47 /* Frameworks */,
+				891A4D7D14579B3C00A2CF47 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		891A4D7D14579B3C00A2CF47 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				891A4D7C14579B3C00A2CF47 /* PartyAssistant.app */,
+				891A4DA814579B3C00A2CF47 /* PartyAssistantTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		891A4D7F14579B3C00A2CF47 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				891A4D8014579B3C00A2CF47 /* UIKit.framework */,
+				891A4D8214579B3C00A2CF47 /* Foundation.framework */,
+				891A4D8414579B3C00A2CF47 /* CoreGraphics.framework */,
+				891A4DA914579B3C00A2CF47 /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		891A4D8614579B3C00A2CF47 /* PartyAssistant */ = {
+			isa = PBXGroup;
+			children = (
+				891A4D8F14579B3C00A2CF47 /* PartyAssistantAppDelegate.h */,
+				891A4D9014579B3C00A2CF47 /* PartyAssistantAppDelegate.m */,
+				891A4D9214579B3C00A2CF47 /* MainStoryboard.storyboard */,
+				891A4D9514579B3C00A2CF47 /* FirstViewController.h */,
+				891A4D9614579B3C00A2CF47 /* FirstViewController.m */,
+				891A4D9814579B3C00A2CF47 /* first.png */,
+				891A4D9A14579B3C00A2CF47 /* first@2x.png */,
+				891A4D9C14579B3C00A2CF47 /* SecondViewController.h */,
+				891A4D9D14579B3C00A2CF47 /* SecondViewController.m */,
+				891A4D9F14579B3C00A2CF47 /* second.png */,
+				891A4DA114579B3C00A2CF47 /* second@2x.png */,
+				891A4D8714579B3C00A2CF47 /* Supporting Files */,
+			);
+			path = PartyAssistant;
+			sourceTree = "<group>";
+		};
+		891A4D8714579B3C00A2CF47 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				891A4D8814579B3C00A2CF47 /* PartyAssistant-Info.plist */,
+				891A4D8914579B3C00A2CF47 /* InfoPlist.strings */,
+				891A4D8C14579B3C00A2CF47 /* main.m */,
+				891A4D8E14579B3C00A2CF47 /* PartyAssistant-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		891A4DB014579B3D00A2CF47 /* PartyAssistantTests */ = {
+			isa = PBXGroup;
+			children = (
+				891A4DB614579B3D00A2CF47 /* PartyAssistantTests.h */,
+				891A4DB714579B3D00A2CF47 /* PartyAssistantTests.m */,
+				891A4DB114579B3D00A2CF47 /* Supporting Files */,
+			);
+			path = PartyAssistantTests;
+			sourceTree = "<group>";
+		};
+		891A4DB114579B3D00A2CF47 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				891A4DB214579B3D00A2CF47 /* PartyAssistantTests-Info.plist */,
+				891A4DB314579B3D00A2CF47 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		891A4D7B14579B3C00A2CF47 /* PartyAssistant */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 891A4DBB14579B3D00A2CF47 /* Build configuration list for PBXNativeTarget "PartyAssistant" */;
+			buildPhases = (
+				891A4D7814579B3C00A2CF47 /* Sources */,
+				891A4D7914579B3C00A2CF47 /* Frameworks */,
+				891A4D7A14579B3C00A2CF47 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PartyAssistant;
+			productName = PartyAssistant;
+			productReference = 891A4D7C14579B3C00A2CF47 /* PartyAssistant.app */;
+			productType = "com.apple.product-type.application";
+		};
+		891A4DA714579B3C00A2CF47 /* PartyAssistantTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 891A4DBE14579B3D00A2CF47 /* Build configuration list for PBXNativeTarget "PartyAssistantTests" */;
+			buildPhases = (
+				891A4DA314579B3C00A2CF47 /* Sources */,
+				891A4DA414579B3C00A2CF47 /* Frameworks */,
+				891A4DA514579B3C00A2CF47 /* Resources */,
+				891A4DA614579B3C00A2CF47 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				891A4DAF14579B3D00A2CF47 /* PBXTargetDependency */,
+			);
+			name = PartyAssistantTests;
+			productName = PartyAssistantTests;
+			productReference = 891A4DA814579B3C00A2CF47 /* PartyAssistantTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		891A4D7314579B3B00A2CF47 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 891A4D7614579B3B00A2CF47 /* Build configuration list for PBXProject "PartyAssistant" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 891A4D7114579B3B00A2CF47;
+			productRefGroup = 891A4D7D14579B3C00A2CF47 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				891A4D7B14579B3C00A2CF47 /* PartyAssistant */,
+				891A4DA714579B3C00A2CF47 /* PartyAssistantTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		891A4D7A14579B3C00A2CF47 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				891A4D8B14579B3C00A2CF47 /* InfoPlist.strings in Resources */,
+				891A4D9414579B3C00A2CF47 /* MainStoryboard.storyboard in Resources */,
+				891A4D9914579B3C00A2CF47 /* first.png in Resources */,
+				891A4D9B14579B3C00A2CF47 /* first@2x.png in Resources */,
+				891A4DA014579B3C00A2CF47 /* second.png in Resources */,
+				891A4DA214579B3C00A2CF47 /* second@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		891A4DA514579B3C00A2CF47 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				891A4DB514579B3D00A2CF47 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		891A4DA614579B3C00A2CF47 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		891A4D7814579B3C00A2CF47 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				891A4D8D14579B3C00A2CF47 /* main.m in Sources */,
+				891A4D9114579B3C00A2CF47 /* PartyAssistantAppDelegate.m in Sources */,
+				891A4D9714579B3C00A2CF47 /* FirstViewController.m in Sources */,
+				891A4D9E14579B3C00A2CF47 /* SecondViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		891A4DA314579B3C00A2CF47 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				891A4DB814579B3D00A2CF47 /* PartyAssistantTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		891A4DAF14579B3D00A2CF47 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 891A4D7B14579B3C00A2CF47 /* PartyAssistant */;
+			targetProxy = 891A4DAE14579B3D00A2CF47 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		891A4D8914579B3C00A2CF47 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				891A4D8A14579B3C00A2CF47 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		891A4D9214579B3C00A2CF47 /* MainStoryboard.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				891A4D9314579B3C00A2CF47 /* en */,
+			);
+			name = MainStoryboard.storyboard;
+			sourceTree = "<group>";
+		};
+		891A4DB314579B3D00A2CF47 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				891A4DB414579B3D00A2CF47 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		891A4DB914579B3D00A2CF47 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		891A4DBA14579B3D00A2CF47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		891A4DBC14579B3D00A2CF47 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PartyAssistant/PartyAssistant-Prefix.pch";
+				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		891A4DBD14579B3D00A2CF47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PartyAssistant/PartyAssistant-Prefix.pch";
+				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		891A4DBF14579B3D00A2CF47 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PartyAssistant.app/PartyAssistant";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PartyAssistant/PartyAssistant-Prefix.pch";
+				INFOPLIST_FILE = "PartyAssistantTests/PartyAssistantTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		891A4DC014579B3D00A2CF47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/PartyAssistant.app/PartyAssistant";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PartyAssistant/PartyAssistant-Prefix.pch";
+				INFOPLIST_FILE = "PartyAssistantTests/PartyAssistantTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		891A4D7614579B3B00A2CF47 /* Build configuration list for PBXProject "PartyAssistant" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				891A4DB914579B3D00A2CF47 /* Debug */,
+				891A4DBA14579B3D00A2CF47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		891A4DBB14579B3D00A2CF47 /* Build configuration list for PBXNativeTarget "PartyAssistant" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				891A4DBC14579B3D00A2CF47 /* Debug */,
+				891A4DBD14579B3D00A2CF47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		891A4DBE14579B3D00A2CF47 /* Build configuration list for PBXNativeTarget "PartyAssistantTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				891A4DBF14579B3D00A2CF47 /* Debug */,
+				891A4DC014579B3D00A2CF47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 891A4D7314579B3B00A2CF47 /* Project object */;
+}
