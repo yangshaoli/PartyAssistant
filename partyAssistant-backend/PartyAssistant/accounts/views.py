@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 
 from accounts.forms import RegisterForm
 
-def register(request):
+def account_web_register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -33,3 +33,8 @@ def register(request):
     else:
 	    return render_to_response('accounts/register.html',{'form' : RegisterForm()}, context_instance = RequestContext(request))
 
+def account_app_register(request):
+    if request.method == 'POST':
+        pass
+    else:
+	    return render_to_response('accounts/register.html',{'form' : RegisterForm()}, context_instance = RequestContext(request))

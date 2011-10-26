@@ -10,7 +10,11 @@ urlpatterns = patterns('',
 		name='login'),
 
     url(r'^web_reg/$', 
-		views.register, 
+		views.account_web_register, 
+		name='web_reg'),
+
+    url(r'^app_reg/$', 
+		views.account_app_register, 
 		name='web_reg'),
 
     url(r'^logout/$', 
