@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 
+from accounts.forms import RegisterForm
+
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)

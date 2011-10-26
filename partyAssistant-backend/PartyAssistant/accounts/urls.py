@@ -9,9 +9,9 @@ urlpatterns = patterns('',
 		{'template_name': 'accounts/login.html'}, 
 		name='login'),
 
-    url(r'^reg_web/$', 
+    url(r'^web_reg/$', 
 		views.register, 
-		name='reg_web'),
+		name='web_reg'),
 
     url(r'^logout/$', 
 		auth_views.logout,
