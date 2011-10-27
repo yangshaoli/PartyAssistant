@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 
     url(r'^app_reg/$', 
 		views.account_app_register, 
-		name='web_reg'),
+		name='app_reg'),
 
     url(r'^logout/$', 
 		auth_views.logout,
