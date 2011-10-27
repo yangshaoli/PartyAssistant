@@ -35,9 +35,9 @@ def account_web_register(request):
             #发送激活邮件
             try:
                 send_emails(email_subject, email_content, SYS_EMAIL_ADDRESS, [email])
-                return render_to_response('accounts/account_operation_success.html')
+                return render_to_response('accounts/account_operation_success.html', context_instance = RequestContext(request))
             except Exception:
-                return render_to_response('accounts/account_operation_fail.html')
+                return render_to_response('accounts/account_operation_fail.html', context_instance = RequestContext(request))
 #            user = authenticate(username=username, password=password)
 #            login(request, user)
             #return redirect(reverse('list_meeting'))
