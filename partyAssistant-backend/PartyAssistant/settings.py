@@ -9,6 +9,9 @@ ADMINS = (
     ('AIMeeting', 'admin@aimeeting.com'),
 )
 
+SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -129,6 +132,7 @@ INSTALLED_APPS = (
 
     'accounts',
 )
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

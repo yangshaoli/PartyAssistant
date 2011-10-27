@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<!--START: content -->
+	<div id="content">
+		<div class="content-inner clearfix">
+  
+			<div class="user-tips">
+				<p>如果已有一个帐户,可在此 <a href="{% url login %}">登录</a>。</p>
+			</div>
+			<form action="{% url web_reg %}" method="post">{% csrf_token %}
+    			<div class="box-corner1 table-form">
+    				<table width="100%" border="0">
+    					<tbody>
+    						<tr>
+    							<th width="12%" scope="row" class="th-title"><label for="id_email">用户邮箱：</label></th>
+                                <td width="88%">{{ form.email }}<span class="required-tip">请务必使用真实邮箱注册，否则将无法收到系统邮件</span>{{ form.email.errors }}</td>
+    						</tr>
+    						<tr>
+    							<th scope="row" class="th-title"><label for="id_password">密码：</label></th>
+                                <td>{{ form.password }}<span class="required-tip">长度为6-16位</span>{{ form.password.errors }}</td>
+    						</tr>
+    						<tr>
+    							<th scope="row" class="th-title"><label for="id_confirm_password">重新输入密码：</label></th>
+                                <td>{{ form.confirm_password }}<span class="required-tip"></span>{{ form.confirm_password.errors }}</td>
+    						</tr>
+    				   </tbody>
+    			    </table>
+    			</div>
+    			<div class="submit-field">
+    				<input type="submit" class="input-submit1 va-m" value="提交"/>
+    				<a href="/">返 回</a>
+    		    </div>
+			</form>
+		</div>
+	</div>
+	<!--END: content -->
+{% endblock %}
