@@ -1,0 +1,62 @@
+<style>
+body {
+    font-family:  Verdana, Helvetica, sans-serif,Arial;
+    color: #333;
+    font: 12px verdana, tahoma, Times New Roman;
+    background: url("../images/bg.gif") repeat-x #fafaf0;
+}
+label { font-size: 12px ;}
+table {font-size: 12px;}
+.addressee_list_row { width: 300px; margin: 5px 20px;}
+.addressee_list_row span {margin-right: 20px;}
+
+</style> 
+ 
+		<table width="100%" border="0">
+			<tbody>
+				<tr>
+					<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
+                    <td width="88%"><input id="addressee" /> <button onclick="alert('test');">添加</button></td>
+				</tr>
+				<tr>
+					<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
+                    <td><textarea rows="8"></textarea></td>
+				</tr>
+		   </tbody>
+	    </table>
+<div id="addressee_list">
+    <div class="addressee_list_row">
+        <span name="client">Chen yang</span><span name="phone">18611387342</span>
+    </div>
+    <div class="addressee_list_row">
+        <span name="client">Cui Heling</span><span name="phone">13683244498</span>
+    </div>
+</div>
+<script type="text/javascript" src="../../static/js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" >
+
+var addressList = '';
+
+$(document).ready(function(){
+    $(".addressee_list_row").toggle( function() {
+        $(this).attr('style', 'background:#efefef');
+        //var c = $(this).children('[name="client"]').text() + '(' + $(this).children('[name="phone"]').text() +'), ';
+        var c =  $(this).children('[name="phone"]').text() + ',';
+        addressList = addressList + c;
+        $('#addressee').val(addressList);
+    }, function(){
+        $(this).attr('style', '');
+        addressList = addressList.replace( $(this).children('[name="phone"]').text() + ',' , '');
+        $('#addressee').val(addressList);
+    });
+});
+
+function autoComplate(){
+
+}
+
+function addToAddressee() {
+    
+}
+
+</script>
