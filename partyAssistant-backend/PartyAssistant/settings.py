@@ -1,20 +1,23 @@
 #-*- coding:utf-8 -*-
 import os
-PROJECT_PATH = os.path.dirname(__file__)
+PROJECT_ROOT = os.path.dirname(__file__)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('AIMeeting', 'admin@aimeeting.com'),
 )
+
+SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_PATH, 'dev.db'),                      # Or path to database file if using sqlite3.
+        'NAME': os.path.join(PROJECT_ROOT, 'db', 'eventmgr.db'),                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -52,7 +55,7 @@ MEDIA_ROOT = ''
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -71,7 +74,7 @@ ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_PATH,'static'),
+    os.path.join(PROJECT_ROOT,'static'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -105,8 +108,11 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'PartyAssistant.urls'
 
+CLIENT_SOLR_PORT = 'http://localhost:8984/solr'
+MEETING_SOLR_PORT = 'http://localhost:8983/solr'
+
 TEMPLATE_DIRS = (
-    "templates"
+    os.path.join(PROJECT_ROOT, 'templates'),
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -124,7 +130,10 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+
+    'accounts',
 )
+
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

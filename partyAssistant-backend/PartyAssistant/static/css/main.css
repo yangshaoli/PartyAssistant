@@ -1,0 +1,7 @@
+/*1.1public style*/
+body {
+    font-family:  Verdana, Helvetica, sans-serif,Arial;
+    color: #333;
+    font: 12px verdana, tahoma, Times New Roman;
+    background: url("../images/bg.gif") repeat-x #fafaf0;
+}
