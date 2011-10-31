@@ -10,13 +10,48 @@ table {font-size: 12px;}
 .addressee_list_row { width: 300px; margin: 5px 20px;}
 .addressee_list_row span {margin-right: 20px;}
 
+#ac_dropdownlist {
+	border: 1px solid black;
+	background-color: white;
+position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left; 
+
+}
+#ac_dropdownlist ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#ac_dropdownlist ul li {
+	margin: 0px;
+	padding: 5px 5px;
+	cursor: default;
+	display: block;
+	/* 
+	if width will be 100% horizontal scrollbar will apear 
+	when scroll mode will be used
+	*/
+	/*width: 100%;*/
+	font: menu;
+	font-size: 12px;
+	/* 
+	it is very important, if line-height not setted or setted 
+	in relative units scroll will be broken in firefox
+	*/
+	line-height: 16px;
+	overflow: hidden;
+}
+
+
 </style> 
  
 		<table width="100%" border="0">
 			<tbody>
 				<tr>
 					<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
-                    <td width="88%"><input id="addressee" /> <button onclick="alert('test');">添加</button></td>
+                    <td width="88%"><textarea id="addressee" onkeypress="showDropDownList()" ></textarea> <button onclick="alert('test');">添加</button></td>
 				</tr>
 				<tr>
 					<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
@@ -32,12 +67,38 @@ table {font-size: 12px;}
         <span name="client">Cui Heling</span><span name="phone">13683244498</span>
     </div>
 </div>
+
+<div id="ac_dropdownlist">
+    <ul>
+        <li><span name="client">Chen Yang</span> (<span name="phone">18611387342</span> )</li>
+        <li><span name="client">Cui Heling</span> (<span name="phone">13683244498</span> )</li>
+    </ul>
+</div>
 <script type="text/javascript" src="../../static/js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript" >
 
 var addressList = '';
 
 $(document).ready(function(){
+    // 下拉列表鼠标移上时高亮
+    $("#ac_dropdownlist li").bind('mouseover', function(){ $(this).attr('style', 'background:#39f; color:#fff;') }).bind('mouseout', function(){ $(this).attr('style', '') });
+    
+    // 点击选项
+    $("#ac_dropdownlist li").bind('click', function(){
+        var inputValue = $('#addressee').val();
+        //addressList = $('#addressee').val() + $(this).text() + ',';
+        //$('#addressee').val(addressList);
+        $('#ac_dropdownlist').hide();
+        var cursortPos = getCursortPosition(document.getElementById('addressee'));
+        var commaPos = inputValue.lastIndexOf(',', cursortPos);
+        var v = inputValue.substring(commaPos +1 , cursortPos );
+        var r = $(this).children('[name="phone"]').text();
+        inputValue = inputValue.substr(0, commaPos + 1 ) + r + ',' + inputValue.substr(cursortPos, inputValue.length )
+        //inputValue = inputValue.replace(v, r + ',');
+        $('#addressee').val(inputValue);
+    });  
+
+    //点击联络表，添加或是删除号码
     $(".addressee_list_row").toggle( function() {
         $(this).attr('style', 'background:#efefef');
         //var c = $(this).children('[name="client"]').text() + '(' + $(this).children('[name="phone"]').text() +'), ';
@@ -51,12 +112,30 @@ $(document).ready(function(){
     });
 });
 
-function autoComplate(){
-
+function showDropDownList(){
+    $("#ac_dropdownlist").show();
+    var pos = $("#addressee").position();
+    //var w = $("#addressee").width();
+    $("#ac_dropdownlist").attr('style', 'left:' + pos.left+ ';top:' + pos.top + ';width:' + $("#addressee").width());
 }
 
 function addToAddressee() {
     
+}
+
+function getCursortPosition (obj) {
+	var CaretPos = 0;	
+	// IE Support
+	if (document.selection) {
+	obj.focus ();
+		var Sel = document.selection.createRange ();
+		Sel.moveStart ('character', - obj.value.length);
+		CaretPos = Sel.text.length;
+	}
+	// Firefox support
+	else if (obj.selectionStart || obj.selectionStart == '0')
+		CaretPos = obj.selectionStart;
+	return (CaretPos);
 }
 
 </script>
