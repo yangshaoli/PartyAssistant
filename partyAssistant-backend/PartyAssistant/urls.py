@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'PartyAssistant.views.home', name='home'),
     # url(r'^PartyAssistant/', include('PartyAssistant.foo.urls')),
+    url(r'^accounts/', include('accounts.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
