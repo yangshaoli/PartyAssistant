@@ -10,6 +10,8 @@ from django.contrib.auth.models import User
 
 from accounts.forms import RegistrationForm
 from accounts.models import Company, UserProfile, TempActivateNote
+from tools.email_tool import send_emails, email_re
+
 import re, os, random
 
 from settings import DOMAIN_NAME, PROJECT_ROOT, SYS_EMAIL_ADDRESS
