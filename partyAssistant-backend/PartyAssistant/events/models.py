@@ -21,10 +21,3 @@ class Meeting(models.Model):
     def get_apply_url(self):
         return reverse('event_apply', args=[self.id])
     
-class UserProfile(models.Model):
-    user = models.OneToOneField(User)
-    password = models.CharField(max_length = 16, blank = True)
-    first_login = models.BooleanField(default = True)
-    
-    def __unicode__(self):
-        return self.user.username
