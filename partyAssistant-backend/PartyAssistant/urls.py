@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
+from settings import MEDIA_ROOT
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -14,4 +15,5 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^events/', include('PartyAssistant.events.urls')),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT}),
 )
