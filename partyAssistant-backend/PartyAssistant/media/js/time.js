@@ -23,10 +23,7 @@ TimePker.prototype._initHtml=function(){
 		}
 	}
 	hc='<div id="tslt_'+ this.id +'" class="time_class">'+hc+'</div>';
-	
 	$(hc).appendTo("body");
-	//els=document.getElementById("tslt_"+this.id);
-	//$(els).hide();
 }
 
 TimePker.prototype.bindEvent = function(){
@@ -39,7 +36,6 @@ TimePker.prototype.bindEvent = function(){
 		var left = $(this).offset().left;
 		$('#tslt_' + this.id).css('top', top);
 		$('#tslt_' + this.id).css('left', left);
-		//$('#tslt_' + this.id).css('position', 'absolute');
 		$('#tslt_' + this.id).fadeIn(200);
 		f(this,slt_h)
 	});
