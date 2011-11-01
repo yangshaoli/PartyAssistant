@@ -4,7 +4,7 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('',   
     # Examples:
     url(r'^$', 'PartyAssistant.views.home', name='home'),
     url(r'^m/$', 'PartyAssistant.views.home', name='home'), 
@@ -15,4 +15,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
+    url(r'^accounts/', include('accounts.urls')),
+    url(r'^events/', include('events.urls')),
 )

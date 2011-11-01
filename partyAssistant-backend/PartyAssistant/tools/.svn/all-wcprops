@@ -1,0 +1,149 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/acg-eventmgr/!svn/ver/2042/branches/0.4/eventmgr/tools
+END
+csv_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/acg-eventmgr/!svn/ver/1992/branches/0.4/eventmgr/tools/csv_tool.py
+END
+contact_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/acg-eventmgr/!svn/ver/1992/branches/0.4/eventmgr/tools/contact_tool.py
+END
+datetime_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/datetime_tool.py
+END
+name_split.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/acg-eventmgr/!svn/ver/1937/branches/0.4/eventmgr/tools/name_split.py
+END
+barcode_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/acg-eventmgr/!svn/ver/1987/branches/0.4/eventmgr/tools/barcode_tool.py
+END
+client_form_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/acg-eventmgr/!svn/ver/1952/branches/0.4/eventmgr/tools/client_form_tool.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/__init__.py
+END
+baseclass.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/baseclass.py
+END
+temp_user_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/temp_user_tool.py
+END
+meeting_client_report_tools.py
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/meeting_client_report_tools.py
+END
+search_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/acg-eventmgr/!svn/ver/1937/branches/0.4/eventmgr/tools/search_tool.py
+END
+client_name_to_pinyin_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/acg-eventmgr/!svn/ver/1937/branches/0.4/eventmgr/tools/client_name_to_pinyin_tool.py
+END
+page_size_setting.py
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/page_size_setting.py
+END
+tag_replace_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/acg-eventmgr/!svn/ver/2042/branches/0.4/eventmgr/tools/tag_replace_tool.py
+END
+google_calendar.py
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/acg-eventmgr/!svn/ver/2010/branches/0.4/eventmgr/tools/google_calendar.py
+END
+fckeditor.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/acg-eventmgr/!svn/ver/1962/branches/0.4/eventmgr/tools/fckeditor.py
+END
+thread_controller.py
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/acg-eventmgr/!svn/ver/2042/branches/0.4/eventmgr/tools/thread_controller.py
+END
+http_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/http_tool.py
+END
+exceptions.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/exceptions.py
+END
+paginator_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/paginator_tool.py
+END
+md5_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/acg-eventmgr/!svn/ver/1865/branches/0.4/eventmgr/tools/md5_tool.py
+END
+email_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/acg-eventmgr/!svn/ver/2041/branches/0.4/eventmgr/tools/email_tool.py
+END
+client_group_tool.py
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/acg-eventmgr/!svn/ver/1937/branches/0.4/eventmgr/tools/client_group_tool.py
+END
+chartclass.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/acg-eventmgr/!svn/ver/1937/branches/0.4/eventmgr/tools/chartclass.py
+END
