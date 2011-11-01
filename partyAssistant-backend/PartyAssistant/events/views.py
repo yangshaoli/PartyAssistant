@@ -15,9 +15,8 @@ def createParty(request):
     '''
     创建活动：需要会议的名称，时间（起始时间，结束时间），地点，创建人
     '''
-    print request.user
     if DEBUG:
-        #设置假的request.user ，设置DEBUG切换状态大
+        #设置假的request.user ，设置DEBUG切换状态
         if 'AnonymousUser' == str(request.user):
             request.user=User.objects.get(pk=1) 
             
