@@ -13,6 +13,6 @@ urlpatterns = patterns('',
     # url(r'^admb.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^createparty/$','events.views.createParty',name='creatparty'),
-    url(r'^deleteparty/$','events.views.deleteParty',name='deleteparty'),
+    url(r'^create_party/$','events.views.create_party',name='create_party'),
+    url(r'^delete_party/$','events.views.delete_party',name='delete_party'),
     )

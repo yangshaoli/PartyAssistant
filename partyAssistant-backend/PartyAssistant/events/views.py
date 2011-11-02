@@ -5,51 +5,39 @@ Created on 2011-10-27
 @author: liuxue
 '''
 
-from django.contrib.auth.models import User
-from models import Meeting
+from models import Party
 from django.shortcuts import render_to_response, get_object_or_404
-from forms import createPartyForm
-from tools.datetime_tool import time_combine
-DEBUG = True
-def createParty(request):
-    '''
-    创建活动：需要会议的名称，时间（起始时间，结束时间），地点，创建人
-    '''
-    if DEBUG:
-        #设置假的request.user ，设置DEBUG切换状态
-        if 'AnonymousUser' == str(request.user):
-            request.user=User.objects.get(pk=1) 
-            
+from forms import CreatePartyForm
+from django.template import RequestContext
+def create_party(request):            
     if request.method=='POST':
-        form = createPartyForm(request.POST)
+        form = CreatePartyForm(request.POST)
         if form.is_valid():        
-            start_time = time_combine(form.cleaned_data['start_date'],
-                                      str(form.cleaned_data['start_time']))
-            end_time = time_combine(form.cleaned_data['end_date'],
-                                    str(form.cleaned_data['end_time']))
+            start_time = form.cleaned_data['start_time']
+            end_time = form.cleaned_data['end_time']
             address=form.cleaned_data['address']
-            remarks=form.cleaned_data['remarks']  
-            Meeting.objects.create(
-                           start_time = start_time,
-                           end_time = end_time,
-                           address = address,
-                           remarks = remarks,                           
-                           creater = request.user                                 
+            description=form.cleaned_data['description']  
+            limit_num = form.cleaned_data['limit_num']   
+            Party.objects.create(
+                           start_time=start_time,
+                           end_time=end_time,
+                           address=address,
+                           description=description,                           
+                           creator=request.user,
+                           limit_num=limit_num                                  
                            );
-            #完成后跳转位置  暂时用index。html               
-            return render_to_response('index.html',{'message':'create'});
+            return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
         else:
-            return render_to_response('events/createParty.html',{'form':form}) 
+            return render_to_response('events/create_party.html',{'form':form}, context_instance=RequestContext(request)) 
     else:
-        form = createPartyForm()
-        return render_to_response('events/createParty.html',{'form':form})
+        form = CreatePartyForm()
+        return render_to_response('events/create_party.html',{'form':form}, context_instance=RequestContext(request))
 
  
 
-def deleteParty(request):
-    meetingid=request.GET['meetingid']
-    meeting=get_object_or_404(Meeting,pk=meetingid)
-    Meeting.delete(meeting)
-    return render_to_response('index.html',{'message','delete'})
+def delete_party(request,party_id):
+    party=get_object_or_404(Party,pk=party_id)
+    Party.delete(party)
+    return render_to_response('list_party.html',{'message','delete success jump to list_party'})
  
 

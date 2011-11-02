@@ -20,10 +20,12 @@
 <title>创建活动</title>
 </head>
 <body>
-<form action='{% url creatparty %}' method='post'>
+
+<form action='{% url create_party %}' method='post'>
+{% csrf_token %}
 <table>
-<tr><td>开始时间</td><td>{{ form.start_date }}
-                            	{{form.start_time}}<span class="required-tip">如：2010-01-01 23:09</span>
+<tr><td>开始时间</td><td><input type="text" class="input-txt3 mys" id="id_start_date" name="start_date"></input>
+                            	<input type="text" class='input-txt3 mys TimePker' id='id_start_time' autocomplete='off' name="start_time"></input><span class="required-tip">如：2010-01-01 23:09</span>
                             	<div style="display: none; "></div>
 	                            {% if form.start_date.errors %}
 	                            	{{ form.start_date.errors }}
@@ -31,17 +33,18 @@
 	                            	{{ form.start_time.errors }}
 	                            {% endif %}</td>
 </tr>
-<tr><td>结束时间</td><td>{{ form.end_date }}
-	                            {{form.end_time}}<span class="required-tip">如：2010-01-01 23:09</span>
+<tr><td>结束时间</td><td><input type="text" class='input-txt3' id="id_end_date" name="end_date"></input>
+                            	<input type="text" class='input-txt3 mys TimePker' id='id_end_time' autocomplete='off' name="end_time"></input>
+	                            <span class="required-tip">如：2010-01-01 23:09</span>
 	                            {% if form.end_date.errors %}
 	                            	{{ form.end_date.errors }}
 	                            {% else %}
 	                            	{{ form.end_time.errors }}
 	                            {% endif %}</td>
 </tr>
-<tr><td>地址</td><td>{{ form.address}}</td>
+<tr><td>地址</td><td><input type='textfield' name='address'  class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
 </tr>
-<tr><td>描述</td><td>{{ form.remarks}}</td>
+<tr><td>描述</td><td><input type='textfield' name='discription' class='textarea-remark2'></input>{{ form.description.errors}}</td>
 </tr>
 <tr><td>限制人数</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
 </tr>
