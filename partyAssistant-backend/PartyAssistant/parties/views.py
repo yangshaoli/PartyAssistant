@@ -28,10 +28,10 @@ def create_party(request):
                            );
             return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
         else:
-            return render_to_response('events/create_party.html',{'form':form}, context_instance=RequestContext(request)) 
+            return render_to_response('parties/create_party.html',{'form':form}, context_instance=RequestContext(request)) 
     else:
         form = CreatePartyForm()
-        return render_to_response('events/create_party.html',{'form':form}, context_instance=RequestContext(request))
+        return render_to_response('parties/create_party.html',{'form':form}, context_instance=RequestContext(request))
 
  
 
