@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import patterns, url
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -13,6 +13,6 @@ urlpatterns = patterns('',
     # url(r'^admb.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    url(r'^createparty/$','events.views.createParty',name='creatparty'),
-    url(r'^deleteparty/$','events.views.deleteParty',name='deleteparty'),
+    url(r'^create_party/$','parties.views.create_party',name='create_party'),
+    url(r'^delete_party/(?P<id>\d+)/$','parties.views.delete_party',name='delete_party'),
     )
