@@ -4,21 +4,8 @@ from . import views
 
 
 urlpatterns = patterns('',
-    url(r'^login/$',
-		auth_views.login, 
-		{'template_name': 'accounts/login.html'}, 
-		name='login'),
-
-    url(r'^web_reg/$', 
-		views.account_web_register, 
-		name='web_reg'),
-
-    url(r'^app_reg/$', 
-		views.account_app_register, 
-		name='app_reg'),
-
-    url(r'^logout/$', 
-		auth_views.logout,
-		{'template_name': 'index.html'}, 
-		name='logout'),
-	)
+    url(r'^login/$',auth_views.login,{'template_name': 'accounts/login.html'}, name='login'),
+    url(r'^web_register/$', views.web_register, name='web_register'),
+    url(r'^app_register/$', views.app_register, name='app_register'),
+    url(r'^logout/$', auth_views.logout, {'template_name': 'index.html'}, name='logout'),
+)
