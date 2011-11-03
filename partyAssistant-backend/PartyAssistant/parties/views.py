@@ -33,7 +33,6 @@ def create_party(request):
         form = CreatePartyForm()
         return render_to_response('parties/create_party.html',{'form':form}, context_instance=RequestContext(request))
 
- 
 
 def delete_party(request,party_id):
     party=get_object_or_404(Party,pk=party_id)
