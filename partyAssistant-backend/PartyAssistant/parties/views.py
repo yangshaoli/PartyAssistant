@@ -74,3 +74,6 @@ def list_party(request):
         
     }
     return render_to_response('parties/list.html', ctx ,context_instance=RequestContext(request))
+
+def show_party(request, id):
+    pass

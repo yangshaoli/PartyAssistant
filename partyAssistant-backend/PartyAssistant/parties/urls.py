@@ -18,4 +18,5 @@ urlpatterns = patterns('parties.views',
     url(r'^message_invite/$','message_invite',name='message_invite'),
     url(r'^email_invite/$','email_invite',name='email_invite'),
     url(r'^list/$','list_party',name='list_party'),
+    url(r'^show/(?P<id>\d+)/$','show_party',name='show_party'),
 )
