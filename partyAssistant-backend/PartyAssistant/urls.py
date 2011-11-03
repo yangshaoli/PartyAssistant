@@ -18,7 +18,6 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^events/', include('PartyAssistant.parties.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/', include('accounts.urls')),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': MEDIA_ROOT}),
-
+    url(r'^clients/', include('PartyAssistant.clients.urls')),
 )
