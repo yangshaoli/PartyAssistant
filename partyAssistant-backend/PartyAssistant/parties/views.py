@@ -7,8 +7,11 @@ Created on 2011-10-27
 
 from models import Party
 from django.shortcuts import render_to_response, get_object_or_404
-from forms import CreatePartyForm
+from forms import CreatePartyForm, InviteForm
 from django.template import RequestContext
+from tools.email_tool import send_emails
+from settings import SYS_EMAIL_ADDRESS
+
 def create_party(request):            
     if request.method=='POST':
         form = CreatePartyForm(request.POST)
@@ -39,4 +42,24 @@ def delete_party(request,party_id):
     Party.delete(party)
     return render_to_response('list_party.html',{'message','delete success jump to list_party'})
  
+def message_invite(request):
+    form = InviteForm()
+    return render_to_response('parties/invite.html',{'form':form}, context_instance=RequestContext(request))
 
+def email_invite(request):
+    email_subject = u'[PartyAssistant]您收到一个活动邀请'
+    
+    if request.method=='POST':
+        form = InviteForm(request.POST)
+        if form.is_valid():
+            addressees = form.cleaned_data['addressee']
+            content = form.cleaned_data['content']
+            for addressee in addressees.split(','):
+                send_emails(email_subject, content, SYS_EMAIL_ADDRESS, [addressee])
+            return render_to_response('message.html', context_instance=RequestContext(request))
+    else:
+        form = InviteForm()
+        return render_to_response('parties/invite.html',{'form':form}, context_instance=RequestContext(request))
+
+def list_party(request):
+    return render_to_response('parties/list.html', context_instance=RequestContext(request))

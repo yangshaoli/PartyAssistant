@@ -46,19 +46,21 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 
 
 </style> 
- 
+ <form action="{% url email_invite %}" method="POST">{% csrf_token %}
 		<table width="100%" border="0">
 			<tbody>
 				<tr>
 					<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
-                    <td width="88%"><textarea id="addressee" onkeypress="showDropDownList()" ></textarea> <button onclick="alert('test');">添加</button></td>
+                    <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button onclick="alert('test');">添加</button></td>
 				</tr>
 				<tr>
 					<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
-                    <td><textarea rows="8"></textarea></td>
+                    <td><textarea id="id_content" name="content" rows="8"> 陈洋邀请您参加活动</textarea></td>
 				</tr>
 		   </tbody>
 	    </table>
+	    <input type="submit" />
+</form>
 <div id="addressee_list">
     <div class="addressee_list_row">
         <span name="client">Chen yang</span><span name="phone">18611387342</span>

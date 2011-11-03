@@ -32,3 +32,7 @@ class CreatePartyForm(forms.Form):
                 self._errors['limit_num'] = ErrorList([u'限制人数在0~1000'])
                         
         return self.cleaned_data
+
+class InviteForm(forms.Form):
+    addressee = forms.CharField(widget=forms.TextInput(), required=True)
+    content = forms.CharField(widget=forms.TextInput(), required=True)
