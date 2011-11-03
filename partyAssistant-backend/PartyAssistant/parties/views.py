@@ -6,9 +6,11 @@ Created on 2011-10-27
 '''
 
 from models import Party
-from django.shortcuts import render_to_response, get_object_or_404
-from forms import CreatePartyForm, InviteForm
+from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
+
+from forms import CreatePartyForm, InviteForm
 from tools.email_tool import send_emails
 from settings import SYS_EMAIL_ADDRESS
 
@@ -29,7 +31,11 @@ def create_party(request):
                            creator=request.user,
                            limit_num=limit_num                                  
                            );
-            #return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
+            #判断用户选择的通知方式
+            if request.POST['invite_type'] == 'email':
+                return redirect(reverse('email_invite'))
+            else:
+                return redirect(reverse('message_invite'))
         else:
             return render_to_response('parties/create_party.html',{'form':form}, context_instance=RequestContext(request)) 
     else:
@@ -44,7 +50,7 @@ def delete_party(request,party_id):
  
 def message_invite(request):
     form = InviteForm()
-    return render_to_response('parties/invite.html',{'form':form}, context_instance=RequestContext(request))
+    return render_to_response('parties/invite.html',{'form':form, 'title':u'发送短信通知'}, context_instance=RequestContext(request))
 
 def email_invite(request):
     email_subject = u'[PartyAssistant]您收到一个活动邀请'
@@ -55,12 +61,11 @@ def email_invite(request):
             addressees = form.cleaned_data['addressee']
             content = form.cleaned_data['content']
             for addressee in addressees.split(','):
-                print addressee
                 send_emails(email_subject, content, SYS_EMAIL_ADDRESS, [addressee])
             return render_to_response('message.html', context_instance=RequestContext(request))
     else:
         form = InviteForm()
-        return render_to_response('parties/invite.html',{'form':form}, context_instance=RequestContext(request))
+        return render_to_response('parties/invite.html',{'form':form , 'title':u'发送邮件通知'}, context_instance=RequestContext(request))
 
 def list_party(request):
     party_list = Party.objects.all()
