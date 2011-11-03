@@ -15,6 +15,7 @@ class Party(models.Model):
     description = models.TextField(blank=True)
     creator = models.ForeignKey(User)
     limit_num = models.IntegerField(max_length=3)
+    created_time = models.DateTimeField(auto_now_add = True)
     def __unicode__(self):
         return self.id
     

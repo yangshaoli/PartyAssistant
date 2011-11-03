@@ -3,7 +3,7 @@
 {% block content %}
 
 {% for party in party_list %}
-活动{{ forloop.counter }}<br/>
+<a href="#">活动{{ forloop.counter }}</a><br/>
 描述：{{party.description}}
 <hr>
 {% endfor %}

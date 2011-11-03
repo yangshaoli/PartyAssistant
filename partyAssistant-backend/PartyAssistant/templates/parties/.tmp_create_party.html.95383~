@@ -46,9 +46,20 @@
 <tr><td>限制人数</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
 </tr>
 </table>
-<input name='invite_type' type='hidden' value=''/>
-<input type='button' value='用手机短信发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'msg';this.form.submit()" />
-<input type='button' value='用电子邮件发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'email';this.form.submit()"/>
+<input type='button' value='用手机短信发送邀请' onclick="submitAndInvite('msg')" />
+<input type='button' value='用电子邮件发送邀请' onclick="submitAndInvite('email')"/>
 </form>
+<script type="text/javascript" >
+
+function submitAndInvite(action){
+	if (action == 'email'){
+		alert('use-email');
+		
+	} else { 
+		alert('use-msg');
+	}
+}
+
+</script>
 </body>
 </html>

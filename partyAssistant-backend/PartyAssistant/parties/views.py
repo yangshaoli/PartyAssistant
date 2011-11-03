@@ -29,7 +29,7 @@ def create_party(request):
                            creator=request.user,
                            limit_num=limit_num                                  
                            );
-            return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
+            #return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
         else:
             return render_to_response('parties/create_party.html',{'form':form}, context_instance=RequestContext(request)) 
     else:
@@ -66,5 +66,6 @@ def list_party(request):
     party_list = Party.objects.all()
     ctx = {
         'party_list' : party_list
+        
     }
     return render_to_response('parties/list.html', ctx ,context_instance=RequestContext(request))
