@@ -55,6 +55,7 @@ def email_invite(request):
             addressees = form.cleaned_data['addressee']
             content = form.cleaned_data['content']
             for addressee in addressees.split(','):
+                print addressee
                 send_emails(email_subject, content, SYS_EMAIL_ADDRESS, [addressee])
             return render_to_response('message.html', context_instance=RequestContext(request))
     else:
@@ -62,4 +63,8 @@ def email_invite(request):
         return render_to_response('parties/invite.html',{'form':form}, context_instance=RequestContext(request))
 
 def list_party(request):
-    return render_to_response('parties/list.html', context_instance=RequestContext(request))
+    party_list = Party.objects.all()
+    ctx = {
+        'party_list' : party_list
+    }
+    return render_to_response('parties/list.html', ctx ,context_instance=RequestContext(request))

@@ -2,6 +2,9 @@
 {% block title %} 活动列表 {% endblock %}
 {% block content %}
 
-List party
-
+{% for party in party_list %}
+活动{{ forloop.counter }}<br/>
+描述：{{party.description}}
+<hr>
+{% endfor %}
 {% endblock %}
