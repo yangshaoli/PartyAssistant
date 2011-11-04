@@ -75,6 +75,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
 </head>
 <body>{% csrf_token %}
 <input type='button' value='返回' onclick="back();"></input>
+<input type='button' value='再次邀请' onclick="alert("再次邀请")"></input>
 <table>
 {% for client_party in client_party_list %}
 <tr>
