@@ -9,6 +9,7 @@ from models import Party
 from django.shortcuts import render_to_response, get_object_or_404
 from forms import CreatePartyForm
 from django.template import RequestContext
+from django.http import HttpResponse
 def create_party(request):            
     if request.method=='POST':
         form = CreatePartyForm(request.POST)
@@ -33,9 +34,12 @@ def create_party(request):
 
  
 
-def delete_party(request,party_id):
-    party=get_object_or_404(Party,pk=party_id)
-    Party.delete(party)
-    return render_to_response('list_party.html',{'message','delete success jump to list_party'})
+def delete_party(request):
+    if request.method=='GET':
+        return render_to_response('parties/delete_party_test.html',context_instance=RequestContext(request))
+    else:
+        party=get_object_or_404(Party,pk=request.POST['party_id'])
+        Party.delete(party) 
+        return HttpResponse("OK")
  
 
