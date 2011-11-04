@@ -1,0 +1,47 @@
+<html>
+<head>
+  <script type="text/javascript" src="/media/js/jquery-1.4.2.js"></script>
+ <script type="text/javascript" src="/media/js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="/media/js/time.js"></script>
+    <script type="text/javascript" src="/media/js/ui.core.js"></script>
+    <script type="text/javascript" src="/media/js/jquery.form.js"></script>
+    <link type="text/css" href="/media/css/main.css" rel="stylesheet" />
+    <link type="text/css" href="/media/css/datepicker.css" rel="stylesheet" />
+    <link type="text/css" href="/media/css/datepicker2.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $("document").ready(function(){
+            $("#id_date").datepicker();
+           
+        });
+
+
+        
+    </script>
+<title>创建活动</title>
+</head>
+<body>
+
+<form action='{% url create_party %}' method='post'>
+{% csrf_token %}
+<table>
+<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date"></input>
+                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time"></input><span class="required-tip">如：2010-01-01 23:09</span>
+                            	<div style="display: none; "></div>
+	                            {% if form.date.errors %}
+	                            	{{ form.date.errors }}
+	                            {% else %}
+	                            	{{ form.time.errors }}
+	                            {% endif %}</td>
+</tr>
+
+<tr><td>地址</td><td><input type='textfield' name='address'  class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
+</tr>
+<tr><td>描述</td><td><input type='textfield' name='discription' class='textarea-remark2'></input>{{ form.description.errors}}</td>
+</tr>
+<tr><td>限制人数</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
+</tr>
+</table>
+<input type='submit' value='完成'></input>
+</form>
+</body>
+</html>

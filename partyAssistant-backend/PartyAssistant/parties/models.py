@@ -9,8 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 
 class Party(models.Model):
-    start_time = models.DateTimeField()
-    end_time = models.DateTimeField(blank = True)
+    time = models.DateTimeField()
     address = models.CharField(max_length=256)
     description = models.TextField(blank=True)
     creator = models.ForeignKey(User)

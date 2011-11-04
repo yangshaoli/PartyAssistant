@@ -13,14 +13,12 @@ def create_party(request):
     if request.method=='POST':
         form = CreatePartyForm(request.POST)
         if form.is_valid():        
-            start_time = form.cleaned_data['start_time']
-            end_time = form.cleaned_data['end_time']
+            time = form.cleaned_data['time']
             address=form.cleaned_data['address']
             description=form.cleaned_data['description']  
             limit_num = form.cleaned_data['limit_num']   
             Party.objects.create(
-                           start_time=start_time,
-                           end_time=end_time,
+                           time=time,
                            address=address,
                            description=description,                           
                            creator=request.user,
