@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ContactListViewController.h"
+#import "ContactListNavigationController.h"
 
 @interface SendEmailToClientsViewController : UITableViewController
 

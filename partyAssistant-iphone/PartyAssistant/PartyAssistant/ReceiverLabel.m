@@ -6,26 +6,40 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "ReceiverView.h"
+#import "ReceiverLabel.h"
 
-@implementation ReceiverView
+@implementation ReceiverLabel
+@synthesize maxWidth,maxHeight;
 
-- (id)initWithFrame:(CGRect)frame
+
+- (id)initWithReceiverObject:(ClientObject *)receiver index:(NSInteger)lbIndex
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code
-    }
+    self.maxWidth = 140.0f;
+    self.maxHeight = 36.0f;
+    self = [self initWithFrame:CGRectMake(0,4+44*lbIndex,self.maxWidth,self.maxHeight)];
+    //if ([receiver.cName ]) {
+        
+    //}
+    self.text = receiver.cName;
+    self.backgroundColor = [UIColor colorWithRed:0.4549 green:0.7176 blue:0.9373 alpha:1];
+    self.layer.cornerRadius = 20;
+    self.lineBreakMode = UILineBreakModeWordWrap | UILineBreakModeTailTruncation;  
+    self.numberOfLines = 1;
     return self;
 }
 
-/*
+
+
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
+- (void)drawTextInRect:(CGRect)rect
 {
     // Drawing code
+    rect.origin.x += 20;
+    [super drawTextInRect:rect];
 }
-*/
+
+
 
 @end

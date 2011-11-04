@@ -7,7 +7,24 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseInfoObject.h"
+#import "BaseInfoService.h"
+#import "SendSMSToClientsViewController.h"
+#import "SendEmailToClientsViewController.h"
+@interface AddNewPartyBaseInfoTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate,UIPickerViewDelegate>{
+    BaseInfoObject *baseInfoObject;
+    UIDatePicker *datePicker;
+    UIPickerView *peoplemaxiumPicker;
+    UITextField *locationTextField;
+    UITextView *descriptionTextView;
+}
 
-@interface AddNewPartyBaseInfoTableViewController : UITableViewController
+@property(nonatomic, retain)BaseInfoObject *baseInfoObject;
+@property(nonatomic, retain)UIDatePicker *datePicker;
+@property(nonatomic, retain)UIPickerView *peoplemaxiumPicker;
+@property(nonatomic, retain)UITextField *locationTextField;
+@property(nonatomic, retain)UITextView *descriptionTextView;
+
+- (void)goToSMS;
 
 @end

@@ -9,5 +9,12 @@
 #import <Foundation/Foundation.h>
 
 @interface UserObject : NSObject
+{
+    NSNumber *uID;
+    NSString *phoneNum;
+}
+
+@property(nonatomic, retain)NSNumber *uID;
+@property(nonatomic, retain)NSString *phoneNum;
 
 @end

@@ -7,7 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UserObject.h"
+#import "SynthesizeSingleton.h"
+#define USEROBJECTFILE @"UserObjectFile"
+#define USEROBJECTKEY @"UserObjectKey"
 
 @interface UserObjectService : NSObject
+{
+    UserObject *userObject;
+}
 
+@property(nonatomic,retain)UserObject *userObject;
+
++ (UserObjectService *)sharedUserObjectService;
+- (UserObject *)getUserObject;
+- (void)saveUserObject;
+- (void)clearUserObject;
 @end

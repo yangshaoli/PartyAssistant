@@ -9,6 +9,7 @@
 #import "UserObject.h"
 
 @implementation UserObject
+@synthesize uID,phoneNum;
 
 - (id)init
 {

@@ -15,20 +15,17 @@
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:@"OK" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     av.tag=1;
 	[av show];
-    [av release];
 }
 
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage{
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     av.tag=1;
 	[av show];
-    [av release];
 }
 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
-    [av release];
 }
 
 #pragma mark --
@@ -36,25 +33,20 @@
 
 - (void)showWaiting {
 	
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
+	NSLog(@"111");
 	IndicatorMessageView *waitingView = [[IndicatorMessageView alloc] initWithFrame:CGRectMake(80, 110+self.tableView.contentOffset.y, 160, 60)];
-	
+	NSLog(@"222");
 	[self.view addSubview:waitingView];
-	[waitingView release];
+    NSLog(@"333");
 	self.view.userInteractionEnabled = NO;
 	
-	[pool release];
 }
 
 - (void)showWaitingWithFrame:(CGRect)frame {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	IndicatorMessageView *waitingView = [[IndicatorMessageView alloc] initWithFrame:frame];
 	
 	[self.view addSubview:waitingView];
-	[waitingView release];
 	self.view.userInteractionEnabled = NO;
-    [pool release];
 }
 
 - (void)dismissWaiting

@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AddressBook/AddressBook.h>
 
 @interface ContactorEmailDetailsViewController : UITableViewController
+{
+    ABRecordID contactorID;
+}
 
+@property(nonatomic, assign)ABRecordID contactorID;
 @end

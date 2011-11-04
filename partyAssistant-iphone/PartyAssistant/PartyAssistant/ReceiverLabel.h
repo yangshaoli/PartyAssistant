@@ -7,7 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ClientObject.h"
+#import <QuartzCore/QuartzCore.h>
 
-@interface ReceiverView : UIView
+@interface ReceiverLabel : UILabel
+{
+    const CGFloat maxWidth;
+    const CGFloat maxHeight;
+}
+
+@property(nonatomic, assign)CGFloat maxWidth;
+@property(nonatomic, assign)CGFloat maxHeight;
+
+- (id)initWithReceiverObject:(ClientObject *)receiver index:(NSInteger)lbIndex;
 
 @end

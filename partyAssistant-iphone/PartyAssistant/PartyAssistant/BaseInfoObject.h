@@ -8,6 +8,25 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BaseInfoObject : NSObject
+@interface BaseInfoObject : NSObject{
+    NSString *starttimeStr;
+    NSDate *starttimeDate;
+    NSString *location;
+    NSString *description;
+    NSNumber *peopleMaximum;
+    NSNumber *userId;
+    NSNumber *partyId;
+}
 
+@property(nonatomic, retain)NSString *starttimeStr;
+@property(nonatomic, retain)NSDate *starttimeDate;
+@property(nonatomic, retain)NSString *location;
+@property(nonatomic, retain)NSString *description;
+@property(nonatomic, retain)NSNumber *peopleMaximum;
+@property(nonatomic, retain)NSNumber *userId;
+@property(nonatomic, retain)NSNumber *partyId;
+
+
+- (void)clearObject;
+- (void)formatDateToString;
 @end

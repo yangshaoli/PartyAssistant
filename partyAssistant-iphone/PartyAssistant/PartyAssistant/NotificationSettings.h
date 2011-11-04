@@ -6,8 +6,5 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-@protocol NotificationSettings <NSObject>
-
-@end
+#define SELECT_CONTACT_MANNER @"SelectContactManner"
+#define SELECT_RECEIVER_IN_SEND_SMS @"SelectReceiverInSendSMS"

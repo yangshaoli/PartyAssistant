@@ -8,6 +8,21 @@
 
 #import <Foundation/Foundation.h>
 
-@interface MsgObject : NSObject
+@interface SMSObject : NSObject
+{
+    NSNumber *smsID;
+    NSString *smsContent;
+    BOOL _isSendBySelf;
+    BOOL _isApplyTips;
+    NSArray *receiversArray;
+}
+
+@property(nonatomic,retain)NSNumber *smsID;
+@property(nonatomic,retain)NSString *smsContent;
+@property(nonatomic,assign)BOOL _isSendBySelf;
+@property(nonatomic,assign)BOOL _isApplyTips;
+@property(nonatomic,retain)NSArray *receiversArray;
+
+- (void)clearObject;
 
 @end

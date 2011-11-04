@@ -29,7 +29,7 @@
         backgroundView.layer.masksToBounds = YES;
         
         self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 25, 140, 30)];
-        messageLabel.text = @"Please wait...";
+        messageLabel.text = @"请稍候...";
         messageLabel.textAlignment = UITextAlignmentCenter;
         messageLabel.backgroundColor = [UIColor clearColor];
         messageLabel.textColor = [UIColor whiteColor];
@@ -42,9 +42,6 @@
         [self addSubview:activityView];
         [self addSubview:messageLabel];
         [activityView startAnimating];
-        [backgroundView release];
-        [activityView release];
-        [messageLabel release];
     }
     return self;
 }
@@ -58,18 +55,5 @@
 }
 */
 
-- (void)dealloc
-{
-    [backgroundView removeFromSuperview];
-    [activityView stopAnimating];
-    [activityView removeFromSuperview];
-    [messageLabel removeFromSuperview];
-    
-    self.backgroundView = nil;
-    self.messageLabel = nil;
-    self.activityView = nil;
-    
-    [super dealloc];
-}
 
 @end

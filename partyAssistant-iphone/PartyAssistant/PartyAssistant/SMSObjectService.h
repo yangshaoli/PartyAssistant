@@ -7,7 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SMSObject.h"
+#import "SynthesizeSingleton.h"
+#define SMSOBJECTFILE @"SMSObjectFile"
+#define SMSOBJECTKEY @"SMSObjectKey"
 
 @interface SMSObjectService : NSObject
+{
+    SMSObject *smsObject;
+}
+
+@property(nonatomic,retain)SMSObject *smsObject;
+
++ (SMSObjectService *)sharedSMSObjectService;
+- (SMSObject *)getSMSObject;
+- (void)saveSMSObject;
+- (void)clearSMSObject;
 
 @end

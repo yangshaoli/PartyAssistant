@@ -7,7 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "BaseInfoObject.h"
+#import "SynthesizeSingleton.h"
+#define BASEINFOOBJECTFILE @"BaseInfoObjectFile"
+#define BASEINFOOBJECTKEY @"BaseInfoObject"
 
-@interface BaseInfoObjectServices : NSObject
+@interface BaseInfoService : NSObject{
+    BaseInfoObject *baseinfoObject;
+}
+
+
+@property (nonatomic, retain) BaseInfoObject *baseinfoObject;
+
++ (BaseInfoService *)sharedBaseInfoService;
+- (BaseInfoObject *)getBaseInfo;
+- (void)saveBaseInfo;
+- (void)reorganizeData;
+- (void)clearBaseInfo;
+
 
 @end

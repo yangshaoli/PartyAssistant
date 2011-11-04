@@ -6,8 +6,6 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#define DOMAIN_NAME @"http://www.airenao.com"
 
-@protocol URLSettings <NSObject>
-
-@end
+#define CREATE_PARTY [NSString stringWithFormat:@"%@/party/create/",DOMAIN_NAME]
