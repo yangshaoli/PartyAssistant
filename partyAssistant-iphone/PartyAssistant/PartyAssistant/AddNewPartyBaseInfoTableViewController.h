@@ -1,5 +1,5 @@
 //
-//  SecondViewController.h
+//  AddNewPartyBaseInfoTableViewController.h
 //  PartyAssistant
 //
 //  Created by 超 李 on 11-10-26.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SecondViewController : UIViewController
+@interface AddNewPartyBaseInfoTableViewController : UITableViewController
 
 @end

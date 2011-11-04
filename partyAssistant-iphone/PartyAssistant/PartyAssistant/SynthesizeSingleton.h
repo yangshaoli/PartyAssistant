@@ -1,13 +1,13 @@
 //
-//  FirstViewController.h
+//  SynthesizeSingleton.h
 //  PartyAssistant
 //
 //  Created by 超 李 on 11-10-26.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface FirstViewController : UIViewController
+@protocol SynthesizeSingleton <NSObject>
 
 @end
