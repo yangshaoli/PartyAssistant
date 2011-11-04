@@ -8,24 +8,25 @@ Created on 2011-10-27
 from models import Party
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from django.template import RequestContext
 
 from forms import CreatePartyForm, InviteForm
 from tools.email_tool import send_emails
 from settings import SYS_EMAIL_ADDRESS
 
+from clients.models import Client, ClientParty
+
 def create_party(request):            
     if request.method=='POST':
         form = CreatePartyForm(request.POST)
         if form.is_valid():        
-            start_time = form.cleaned_data['start_time']
-            end_time = form.cleaned_data['end_time']
+            time = form.cleaned_data['time']
             address=form.cleaned_data['address']
             description=form.cleaned_data['description']  
             limit_num = form.cleaned_data['limit_num']   
-            Party.objects.create(
-                           start_time=start_time,
-                           end_time=end_time,
+            party = Party.objects.create(
+                           time=time,
                            address=address,
                            description=description,                           
                            creator=request.user,
@@ -33,8 +34,8 @@ def create_party(request):
                            );
             #判断用户选择的通知方式
             if request.POST['invite_type'] == 'email':
-                return redirect(reverse('email_invite'))
-            else:
+                return redirect(reverse('email_invite', args=[party.id]))
+            else: #如果用户选择短信通知
                 return redirect(reverse('message_invite'))
         else:
             return render_to_response('parties/create_party.html',{'form':form}, context_instance=RequestContext(request)) 
@@ -52,7 +53,7 @@ def message_invite(request):
     form = InviteForm()
     return render_to_response('parties/invite.html',{'form':form, 'title':u'发送短信通知'}, context_instance=RequestContext(request))
 
-def email_invite(request):
+def email_invite(request, party_id):
     email_subject = u'[PartyAssistant]您收到一个活动邀请'
     
     if request.method=='POST':
@@ -62,10 +63,20 @@ def email_invite(request):
             content = form.cleaned_data['content']
             for addressee in addressees.split(','):
                 send_emails(email_subject, content, SYS_EMAIL_ADDRESS, [addressee])
+                #将收件人加入clients,状态为'被邀请'
+                if Client.objects.filter(email=addressee).count() == 0:
+                    client = Client.objects.create(email=addressee, creator=User.objects.get(pk=request.user.id))
+                    ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'被邀请') #在UserProfile中写入号码
             return render_to_response('message.html', context_instance=RequestContext(request))
     else:
         form = InviteForm()
-        return render_to_response('parties/invite.html',{'form':form , 'title':u'发送邮件通知'}, context_instance=RequestContext(request))
+        party = Party.objects.get(pk=party_id)
+        ctx = {
+            'form':form,
+            'party':party,
+            'title':u'发送邮件通知'
+        }
+        return render_to_response('parties/invite.html', ctx, context_instance=RequestContext(request))
 
 def list_party(request):
     party_list = Party.objects.all()
@@ -75,5 +86,9 @@ def list_party(request):
     }
     return render_to_response('parties/list.html', ctx ,context_instance=RequestContext(request))
 
-def show_party(request, id):
-    pass
+def show_party(request, party_id):
+    party = Party.objects.get(pk=party_id)
+    ctx = {
+        'party' : party
+    }
+    return render_to_response('parties/show.html', ctx ,context_instance=RequestContext(request))

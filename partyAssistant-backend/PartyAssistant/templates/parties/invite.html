@@ -47,18 +47,17 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 	overflow: hidden;
 }
 
-
 </style> 
- <form action="{% url email_invite %}" method="POST">{% csrf_token %}
+ <form action="{% url email_invite party.id%}" method="POST">{% csrf_token %}
 		<table width="100%" border="0">
 			<tbody>
 				<tr>
 					<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
-                    <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button onclick="alert('test');">添加</button></td>
+                    <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button>添加</button></td>
 				</tr>
 				<tr>
 					<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
-                    <td><textarea id="id_content" name="content" rows="8"> 陈洋邀请您参加活动</textarea></td>
+                    <td><textarea id="id_content" name="content" rows="8">邀请您{{party.start_time|date:"Y-m-d H:m:s"}}参加活动 <a href=""></a></textarea></td>
 				</tr>
 		   </tbody>
 	    </table>
@@ -79,7 +78,7 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
         <li><span name="client">Cui Heling</span> (<span name="phone">13683244498</span> )</li>
     </ul>
 </div>
-<script type="text/javascript" src="../../static/js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript" >
 
 var addressList = '';
@@ -90,13 +89,13 @@ $(document).ready(function(){
     
     // 点击下拉列表中的某一项，将号码添加到[收件人]
     $("#ac_dropdownlist li").bind('click', function(){
-        var inputValue = $('#addressee').val();
-        var cursortPos = getCursortPosition(document.getElementById('addressee'));
+        var inputValue = $('#id_addressee').val();
+        var cursortPos = getCursortPosition(document.getElementById('id_addressee'));
         var commaPos = inputValue.lastIndexOf(',', cursortPos);
         var v = inputValue.substring(commaPos +1 , cursortPos );
         var r = $(this).children('[name="phone"]').text();
         inputValue = inputValue.substr(0, commaPos + 1 ) + r + ',' + inputValue.substr(cursortPos, inputValue.length )
-        $('#addressee').val(inputValue);
+        $('#id_addressee').val(inputValue);
         $('#ac_dropdownlist').hide();
     });  
 
@@ -106,11 +105,11 @@ $(document).ready(function(){
         //var c = $(this).children('[name="client"]').text() + '(' + $(this).children('[name="phone"]').text() +'), ';
         var c =  $(this).children('[name="phone"]').text() + ',';
         addressList = addressList + c;
-        $('#addressee').val(addressList);
+        $('#id_addressee').val(addressList);
     }, function(){
         $(this).attr('style', '');
         addressList = addressList.replace( $(this).children('[name="phone"]').text() + ',' , '');
-        $('#addressee').val(addressList);
+        $('#id_addressee').val(addressList);
     });
 });
 
@@ -121,10 +120,10 @@ $(document).ready(function(){
 **/
 function showDropDownList(){
     $("#ac_dropdownlist").show();
-    var pos = $("#addressee").position();
-    var h = $("#addressee").height();
+    var pos = $("#id_addressee").position();
+    var h = $("#id_addressee").height();
     var t = pos.top + h - 20; 
-    $("#ac_dropdownlist").attr('style', 'left:' + pos.left + ';top:' + t + ';width:' + $("#addressee").width());
+    $("#ac_dropdownlist").attr('style', 'left:' + pos.left + 'px;top:' + t + 'px;width:' + $("#id_addressee").width() + 'px;');
 }
 
 function getInputChar() {

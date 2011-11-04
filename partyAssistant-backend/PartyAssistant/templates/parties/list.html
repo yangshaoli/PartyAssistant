@@ -3,8 +3,7 @@
 {% block content %}
 
 {% for party in party_list %}
-<a href="{%url show_party party.id %}">活动{{ forloop.counter }}</a> <span style="margin-left:30px"><a href="#">复制</a> | <a href="#">分享</a> | <a href="#">删除</a></span><br/>
-描述：{{party.description}}
+<a href="{%url show_party party.id %}">{{party.description}} {{party.start_time}}</a> <span style="margin-left:30px"><a href="#">复制</a> | <a href="#">分享</a> | <a href="#">删除</a></span><br/>
 <hr>
 {% endfor %}
 {% endblock %}
