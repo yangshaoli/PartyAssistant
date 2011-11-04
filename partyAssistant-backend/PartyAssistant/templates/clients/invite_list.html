@@ -62,8 +62,10 @@ $(document).ajaxSend(function(event, xhr, settings) {
     type:"POST",
     url:URL,
     data:{'id':client_party_id,'apply_status':current_stauts},
-    async:false
+    async:false,
+    success:function(data, textStatus){ location.replace(location) ;}
     });
+    
   });
  });
 </script>
