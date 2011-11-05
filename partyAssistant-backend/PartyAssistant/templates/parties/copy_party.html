@@ -24,8 +24,8 @@
 <form action='{% url copy_party party_id %}' method='post'>
 {% csrf_token %}
 <table>
-<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date" ></input>
-                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time"></input><span class="required-tip">如：2010-01-01 23:09</span>
+<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date" vale='{{ old_party.time.strftime('%Y-%m-%d') }}'></input>
+                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time" vale='{{ old_party.time.strftime('%H:%M:%S') }}' ></input><span class="required-tip">如：2010-01-01 23:09</span>
                             	<div style="display: none; "></div>
                                
 	                            {% if form.date.errors %}

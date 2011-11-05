@@ -17,28 +17,43 @@
 
         
     </script>
-<title>创建活动</title>
+<title>修改活动</title>
 </head>
 <body>
 
-<form action='{% url create_party %}' method='post'>
+<form action='{% url modify_party party_id %}' method='post'>
 {% csrf_token %}
 <table>
-<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date" ></input>
-                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time" ></input><span class="required-tip">如：2010-01-01 23:09</span>
+<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date" valew='{{ party.time.strftime('%Y-%m-%d') }}' ></input>
+                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time" valew='{{ party.time.strftime('%H:%M:%S') }}'></input><span class="required-tip">如：2010-01-01 23:09</span>
                             	<div style="display: none; "></div>
+                               
 	                            {% if form.date.errors %}
 	                            	{{ form.date.errors }}
 	                            {% else %}
 	                            	{{ form.time.errors }}
-	                            {% endif %}</td>
+	                            {% endif %}
+	                          
+	                            </td>
 </tr>
 
-<tr><td>地址</td><td><input type='textfield' name='address'  class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
+<tr><td>地址</td><td><input type='textfield' name='address'  class= 'textarea-remark2' value="{{party.address}}"></input>
+
+{{ form.address.errors}}
+
+
+
+</td>
 </tr>
-<tr><td>描述</td><td><input type='textfield' name='description' class='textarea-remark2'></input>{{ form.description.errors}}</td>
+<tr><td>描述</td><td><input type='textfield' name='description' class='textarea-remark2' value="{{party.description}}"></input>   {{ form.description.errors}} </td>
 </tr>
-<tr><td>限制人数</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
+<tr><td>限制人数</td><td>
+ 
+   <input type='text' name='limit_num' value='{{ party.limit_num}}'></input>
+  
+{{ form.limit_num.errors}}
+ 
+</td>
 </tr>
 </table>
 <input type='submit' value='完成'></input>

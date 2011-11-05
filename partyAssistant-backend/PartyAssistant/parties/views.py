@@ -35,14 +35,11 @@ def create_party(request):
 
  
 
-def delete_party(request):
-    if request.method=='GET':
-        return render_to_response('parties/delete_party_test.html',context_instance=RequestContext(request))
-    else:
-        party=get_object_or_404(Party,pk=request.POST['party_id'])
-        Party.delete(party) 
-        return HttpResponse("OK")
-    
+def delete_party(request,party_id):          
+    party=get_object_or_404(Party,pk=party_id)
+    Party.delete(party) 
+    return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
+        
 @csrf_protect
 def copy_party(request,party_id):#复制party和联系人
     if request.method == 'GET':
@@ -78,7 +75,21 @@ def copy_party(request,party_id):#复制party和联系人
         else:
             return render_to_response('parties/copy_party.html',{'form':form,'party_id':party_id,'old_party':old_party}, context_instance=RequestContext(request)) 
     
-      
-    return HttpResponse("OK")
 
-    
+def modify_party(request,party_id):
+    if request.method=='GET':
+        party = Party.objects.get(pk=party_id)
+        form = CreatePartyForm()
+        return render_to_response('parties/modify_party.html',{'form':form,'party_id':party_id,'party':party}, context_instance=RequestContext(request));
+    else :
+        party = Party.objects.get(pk=party_id)
+        form = CreatePartyForm(request.POST)
+        if form.is_valid():        
+            party.time = form.cleaned_data['time']
+            party.address=form.cleaned_data['address']
+            party.description=form.cleaned_data['description']  
+            party.limit_num = form.cleaned_data['limit_num']               
+            return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
+        else:
+            return render_to_response('parties/modify_party.html',{'form':form,'party_id':party_id,'party':party}, context_instance=RequestContext(request));
+        

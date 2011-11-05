@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^create_party/$','parties.views.create_party',name='create_party'),
-    url(r'^delete_party/$','parties.views.delete_party',name='delete_party'),
+    url(r'^delete_party/(?P<party_id>\d+)/$','parties.views.delete_party',name='delete_party'),
     url(r'^copy_party/(?P<party_id>\d+)/$','parties.views.copy_party',name='copy_party'),
+    url(r'^modify_party/(?P<party_id>\d+)/$','parties.views.modify_party',name='modify_party'),
     )
