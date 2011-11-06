@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %} 活动明细 {% endblock %}
+{% block content %}
+
+<ul>
+	<li><span>开始时间：</span>{{party.start_time}}</li>
+	<li><span>结束时间：</span>{{party.end_time}}</li>
+	<li><span>地点：</span>{{party.address}}</li>
+	<li><span>人数限制：</span>{{party.limit_num}}</li>
+	<li><span>描述：</span>{{party.description}}</li>
+</ul>
+<br>
+
+<a href="#">邀请人数</a>: 30<br/>
+<a href="#">报名人数</a>: 30<br/>
+<a href="#">未响应人数</a>: 30<br/>
+<a href="#">不报名人数</a>: 30<br/>
+{% endblock %}

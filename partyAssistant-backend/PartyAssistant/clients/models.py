@@ -15,7 +15,7 @@ class ClientProfile(models.Model):
     client = models.OneToOneField(Client)
     
     
-class Client_Party(models.Model):
+class ClientParty(models.Model):
     client = models.ForeignKey(Client)
     party   = models.ForeignKey(Party)
     apply_status = models.CharField(max_length = 15)
