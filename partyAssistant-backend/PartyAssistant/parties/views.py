@@ -9,7 +9,6 @@ from models import Party
 from django.shortcuts import render_to_response, get_object_or_404
 from forms import CreatePartyForm
 from django.template import RequestContext
-from django.http import HttpResponse
 from clients.models import Client_Party
 def create_party(request):            
     if request.method=='POST':
