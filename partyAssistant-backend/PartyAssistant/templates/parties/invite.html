@@ -49,19 +49,20 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 
 </style> 
  <form action="{% url email_invite party.id%}" method="POST">{% csrf_token %}
-		<table width="100%" border="0">
-			<tbody>
-				<tr>
-					<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
-                    <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button>添加</button></td>
-				</tr>
-				<tr>
-					<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
-                    <td><textarea id="id_content" name="content" rows="8">邀请您{{party.start_time|date:"Y-m-d H:m:s"}}参加活动 <a href=""></a></textarea></td>
-				</tr>
-		   </tbody>
-	    </table>
-	    <input type="submit" />
+	<table width="100%" border="0">
+		<tbody>
+			<tr>
+				<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
+                <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button>添加</button></td>
+			</tr>
+			<tr>
+				<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
+                <td><textarea id="id_content" name="content" rows="8">{{party.creator.username}}邀请您{{party.start_time|date:"Y-m-d H:m:s"}}参加活动 {{party.description}} </textarea></td>
+			</tr>
+			<tr><th scope="row" class="th-title"><label>带报名提示？:</label></th><td><input name="enroll_link" type="checkbox" checked value="1"/></td></tr>
+	   </tbody>
+    </table>
+    <input type="submit" />
 </form>
 <div id="addressee_list">
     <div class="addressee_list_row">

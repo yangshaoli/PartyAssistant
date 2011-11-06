@@ -13,7 +13,7 @@ from django.template import RequestContext
 
 from forms import CreatePartyForm, InviteForm
 from tools.email_tool import send_emails
-from settings import SYS_EMAIL_ADDRESS
+from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 
 from clients.models import Client, ClientParty
 
@@ -55,18 +55,21 @@ def message_invite(request):
 
 def email_invite(request, party_id):
     email_subject = u'[PartyAssistant]您收到一个活动邀请'
-    
     if request.method=='POST':
         form = InviteForm(request.POST)
         if form.is_valid():
             addressees = form.cleaned_data['addressee']
             content = form.cleaned_data['content']
             for addressee in addressees.split(','):
+                #如果带报名提示，则内容中带上报名链接
+                if request.POST['enroll_link']:
+                    enroll_link = DOMAIN_NAME+'/clients/invite_enroll/'+addressee+'/'+party_id
+                    content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                 send_emails(email_subject, content, SYS_EMAIL_ADDRESS, [addressee])
                 #将收件人加入clients,状态为'被邀请'
-                if Client.objects.filter(email=addressee).count() == 0:
+                if Client.objects.filter(email=addressee, creator=User.objects.get(pk=request.user.id)).count() == 0:
                     client = Client.objects.create(email=addressee, creator=User.objects.get(pk=request.user.id))
-                    ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'被邀请') #在UserProfile中写入号码
+                    ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'被邀请')
             return render_to_response('message.html', context_instance=RequestContext(request))
     else:
         form = InviteForm()
@@ -82,7 +85,6 @@ def list_party(request):
     party_list = Party.objects.all()
     ctx = {
         'party_list' : party_list
-        
     }
     return render_to_response('parties/list.html', ctx ,context_instance=RequestContext(request))
 

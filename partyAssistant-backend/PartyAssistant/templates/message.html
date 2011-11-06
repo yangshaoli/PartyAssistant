@@ -2,7 +2,14 @@
 {% block title %} 操作成功 {% endblock %}
 {% block content %}
 
+{% if message %}
+
+{{message}}
+
+{% else %}
+
 邮件已经成功发送。您现在可以查看<a href="{%url list_party %}">活动列表</a>了。
 
+{% endif %}
 
 {% endblock %}

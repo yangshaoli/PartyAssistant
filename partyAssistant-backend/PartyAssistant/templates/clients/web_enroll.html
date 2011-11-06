@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}报名页面 - AIMeeting{% endblock %}
+
+{% block content %}
+
+{% if client %}
+<!-- 被邀请用户报名页面 -->
+
+{{party.start_time}}
+<form method="POST" url="{% url invite_enroll client.email party.id %}">{% csrf_token %}
+	<input type="hidden" name="action" value="yes"/>
+	<input type="submit" value="参加" />
+	<input type="submit" value="不参加" />
+</form>
+
+{% else %}
+<!-- 公共用户报名页面 -->
+
+{{party.start_time}}
+<form method="POST" url="{% url public_enroll party.id %}">{% csrf_token %}
+	NAME: <input type="text" name="name" id="id_name"/><br/>
+	EMAIL: <input type="text" name="email" id="id_email"/><br/>
+	PHONE: <input type="text" name="phone" id="id_phone"/><br/>
+
+	<input type="hidden" name="action" value="yes"/>
+	<input type="submit" value="参加" />
+</form>
+
+{% endif %}
+
+{% endblock %}
