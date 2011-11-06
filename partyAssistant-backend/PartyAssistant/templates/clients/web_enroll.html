@@ -7,26 +7,32 @@
 {% if client %}
 <!-- 被邀请用户报名页面 -->
 
-{{party.time}}
+{{client.name}} 你好 <br/>
+{{party.creator.username}}邀请您 于{{party.time}}  在 {{party.address}}<br/>
+{{party.description}}<br/>
+{{party.limit_num}}人 <br/>
+
 <form method="POST" url="{% url invite_enroll client.email party.id %}">{% csrf_token %}
-	<input type="hidden" name="action" value="yes"/>
-	<input type="submit" value="参加" />
-	<input type="submit" value="不参加" />
+	<input type="hidden" name="action" value=""/>
+	<button onclick="document.getElementsByName('action')[0].value = 'yes';this.form.submit()">参加</button>
+	<button onclick="document.getElementsByName('action')[0].value = 'no';this.form.submit()">不参加</button>
 </form>
 
 {% else %}
 <!-- 公共用户报名页面 -->
 
-{{party.start_time}}
+{{party.time}} {{party.address}}<br/>
+{{party.description}}<br/>
+{{party.limit_num}}人 <br/>
 <form method="POST" url="{% url public_enroll party.id %}">{% csrf_token %}
 	NAME: <input type="text" name="name" id="id_name"/><br/>
 	EMAIL: <input type="text" name="email" id="id_email"/><br/>
 	PHONE: <input type="text" name="phone" id="id_phone"/><br/>
 
-	<input type="hidden" name="action" value="yes"/>
 	<input type="submit" value="参加" />
 </form>
 
 {% endif %}
-
+<br/>
+<a href="#">下载App</a>
 {% endblock %}

@@ -56,6 +56,10 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
                 <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button>添加</button></td>
 			</tr>
 			<tr>
+				<th width="12%" scope="row" class="th-title"><label>已邀请：</label></th>
+                <td width="88%">{{invite_num}}</td>
+			</tr>
+			<tr>
 				<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
                 <td><textarea id="id_content" name="content" rows="8">{{party.creator.username}}邀请您{{party.time|date:"Y-m-d H:m:s"}}参加活动 {{party.description}} </textarea></td>
 			</tr>

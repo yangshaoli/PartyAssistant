@@ -14,20 +14,18 @@ from parties.models import Party
 
 def public_enroll(request, party_id):
     if request.method=='POST':
-        if request.POST['action'] == 'yes':
-            #将用户加入clients,状态为'已报名'
-            email = request.POST['email']
-            phone = request.POST['phone']
-            if Client.objects.filter(email=email).count() == 0:
-                client = Client.objects.create(email=email, phone=phone, creator=User.objects.get(pk=Party.objects.get(id=party_id).creator_id))
-                ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'已报名') #在UserProfile中写入号码
-                return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
-            else:
-                return render_to_response('message.html', {'message':u'您已经报名了'}, context_instance=RequestContext(request))
-        else:
-            
+        #将用户加入clients,状态为'已报名'
+        name = request.POST['name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        if Client.objects.filter(email=email).count() == 0:
+            client = Client.objects.create(name=name, email=email, phone=phone, invite_type='public')
+            #TODO 
             ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'已报名') #在UserProfile中写入号码
-            return render_to_response('message.html', {'message':u'您已经拒绝了这次邀请'}, context_instance=RequestContext(request))
+            return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
+        else:
+            return render_to_response('message.html', {'message':u'您已经报名了'}, context_instance=RequestContext(request))
+        
     else:
         party = Party.objects.get(id=party_id)
         ctx = {
@@ -37,10 +35,21 @@ def public_enroll(request, party_id):
 
 def invite_enroll(request, email, party_id):
     if request.method=='POST':
-        pass
+        client = Client.objects.get(email=email)
+        party = Party.objects.get(pk=party_id)
+        status = ClientParty.objects.get(client=client, party=party)
+        if request.POST['action'] == 'yes': #如果点击参加
+            status.apply_status = u'已报名'
+            status.save()
+            return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
+        else:
+            status.apply_status = u'不参加'
+            status.save()
+            return render_to_response('message.html', {'message':u'您已经拒绝了这次邀请'}, context_instance=RequestContext(request))
+
     else:
         party = Party.objects.get(id=party_id)
-        client = Client.objects.get(email=email)
+        client = Client.objects.get(email=email,creator=party.creator)
         ctx = {
                'client': client,
                'party' : party

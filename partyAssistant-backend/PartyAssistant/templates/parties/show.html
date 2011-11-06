@@ -10,9 +10,9 @@
 	<li><span>描述：</span>{{party.description}}</li>
 </ul>
 <br>
-
-<a href="#">邀请人数</a>: 30<br/>
-<a href="#">报名人数</a>: 30<br/>
-<a href="#">未响应人数</a>: 30<br/>
-<a href="#">不报名人数</a>: 30<br/>
+<a href="{% url invite_list party.id %}">邀请人数</a>: {{client.invite.count}}<br/>
+<a href="{% url apply_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
+<a href="{% url notresponse_list party.id %}">未响应人数</a>: {{client.noroll.count}}<br/>
+<a href="{% url notapply_list party.id %}">不报名人数</a>: {{client.reject.count}}<br/>
+{{noroll.count}}
 {% endblock %}

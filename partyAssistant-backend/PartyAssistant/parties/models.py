@@ -13,5 +13,3 @@ class Party(models.Model):
     description = models.TextField(blank=True)
     creator = models.ForeignKey(User)
     limit_num = models.IntegerField(max_length=3)
-   
-    
