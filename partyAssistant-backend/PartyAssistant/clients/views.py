@@ -73,23 +73,23 @@ def change_apply_status(request):
 def invite_list(request,party_id):
 #    if request.method == 'POST':
     party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party)
+    client_party_list=ClientParty.objects.filter(party=party).exclude(invite_type='public')
     return render_to_response('clients/invite_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
 
 #报名人员列表
-def apply_list(request,party_id):
+def enrolled_list(request,party_id):
     party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'报名')
+    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'已报名')
     return render_to_response('clients/apply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
 
 #未向应人员列表
-def notresponse_list(request,party_id):
+def norll_list(request,party_id):
     party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未响应')
+    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未报名')
     return render_to_response('clients/notresponse_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
 
 #未报名人员列表
-def notapply_list(request,party_id):
+def reject_list(request,party_id):
     party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未报名')
+    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'不参加')
     return render_to_response('clients/notapply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 

@@ -17,6 +17,8 @@ from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 
 from clients.models import Client, ClientParty
 
+import datetime
+
 def create_party(request):            
     if request.method=='POST':
         form = CreatePartyForm(request.POST)
@@ -51,11 +53,10 @@ def delete_party(request,party_id):
 
 def copy_party(request,party_id):#复制party和联系人
     if request.method == 'GET':
-        print"_____"        
-        print party_id
-        old_party = Party.objects.get(pk=int(party_id))
-        print old_party 
-        return render_to_response('parties/copy_party.html',{'old_party':old_party,'party_id':party_id,'form':CreatePartyForm()},context_instance=RequestContext(request))
+        old_party = Party.objects.get(pk=int(party_id))        
+        date = datetime.datetime.strftime(old_party.time,'%Y-%m-%d')
+        time = datetime.datetime.strftime(old_party.time,'%H:%M:%S')
+        return render_to_response('parties/copy_party.html',{'old_party':old_party,'date':date,'time':time,'form':CreatePartyForm()},context_instance=RequestContext(request))
     else :
         old_party = Party.objects.get(pk=int(party_id))
         form = CreatePartyForm(request.POST)
@@ -77,18 +78,20 @@ def copy_party(request,party_id):#复制party和联系人
                 ClientParty.objects.create(
                                             client =client_party.client,
                                             party=new_party,
-                                            apply_status=u'未响应'
+                                            apply_status=u'被邀请'
                                             )       
-            return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
+            return list_party(request)
         else:
-            return render_to_response('parties/copy_party.html',{'form':form,'party_id':party_id,'old_party':old_party}, context_instance=RequestContext(request)) 
+            return render_to_response('parties/copy_party.html',{'form':form,'old_party':old_party}, context_instance=RequestContext(request)) 
     
 
 def modify_party(request,party_id):
     if request.method=='GET':
         party = Party.objects.get(pk=party_id)
+        date = datetime.datetime.strftime(party.time,'%Y-%m-%d')
+        time = datetime.datetime.strftime(party.time,'%H:%M:%S')
         form = CreatePartyForm()
-        return render_to_response('parties/modify_party.html',{'form':form,'party_id':party_id,'party':party}, context_instance=RequestContext(request));
+        return render_to_response('parties/modify_party.html',{'form':form,'party':party,'date':date,'time':time}, context_instance=RequestContext(request));
     else :
         party = Party.objects.get(pk=party_id)
         form = CreatePartyForm(request.POST)
@@ -96,10 +99,11 @@ def modify_party(request,party_id):
             party.time = form.cleaned_data['time']
             party.address=form.cleaned_data['address']
             party.description=form.cleaned_data['description']  
-            party.limit_num = form.cleaned_data['limit_num']               
-            return render_to_response('list_party.html',{'message':'create success jump to list_party'}, context_instance=RequestContext(request));
+            party.limit_num = form.cleaned_data['limit_num']     
+            party.save()          
+            return list_party(request)
         else:
-            return render_to_response('parties/modify_party.html',{'form':form,'party_id':party_id,'party':party}, context_instance=RequestContext(request));
+            return render_to_response('parties/modify_party.html',{'form':form,'party':party}, context_instance=RequestContext(request));
 
 '''
 @summary: 处理短信邀请和邮件邀请
