@@ -57,7 +57,7 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 			</tr>
 			<tr>
 				<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
-                <td><textarea id="id_content" name="content" rows="8">{{party.creator.username}}邀请您{{party.start_time|date:"Y-m-d H:m:s"}}参加活动 {{party.description}} </textarea></td>
+                <td><textarea id="id_content" name="content" rows="8">{{party.creator.username}}邀请您{{party.time|date:"Y-m-d H:m:s"}}参加活动 {{party.description}} </textarea></td>
 			</tr>
 			<tr><th scope="row" class="th-title"><label>带报名提示？:</label></th><td><input name="enroll_link" type="checkbox" checked value="1"/></td></tr>
 	   </tbody>
@@ -75,7 +75,7 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 
 <div id="ac_dropdownlist">
     <ul>
-        <li><span name="client">Chen Yang</span> (<span name="phone">18611387342</span> )</li>
+        <li><span name="client">Chen Yang</span> (<span name="phone">jp.chenyang@gmail.com</span> )</li>
         <li><span name="client">Cui Heling</span> (<span name="phone">13683244498</span> )</li>
     </ul>
 </div>

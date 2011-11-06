@@ -1,8 +1,13 @@
-#coding=utf-8
+# -*- coding=utf-8 -*-
+'''
+@summary: 报名处理，包括公开报名和邮件邀请报名
+@author:chenyang
+'''
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from django.http import HttpResponse
 
 from clients.models import Client, ClientParty
 from parties.models import Party
@@ -41,3 +46,41 @@ def invite_enroll(request, email, party_id):
                'party' : party
         } 
         return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))
+
+'''
+@author: liuxue
+'''
+
+def change_apply_status(request):
+    if request.method == 'POST':
+        client_party = ClientParty.objects.get(pk=int(request.POST['id']))      
+        client_party.apply_status = request.POST['apply_status']
+        client_party.save()
+        print client_party.apply_status
+    return HttpResponse("OK")
+
+
+#受邀人员列表
+def invite_list(request,party_id):
+#    if request.method == 'POST':
+    party = get_object_or_404(Party, pk=int(party_id))
+    client_party_list=ClientParty.objects.filter(party=party)
+    return render_to_response('clients/invite_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+
+#报名人员列表
+def apply_list(request,party_id):
+    party = get_object_or_404(Party, pk=int(party_id))
+    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'报名')
+    return render_to_response('clients/apply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+
+#未向应人员列表
+def notresponse_list(request,party_id):
+    party = get_object_or_404(Party, pk=int(party_id))
+    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未响应')
+    return render_to_response('clients/notresponse_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+
+#未报名人员列表
+def notapply_list(request,party_id):
+    party = get_object_or_404(Party, pk=int(party_id))
+    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未报名')
+    return render_to_response('clients/notapply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 

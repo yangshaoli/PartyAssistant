@@ -7,7 +7,7 @@
 {% if client %}
 <!-- 被邀请用户报名页面 -->
 
-{{party.start_time}}
+{{party.time}}
 <form method="POST" url="{% url invite_enroll client.email party.id %}">{% csrf_token %}
 	<input type="hidden" name="action" value="yes"/>
 	<input type="submit" value="参加" />
