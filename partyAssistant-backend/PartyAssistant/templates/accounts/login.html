@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %} {%trans "Login"%}  {% endblock %}
+
+{% block content %}
+
+<form action="{% url login %}" method="post">	
+{% csrf_token %}
+<div class="tips"></div>
+	{{ form.as_p }}
+	<input type="hidden" name="next" value="{{ next }}" />
+	<input id="button" type="submit" value="Login" />
+</form>
+</div>
+<ul style="margin:20px 0px 0px 10px">
+	<li><a href="{%url get_password %}">找回密码</a></li>
+</ul>
+{% endblock %}
+
+{% block js %}
+<script>
+</script>
+{% endblock %}
