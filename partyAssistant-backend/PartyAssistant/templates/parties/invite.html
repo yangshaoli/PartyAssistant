@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}{{ title}} {% endblock %}
+{% block content %}
+<style>
+body {
+    font-family:  Verdana, Helvetica, sans-serif,Arial;
+    color: #333;
+    font: 12px verdana, tahoma, Times New Roman;
+    background: url("../images/bg.gif") repeat-x #fafaf0;
+}
+label { font-size: 12px ;}
+table {font-size: 12px;}
+.addressee_list_row { width: 300px; margin: 5px 20px;}
+.addressee_list_row span {margin-right: 20px;}
+
+#ac_dropdownlist {
+	border: 1px solid black;
+	background-color: white;
+position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left; 
+
+}
+#ac_dropdownlist ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+#ac_dropdownlist ul li {
+	margin: 0px;
+	padding: 5px 5px;
+	cursor: default;
+	display: block;
+	/* 
+	if width will be 100% horizontal scrollbar will apear 
+	when scroll mode will be used
+	*/
+	/*width: 100%;*/
+	font: menu;
+	font-size: 12px;
+	/* 
+	it is very important, if line-height not setted or setted 
+	in relative units scroll will be broken in firefox
+	*/
+	line-height: 16px;
+	overflow: hidden;
+}
+
+</style> 
+ <form action="{% url email_invite party.id%}" method="POST">{% csrf_token %}
+	<table width="100%" border="0">
+		<tbody>
+			<tr>
+				<th width="12%" scope="row" class="th-title"><label for="id_addressee">收件人：</label></th>
+                <td width="88%"><textarea name="addressee" id="id_addressee" onkeypress="showDropDownList()" ></textarea> <button>添加</button></td>
+			</tr>
+			<tr>
+				<th width="12%" scope="row" class="th-title"><label>已邀请：</label></th>
+                <td width="88%">{{invite_num}}</td>
+			</tr>
+			<tr>
+				<th scope="row" class="th-title"><label for="id_content">内容：</label></th>
+                <td><textarea id="id_content" name="content" rows="8">{{party.creator.username}}邀请您{{party.time|date:"Y-m-d H:m:s"}}参加活动 {{party.description}} </textarea></td>
+			</tr>
+			<tr><th scope="row" class="th-title"><label>带报名提示？:</label></th><td><input name="enroll_link" type="checkbox" checked value="1"/></td></tr>
+	   </tbody>
+    </table>
+    <input type="submit" />
+</form>
+<div id="addressee_list">
+    <div class="addressee_list_row">
+        <span name="client">Chen yang</span><span name="phone">18611387342</span>
+    </div>
+    <div class="addressee_list_row">
+        <span name="client">Cui Heling</span><span name="phone">13683244498</span>
+    </div>
+</div>
+
+<div id="ac_dropdownlist">
+    <ul>
+        <li><span name="client">Chen Yang</span> (<span name="phone">jp.chenyang@gmail.com</span> )</li>
+        <li><span name="client">Cui Heling</span> (<span name="phone">13683244498</span> )</li>
+    </ul>
+</div>
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" >
+
+var addressList = '';
+
+$(document).ready(function(){
+    // 下拉列表鼠标移上时高亮
+    $("#ac_dropdownlist li").bind('mouseover', function(){ $(this).attr('style', 'background:#39f; color:#fff;') }).bind('mouseout', function(){ $(this).attr('style', '') });
+    
+    // 点击下拉列表中的某一项，将号码添加到[收件人]
+    $("#ac_dropdownlist li").bind('click', function(){
+        var inputValue = $('#id_addressee').val();
+        var cursortPos = getCursortPosition(document.getElementById('id_addressee'));
+        var commaPos = inputValue.lastIndexOf(',', cursortPos);
+        var v = inputValue.substring(commaPos +1 , cursortPos );
+        var r = $(this).children('[name="phone"]').text();
+        inputValue = inputValue.substr(0, commaPos + 1 ) + r + ',' + inputValue.substr(cursortPos, inputValue.length )
+        $('#id_addressee').val(inputValue);
+        $('#ac_dropdownlist').hide();
+    });  
+
+    //点击联络表，添加或是删除号码
+    $(".addressee_list_row").toggle( function() {
+        $(this).attr('style', 'background:#efefef');
+        //var c = $(this).children('[name="client"]').text() + '(' + $(this).children('[name="phone"]').text() +'), ';
+        var c =  $(this).children('[name="phone"]').text() + ',';
+        addressList = addressList + c;
+        $('#id_addressee').val(addressList);
+    }, function(){
+        $(this).attr('style', '');
+        addressList = addressList.replace( $(this).children('[name="phone"]').text() + ',' , '');
+        $('#id_addressee').val(addressList);
+    });
+});
+
+
+/**
+* 显示下拉列表
+* @TODO Ajax生成下拉列表 
+**/
+function showDropDownList(){
+    $("#ac_dropdownlist").show();
+    var pos = $("#id_addressee").position();
+    var h = $("#id_addressee").height();
+    var t = pos.top + h - 20; 
+    $("#ac_dropdownlist").attr('style', 'left:' + pos.left + 'px;top:' + t + 'px;width:' + $("#id_addressee").width() + 'px;');
+}
+
+function getInputChar() {
+    
+}
+
+/**
+* 获得当前光标在文本框中的位置
+**/
+function getCursortPosition (obj) {
+	var CaretPos = 0;	
+	// IE Support
+	if (document.selection) {
+	obj.focus ();
+		var Sel = document.selection.createRange ();
+		Sel.moveStart ('character', - obj.value.length);
+		CaretPos = Sel.text.length;
+	}
+	// Firefox support
+	else if (obj.selectionStart || obj.selectionStart == '0')
+		CaretPos = obj.selectionStart;
+	return (CaretPos);
+}
+
+</script>
+
+{% endblock %}

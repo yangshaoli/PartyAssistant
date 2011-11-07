@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %} {%trans "Register"%}  {% endblock %}
+
+{% block content %}
+	<!--START: content -->
+	<div id="content">
+		<div class="content-inner clearfix">
+			<form action="{% url web_register %}" method="post">{% csrf_token %}
+    			{{ form.as_p}}
+    			<div class="submit-field">
+    				<input type="submit" class="input-submit1 va-m" value="提交"/>
+    				<a href="/">返 回</a>
+    		    </div>
+			</form>
+		</div>
+	</div>
+	<!--END: content -->
+{% endblock %}

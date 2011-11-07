@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #mac os noise
 .DS_Store
 
@@ -5,3 +6,10 @@
 partyAssistant-iphone/PartyAssistant/PartyAssistant.xcodeproj/project.xcworkspace/
 partyAssistant-iphone/PartyAssistant/PartyAssistant.xcodeproj/xcuserdata/
 
+=======
+.project
+.pydevproject
+*.settings*
+dev.db
+*.pyc
+>>>>>>> b6be090d150cdb0c2e07036fee4a83e3511c4ced
