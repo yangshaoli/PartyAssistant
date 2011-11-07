@@ -12,6 +12,7 @@ ADMINS = (
 
 SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
 DOMAIN_NAME = 'http://127.0.0.1:8000'
+LOGIN_REDIRECT_URL = '/parties/create_party'
 
 SMS_ISP_USERNAME = 's1002020649'
 SMS_ISP_PASSWORD = '13488891003'
