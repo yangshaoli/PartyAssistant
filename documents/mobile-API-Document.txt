@@ -25,3 +25,31 @@
 			"description":Error Msg,
 			"data":{something needed}
 			}
+	ClientObject:{
+			"cName":String,
+			"cVal":Email/Phone Num
+			"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")
+			}
+2. PartyList
+	url:""
+	method:GET
+	input:{
+		"uid":Integer(user id)
+		}
+	output:{
+		"status":"ok",
+		"code":200,
+		"description":"ok",
+		"dataSource":{
+				"page":Integer,
+				"partyList":PartyObjectArray,
+				}
+		}
+
+	PartyObject:{
+			"starttime":Datetime,
+			"description":String,
+			"peopleMaximum":Integer,
+			"location":String,
+			"partyId":int
+			}
