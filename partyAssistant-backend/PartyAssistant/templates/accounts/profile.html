@@ -1,9 +1,15 @@
 {% extends "base.html" %}
-{% load i18n gravatar%}
-{% block title %} 我的主页  {% endblock %}
+
+{% block title %} 账户信息  {% endblock %}
 
 {% block content %}
+{{user.email}}<br/>
+{{user.username}} <input type="button" value="修改密码" onclick="document.getElementById('change_password').style.display = 'block'" />
 
+<form id="change_password" action="{%url profile %}" method="POST" style="display:none">{% csrf_token %}
+{{ form.as_p}}
+<input type="submit" />
+</form>
 {% endblock %}
 
 {% block js %}

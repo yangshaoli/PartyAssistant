@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from accounts.forms import WebRegistrationForm, AppRegistrationForm
+from accounts.forms import WebRegistrationForm, AppRegistrationForm, GetPasswordForm, ChangePasswordForm
 from accounts.models import UserProfile, TempActivateNote
 from tools.email_tool import send_emails
 
@@ -14,29 +14,19 @@ import hashlib
 
 from settings import DOMAIN_NAME,  SYS_EMAIL_ADDRESS
 
-EMAIL_CONTENT = u'<div>尊敬的用户：<br>感谢您注册我们的网站，您可以通过点击<a href=" %s ">[ %s ]</a>来激活您的帐号。</div>'
+EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
 def web_register(request):
-    email_subject = u'AIMeeting注册激活邮件'
     if request.method == 'POST':
         form = WebRegistrationForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
+            username = form.cleaned_data['username']
             password = form.cleaned_data["password"]
-            random_str = ''.join(random.sample([chr(i) for i in range(48, 57) + range(65, 90) + range(97, 122)], 16))
-            t = TempActivateNote.objects.get_or_create(email = email, action = u'新建账户' , aim_limit = u'管理员', defaults = {'password':password, 'random_str':random_str })
-            if not t[1]:
-                t[0].password = password
-                t[0].save()
-            #读出Email文件的内容，用于发送激活邮件
-            web_address = DOMAIN_NAME + '/accounts/activate/' + email + '/' + t[0].random_str
-            email_content = EMAIL_CONTENT % (web_address, web_address)
-            #发送激活邮件
-            try:
-                send_emails(email_subject, email_content, SYS_EMAIL_ADDRESS, [email])
-                return render_to_response('accounts/web_register_success.html', context_instance = RequestContext(request))
-            except Exception:
-                return render_to_response('accounts/web_register_fail.html', context_instance = RequestContext(request))
+            email = form.cleaned_data['email']
+            User.objects.create_user(username, email, password)
+            return render_to_response('accounts/web_register_success.html', {'form': form},context_instance = RequestContext(request))
+        else:
+            return render_to_response('message.html', {'message':u'注册失败，您填写的资料有误'}, context_instance = RequestContext(request))
     else:
         form = WebRegistrationForm()
     return render_to_response('accounts/web_register.html', {'form': form},context_instance = RequestContext(request))
@@ -62,3 +52,41 @@ def activate(request, email , random_str):
     UserProfile.objects.create(user=user, account_type=note.aim_limit )
     note.delete()
     return redirect(reverse('create_party'))
+
+def get_password(request):
+    email_subject = u'爱热闹取回密码'
+    random_password = ''.join(random.sample([chr(i) for i in range(48, 57) + range(65, 90) + range(97, 122)], 16))
+    if request.method == 'POST':
+        form = GetPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            email_content = EMAIL_CONTENT % (random_password)
+            #重新设置用户密码
+            user = User.objects.get(email=email)
+            user.set_password(random_password)
+            user.save()
+            send_emails(email_subject, email_content, SYS_EMAIL_ADDRESS, [email])
+            return render_to_response('message.html', {'message':u'新密码已发送到您的邮箱'}, context_instance = RequestContext(request))
+        else:
+            return render_to_response('message.html', {'message':u'邮箱错误，密码取回失败'}, context_instance = RequestContext(request))
+    else:
+        form = GetPasswordForm()
+        return render_to_response('accounts/get_password.html', {'form': form},context_instance = RequestContext(request))
+
+def profile(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            old_password = form.cleaned_data['old_password']
+            new_password = form.cleaned_data['new_password']
+            user = User.objects.get(pk=request.user.id)
+            if user.check_password(old_password):#检查旧密码
+                user.set_password(new_password)
+                return render_to_response('message.html', {'message':u'密码修改成功'}, context_instance = RequestContext(request))
+            else:
+                return render_to_response('message.html', {'message':u'原密码输入错误'}, context_instance = RequestContext(request))
+        else:
+            return render_to_response('message.html', {'message':u'密码修改失败'}, context_instance = RequestContext(request))
+    else:
+        form = ChangePasswordForm()
+        return render_to_response('accounts/profile.html', {'form': form},context_instance = RequestContext(request))
