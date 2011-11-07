@@ -3,7 +3,6 @@ from django.conf.urls.defaults import patterns, include, url
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
-
 urlpatterns = patterns('',   
     # Examples:
     url(r'^$', 'PartyAssistant.views.home', name='home'),
@@ -15,7 +14,6 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    
     url(r'^accounts/', include('accounts.urls')),
     url(r'^clients/', include('clients.urls')),
     url(r'^parties/', include('parties.urls')),
