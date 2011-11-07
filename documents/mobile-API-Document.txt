@@ -1,27 +1,55 @@
 1. createParty
-	url:""
-	method:POST
-	input:{
-		"receivers":Array of Client Object,
-		"content":String of SMS/Email Content,
-		"subject":String of Email Subject;sms will be blank,
-		"_isapplytips":BOOL/Integer(Transfer to BOOL),
-		"msgType":String of "SMS" or "Email",
-		"starttime":Datetime Type,
-		"location":String,
-		"description":String,
-		"peopleMaximum":Int,
-		"uID":Int,
-		}
-	output:Success- {
-			"status":'ok',
-			"code":200,
-			"description":"ok",
-			"data":{}
-			}
-		Error - {
-			"status":'fail',
-			"code":404/200/500 etc,
-			"description":Error Msg,
-			"data":{something needed}
-			}
+url:""
+method:POST
+input:{
+"receivers":Array of Client Object,
+"content":String of SMS/Email Content,
+"subject":String of Email Subject;sms will be blank,
+"_isapplytips":BOOL/Integer(Transfer to BOOL),
+"msgType":String of "SMS" or "Email",
+"starttime":Datetime Type,
+"location":String,
+"description":String,
+"peopleMaximum":Int,
+"uID":Int,
+}
+output:Success- {
+"status":'ok',
+"code":200,
+"description":"ok",
+"data":{}
+}
+Error - {
+"status":'fail',
+"code":404/200/500 etc,
+"description":Error Msg,
+"data":{something needed}
+}
+ClientObject:{
+"cName":String,
+"cVal":Email/Phone Num
+"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")
+}
+2. PartyList
+url:""
+method:GET
+input:{
+"uid":Integer(user id)
+}
+output:{
+"status":"ok",
+"code":200,
+"description":"ok",
+"dataSource":{
+"page":Integer,
+"partyList":PartyObjectArray,
+}
+}
+
+PartyObject:{
+"starttime":Datetime,
+"description":String,
+"peopleMaximum":Integer,
+"location":String,
+"partyId":int
+}

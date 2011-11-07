@@ -74,4 +74,27 @@ def createParty(request):
           
         returnjson = simplejson.dumps(returnjson)       
         return HttpResponse(returnjson)     
+
+def PartyList(request,uid):
+    if request.method == 'GET':
+        pass
+      
+    pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
