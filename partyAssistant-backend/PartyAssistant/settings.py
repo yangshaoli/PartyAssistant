@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     'accounts',
+    'clients',
     'parties',
 )
 

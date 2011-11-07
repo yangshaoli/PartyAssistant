@@ -10,13 +10,18 @@ APPLY_STATUS = (
                 (u'不参加', u'不参加'),
 )
 
+INVITE_TYPE = (
+    ('email', 'email'),
+    ('phone', 'phone'),
+    ('public', 'public'),
+)
 class Client(models.Model):
     name = models.CharField(max_length=16, blank=True, null=True)
     phone = models.CharField(max_length=15, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     ip = models.IPAddressField(blank=True, null=True)
     creator = models.ForeignKey(User,blank=True, null=True)
-    invite_type = models.CharField(max_length=8, blank=True)
+    invite_type = models.CharField(max_length=8, blank=True, choices=INVITE_TYPE)
     
 class ClientProfile(models.Model):
     client = models.OneToOneField(Client)

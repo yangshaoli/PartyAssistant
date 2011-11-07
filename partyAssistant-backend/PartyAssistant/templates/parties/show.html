@@ -11,8 +11,8 @@
 </ul>
 <br>
 <a href="{% url invite_list party.id %}">邀请人数</a>: {{client.invite.count}}<br/>
-<a href="{% url apply_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
-<a href="{% url notresponse_list party.id %}">未响应人数</a>: {{client.noroll.count}}<br/>
-<a href="{% url notapply_list party.id %}">不报名人数</a>: {{client.reject.count}}<br/>
+<a href="{% url enrolled_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
+<a href="{% url noenroll_list party.id %}">未响应人数</a>: {{client.noenroll.count}}<br/>
+<a href="{% url reject_list party.id %}">不报名人数</a>: {{client.reject.count}}<br/>
 {{noroll.count}}
 {% endblock %}

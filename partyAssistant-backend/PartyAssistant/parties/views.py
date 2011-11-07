@@ -159,7 +159,7 @@ def show_party(request, party_id):
     client = {
         u'invite' : Client.objects.exclude(invite_type='public'),
         u'enrolled' : ClientParty.objects.filter(party=party_id,apply_status=u'已报名'),
-        u'noroll' : ClientParty.objects.filter(party=party_id,apply_status=u'未报名'),
+        u'noenroll' : ClientParty.objects.filter(party=party_id,apply_status=u'未报名'),
         u'reject' : ClientParty.objects.filter(party=party_id,apply_status=u'不参加'),
     }
     ctx = {
