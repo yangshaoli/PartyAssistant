@@ -14,7 +14,7 @@ from apps.parties.models import Party
 from apps.clients.models import ClientParty , Client
 from utils.tools.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.tools.paginator_tool import process_paginator
-from apps.messages.models import EmailMessage
+from apps.messages.models import EmailMessage, SMSMessage
 def createParty(request):
     status = 'ok'
     code   = '200'
@@ -165,11 +165,19 @@ def GetPartyMsg(request,pid):
             ClientObject.cId   = client.id
             ClientObjectArray.append(ClientObject)
         if client.invite_type=='email':
-            msgType == 'Email'
+            msgType = 'Email'
             print '读取Email'
             emailmessagelist = EmailMessage.objects.filter(party=party).order('-createtime')
-            subject = 
-            content =
+            lastet_emailmessage =None
+            try:
+                lastet_emailmessage= emailmessagelist[0]
+            except:
+                status = 'fail'
+                code = '500'
+                if description == 'ok':
+                    description = u'获取邮件信息失败，可能没有此信息'        
+            subject = lastet_emailmessage.subject
+            content = lastet_emailmessage.content
             dataSource={
                         'msgType':msgType,
                         'receiverArray':ClientObjectArray,
@@ -186,11 +194,18 @@ def GetPartyMsg(request,pid):
                         }
 
         else:
-            msgType == 'SMS'
-            print "读信息"    
-                  
-            subject = 
-            content =
+            msgType = 'SMS'   
+            smsmessagelist = SMSMessage.objects.filter(party=party).order('-createtime')
+            lastet_smsmessage =None
+            try:
+                lastet_smsmessage= smsmessagelist[0]
+            except:
+                status = 'fail'
+                code = '500'
+                if description == 'ok':
+                    description = u'获取邮件信息失败，可能没有此信息'      
+            subject = ''
+            content = lastet_smsmessage.content
             dataSource={
                         'msgType':msgType,
                         'receiverArray':ClientObjectArray,
