@@ -1,22 +1,23 @@
-<html>
-<head>
-  <script type="text/javascript" src="/media/js/jquery-1.4.2.js"></script>
- <script type="text/javascript" src="/media/js/ui.datepicker.js"></script>
-    <script type="text/javascript" src="/media/js/time.js"></script>
-    <script type="text/javascript" src="/media/js/ui.core.js"></script>
-    <script type="text/javascript" src="/media/js/jquery.form.js"></script>
-    <link type="text/css" href="/media/css/main.css" rel="stylesheet" />
-    <link type="text/css" href="/media/css/datepicker.css" rel="stylesheet" />
-    <link type="text/css" href="/media/css/datepicker2.css" rel="stylesheet" />
+{% extends 'base.html' %}
+{% block title %}创建活动{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+ <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/time.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/ui.core.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.form.js"></script>
+    <link type="text/css" href="{{STATIC_URL}}css/main.css" rel="stylesheet" />
+    <link type="text/css" href="{{STATIC_URL}}css/datepicker.css" rel="stylesheet" />
+    <link type="text/css" href="{{STATIC_URL}}css/datepicker2.css" rel="stylesheet" />
     <script type="text/javascript">
         $("document").ready(function(){
-            $("#id_start_date").datepicker();
-            $("#id_end_date").datepicker();
+            $("#id_date").datepicker();
         });
     </script>
-<title>创建活动</title>
-</head>
-<body>
+
+
 
 <form action='{% url create_party %}' method='post'>
 {% csrf_token %}
@@ -42,5 +43,4 @@
 <input type='button' value='用手机短信发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'msg';this.form.submit()" />
 <input type='button' value='用电子邮件发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'email';this.form.submit()"/>
 </form>
-</body>
-</html>
+{% endblock%}
