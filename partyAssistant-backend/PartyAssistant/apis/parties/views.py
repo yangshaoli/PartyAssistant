@@ -11,6 +11,7 @@ from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from django.contrib.auth.models import User
 from parties.models import Party
 from clients.models import ClientParty , Client
+import datetime
 def createParty(request):
     if request.method == 'POST' :
         receivers = request.POST['receivers']
@@ -37,7 +38,7 @@ def createParty(request):
         code   = '200'
         description = 'ok'
         data  = {}
-        for i in range(receivers):
+        for i in range(len(receivers)):
             receiver = receivers[i]
             ClientParty.objects.create(party=party,
                                        client=Client.objects.get(pk=receiver.cId),
@@ -50,7 +51,7 @@ def createParty(request):
                  
             else:
                 print 'send Email'
-                if _isapplytips:
+                if _isapplytips or _isapplytips > 0 :
                     enroll_link = DOMAIN_NAME+'/clients/invite_enroll/'+receiver.cVal+'/'+party.id
                     content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                     try :     
@@ -76,25 +77,49 @@ def createParty(request):
         return HttpResponse(returnjson)     
 
 def PartyList(request,uid):
+    status = 'ok'
+    code   = '200'
+    description = 'ok'
+    
+    user  = None
     if request.method == 'GET':
-        pass
-      
-    pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
+        try:
+            user = User.objects.get(pk=uid)
+        except:
+            status = 'fail'
+            code = '404'
+            description = u'用户不存在'    
+            
+    partlist = []
+    try:
+        partlist=Party.objects.filter(creator=user)  
+    except:
+        status = "fail"
+        code   = "404"        
+         
+    partyObject=None
+    PartyObjectArray = []    
+    try :
+        for party in partlist:
+            partyObject.starttime=datetime.datetime.strftime(party.time,'%Y-%m-%d %H:%M:%S')
+            partyObject.description=party.description
+            partyObject.peopleMaximum=party.limit_num
+            partyObject.location=party.address
+            partyObject.partyId=party.id
+            PartyObjectArray.append(partyObject)            
+    except:
+        status = "fail"
+        code   = "404"
+        description = u'获取活动列表失败'
+    dataSource={
+                'page':1,
+                'partyList':PartyObjectArray
+                }    
+    returnjson={
+                'status':status,
+                'code':code,
+                'description':description,
+                'dataSource':dataSource             
+                }
+    returnjson = simplejson.dumps(returnjson)       
+    return HttpResponse(returnjson)      
