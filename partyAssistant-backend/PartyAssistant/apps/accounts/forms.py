@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.forms.util import ErrorList
 from django.contrib.auth.forms import AuthenticationForm
-from accounts.models import UserProfile
+from apps.accounts.models import UserProfile
 
 class LoginForm(AuthenticationForm):
     def clean(self):

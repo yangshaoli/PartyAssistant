@@ -6,11 +6,11 @@ Created on 2011-11-7
 '''
 from django.http import HttpResponse
 from django.utils import simplejson
-from tools.email_tool import send_emails
+from utils.tools.email_tool import send_emails
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from django.contrib.auth.models import User
-from parties.models import Party
-from clients.models import ClientParty , Client
+from apps.parties.models import Party
+from apps.clients.models import ClientParty , Client
 import datetime
 def createParty(request):
     if request.method == 'POST' :

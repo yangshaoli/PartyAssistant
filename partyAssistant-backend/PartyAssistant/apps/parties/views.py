@@ -12,10 +12,10 @@ from django.contrib.auth.models import User
 from django.template import RequestContext
 
 from forms import CreatePartyForm, InviteForm
-from tools.email_tool import send_emails
+from utils.tools.email_tool import send_emails
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 
-from clients.models import Client, ClientParty
+from apps.clients.models import Client, ClientParty
 
 import datetime
 

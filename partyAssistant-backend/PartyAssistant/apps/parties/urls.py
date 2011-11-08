@@ -4,7 +4,7 @@ from django.conf.urls.defaults import patterns, url
 # from django.contrib import admin
 # admin.autodiscover()
 
-urlpatterns = patterns('parties.views',   
+urlpatterns = patterns('apps.parties.views',   
     # Examples:
     # url(r'^$', 'PartyAssistant.views.home', name='home'),
     # url(r'^PartyAssistant/', include('PartyAssistant.foo.urls')),

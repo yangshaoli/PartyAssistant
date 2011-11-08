@@ -4,9 +4,9 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404, Ht
 from django.template.context import RequestContext
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from accounts.forms import WebRegistrationForm, AppRegistrationForm, GetPasswordForm, ChangePasswordForm
-from accounts.models import UserProfile, TempActivateNote
-from tools.email_tool import send_emails
+from apps.accounts.forms import WebRegistrationForm, AppRegistrationForm, GetPasswordForm, ChangePasswordForm
+from apps.accounts.models import UserProfile, TempActivateNote
+from utils.tools.email_tool import send_emails
 
 import random
 import hashlib

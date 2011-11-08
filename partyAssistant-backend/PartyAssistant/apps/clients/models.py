@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from parties.models import Party
+from apps.parties.models import Party
 
 APPLY_STATUS = (
                 (u'已报名', u'已报名'),

@@ -9,8 +9,8 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.http import HttpResponse
 
-from clients.models import Client, ClientParty
-from parties.models import Party
+from apps.clients.models import Client, ClientParty
+from apps.parties.models import Party
 
 def public_enroll(request, party_id):
     if request.method=='POST':
