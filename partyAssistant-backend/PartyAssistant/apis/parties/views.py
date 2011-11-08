@@ -11,7 +11,8 @@ from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from django.contrib.auth.models import User
 from parties.models import Party
 from clients.models import ClientParty , Client
-import datetime
+from tools.page_size_setting import LIST_MEETING_PAGE_SIZE
+from tools.paginator_tool import process_paginator
 def createParty(request):
     if request.method == 'POST' :
         receivers = request.POST['receivers']
@@ -76,7 +77,7 @@ def createParty(request):
         returnjson = simplejson.dumps(returnjson)       
         return HttpResponse(returnjson)     
 
-def PartyList(request,uid):
+def PartyList(request,uid,page):
     status = 'ok'
     code   = '200'
     description = 'ok'
@@ -90,18 +91,19 @@ def PartyList(request,uid):
             code = '404'
             description = u'用户不存在'    
             
-    partlist = []
+    partylist = []
     try:
-        partlist=Party.objects.filter(creator=user)  
+        partylist=Party.objects.filter(creator=user).order_by('-time')  
     except:
         status = "fail"
         code   = "404"        
-         
+    GMT_FORMAT = '%Y-%m-%d %H:%M'
+    partylist = process_paginator(partylist, page, LIST_MEETING_PAGE_SIZE)         
     partyObject=None
     PartyObjectArray = []    
     try :
-        for party in partlist:
-            partyObject.starttime=datetime.datetime.strftime(party.time,'%Y-%m-%d %H:%M:%S')
+        for party in partylist:
+            partyObject.starttime=party.time.strftime(GMT_FORMAT)
             partyObject.description=party.description
             partyObject.peopleMaximum=party.limit_num
             partyObject.location=party.address

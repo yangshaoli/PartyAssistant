@@ -35,6 +35,7 @@
 	method:GET
 	input:{
 		"uid":Integer(user id)
+                "page":Integer
 		}
 	output:{
 		"status":"ok",
