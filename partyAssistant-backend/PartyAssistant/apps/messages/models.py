@@ -10,7 +10,7 @@ from apps.parties.models import Party
 class EmailMessage(models.Model):
     subject = models.CharField(max_length=256)
     content = models.TextField()
-    creator = models.ForeignKey(User)
+    createtime = models.DateTimeField(auto_now_add=True)
     party = models.ForeignKey(Party)
     _isApplyTips = models.BooleanField()
     _isSendBySelf = models.BooleanField()

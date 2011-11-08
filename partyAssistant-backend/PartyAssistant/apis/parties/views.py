@@ -14,7 +14,7 @@ from apps.parties.models import Party
 from apps.clients.models import ClientParty , Client
 from utils.tools.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.tools.paginator_tool import process_paginator
-
+from apps.messages.models import EmailMessage
 def createParty(request):
     status = 'ok'
     code   = '200'
@@ -82,7 +82,7 @@ def createParty(request):
         returnjson = simplejson.dumps(returnjson)       
         return HttpResponse(returnjson)     
 
-def PartyList(request,uid,page):
+def PartyList(request,uid,page=1):
     status = 'ok'
     code   = '200'
     description = 'ok' 
@@ -122,7 +122,7 @@ def PartyList(request,uid,page):
         if description == 'ok':
             description = u'时间初始化失败'
     dataSource={
-                'page':1,
+                'page':page,
                 'partyList':PartyObjectArray
                 }    
     returnjson={
@@ -138,7 +138,8 @@ def PartyList(request,uid,page):
 def GetPartyMsg(request,pid):
     status = 'ok'
     code   = '200'
-    description = 'ok' 
+    description = 'ok'
+    returnjson={} 
     if request.method == 'GET':
         party=None
         try:
@@ -166,6 +167,7 @@ def GetPartyMsg(request,pid):
         if client.invite_type=='email':
             msgType == 'Email'
             print '读取Email'
+            emailmessagelist = EmailMessage.objects.filter(party=party).order('-createtime')
             subject = 
             content =
             dataSource={
@@ -186,24 +188,24 @@ def GetPartyMsg(request,pid):
         else:
             msgType == 'SMS'
             print "读信息"    
-        
-        subject = 
-        content =
-        dataSource={
-                    'msgType':msgType,
-                    'receiverArray':ClientObjectArray,
-                    'content':content,
-                    'subject':subject,
-                    '_isApplyTips':_isApplyTips,
-                    '_isSendBySelf':_isSendBySelf
-                    }    
-        returnjson={
-                    'status':status,
-                    'code':code,
-                    'description':description,
-                    'dataSource':dataSource             
-                    }
-        returnjson = simplejson.dumps(returnjson)       
+                  
+            subject = 
+            content =
+            dataSource={
+                        'msgType':msgType,
+                        'receiverArray':ClientObjectArray,
+                        'content':content,
+                        'subject':subject,
+                        '_isApplyTips':_isApplyTips,
+                        '_isSendBySelf':_isSendBySelf
+                        }    
+            returnjson={
+                        'status':status,
+                        'code':code,
+                        'description':description,
+                        'dataSource':dataSource             
+                        }
+            returnjson = simplejson.dumps(returnjson)       
         return HttpResponse(returnjson)      
 
         
