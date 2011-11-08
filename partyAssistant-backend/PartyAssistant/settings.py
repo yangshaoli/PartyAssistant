@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'accounts',
     'clients',
     'parties',
+    'apis',
 )
 
 

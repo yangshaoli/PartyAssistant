@@ -2,7 +2,6 @@
 
 from django.shortcuts import render_to_response, redirect, get_object_or_404, HttpResponse
 from django.template.context import RequestContext
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from accounts.forms import WebRegistrationForm, AppRegistrationForm, GetPasswordForm, ChangePasswordForm
@@ -12,7 +11,7 @@ from tools.email_tool import send_emails
 import random
 import hashlib
 
-from settings import DOMAIN_NAME,  SYS_EMAIL_ADDRESS
+from settings import  SYS_EMAIL_ADDRESS
 
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
