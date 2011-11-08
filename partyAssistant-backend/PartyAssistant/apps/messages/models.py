@@ -17,7 +17,7 @@ class EmailMessage(models.Model):
     
 class SMSMessage(models.Model):
     content = models.TextField()
-    creator = models.ForeignKey(User)
+    createtime = models.DateTimeField(auto_now_add=True)
     party = models.ForeignKey(Party)
     _isApplyTips = models.BooleanField()
     _isSendBySelf = models.BooleanField()    
