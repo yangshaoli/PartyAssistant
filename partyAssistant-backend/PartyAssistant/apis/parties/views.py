@@ -57,6 +57,13 @@ def createParty(request):
                 if _isapplytips or _isapplytips > 0 :
                     enroll_link = DOMAIN_NAME+'/clients/invite_enroll/'+receiver.cVal+'/'+party.id
                     content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
+                    EmailMessage.objects.create(
+                                                subject=subject,
+                                                content=content,
+                                                party=party,
+                                                _isApplyTips=_isapplytips,
+                                                _isSendBySelf=False
+                                                )
                     try :     
                         send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
                         print '记录邮件内容，未完成'

@@ -5,7 +5,6 @@ Created on 2011-11-8
 @author: liuxue
 '''
 from django.db import models
-from django.contrib.auth.models import User
 from apps.parties.models import Party
 class EmailMessage(models.Model):
     subject = models.CharField(max_length=256)
