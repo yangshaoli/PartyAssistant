@@ -77,4 +77,3 @@
 	ClientObjects同上
 
 4. EditParty:
-	url:""
