@@ -9,3 +9,5 @@
 #define DOMAIN_NAME @"http://www.airenao.com"
 
 #define CREATE_PARTY [NSString stringWithFormat:@"%@/party/create/",DOMAIN_NAME]
+#define GET_PARTY_LIST [NSString stringWithFormat:@"%@/party/list/",DOMAIN_NAME]
+#define GET_MSG_IN_COPY_PARTY [NSString stringWithFormat:@"%@/party/copy/msg/get/",DOMAIN_NAME]

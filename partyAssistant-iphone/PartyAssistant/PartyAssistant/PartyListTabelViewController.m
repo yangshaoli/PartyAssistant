@@ -9,6 +9,7 @@
 #import "PartyListTabelViewController.h"
 
 @implementation PartyListTabelViewController
+@synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,6 +39,16 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
+    self.navigationItem.rightBarButtonItem = refreshBtn;
+    self.partyList = [[NSMutableArray alloc] initWithArray:[[PartyListService sharedPartyListService] getPartyList]];
+    if ([partyList count] == 0) {
+        self._isNeedRefresh = YES;
+    }
+    if (self._isNeedRefresh) {
+        [self refreshBtnAction];
+    }
 }
 
 - (void)viewDidUnload
@@ -77,16 +88,17 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 0;
+    if ([self.partyList count]>20) {
+        return 20;
+    }
+    return [self.partyList count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -99,7 +111,18 @@
     }
     
     // Configure the cell...
-    
+    BaseInfoObject *baseinfo = [partyList objectAtIndex:indexPath.row];
+    NSRange range;
+    range.location = 16;
+    range.length = baseinfo.description.length - 16;
+    cell.textLabel.text = [baseinfo.description stringByReplacingCharactersInRange:range withString:@"..."];
+    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(200, 20, 110, 24)];
+    timeLabel.textAlignment = UITextAlignmentRight;
+    timeLabel.text = baseinfo.starttimeStr;
+    timeLabel.textColor = [UIColor lightGrayColor];
+    [cell addSubview:timeLabel];
+    cell.tag = [baseinfo.partyId intValue];
+    cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
     return cell;
 }
 
@@ -153,6 +176,105 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    PartyDetailTableViewController *vc = [[PartyDetailTableViewController alloc] initWithNibName:@"PartyDetailTableViewController" bundle:[NSBundle mainBundle]];
+    vc.baseinfo = [self.partyList objectAtIndex:indexPath.row];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
+- (void)refreshBtnAction{
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSURL *url = [NSURL URLWithString:GET_PARTY_LIST];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSString stringWithFormat:@"%@uid=%@",url,user.uID]];
+    request.timeOutSeconds = 30;
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [acv startAnimating];
+    self.navigationItem.rightBarButtonItem.customView = acv;
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSNumber* code = [[result objectForKey:@"status"] objectForKey:@"code"];
+	NSString *description = [[result objectForKey:@"status"] objectForKey:@"description"];
+	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
+	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
+//	[self dismissWaiting];
+	if ([code intValue]==200 && [description isEqualToString:@"ok"]) {
+		NSDictionary *dataSource = [result objectForKey:@"datasource"];
+        self.pageIndex = [[dataSource objectForKey:@"page"] intValue];
+        
+        if (pageIndex == 0) {
+            pageIndex = 1;
+        }
+        
+        NSArray *allDatas = [dataSource objectForKey:@"partyList"];
+        [self.partyList removeAllObjects];
+        for(int i=0;i<[partyList count];i++){
+            NSDictionary *party = [partyList objectAtIndex:i];
+            BaseInfoObject *biObj = [[BaseInfoObject alloc] init];
+            biObj.starttimeDate = [party objectForKey:@"starttime"];
+            biObj.description = [party objectForKey:@"description"];
+            biObj.peopleMaximum = [party objectForKey:@"peopleMaximum"];
+            biObj.location = [party objectForKey:@"location"];
+            biObj.partyId = [party objectForKey:@"partyId"];
+            [biObj formatDateToString];
+            [self.partyList addObject:biObj];
+        }
+        
+        
+        [self.tableView reloadData];
+//        [self setBottomRefreshViewYandDeltaHeight];
+	}else{
+		[self showAlertRequestFailed:description];		
+	}
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	//[self dismissWaiting];
+	//[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
+{
+    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"复制",@"删除",@"分享", nil];
+    UITableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
+    sheet.tag = indexPath.row;
+    [sheet showInView:self.view];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSInteger pIndex = actionSheet.tag;
+    if (buttonIndex == 0) {
+        [self copyPartyAtID:pIndex];
+    }else if(buttonIndex == 1){
+        [self deletePartyAtID:pIndex];
+    }else if(buttonIndex == 2){
+        [self sharePartyAtID:pIndex];
+    }
+    
+}
+
+- (void)copyPartyAtID:(NSInteger)pIndex
+{
+    CopyPartyTableViewController *vc = [[CopyPartyTableViewController alloc] initWithNibName:@"CopyPartyTableViewController" bundle:[NSBundle mainBundle]];
+    vc.baseinfo = [self.partyList objectAtIndex:pIndex];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)deletePartyAtID:(NSInteger)pIndex
+{
+
+}
+
+- (void)sharePartyAtID:(NSInteger)pIndex
+{
+
+}
 @end

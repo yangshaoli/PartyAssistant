@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AddressBookUI/AddressBookUI.h>
 #import <AddressBook/ABPerson.h>
+#import <MessageUI/MFMessageComposeViewController.h>
 
 #import "ContactListViewController.h"
 #import "ContactListNavigationController.h"
@@ -22,8 +23,11 @@
 #import "ASIFormDataRequest.h"
 #import "BaseInfoService.h"
 #import "BaseInfoObject.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+#import "PartyListTabelViewController.h"
 
-@interface SendSMSToClientsViewController : UITableViewController<UITableViewDelegate>
+@interface SendSMSToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate>
 {
     UIView *receiversView;
     NSMutableArray *receiverArray;

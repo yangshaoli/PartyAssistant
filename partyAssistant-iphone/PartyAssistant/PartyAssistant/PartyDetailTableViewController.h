@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseInfoObject.h"
 
-@interface PartyDetailTableViewController : UITableViewController
+@interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{
+    BaseInfoObject *baseinfo;
+}
+
+@property(nonatomic, retain)BaseInfoObject *baseinfo;
 
 @end

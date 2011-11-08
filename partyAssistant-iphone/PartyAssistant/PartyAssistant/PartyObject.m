@@ -9,12 +9,16 @@
 #import "PartyObject.h"
 
 @implementation PartyObject
+@synthesize baseinfoObject,smsObject,userObject,pID;
 
-- (id)init
+- (id)initWithBaseInfoObject:(BaseInfoObject *)baseinfo SMSObject:(SMSObject *)sms UserObject:(UserObject *)user pId:(NSInteger)pid
 {
     self = [super init];
     if (self) {
-        // Initialization code here.
+        self.baseinfoObject = baseinfo;
+        self.smsObject = sms;
+        self.userObject = user;
+        self.pID = pid;
     }
     
     return self;

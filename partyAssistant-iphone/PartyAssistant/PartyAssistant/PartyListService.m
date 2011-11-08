@@ -9,6 +9,7 @@
 #import "PartyListService.h"
 
 @implementation PartyListService
+@synthesize partyList;
 
 - (id)init
 {

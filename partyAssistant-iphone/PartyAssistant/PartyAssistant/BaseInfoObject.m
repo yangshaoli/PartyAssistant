@@ -9,7 +9,7 @@
 #import "BaseInfoObject.h"
 
 @implementation BaseInfoObject
-@synthesize starttimeStr, starttimeDate, location, description, peopleMaximum, userId, partyId;
+@synthesize starttimeStr, starttimeDate, location, description, peopleMaximum, userObject, partyId;
 
 - (id)init
 {
@@ -21,8 +21,8 @@
         self.location = @"";
         self.description = @"";
         self.peopleMaximum = [NSNumber numberWithInt:0];
-        self.userId = [NSNumber numberWithInt:0];
-        self.partyId = [NSNumber numberWithInt:0];
+        self.userObject = [[UserObjectService sharedUserObjectService] getUserObject];
+        self.partyId = [NSNumber numberWithInt:-1];
     }
     
     return self;
@@ -33,7 +33,7 @@
 	[encoder encodeObject: self.location forKey:@"location"];
 	[encoder encodeObject: self.description forKey:@"description"];
 	[encoder encodeObject: self.peopleMaximum forKey:@"peopleMaximum"];
-    [encoder encodeObject: self.userId forKey:@"userId"];
+    [encoder encodeObject: self.userObject forKey:@"userObject"];
     [encoder encodeObject: self.partyId forKey:@"partyId"];
 }
 
@@ -42,7 +42,7 @@
 	self.location = [decoder decodeObjectForKey:@"location"];
 	self.description = [decoder decodeObjectForKey:@"description"];
 	self.peopleMaximum = [decoder decodeObjectForKey:@"peopleMaximum"];
-    self.userId = [decoder decodeObjectForKey:@"userId"];
+    self.userObject = [decoder decodeObjectForKey:@"userObject"];
     self.partyId = [decoder decodeObjectForKey:@"partyId"];
 	
 	return self;
@@ -54,7 +54,7 @@
     self.location = @"";
     self.description = @"";
     self.peopleMaximum = 0;
-    self.userId = 0;
+    self.userObject = [[UserObjectService sharedUserObjectService] getUserObject];
     self.partyId = 0;
 }
 - (void)formatDateToString{

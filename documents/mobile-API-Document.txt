@@ -53,3 +53,28 @@
 			"location":String,
 			"partyId":int
 			}
+
+3. GetPartyMsg
+	url:""
+	method:GET
+	input:{
+		"pid":Integer(party id)
+		}
+	output:{
+		"status":"ok",
+		"code":200,
+		"description":"ok",
+		"dataSource":{
+				"msgType":"SMS"/"Email",
+				"receiverArray":clientsObjectsArray,
+				'content':String,
+				'subject':String,
+				'_isApplyTips':BOOL,
+				'_isSendBySelf':BOOL
+				}
+		}
+	这个API的逻辑是给你一个Party ID，返回我在这个Party中发送的一封短信或邮件内容及其收件人
+	ClientObjects同上
+
+4. EditParty:
+	url:""

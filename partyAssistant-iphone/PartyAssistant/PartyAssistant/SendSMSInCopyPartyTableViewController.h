@@ -7,7 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BaseInfoObject.h"
+#import "SMSObject.h"
+
 
 @interface SendSMSInCopyPartyTableViewController : UITableViewController
+{
+    BaseInfoObject  *baseinfo;
+    SMSObject *smsObject;
+}
+
+@property(nonatomic, retain)BaseInfoObject *baseinfo;
+@property(nonatomic, retain)SMSObject *smsObject;
 
 @end

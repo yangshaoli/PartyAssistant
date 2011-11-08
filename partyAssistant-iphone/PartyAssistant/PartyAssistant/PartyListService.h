@@ -7,7 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "BaseInfoObject.h"
 
-@interface PartyListService : NSObject
+@interface PartyListService : NSObject{
+    NSMutableArray *partyList;
+}
+
+@property(nonatomic, retain)NSMutableArray *partyList;
+
++ (PartyListService *)sharedPartyListService;
+- (NSArray *)getPartyList;
+- (void)savePartyList;
+- (NSArray *)addPartyList:(BaseInfoObject *)baseinfo;
+- (void)clearPartyList;
 
 @end

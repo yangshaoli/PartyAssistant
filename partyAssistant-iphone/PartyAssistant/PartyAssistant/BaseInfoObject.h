@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UserObject.h"
+#import "UserObjectService.h"
 
 @interface BaseInfoObject : NSObject{
     NSString *starttimeStr;
@@ -14,7 +16,7 @@
     NSString *location;
     NSString *description;
     NSNumber *peopleMaximum;
-    NSNumber *userId;
+    UserObject *userObject;
     NSNumber *partyId;
 }
 
@@ -23,7 +25,7 @@
 @property(nonatomic, retain)NSString *location;
 @property(nonatomic, retain)NSString *description;
 @property(nonatomic, retain)NSNumber *peopleMaximum;
-@property(nonatomic, retain)NSNumber *userId;
+@property(nonatomic, retain)UserObject *userObject;
 @property(nonatomic, retain)NSNumber *partyId;
 
 

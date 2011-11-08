@@ -33,6 +33,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.tabBarController.selectedIndex = 1;
     UIBarButtonItem *doneBtn=[[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.rightBarButtonItem = doneBtn;
     if (!_isShowAllReceivers) {
@@ -324,36 +325,37 @@
     [s saveSMSObject];
 }
 
+- (void)createPartySuc{
+    SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+    [s clearSMSObject];
+    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+    [bs clearBaseInfo];
+    self.tabBarController.selectedIndex = 1;
+    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    [self dismissModalViewControllerAnimated:NO];
+    [self.navigationController popToRootViewControllerAnimated:NO];
+}
+
 - (void)doneBtnAction{
     [self saveSMSInfo];
     [self showWaiting];
-    BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
-    BaseInfoObject *baseinfo = [s getBaseInfo];
+    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+    BaseInfoObject *baseinfo = [bs getBaseInfo];
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:self.smsObject.receiversArray forKey:@"receivers"];
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
     [request setPostValue:@"" forKey:@"subject"];
+    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
     [request setPostValue:@"SMS" forKey:@"msgType"];
-    [request setPostValue:@"" forKey:@"subject"];
     [request setPostValue:baseinfo.starttimeDate forKey:@"starttime"];
     [request setPostValue:baseinfo.location forKey:@"location"];
     [request setPostValue:baseinfo.description forKey:@"description"];
     [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
-//    [request setPostValue:.uID forKey:@"uID";
-//    if (!self.eventerestingobject.categoryBaseObject.tagsArray) {
-//        [request setPostValue:@"" forKey:@"tags"];
-//    } else {
-//        [request setPostValue:[self.eventerestingobject.categoryBaseObject.tagsArray componentsJoinedByString:@","] forKey:@"tags"];
-//    }
-//    
-//    //    [request setPostValue:self.eventerestingobject.currentOrNot forKey:@"current_or_not"];
-//    [request setPostValue:self.eventerestingobject.latitude forKey:@"latitude"];
-//    [request setPostValue:self.eventerestingobject.longitude forKey:@"longitude"];
-//    [request setPostValue:self.eventerestingobject.address_line_1 forKey:@"location"];
-//    [request setPostValue:self.eventerestingobject.city forKey:@"city"];
-//    [request setPostValue:self.eventerestingobject.state forKey:@"state"];
-//    [request setPostValue:[NSString stringWithFormat:@"%d",self.eventerestingobject.categoryBaseObject.mainImageIndex] forKey:@"mainImageIndex"];
+    [request setPostValue:user.uID forKey:@"uID"];
 //    NSString *tempPath = NSTemporaryDirectory();
 //    for(NSNumber *i in imageNamesArray){
 //        NSString *imageName = [NSString stringWithFormat:@"tempPostingImage_%@.jpg",i];
@@ -361,10 +363,49 @@
 //        [request addFile:imageFile withFileName:nil andContentType:@"image/jpeg" forKey:@"images"];
 //    }
 //    [request setDelegate:self];
-//    request.timeOutSeconds = 30;
-//    [request setShouldAttemptPersistentConnection:NO];
-//    [request startAsynchronous];
+    request.timeOutSeconds = 30;
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
     
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSNumber* code = [[result objectForKey:@"status"] objectForKey:@"code"];
+	NSString *description = [[result objectForKey:@"status"] objectForKey:@"description"];
+	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
+	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
+	[self dismissWaiting];
+	if ([code intValue]==200 && [description isEqualToString:@"ok"]) {
+		if (self.smsObject._isSendBySelf) {
+            MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
+            if (self.smsObject._isApplyTips) {
+                vc.body = [self.smsObject.smsContent stringByAppendingString:@""];
+            }else{
+                vc.body = self.smsObject.smsContent;
+            };
+            NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+            for(int i=0;i<[self.receiverArray count];i++){
+                [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+            }
+            vc.recipients = aArray;
+            [self presentModalViewController:vc animated:YES];
+        }else{
+            [self createPartySuc];
+        }
+	}else{
+		[self showAlertRequestFailed:description];		
+	}
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch{
@@ -376,5 +417,38 @@
     [self saveSMSInfo];
     
 }
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	// Notifies users about errors associated with the interface
+	switch (result) {
+		case MessageComposeResultCancelled:{
+            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
+            [sh showInView:self.view];
+            break;
+            }
+		case MessageComposeResultSent:
+			[self createPartySuc];
+			break;
+		case MessageComposeResultFailed:{
+            UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            [av show];
+			break;
+        }
+		default:
+			break;
+	}
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        [self createPartySuc];
+    }else{
+        [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
+    }
+    
+}
+
 
 @end

@@ -41,7 +41,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStyleBordered target:self action:@selector(cancleBtnAction)];
     ABAddressBookRef addressBook = ABAddressBookCreate();
-    self.contactorsArrayRef = ABAddressBookCopyArrayOfAllPeople(addressBook);
+    self.contactorsArrayRef = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook,nil,1);
 //    CFIndex nPeople = ABAddressBookGetPersonCount(addressBook);
     if (!msgType) {
         self.msgType = @"SMS";
@@ -122,7 +122,7 @@
     if (personMName == nil) {
         personMName = @"";
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ %@",personFName,personMName,personLName];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
     cell.tag = recordID;
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;

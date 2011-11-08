@@ -79,15 +79,22 @@
 {
 #warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 0;
+    if (section == 0) {
+        return 4;
+    }else if(section ==1){
+        return 4;
+    }
+    return 1;
 }
+
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -99,7 +106,68 @@
     }
     
     // Configure the cell...
-    
+    if (indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            cell.textLabel.text = @"开始时间:";
+            UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
+            starttimeLabel.textAlignment = UITextAlignmentRight;
+            starttimeLabel.backgroundColor = [UIColor clearColor];
+            starttimeLabel.text = self.baseinfo.starttimeStr;
+            //            starttimeLabel.text = @"2011-11-11 11:00";
+            [cell addSubview:starttimeLabel];
+        }else if(indexPath.row == 1){
+            cell.textLabel.text = @"地点:";
+            UILabel *locationLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
+            locationLabel.textAlignment = UITextAlignmentRight;
+            locationLabel.backgroundColor = [UIColor clearColor];
+            locationLabel.text = self.baseinfo.location;
+            [cell addSubview:locationLabel];
+        }else if(indexPath.row == 2){
+            cell.textLabel.text = @"人数上限:";
+            UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(260, 0, 30, 44)];
+            peopleStrLable.backgroundColor = [UIColor clearColor];
+            peopleStrLable.textAlignment = UITextAlignmentRight;
+            peopleStrLable.text = [NSString stringWithFormat:@"%d 人", self.baseinfo.peopleMaximum];
+            [cell addSubview:peopleStrLable];
+        }else{
+            cell.textLabel.text = @"描述:";
+            UITextView *descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 200, 100)];
+            descriptionTextView.text = self.baseinfo.description;
+            descriptionTextView.backgroundColor = [UIColor clearColor];
+            descriptionTextView.editable = NO;
+            [cell addSubview:descriptionTextView];
+        }
+    }else if(indexPath.section == 1){
+        if (indexPath.row == 0) {
+            cell.textLabel.text = @"邀请人:";
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            lb_1.tag = 1;
+            lb_1.text = @"... 人";
+            lb_1.textAlignment = UITextAlignmentRight;
+            [cell addSubview:lb_1];
+        }else if(indexPath.row == 1){
+            cell.textLabel.text = @"已报名:";
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            lb_1.tag = 2;
+            lb_1.text = @"... 人";
+            lb_1.textAlignment = UITextAlignmentRight;
+            [cell addSubview:lb_1];
+        }else if(indexPath.row == 2){
+            cell.textLabel.text = @"不报名:";
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            lb_1.tag = 3;
+            lb_1.text = @"... 人";
+            lb_1.textAlignment = UITextAlignmentRight;
+            [cell addSubview:lb_1];
+        }else if(indexPath.row == 3){
+            cell.textLabel.text = @"未报名:";
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            lb_1.tag = 4;
+            lb_1.text = @"... 人";
+            lb_1.textAlignment = UITextAlignmentRight;
+            [cell addSubview:lb_1];
+        }
+    }
     return cell;
 }
 
@@ -153,6 +221,15 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    if (indexPath.section == 1) {
+        if(indexPath.row == 0){
+        
+        }else if(indexPath.row == 1){
+        
+        }else if(indexPath.row == 2){
+        
+        }
+    }
 }
 
 @end

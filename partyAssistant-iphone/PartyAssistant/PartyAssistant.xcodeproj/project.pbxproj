@@ -26,6 +26,17 @@
 		891A4DB814579B3D00A2CF47 /* PartyAssistantTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4DB714579B3D00A2CF47 /* PartyAssistantTests.m */; };
 		891A4DCF1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4DCD1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m */; };
 		891A4DD01457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4DCD1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m */; };
+		89277DF914662E1600B05020 /* PartyListTabelViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89277DF714662E1600B05020 /* PartyListTabelViewController.m */; };
+		89277DFA14662E1600B05020 /* PartyListTabelViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89277DF814662E1600B05020 /* PartyListTabelViewController.xib */; };
+		89277DFD14666C0700B05020 /* PartyListService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89277DFC14666C0700B05020 /* PartyListService.m */; };
+		89277E01146682E000B05020 /* PartyDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89277DFF146682E000B05020 /* PartyDetailTableViewController.m */; };
+		89277E02146682E000B05020 /* PartyDetailTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89277E00146682E000B05020 /* PartyDetailTableViewController.xib */; };
+		89277E061467851700B05020 /* CopyPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89277E041467851700B05020 /* CopyPartyTableViewController.m */; };
+		89277E071467851700B05020 /* CopyPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89277E051467851700B05020 /* CopyPartyTableViewController.xib */; };
+		89277E0B1467A4A500B05020 /* SendSMSInCopyPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89277E091467A4A400B05020 /* SendSMSInCopyPartyTableViewController.m */; };
+		89277E0C1467A4A500B05020 /* SendSMSInCopyPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89277E0A1467A4A400B05020 /* SendSMSInCopyPartyTableViewController.xib */; };
+		89277E101467A4C900B05020 /* SendEmailInCopyPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89277E0E1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.m */; };
+		89277E111467A4C900B05020 /* SendEmailInCopyPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89277E0F1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.xib */; };
 		8932652B145E6C37006E827D /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8932652A145E6C37006E827D /* AddressBookUI.framework */; };
 		89326537145E8233006E827D /* ReceiverLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 89326536145E8233006E827D /* ReceiverLabel.m */; };
 		8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8932653C145E88F6006E827D /* AddressBook.framework */; };
@@ -128,6 +139,23 @@
 		891A4DB714579B3D00A2CF47 /* PartyAssistantTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PartyAssistantTests.m; sourceTree = "<group>"; };
 		891A4DCC1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddNewPartyBaseInfoTableViewController.h; sourceTree = "<group>"; };
 		891A4DCD1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddNewPartyBaseInfoTableViewController.m; sourceTree = "<group>"; };
+		89277DF614662E1600B05020 /* PartyListTabelViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyListTabelViewController.h; sourceTree = "<group>"; };
+		89277DF714662E1600B05020 /* PartyListTabelViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyListTabelViewController.m; sourceTree = "<group>"; };
+		89277DF814662E1600B05020 /* PartyListTabelViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyListTabelViewController.xib; sourceTree = "<group>"; };
+		89277DFB14666C0700B05020 /* PartyListService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyListService.h; sourceTree = "<group>"; };
+		89277DFC14666C0700B05020 /* PartyListService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyListService.m; sourceTree = "<group>"; };
+		89277DFE146682E000B05020 /* PartyDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyDetailTableViewController.h; sourceTree = "<group>"; };
+		89277DFF146682E000B05020 /* PartyDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyDetailTableViewController.m; sourceTree = "<group>"; };
+		89277E00146682E000B05020 /* PartyDetailTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyDetailTableViewController.xib; sourceTree = "<group>"; };
+		89277E031467851600B05020 /* CopyPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CopyPartyTableViewController.h; sourceTree = "<group>"; };
+		89277E041467851700B05020 /* CopyPartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CopyPartyTableViewController.m; sourceTree = "<group>"; };
+		89277E051467851700B05020 /* CopyPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CopyPartyTableViewController.xib; sourceTree = "<group>"; };
+		89277E081467A4A400B05020 /* SendSMSInCopyPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendSMSInCopyPartyTableViewController.h; sourceTree = "<group>"; };
+		89277E091467A4A400B05020 /* SendSMSInCopyPartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendSMSInCopyPartyTableViewController.m; sourceTree = "<group>"; };
+		89277E0A1467A4A400B05020 /* SendSMSInCopyPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SendSMSInCopyPartyTableViewController.xib; sourceTree = "<group>"; };
+		89277E0D1467A4C700B05020 /* SendEmailInCopyPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendEmailInCopyPartyTableViewController.h; sourceTree = "<group>"; };
+		89277E0E1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendEmailInCopyPartyTableViewController.m; sourceTree = "<group>"; };
+		89277E0F1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SendEmailInCopyPartyTableViewController.xib; sourceTree = "<group>"; };
 		8932652A145E6C37006E827D /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
 		89326535145E8233006E827D /* ReceiverLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverLabel.h; sourceTree = "<group>"; };
 		89326536145E8233006E827D /* ReceiverLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverLabel.m; sourceTree = "<group>"; };
@@ -410,6 +438,21 @@
 		891A4DC41457B17500A2CF47 /* PartyList */ = {
 			isa = PBXGroup;
 			children = (
+				89277DF614662E1600B05020 /* PartyListTabelViewController.h */,
+				89277DF714662E1600B05020 /* PartyListTabelViewController.m */,
+				89277DF814662E1600B05020 /* PartyListTabelViewController.xib */,
+				89277DFE146682E000B05020 /* PartyDetailTableViewController.h */,
+				89277DFF146682E000B05020 /* PartyDetailTableViewController.m */,
+				89277E00146682E000B05020 /* PartyDetailTableViewController.xib */,
+				89277E031467851600B05020 /* CopyPartyTableViewController.h */,
+				89277E041467851700B05020 /* CopyPartyTableViewController.m */,
+				89277E051467851700B05020 /* CopyPartyTableViewController.xib */,
+				89277E081467A4A400B05020 /* SendSMSInCopyPartyTableViewController.h */,
+				89277E091467A4A400B05020 /* SendSMSInCopyPartyTableViewController.m */,
+				89277E0A1467A4A400B05020 /* SendSMSInCopyPartyTableViewController.xib */,
+				89277E0D1467A4C700B05020 /* SendEmailInCopyPartyTableViewController.h */,
+				89277E0E1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.m */,
+				89277E0F1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.xib */,
 			);
 			name = PartyList;
 			sourceTree = "<group>";
@@ -596,6 +639,8 @@
 				89E7D925146280900059ADF4 /* SMSObjectService.m */,
 				89E7D939146378CC0059ADF4 /* UserObjectService.h */,
 				89E7D93A146378CD0059ADF4 /* UserObjectService.m */,
+				89277DFB14666C0700B05020 /* PartyListService.h */,
+				89277DFC14666C0700B05020 /* PartyListService.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -682,6 +727,11 @@
 				899D62F5145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib in Resources */,
 				899D62FB145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib in Resources */,
 				899D6305145FFB6B00B9B4EC /* ContactListNavigationController.xib in Resources */,
+				89277DFA14662E1600B05020 /* PartyListTabelViewController.xib in Resources */,
+				89277E02146682E000B05020 /* PartyDetailTableViewController.xib in Resources */,
+				89277E071467851700B05020 /* CopyPartyTableViewController.xib in Resources */,
+				89277E0C1467A4A500B05020 /* SendSMSInCopyPartyTableViewController.xib in Resources */,
+				89277E111467A4C900B05020 /* SendEmailInCopyPartyTableViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -767,6 +817,12 @@
 				89E7D93414628C680059ADF4 /* IndicatorMessageView.m in Sources */,
 				89E7D938146378150059ADF4 /* UserObject.m in Sources */,
 				89E7D93B146378CD0059ADF4 /* UserObjectService.m in Sources */,
+				89277DF914662E1600B05020 /* PartyListTabelViewController.m in Sources */,
+				89277DFD14666C0700B05020 /* PartyListService.m in Sources */,
+				89277E01146682E000B05020 /* PartyDetailTableViewController.m in Sources */,
+				89277E061467851700B05020 /* CopyPartyTableViewController.m in Sources */,
+				89277E0B1467A4A500B05020 /* SendSMSInCopyPartyTableViewController.m in Sources */,
+				89277E101467A4C900B05020 /* SendEmailInCopyPartyTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

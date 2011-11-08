@@ -9,6 +9,7 @@
 #import "SendSMSInCopyPartyTableViewController.h"
 
 @implementation SendSMSInCopyPartyTableViewController
+@synthesize smsObject,baseinfo;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {

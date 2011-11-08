@@ -7,7 +7,28 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PartyListService.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "UITableViewControllerExtra.h"
+#import "PartyDetailTableViewController.h"
+#import "CopyPartyTableViewController.h"
 
-@interface PartyListTabelViewController : UITableViewController
+@interface PartyListTabelViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>{
+    NSMutableArray *partyList;
+    BOOL _isNeedRefresh;
+    BOOL _isRefreshing;
+    NSInteger pageIndex;
+}
 
+@property(nonatomic, retain)NSMutableArray *partyList;
+@property(nonatomic, assign)BOOL _isNeedRefresh;
+@property(nonatomic, assign)BOOL _isRefreshing;
+@property(nonatomic, assign)NSInteger pageIndex;
+
+- (void)refreshBtnAction;
+- (void)copyPartyAtID:(NSInteger)pIndex;
+- (void)deletePartyAtID:(NSInteger)pIndex;
+- (void)sharePartyAtID:(NSInteger)pIndex;
 @end
