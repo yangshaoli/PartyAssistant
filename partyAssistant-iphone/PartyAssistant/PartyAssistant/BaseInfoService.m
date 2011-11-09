@@ -48,7 +48,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(BaseInfoService)
     if (!self.baseinfoObject) {
         return;
     }
-    
+    [self.baseinfoObject formatDateToString];
     NSMutableData *theData = [NSMutableData data];
     NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
     

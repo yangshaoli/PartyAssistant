@@ -185,7 +185,7 @@
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:GET_PARTY_LIST];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSString stringWithFormat:@"%@uid=%@",url,user.uID]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSString stringWithFormat:@"%@uid=%d",url,user.uID]];
     request.timeOutSeconds = 30;
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];

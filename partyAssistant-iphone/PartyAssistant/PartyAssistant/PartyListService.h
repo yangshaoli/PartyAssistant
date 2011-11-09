@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "BaseInfoObject.h"
+#import "SynthesizeSingleton.h"
+
+#define PARTYLISTFILE @"PartyListFile"
+#define PARTYLISTKEY @"PartyListKey"
 
 @interface PartyListService : NSObject{
     NSMutableArray *partyList;

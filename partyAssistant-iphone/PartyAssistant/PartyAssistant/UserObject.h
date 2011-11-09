@@ -10,11 +10,13 @@
 
 @interface UserObject : NSObject
 {
-    NSNumber *uID;
+    NSInteger uID;
     NSString *phoneNum;
 }
 
-@property(nonatomic, retain)NSNumber *uID;
+@property(nonatomic, assign)NSInteger uID;
 @property(nonatomic, retain)NSString *phoneNum;
+
+- (void)clearObject;
 
 @end
