@@ -24,6 +24,7 @@ def createParty(request):
         content = request.POST['content']
         subject = request.POST['subject']
         _isapplytips = request.POST['_isapplytips']
+        _isSendBySelf = request.POST['_isSendBySelf']
         msgType = request.POST['msgType']
         starttime = request.POST['starttime']
         location = request.POST['location']
@@ -57,29 +58,32 @@ def createParty(request):
                 if _isapplytips or _isapplytips > 0 :
                     enroll_link = DOMAIN_NAME+'/clients/invite_enroll/'+receiver.cVal+'/'+party.id
                     content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
-                    EmailMessage.objects.create(
-                                                subject=subject,
-                                                content=content,
-                                                party=party,
-                                                _isApplyTips=_isapplytips,
-                                                _isSendBySelf=False
-                                                )
-                    try :     
-                        send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
-                        print '记录邮件内容，未完成'
-                    except:
-                        code = '500'
-                        data['Email']=u'邮件发送失败'
-                        if description == 'ok':
-                            description='邮件发送失败'
+                EmailMessage.objects.create(
+                                            subject=subject,
+                                            content=content,
+                                            party=party,
+                                            _isApplyTips=_isapplytips,
+                                            _isSendBySelf=_isSendBySelf
+                                            )
+                try :     
+                    send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
+                except:
+                    data['Email']=u'邮件发送失败'
+                    
                 try :   
-                    client = Client.objects.get(pk=receiver.cId)
-                    ClientParty.objects.create(client=client, party=party, apply_status=u'未报名') 
+                    client = Client.objects.get(pk=receiver.cId)                     
                 except:
                     code = '404'
                     data['client']=u"未找到对应联系人"
-                    if description == 'ok':
-                        description=u'未找到联系人'    
+                    description=u'未找到联系人'
+                    returnjson = {'status':status,
+                      'code':code,
+                      'description':description,
+                      'data':data              
+                     }
+                    returnjson = simplejson.dumps(returnjson)       
+                    return HttpResponse(returnjson) 
+                ClientParty.objects.create(client=client, party=party, apply_status=u'未报名')       
         returnjson = {'status':status,
                       'code':code,
                       'description':description,
@@ -104,30 +108,41 @@ def PartyList(request,uid,page=1):
                 description = u'用户不存在'    
             
     partylist = []
+    partyObject=None
+    PartyObjectArray = []
     try:
         partylist=Party.objects.filter(creator=user).order_by('-time')  
     except:
         status = "fail"
         code   = "404"
-        if description == 'ok':
-            description=u'获取列表失败'        
+        description=u'获取列表失败'  
+        dataSource={
+                    'page':page,
+                    'partyList':PartyObjectArray
+                    }    
+        returnjson={
+                    'status':status,
+                    'code':code,
+                    'description':description,
+                    'dataSource':dataSource             
+                }
+        returnjson = simplejson.dumps(returnjson)       
+        return HttpResponse(returnjson)       
     GMT_FORMAT = '%Y-%m-%d %H:%M'
     partylist = process_paginator(partylist, page, LIST_MEETING_PAGE_SIZE)         
-    partyObject=None
-    PartyObjectArray = []    
-    try :
-        for party in partylist:
+        
+
+    for party in partylist:
+        try:
             partyObject.starttime=party.time.strftime(GMT_FORMAT)
-            partyObject.description=party.description
-            partyObject.peopleMaximum=party.limit_num
-            partyObject.location=party.address
-            partyObject.partyId=party.id
-            PartyObjectArray.append(partyObject)            
-    except:
-        status = "fail"
-        code   = "404"
-        if description == 'ok':
-            description = u'时间初始化失败'
+        except:
+            continue
+        partyObject.description=party.description
+        partyObject.peopleMaximum=party.limit_num
+        partyObject.location=party.address
+        partyObject.partyId=party.id
+        PartyObjectArray.append(partyObject)            
+
     dataSource={
                 'page':page,
                 'partyList':PartyObjectArray
