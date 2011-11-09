@@ -17,19 +17,20 @@ from apps.parties.models import Party
 from apps.clients.models import ClientParty , Client
 from utils.tools.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.tools.paginator_tool import process_paginator
+from utils.tools.my_exception import myException
+from utils.tools.apis_json_response import apis_json_response_decorator
 from apps.messages.models import EmailMessage, SMSMessage
 import re
+
+from ERROR_MSG_SETTINGS import *
 
 from utils.tools.reg_phone_num import regPhoneNum
 
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
+@apis_json_response_decorator
 @commit_on_success
 def createParty(request):
-    print 'i am in'
-    status = 'ok'
-    code = '200'
-    description = 'ok' 
     if request.method == 'POST' :
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
@@ -42,12 +43,13 @@ def createParty(request):
         description = request.POST['description']
         peopleMaximum = request.POST['peopleMaximum']
         uID = request.POST['uID']
+        user = User.objects.get(pk = uID)
         try:
-            user = User.objects.get(pk = uID)
-        except Exception, e:
-            print "A"
-        if starttime:
             starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S')
+        except Exception:
+            starttime = None
+        if len(location) > 256:
+            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         #创建活动
        	party = Party.objects.create(time = starttime,
                              address = location,
@@ -55,7 +57,6 @@ def createParty(request):
                              creator = user,
                              limit_num = peopleMaximum,
                              )
-        data = {}
         for i in range(len(receivers)):
             receiver = receivers[i]
             if msgType == 'SMS':
@@ -79,7 +80,6 @@ def createParty(request):
                 print 'send SMS'
                  
             else:
-                print 'send Email'
                 if _isapplytips or _isapplytips > 0 :
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + receiver.cVal + '/' + party.id
                     content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
@@ -94,29 +94,6 @@ def createParty(request):
                     send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
                 except:
                     data['Email'] = u'邮件发送失败'
-                    
-                try :   
-                    client = Client.objects.get(pk = receiver.cId)                     
-                except:
-                    code = '404'
-                    data['client'] = u"未找到对应联系人"
-                    description = u'未找到联系人'
-                    returnjson = {'status':status,
-                      'code':code,
-                      'description':description,
-                      'data':data              
-                     }
-                    returnjson = simplejson.dumps(returnjson)       
-                    return HttpResponse(returnjson)      
-        returnjson = {'status':status,
-                      'code':code,
-                      'description':description,
-                      'data':data              
-                     }                 
-          
-        returnjson = simplejson.dumps(returnjson)       
-        return HttpResponse(returnjson)     
-    return HttpResponse('Bad Request')
 
 def PartyList(request, uid, page = 1):
     status = 'ok'

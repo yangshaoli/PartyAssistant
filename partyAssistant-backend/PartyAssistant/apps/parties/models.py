@@ -8,8 +8,8 @@ from django.db import models
 from django.contrib.auth.models import User
 
 class Party(models.Model):
-    time = models.DateTimeField()
-    address = models.CharField(max_length=256,blank=True)
-    description = models.TextField(blank=True)
+    time = models.DateTimeField(blank = True, null = True)
+    address = models.CharField(max_length = 256, blank = True)
+    description = models.TextField(blank = True)
     creator = models.ForeignKey(User)
-    limit_num = models.IntegerField(max_length=3)
+    limit_num = models.IntegerField(max_length = 3, default = 0)
