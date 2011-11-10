@@ -92,7 +92,7 @@ def edit_party(request,party_id):
         date = datetime.datetime.strftime(party.time,'%Y-%m-%d')
         time = datetime.datetime.strftime(party.time,'%H:%M:%S')
         form = CreatePartyForm()
-        return render_to_response('parties/modify_party.html',{'form':form,'party':party,'date':date,'time':time}, context_instance=RequestContext(request));
+        return render_to_response('parties/edit_party.html',{'form':form,'party':party,'date':date,'time':time}, context_instance=RequestContext(request));
     else :
         party = Party.objects.get(pk=party_id)
         form = CreatePartyForm(request.POST)
