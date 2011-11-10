@@ -14,7 +14,7 @@ urlpatterns = patterns('apps.parties.views',
 
     # Uncomment the next line to enable the admin:
     url(r'^create_party/$','create_party',name='create_party'),
-    url(r'^delete_party/(?P<id>\d+)/$','delete_party',name='delete_party'),
+    url(r'^delete_party/(?P<party_id>\d+)/$','delete_party',name='delete_party'),
     url(r'^copy_party/(?P<party_id>\d+)/$','copy_party',name='copy_party'),
     url(r'^modify_party/(?P<party_id>\d+)/$','modify_party',name='modify_party'),
     

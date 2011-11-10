@@ -49,8 +49,8 @@ def create_party(request):
 def delete_party(request,party_id):
     party=get_object_or_404(Party,pk=party_id)
     Party.delete(party)
-    return render_to_response('list_party.html',{'message','delete success jump to list_party'})
-
+    return list_party(request)
+ 
 def copy_party(request,party_id):#复制party和联系人
     if request.method == 'GET':
         old_party = Party.objects.get(pk=int(party_id))        
