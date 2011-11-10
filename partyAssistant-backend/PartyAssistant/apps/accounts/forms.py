@@ -56,12 +56,15 @@ class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput())
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
-    new_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
-    confirm_password = forms.CharField(required = False, max_length = 16,widget = forms.PasswordInput())
+    old_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
+    new_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
+    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
     
     def __init__(self, request, *args, **kwargs):
-        super(ChangePasswordForm, self).__init__(args, kwargs)
+        if request:
+            super(ChangePasswordForm, self).__init__(args, kwargs)
+        else:
+            super(ChangePasswordForm, self).__init__()
         self.request = request
     
     def clean(self):
