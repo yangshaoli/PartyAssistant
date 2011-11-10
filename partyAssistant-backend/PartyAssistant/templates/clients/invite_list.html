@@ -69,7 +69,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
   });
  });
  function back(){
-   location.href='parties_list.html' ;
+   location.href='{% url show_party party.id %}' ;
  }
   function refesh(){
    document.execCommand('Refresh') 

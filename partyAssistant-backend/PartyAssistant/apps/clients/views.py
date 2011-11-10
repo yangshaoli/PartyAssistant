@@ -78,22 +78,22 @@ def invite_list(request,party_id):
     for i in range(len(client_party_list)):
         if client_party_list[i].client.invite_type == 'public':
             client_party_list.remove(i)
-    return render_to_response('clients/invite_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+    return render_to_response('clients/invite_list.html',{'client_party_list':client_party_list,'party':party}, context_instance=RequestContext(request)) 
 
 #报名人员列表
 def enrolled_list(request,party_id):
     party = get_object_or_404(Party, pk=int(party_id))
     client_party_list=ClientParty.objects.filter(party=party,apply_status=u'已报名')
-    return render_to_response('clients/apply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+    return render_to_response('clients/apply_list.html',{'client_party_list':client_party_list,'party':party}, context_instance=RequestContext(request)) 
 
 #未向应人员列表
 def noenroll_list(request,party_id):
     party = get_object_or_404(Party, pk=int(party_id))
     client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未报名')
-    return render_to_response('clients/notresponse_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+    return render_to_response('clients/notresponse_list.html',{'client_party_list':client_party_list,'party':party}, context_instance=RequestContext(request)) 
 
 #未报名人员列表
 def reject_list(request,party_id):
     party = get_object_or_404(Party, pk=int(party_id))
     client_party_list=ClientParty.objects.filter(party=party,apply_status=u'不参加')
-    return render_to_response('clients/notapply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+    return render_to_response('clients/notapply_list.html',{'client_party_list':client_party_list,'party':party}, context_instance=RequestContext(request)) 
