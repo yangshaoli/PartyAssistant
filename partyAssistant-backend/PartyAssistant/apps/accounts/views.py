@@ -90,3 +90,13 @@ def profile(request):
     else:
         form = ChangePasswordForm()
         return render_to_response('accounts/profile.html', {'form': form},context_instance = RequestContext(request))
+
+def change_password(request):
+    if request.method == 'POST':
+        form = ChangePasswordForm(None, request.POST)
+        if form.is_valid():
+            return redirect('profile')
+    else:
+        form = ChangePasswordForm(None)
+    
+    return TemplateResponse('accounts/change_password.html', {'form': form})

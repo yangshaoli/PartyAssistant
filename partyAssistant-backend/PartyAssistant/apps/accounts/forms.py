@@ -59,3 +59,21 @@ class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
     new_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
     confirm_password = forms.CharField(required = False, max_length = 16,widget = forms.PasswordInput())
+    
+    def __init__(self, request, *args, **kwargs):
+        super(ChangePasswordForm, self).__init__(args, kwargs)
+        self.request = request
+    
+    def clean(self):
+        if 'old_password' in self.cleaned_data:
+            if not self.request.user.check_password(self.cleaned_data['old_password']):
+                self._errors['old_password'] = ErrorList([u'原密码输入错误'])
+                del self.cleaned_data['old_password']
+        
+        if ('confirm_password' in self.cleaned_data) and ('new_password' in self.cleaned_data):
+            if (self.cleaned_data['confirm_password'] != self.cleaned_data['new_password']):
+                self._errors["confirm_password"] = ErrorList([u'新密码与确认密码不匹配'])
+                del self.cleaned_data['password']
+                del self.cleaned_data['confirm_password']
+                
+        return self.cleaned_data

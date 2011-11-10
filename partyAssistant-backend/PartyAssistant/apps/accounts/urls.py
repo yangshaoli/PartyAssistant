@@ -9,4 +9,5 @@ urlpatterns = patterns('apps.accounts.views',
     url(r'^profile/$', 'profile', name='profile'),
     url(r'^activate/(?P<email>\S+)/(?P<random_str>\w+)/$', 'activate', name = 'activate'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'home.html'}, name='logout'),
+    url(r'^change_password/$', 'change_password', name='change_password'), 
 )
