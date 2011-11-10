@@ -15,5 +15,6 @@
 <a href="{% url enrolled_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
 <a href="{% url noenroll_list party.id %}">未响应人数</a>: {{client.noenroll.count}}<br/>
 <a href="{% url reject_list party.id %}">不报名人数</a>: {{client.reject.count}}<br/>
+<a href="{% url list_party %}">返回</a><br/>
 {{noroll.count}}
 {% endblock %}
