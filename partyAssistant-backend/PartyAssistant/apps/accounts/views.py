@@ -74,22 +74,7 @@ def get_password(request):
         return render_to_response('accounts/get_password.html', {'form': form},context_instance = RequestContext(request))
 
 def profile(request):
-    if request.method == 'POST':
-        form = ChangePasswordForm(request.POST)
-        if form.is_valid():
-            old_password = form.cleaned_data['old_password']
-            new_password = form.cleaned_data['new_password']
-            user = User.objects.get(pk=request.user.id)
-            if user.check_password(old_password):#检查旧密码
-                user.set_password(new_password)
-                return render_to_response('message.html', {'message':u'密码修改成功'}, context_instance = RequestContext(request))
-            else:
-                return render_to_response('message.html', {'message':u'原密码输入错误'}, context_instance = RequestContext(request))
-        else:
-            return render_to_response('message.html', {'message':u'密码修改失败'}, context_instance = RequestContext(request))
-    else:
-        form = ChangePasswordForm()
-        return render_to_response('accounts/profile.html', {'form': form},context_instance = RequestContext(request))
+    return TemplateResponse(request, 'accounts/profile.html')
 
 def change_password(request):
     if request.method == 'POST':
