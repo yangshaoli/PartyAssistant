@@ -3,13 +3,14 @@
 {% block content %}
 
 <ul>
-	<li><span>开始时间：</span>{{party.start_time}}</li>
-	<li><span>结束时间：</span>{{party.end_time}}</li>
+	<li><span>日期：</span>{{date}}</li>
+	<li><span>时间：</span>{{time}}</li>
 	<li><span>地点：</span>{{party.address}}</li>
 	<li><span>人数限制：</span>{{party.limit_num}}</li>
 	<li><span>描述：</span>{{party.description}}</li>
 </ul>
 <br>
+<a href="{% url modify_party party.id %}">编辑</a><br/>
 <a href="{% url invite_list party.id %}">邀请人数</a>: {{client.invite.count}}<br/>
 <a href="{% url enrolled_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
 <a href="{% url noenroll_list party.id %}">未响应人数</a>: {{client.noenroll.count}}<br/>

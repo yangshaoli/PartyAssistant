@@ -44,6 +44,7 @@ def createParty(request):
         peopleMaximum = request.POST['peopleMaximum']
         uID = request.POST['uID']
         user = User.objects.get(pk = uID)
+        data = {}
         try:
             starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S')
         except Exception:
@@ -51,7 +52,7 @@ def createParty(request):
         if len(location) > 256:
             raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         #创建活动
-       	party = Party.objects.create(time = starttime,
+        party = Party.objects.create(time = starttime,
                              address = location,
                              description = description,
                              creator = user,
