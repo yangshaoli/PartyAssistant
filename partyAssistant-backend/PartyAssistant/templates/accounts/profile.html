@@ -4,16 +4,7 @@
 
 {% block content %}
 {{user.email}}<br/>
-{{user.username}} <input type="button" value="修改密码" onclick="document.getElementById('change_password').style.display = 'block'" />
+{{user.username}}<br />
 
-<form id="change_password" action="{%url profile %}" method="POST" style="display:none">{% csrf_token %}
-{{ form.as_p}}
-<input type="submit" value="确定" />
-</form>
-{% endblock %}
-
-{% block js %}
-<script>	
-
-</script>
+<a href="{% url change_password %}">修改密码</a>
 {% endblock %}
