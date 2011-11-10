@@ -80,6 +80,8 @@ def change_password(request):
     if request.method == 'POST':
         form = ChangePasswordForm(None, request.POST)
         if form.is_valid():
+            request.user.set_password(form.new_password)
+            request.user.save()
             return redirect('profile')
     else:
         form = ChangePasswordForm(None)
