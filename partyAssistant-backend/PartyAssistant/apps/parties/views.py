@@ -86,7 +86,7 @@ def copy_party(request,party_id):#复制party和联系人
             return render_to_response('parties/copy_party.html',{'form':form,'old_party':old_party}, context_instance=RequestContext(request)) 
     
 
-def modify_party(request,party_id):
+def edit_party(request,party_id):
     if request.method=='GET':
         party = Party.objects.get(pk=party_id)
         date = datetime.datetime.strftime(party.time,'%Y-%m-%d')
@@ -104,7 +104,7 @@ def modify_party(request,party_id):
             party.save()          
             return list_party(request)
         else:
-            return render_to_response('parties/modify_party.html',{'form':form,'party':party}, context_instance=RequestContext(request));
+            return render_to_response('parties/edit_party.html',{'form':form,'party':party}, context_instance=RequestContext(request));
 
 '''
 @summary: 处理短信邀请和邮件邀请
