@@ -18,7 +18,7 @@
 </head>
 <body>
 
-<form action='{% url modify_party party.id %}' method='post'>
+<form action='{% url edit_party party.id %}' method='post'>
 {% csrf_token %}
 <table>
 <tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date" value='{{date}}' ></input>
