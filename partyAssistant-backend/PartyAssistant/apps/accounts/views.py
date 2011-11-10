@@ -1,35 +1,36 @@
 #-*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response, redirect, get_object_or_404, HttpResponse
-from django.template.context import RequestContext
+from apps.accounts.forms import AppRegistrationForm, \
+    GetPasswordForm, ChangePasswordForm, RegistrationForm
+from apps.accounts.models import UserProfile, TempActivateNote
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from apps.accounts.forms import WebRegistrationForm, AppRegistrationForm, GetPasswordForm, ChangePasswordForm
-from apps.accounts.models import UserProfile, TempActivateNote
+from django.shortcuts import render_to_response, redirect, get_object_or_404, \
+    HttpResponse
+from django.template.context import RequestContext
+from django.template.response import TemplateResponse
+from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
-
-import random
 import hashlib
+import random
 
-from settings import  SYS_EMAIL_ADDRESS
+
 
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
-def web_register(request):
+def register(request):
     if request.method == 'POST':
-        form = WebRegistrationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data["password"]
             email = form.cleaned_data['email']
             User.objects.create_user(username, email, password)
-            return render_to_response('accounts/web_register_success.html', {'form': form},context_instance = RequestContext(request))
-        else:
-            return render_to_response('message.html', {'message':u'注册失败，您填写的资料有误'}, context_instance = RequestContext(request))
+            return redirect('list_party')
     else:
-        form = WebRegistrationForm()
-    return render_to_response('accounts/web_register.html', {'form': form},context_instance = RequestContext(request))
+        form = RegistrationForm()
 
+    return TemplateResponse(request, 'accounts/register.html', {'form': form})
 
 def app_register(request):
     if request.method == 'POST':

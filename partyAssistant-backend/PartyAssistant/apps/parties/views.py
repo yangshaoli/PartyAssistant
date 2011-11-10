@@ -18,6 +18,7 @@ from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from apps.clients.models import Client, ClientParty
 
 import datetime
+from django.contrib.auth.decorators import login_required
 
 def create_party(request):            
     if request.method=='POST':
@@ -147,6 +148,7 @@ def email_invite(request, party_id):
 @summary: 显示活动列表，活动详细
 @author: chenyang
 '''
+@login_required
 def list_party(request):
     party_list = Party.objects.all()
     ctx = {
