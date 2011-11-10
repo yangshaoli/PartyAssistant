@@ -84,4 +84,4 @@ def change_password(request):
     else:
         form = ChangePasswordForm(None)
     
-    return TemplateResponse('accounts/change_password.html', {'form': form})
+    return TemplateResponse(request, 'accounts/change_password.html', {'form': form})
