@@ -84,6 +84,6 @@ def change_password(request):
             request.user.save()
             return redirect('profile')
     else:
-        form = ChangePasswordForm(None)
+        form = ChangePasswordForm(request, None)
     
     return TemplateResponse(request, 'accounts/change_password.html', {'form': form})

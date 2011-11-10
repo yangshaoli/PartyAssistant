@@ -60,9 +60,9 @@ class ChangePasswordForm(forms.Form):
     new_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
     confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
     
-    def __init__(self, request, *args, **kwargs):
+    def __init__(self, request, data):
         if request:
-            super(ChangePasswordForm, self).__init__(args, kwargs)
+            super(ChangePasswordForm, self).__init__(data)
         else:
             super(ChangePasswordForm, self).__init__()
         self.request = request
