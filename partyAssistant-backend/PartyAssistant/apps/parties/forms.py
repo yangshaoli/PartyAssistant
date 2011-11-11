@@ -8,7 +8,7 @@ class CreatePartyForm(forms.Form):
     date = forms.DateField(error_messages={'required': u'开始日期不能为空', 'invalid':'请正确输入日期格式，如：2010-01-01'})
     time = forms.TimeField(error_messages={'required': u'开始时间不能为空', 'invalid':'请正确输入时间格式，如：00:00'})
     description = forms.CharField(widget=forms.Textarea(), required=False)
-    address = forms.CharField(widget=forms.TextInput(), required=False)
+    address = forms.CharField(widget=forms.TextInput(), required=False,max_length=256 ,error_messages={'max_length':u'地址信息不可超过256字符'})
     limit_num = forms.IntegerField(widget=forms.TextInput(),error_messages={'required':u'请填写限制人数'})    
     def clean(self):
 
