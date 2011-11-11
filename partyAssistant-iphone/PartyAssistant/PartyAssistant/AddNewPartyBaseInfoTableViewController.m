@@ -39,14 +39,6 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    BaseInfoService *baseinfoService = [BaseInfoService sharedBaseInfoService];
-    self.baseInfoObject = [baseinfoService getBaseInfo];
-    if ([baseInfoObject.starttimeStr isEqualToString:@""]) {
-        baseInfoObject.starttimeDate = [NSDate date];
-        [baseInfoObject formatDateToString];
-        [baseinfoService saveBaseInfo];
-    }
 }
 
 - (void)viewDidUnload
@@ -59,11 +51,15 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
+    self.baseInfoObject = [s getBaseInfo];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -238,7 +234,9 @@
 - (void)saveInfo{
     self.baseInfoObject.description = self.descriptionTextView.text;
     self.baseInfoObject.location = self.locationTextField.text;
+    [self.baseInfoObject formatDateToString];
     BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
+    s.baseinfoObject = self.baseInfoObject;
     [s saveBaseInfo];
 }
 
@@ -263,11 +261,12 @@
                 self.datePicker = [[UIDatePicker alloc] init];
             }
             if (!self.baseInfoObject.starttimeDate) {
-                self.baseInfoObject.starttimeDate = [NSDate date];
+                [datePicker setDate:[NSDate date]];
+            }else{
+                [datePicker setDate:self.baseInfoObject.starttimeDate];
             }
-            [datePicker setDate:self.baseInfoObject.starttimeDate];
             [actionSheet addSubview:datePicker];
-            [actionSheet showInView:self.view];
+            [actionSheet showInView:self.tabBarController.view];
         }else if(indexPath.row == 2){
             NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
@@ -284,7 +283,7 @@
             peoplemaxiumPicker.delegate = self;
             peoplemaxiumPicker.showsSelectionIndicator = YES;
             [actionSheet addSubview:peoplemaxiumPicker];
-            [actionSheet showInView:self.view];
+            [actionSheet showInView:self.tabBarController.view];
         }
     }
 }
@@ -293,19 +292,15 @@
 {
     if (actionSheet.tag == 0) {
         self.baseInfoObject.starttimeDate = [datePicker date];
-        NSLog(@"date:%@",[datePicker date]);
         [self.baseInfoObject formatDateToString];
-        [self.tableView reloadData];
     }else{
-        NSLog(@"aa");
         NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
         NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
         NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
         self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
-        NSLog(@"%@",self.baseInfoObject.peopleMaximum);
-        [self.tableView reloadData];
     }
-    
+    [self saveInfo];
+    [self.tableView reloadData];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

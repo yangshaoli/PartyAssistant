@@ -6,17 +6,29 @@ Created on 2011-11-8
 '''
 from django.db import models
 from apps.parties.models import Party
-class EmailMessage(models.Model):
-    subject = models.CharField(max_length=256)
-    content = models.TextField()
-    createtime = models.DateTimeField(auto_now_add=True)
-    party = models.ForeignKey(Party)
-    _isApplyTips = models.BooleanField()
-    _isSendBySelf = models.BooleanField()
+class BaseMessage(models.Model):
+    receivers = models.TextField()
     
-class SMSMessage(models.Model):
-    content = models.TextField()
-    createtime = models.DateTimeField(auto_now_add=True)
+    createtime = models.DateTimeField(auto_now_add = True)
     party = models.ForeignKey(Party)
-    _isApplyTips = models.BooleanField()
-    _isSendBySelf = models.BooleanField()    
+    apply_tips = models.BooleanField(default = True)
+    send_by_self = models.BooleanField(default = True)
+    
+    def get_subclass_type(self):
+        if hasattr(self, "emailmessage"):
+            return 'Email'
+        else:
+            return 'SMS'
+        
+    def get_subclass_obj(self, *args):
+        if hasattr(self, "emailmessage"):
+            return self.emailmessage
+        else:
+            return self.smsmessage
+
+class EmailMessage(BaseMessage):
+    subject = models.CharField(max_length = 256)
+    content = models.TextField()
+    
+class SMSMessage(BaseMessage):
+    content = models.TextField()

@@ -351,6 +351,7 @@
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
     [request setPostValue:@"SMS" forKey:@"msgType"];
+    [request setPostValue:@"iphone" forKey:@"addressType"];
     [request setPostValue:baseinfo.starttimeDate forKey:@"starttime"];
     [request setPostValue:baseinfo.location forKey:@"location"];
     [request setPostValue:baseinfo.description forKey:@"description"];
@@ -364,6 +365,7 @@
 //    }
 //    [request setDelegate:self];
     request.timeOutSeconds = 30;
+    [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
     NSLog(@"send");
@@ -371,38 +373,42 @@
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
-    NSLog(@"receive");
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
 	NSString *response = [request responseString];
-    NSLog(@"res:%@",response);
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-	NSNumber* code = [[result objectForKey:@"status"] objectForKey:@"code"];
-	NSString *description = [[result objectForKey:@"status"] objectForKey:@"description"];
-	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
-	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
+	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
-	if ([code intValue]==200 && [description isEqualToString:@"ok"]) {
-		if (self.smsObject._isSendBySelf) {
-            MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
-            if (self.smsObject._isApplyTips) {
-                vc.body = [self.smsObject.smsContent stringByAppendingString:@""];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            if (self.smsObject._isSendBySelf) {
+                MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
+                if (self.smsObject._isApplyTips) {
+                    vc.body = [self.smsObject.smsContent stringByAppendingString:@""];
+                }else{
+                    vc.body = self.smsObject.smsContent;
+                };
+                NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+                for(int i=0;i<[self.receiverArray count];i++){
+                    [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                }
+                vc.recipients = aArray;
+                vc.messageComposeDelegate = self;
+                [self presentModalViewController:vc animated:YES];
             }else{
-                vc.body = self.smsObject.smsContent;
-            };
-            NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
-            for(int i=0;i<[self.receiverArray count];i++){
-                [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                [self createPartySuc];
             }
-            vc.recipients = aArray;
-            [self presentModalViewController:vc animated:YES];
         }else{
-            [self createPartySuc];
+            [self showAlertRequestFailed:description];		
         }
-	}else{
-		[self showAlertRequestFailed:description];		
-	}
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+	
 }
+
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
@@ -427,7 +433,7 @@
 	switch (result) {
 		case MessageComposeResultCancelled:{
             UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
-            [sh showInView:self.view];
+            [sh showInView:self.tabBarController.view];
             break;
             }
 		case MessageComposeResultSent:
@@ -442,6 +448,8 @@
 			break;
 	}
 }
+
+
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
