@@ -10,7 +10,7 @@
 	<li><span>描述：</span>{{party.description}}</li>
 </ul>
 <br>
-<a href="{% url modify_party party.id %}">编辑</a><br/>
+<a href="{% url modify_party party.id %}">编辑</a>&nbsp;&nbsp;<a href="{% url delete_party party.id %}">删除</a><br/>
 <a href="{% url invite_list party.id %}">邀请人数</a>: {{client.invite.count}}<br/>
 <a href="{% url enrolled_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
 <a href="{% url noenroll_list party.id %}">未响应人数</a>: {{client.noenroll.count}}<br/>
