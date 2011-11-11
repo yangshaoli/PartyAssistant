@@ -14,7 +14,6 @@ from django.template import RequestContext
 from forms import CreatePartyForm, InviteForm
 from utils.tools.email_tool import send_emails
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
-
 from apps.clients.models import Client, ClientParty
 
 import datetime
@@ -49,9 +48,26 @@ def create_party(request):
 
 def delete_party(request,party_id):
     party=get_object_or_404(Party,pk=party_id)
+    clientpartylist = ClientParty.objects.filter(party=party)
+    for clientparty in clientpartylist:
+        ClientParty.delete(clientparty)
     Party.delete(party)
     return list_party(request)
- 
+def delete_party_notice(request,party_id):
+    party = get_object_or_404(Party,pk=party_id)
+    clientparty_list = ClientParty.objects.filter(party=party)
+    for clientparty in clientparty_list:
+        client = clientparty.client
+        if client.invite_type == 'email':
+            title=u'活动取消通知'
+            content=u'尊敬的 '+client.name+' :'+' 于'+party.time.strftime('%Y-%m-%d %H:%M')+' 在'+party.address+'的活动取消'
+            send_emails(title,content,SYS_EMAIL_ADDRESS,[client.email])
+        if client.invite_type == 'phone':
+            content=u'尊敬的 '+client.name+' :'+' 于'+party.time.strftime('%Y-%m-%d %H:%M')+' 在'+party.address+'的活动取消'
+            print '发送短信 '  
+            print content   
+    return delete_party(request,party_id) 
+
 def copy_party(request,party_id):#复制party和联系人
     if request.method == 'GET':
         old_party = Party.objects.get(pk=int(party_id))        
