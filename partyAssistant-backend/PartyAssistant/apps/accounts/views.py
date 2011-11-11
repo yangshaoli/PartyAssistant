@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from apps.accounts.forms import WebRegistrationForm, AppRegistrationForm, GetPasswordForm, ChangePasswordForm
-from apps.accounts.models import UserProfile, TempActivateNote
+from apps.accounts.models import UserProfile
 from utils.tools.email_tool import send_emails
 
 import random
@@ -25,7 +25,7 @@ def web_register(request):
             User.objects.create_user(username, email, password)
             return render_to_response('accounts/web_register_success.html', {'form': form},context_instance = RequestContext(request))
         else:
-            return render_to_response('message.html', {'message':u'注册失败，您填写的资料有误'}, context_instance = RequestContext(request))
+            return render_to_response('accounts/web_register.html', {'form': form}, context_instance = RequestContext(request))
     else:
         form = WebRegistrationForm()
     return render_to_response('accounts/web_register.html', {'form': form},context_instance = RequestContext(request))
@@ -41,16 +41,6 @@ def app_register(request):
             return render_to_response('accounts/web_register_success.html', context_instance = RequestContext(request))
     else:
         return render_to_response('accounts/app_register.html',{'form' : AppRegistrationForm()}, context_instance = RequestContext(request))
-
-def activate(request, email , random_str):
-    note = get_object_or_404(TempActivateNote, email = email, random_str = random_str, action = u'新建账户')
-    if User.objects.filter(username = email):
-        note.delete()
-        return HttpResponse(u'用户已存在')
-    user = User.objects.create_user(email, email, password=note.password)
-    UserProfile.objects.create(user=user, account_type=note.aim_limit )
-    note.delete()
-    return redirect(reverse('create_party'))
 
 def get_password(request):
     email_subject = u'爱热闹取回密码'
@@ -85,7 +75,7 @@ def profile(request):
             else:
                 return render_to_response('message.html', {'message':u'原密码输入错误'}, context_instance = RequestContext(request))
         else:
-            return render_to_response('message.html', {'message':u'密码修改失败'}, context_instance = RequestContext(request))
+            return render_to_response('accounts/profile.html', {'form': form}, context_instance = RequestContext(request))
     else:
         form = ChangePasswordForm()
         return render_to_response('accounts/profile.html', {'form': form},context_instance = RequestContext(request))

@@ -6,7 +6,7 @@ Created on 2011-10-27
 '''
 
 from models import Party
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import render_to_response, redirect, get_object_or_404,HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.template import RequestContext
@@ -19,7 +19,7 @@ from apps.clients.models import Client, ClientParty
 
 import datetime
 
-def create_party(request):            
+def create_party(request): 
     if request.method=='POST':
         form = CreatePartyForm(request.POST)
         if form.is_valid():        
@@ -49,7 +49,7 @@ def create_party(request):
 def delete_party(request,party_id):
     party=get_object_or_404(Party,pk=party_id)
     Party.delete(party)
-    return render_to_response('list_party.html',{'message','delete success jump to list_party'})
+    return render_to_response('list_party.html',{'message':'delete success jump to list party'})
 
 def copy_party(request,party_id):#复制party和联系人
     if request.method == 'GET':

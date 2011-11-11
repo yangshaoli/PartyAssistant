@@ -55,3 +55,12 @@ class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
     new_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
     confirm_password = forms.CharField(required = False, max_length = 16,widget = forms.PasswordInput())
+    
+    
+    def clean(self):
+        if ('confirm_password' in self.cleaned_data) and ('new_password' in self.cleaned_data):
+            if (self.cleaned_data['confirm_password'] != self.cleaned_data['new_password']):
+                self._errors["confirm_password"] = ErrorList([u"两次输入密码不匹配"])
+                del self.cleaned_data['new_password']
+                del self.cleaned_data['confirm_password']
+        return self.cleaned_data

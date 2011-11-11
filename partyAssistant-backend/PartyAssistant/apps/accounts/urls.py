@@ -7,6 +7,5 @@ urlpatterns = patterns('apps.accounts.views',
     url(r'^app_register/$', 'app_register', name='app_register'),
     url(r'^get_password/$', 'get_password', name='get_password'),
     url(r'^profile/$', 'profile', name='profile'),
-    url(r'^activate/(?P<email>\S+)/(?P<random_str>\w+)/$', 'activate', name = 'activate'),
-    url(r'^logout/$', auth_views.logout, {'template_name': 'home.html'}, name='logout'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/accounts/login'}, name='logout'),
 )
