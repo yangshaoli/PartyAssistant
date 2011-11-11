@@ -30,9 +30,9 @@
 	                            {% endif %}</td>
 </tr>
 
-<tr><td>地址</td><td><input type='textfield' name='address'  value='{{ old_party.address }}' class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
+<tr><td>地址</td><td><textarea name='address'   class= 'textarea-remark2'>{{ old_party.address }} </textarea>{{ form.address.errors}}</td>
 </tr>
-<tr><td>描述</td><td><input type='textfield' name='description' class='textarea-remark2' value='{{ old_party.description}}' ></input>{{ form.description.errors}}</td>
+<tr><td>描述</td><td><textarea name='description' class='textarea-remark2'  >{{ old_party.description}} </textarea>{{ form.description.errors}}</td>
 </tr>
 <tr><td>限制人数</td><td><input name='limit_num' type='text' value='{{ old_party.limit_num }}'></input>{{ form.limit_num.errors}}</td>
 </tr>
