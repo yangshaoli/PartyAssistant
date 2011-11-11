@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %} 活动列表 {% endblock %}
 {% block content %}
-
+<a href="{% url create_party %}">创建活动</a><br/><br/>
 {% for party in party_list %}
 <a href="{% url show_party party.id %}">{{party.description}} {{party.start_time}}</a> <span style="margin-left:30px"><a href="{% url copy_party party.id %}">复制</a> | <a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a></span><br/>
 <hr>
