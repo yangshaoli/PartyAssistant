@@ -174,3 +174,57 @@ def GetPartyClientMainCount(request, pid):
             'refusedClientcount':refused_client_count,
             'donothingClientcount':donothing_client_count,
             }
+
+@csrf_exempt
+@apis_json_response_decorator
+def GetPartyClientSeperatedList(request, pid, type):
+    try:
+        party = Party.objects.get(pk = pid)
+    except:
+        raise myException(u'您要复制的会议已被删除')
+    if type == "all":
+        clientparty_list = ClientParty.objects.filter(party = party).order_by('apply_status')
+    elif type == 'applied':
+        clientparty_list = ClientParty.objects.filter(party = party, apply_status = u"已报名")
+    elif type == 'refused':
+        clientparty_list = ClientParty.objects.filter(party = party, apply_status = u"不参加")
+    elif type == 'donothing':
+        clientparty_list = ClientParty.objects.filter(party = party, apply_status = u"未报名")
+    clientList = []
+    print clientList
+    for clientparty in clientparty_list:
+        if clientparty.client.phone == '':
+            cValue = clientparty.client.email
+        else:
+            cValue = clientparty.client.phone
+        if type == 'all':
+            dic = {
+                   'cName':clientparty.client.name,
+                   'cValue':cValue,
+                   'cID':clientparty.id,
+                   'status':clientparty.apply_status
+                   }
+        else:
+            dic = {
+                   'cName':clientparty.client.name,
+                   'cValue':cValue,
+                   'cID':clientparty.id,
+                   }
+        clientList.append(dic)
+    print clientList
+    return {
+            'clientList':clientList,
+            }
+
+@csrf_exempt
+@apis_json_response_decorator
+def ChangeClientStatus(request):
+    print 1
+    clientparty = ClientParty.objects.get(pk = request.POST['cpID'])
+    action = request.POST['cpAction']
+    if action == 'apply':
+        clientparty.apply_status = u'已报名'
+    else:
+        clientparty.apply_status = u'不参加'
+    clientparty.save()
+    return 'ok'

@@ -227,13 +227,18 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     if (indexPath.section == 1) {
+        ClientStatusTableViewController *vc = [[ClientStatusTableViewController alloc] initWithNibName:@"ClientStatusTableViewController" bundle:[NSBundle mainBundle]];
         if(indexPath.row == 0){
-            
+            vc.clientStatusFlag = @"all";
         }else if(indexPath.row == 1){
-        
+            vc.clientStatusFlag = @"applied";
         }else if(indexPath.row == 2){
-        
+            vc.clientStatusFlag = @"refused";
+        }else{
+            vc.clientStatusFlag = @"donothing";
         }
+        vc.partyId = [self.baseinfo.partyId intValue];
+        [self.navigationController pushViewController:vc animated:YES];
     }
 }
 
@@ -280,7 +285,7 @@
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
-	NSError *error = [request error];
+//	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];
 }

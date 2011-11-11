@@ -11,6 +11,7 @@
 #import "URLSettings.h"
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
+#import "ClientStatusTableViewController.h"
 #import "UITableViewControllerExtra.h"
 
 

@@ -12,3 +12,5 @@
 #define GET_PARTY_LIST [NSString stringWithFormat:@"%@/a/parties/partylist/",DOMAIN_NAME]
 #define GET_MSG_IN_COPY_PARTY [NSString stringWithFormat:@"%@/a/parties/get_party_msg/",DOMAIN_NAME]
 #define GET_PARTY_CLIENT_MAIN_COUNT [NSString stringWithFormat:@"%@/a/parties/get_party_client_main_count/",DOMAIN_NAME]
+#define GET_PARTY_CLIENT_SEPERATED_LIST [NSString stringWithFormat:@"%@/a/parties/get_party_client_seperated_list/",DOMAIN_NAME]
+#define CLIENT_STATUS_OPERATOR [NSString stringWithFormat:@"%@/a/parties/change_client_status/",DOMAIN_NAME]

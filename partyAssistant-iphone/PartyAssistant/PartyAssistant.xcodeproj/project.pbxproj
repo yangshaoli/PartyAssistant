@@ -82,6 +82,8 @@
 		8947F0231458011300017ED1 /* SMSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0221458011300017ED1 /* SMSObject.m */; };
 		8947F0261458018100017ED1 /* ClientObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0251458018100017ED1 /* ClientObject.m */; };
 		8947F02D1458044400017ED1 /* BaseInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F02C1458044400017ED1 /* BaseInfoService.m */; };
+		899BE0BE146CF4B000591957 /* ClientStatusTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899BE0BC146CF4B000591957 /* ClientStatusTableViewController.m */; };
+		899BE0BF146CF4B000591957 /* ClientStatusTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899BE0BD146CF4B000591957 /* ClientStatusTableViewController.xib */; };
 		899BE85A145A9431000BAFEC /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 899BE859145A9431000BAFEC /* MessageUI.framework */; };
 		899BE863145A9750000BAFEC /* SendEmailToClientsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899BE861145A9750000BAFEC /* SendEmailToClientsViewController.m */; };
 		899BE864145A9750000BAFEC /* SendEmailToClientsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899BE861145A9750000BAFEC /* SendEmailToClientsViewController.m */; };
@@ -253,6 +255,9 @@
 		8947F02B1458044400017ED1 /* BaseInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoService.h; sourceTree = "<group>"; };
 		8947F02C1458044400017ED1 /* BaseInfoService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseInfoService.m; sourceTree = "<group>"; };
 		898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRequestErrorMSG.h; sourceTree = "<group>"; };
+		899BE0BB146CF4AF00591957 /* ClientStatusTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientStatusTableViewController.h; sourceTree = "<group>"; };
+		899BE0BC146CF4B000591957 /* ClientStatusTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientStatusTableViewController.m; sourceTree = "<group>"; };
+		899BE0BD146CF4B000591957 /* ClientStatusTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ClientStatusTableViewController.xib; sourceTree = "<group>"; };
 		899BE859145A9431000BAFEC /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		899BE860145A9750000BAFEC /* SendEmailToClientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendEmailToClientsViewController.h; sourceTree = "<group>"; };
 		899BE861145A9750000BAFEC /* SendEmailToClientsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendEmailToClientsViewController.m; sourceTree = "<group>"; };
@@ -478,6 +483,9 @@
 				89277E0D1467A4C700B05020 /* SendEmailInCopyPartyTableViewController.h */,
 				89277E0E1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.m */,
 				89277E0F1467A4C800B05020 /* SendEmailInCopyPartyTableViewController.xib */,
+				899BE0BB146CF4AF00591957 /* ClientStatusTableViewController.h */,
+				899BE0BC146CF4B000591957 /* ClientStatusTableViewController.m */,
+				899BE0BD146CF4B000591957 /* ClientStatusTableViewController.xib */,
 			);
 			name = PartyList;
 			sourceTree = "<group>";
@@ -780,6 +788,7 @@
 				89277E111467A4C900B05020 /* SendEmailInCopyPartyTableViewController.xib in Resources */,
 				899D8C78146B6DE500B48698 /* PartyLoginViewController.xib in Resources */,
 				899D8C7A146B6DE500B48698 /* PartyUserRegisterViewController.xib in Resources */,
+				899BE0BF146CF4B000591957 /* ClientStatusTableViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -877,6 +886,7 @@
 				899D8C70146B6DD300B48698 /* MBProgressHUD.m in Sources */,
 				899D8C77146B6DE500B48698 /* PartyLoginViewController.m in Sources */,
 				899D8C79146B6DE500B48698 /* PartyUserRegisterViewController.m in Sources */,
+				899BE0BE146CF4B000591957 /* ClientStatusTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

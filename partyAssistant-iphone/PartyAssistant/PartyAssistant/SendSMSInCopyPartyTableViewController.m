@@ -306,9 +306,6 @@
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    NSLog(@"receiver:%@",[[self.receiverArray objectAtIndex:0] cName]);
-    NSLog(@"obj:%@",[[self.smsObject.receiversArray objectAtIndex:0] cName]);
-    NSLog(@"receiver:%@",[self.smsObject setupReceiversArrayData]);
     [request setPostValue:[self.smsObject setupReceiversArrayData] forKey:@"receivers"];
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
     [request setPostValue:@"" forKey:@"subject"];
