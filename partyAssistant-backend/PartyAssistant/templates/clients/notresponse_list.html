@@ -84,7 +84,13 @@ $(document).ajaxSend(function(event, xhr, settings) {
 {% else %}
 <input type="text" name='l2' value='佚名' disabled ></input>
 {% endif %}</td>
-<td><input type="text" name='l1' value='{{ client_party.client.phone }}' disabled></input></td>
+<td>
+{% if client_party.client.invite_type == 'phone' %}
+<input type="text" name='l1' value='{{ client_party.client.phone }}' disabled></input>
+{% else %}
+<input type="text" name='l1' value='{{ client_party.client.email }}' disabled></input>
+{% endif %}
+</td>
 <td><select id = "{{client_party.id}}"  class = "apply_status" >
     {% if client_party.apply_status == '报名' %}
     <option  value='报名' selected="selected">报名</option>
