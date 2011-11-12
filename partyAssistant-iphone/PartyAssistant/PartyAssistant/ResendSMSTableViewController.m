@@ -1,14 +1,15 @@
 //
-//  SendSMSInCopyPartyTableViewController.m
+//  ResendSMSTableViewController.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-11-7.
+//  Created by 超 李 on 11-11-12.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "SendSMSInCopyPartyTableViewController.h"
+#import "ResendSMSTableViewController.h"
 
-@implementation SendSMSInCopyPartyTableViewController
+@implementation ResendSMSTableViewController
+
 @synthesize receiverArray,contentTextView,receiversView,_isShowAllReceivers,countlbl,smsObject,baseinfo;
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -108,13 +109,16 @@
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    }
+    
     
     // Configure the cell...
     if (indexPath.section == 0) {
         cell.textLabel.text = @"收件人";
         cell.textLabel.textAlignment = UITextAlignmentLeft;
-
+        
         UIButton *addBTN = [UIButton buttonWithType:UIButtonTypeContactAdd];
         [addBTN setFrame:CGRectMake(280, 10, 30, 30)];
         [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
@@ -161,7 +165,7 @@
 }
 
 - (void)addReceiver{
-
+    
     ContactListViewController *clvc = [[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
     clvc.msgType = @"SMS";
     clvc.selectedContactorsArray = self.receiverArray;
@@ -177,43 +181,43 @@
 }
 
 /*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
+ // Override to support conditional editing of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the specified item to be editable.
+ return YES;
+ }
+ */
 
 /*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+ // Override to support editing the table view.
+ - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ if (editingStyle == UITableViewCellEditingStyleDelete) {
+ // Delete the row from the data source
+ [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+ }   
+ else if (editingStyle == UITableViewCellEditingStyleInsert) {
+ // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+ }   
+ }
+ */
 
 /*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
 
 /*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
 
 #pragma mark - Table view delegate
 
@@ -241,17 +245,21 @@
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     
     CGRect cframe = cell.textLabel.frame;
+    /* 清空收件人的View */
     NSArray *subVArray = [self.receiversView subviews];
     for (int j = 0;j < [subVArray count];j++) {
         [[subVArray objectAtIndex:j] removeFromSuperview];
     }
     [self.countlbl removeFromSuperview];
     self.countlbl = nil;
-    if (_isShowAllReceivers) {
+    /* 处理全显和不显 */
+    if (self._isShowAllReceivers) {
+        /* 添加所有联系人的text */
         for (int i = 0 ;i < [receiverArray count];i++) {
             ReceiverLabel *rlbl = [[ReceiverLabel alloc] initWithReceiverObject:[receiverArray objectAtIndex:i] index:i];
             [self.receiversView addSubview:rlbl];
         }
+        /* 处理外边框的高度问题 */
         if ([receiverArray count] == 0) {
             UILabel *defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 140, 44)];
             defaultLabel.backgroundColor = [UIColor clearColor];
@@ -265,10 +273,13 @@
             cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, [receiverArray count]*44.0f);
         }
     }else{
+        NSLog(@"here");
         if ([receiverArray count]>0) {
+            NSLog(@"here");
             ReceiverLabel *rlbl = [[ReceiverLabel alloc] initWithReceiverObject:[receiverArray objectAtIndex:0] index:0];
             [self.receiversView addSubview:rlbl];
             self.countlbl = [[UILabel alloc] initWithFrame:CGRectMake(receiversView.frame.origin.x+receiversView.frame.size.width+5, 0, 50, 44)];
+            NSLog(@"frame:%f",countlbl.frame.origin.x);
             countlbl.text = [NSString stringWithFormat:@"共%d人",[self.receiverArray count]];
             countlbl.backgroundColor = [UIColor clearColor];
             countlbl.adjustsFontSizeToFitWidth = YES;
@@ -285,6 +296,7 @@
     }
     cell.textLabel.frame = CGRectMake(cframe.origin.x,cframe.origin.y,cframe.size.width,40);
     cell.textLabel.backgroundColor = [UIColor clearColor];
+    [self.view bringSubviewToFront:receiversView];
 }
 
 - (void)saveSMSInfo{
@@ -292,11 +304,12 @@
     self.smsObject.receiversArray = self.receiverArray;
 }
 
-- (void)createPartySuc{
-    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+- (void)resendSuc{
+    NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.baseinfo,@"baseinfo", nil];
+    NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS object:nil userInfo:userinfo];
     [[NSNotificationCenter defaultCenter] postNotification:notification];
-    [self dismissModalViewControllerAnimated:NO];
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self dismissModalViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)doneBtnAction{
@@ -304,7 +317,7 @@
     [self showWaiting];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    NSURL *url = [NSURL URLWithString:CREATE_PARTY];
+    NSURL *url = [NSURL URLWithString:RESEND_MSG_TO_CLIENT];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[self.smsObject setupReceiversArrayData] forKey:@"receivers"];
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
@@ -313,10 +326,7 @@
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
     [request setPostValue:@"SMS" forKey:@"msgType"];
     [request setPostValue:@"iphone" forKey:@"addressType"];
-    [request setPostValue:self.baseinfo.starttimeDate forKey:@"starttime"];
-    [request setPostValue:self.baseinfo.location forKey:@"location"];
-    [request setPostValue:self.baseinfo.description forKey:@"description"];
-    [request setPostValue:self.baseinfo.peopleMaximum forKey:@"peopleMaximum"];
+    [request setPostValue:self.baseinfo.partyId forKey:@"partyID"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     //    NSString *tempPath = NSTemporaryDirectory();
     //    for(NSNumber *i in imageNamesArray){
@@ -342,9 +352,9 @@
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
             if (self.smsObject._isSendBySelf) {
-                NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
                 MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                 if (self.smsObject._isApplyTips) {
+                    NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
                     vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
                 }else{
                     vc.body = self.smsObject.smsContent;
@@ -357,7 +367,7 @@
                 vc.messageComposeDelegate = self;
                 [self presentModalViewController:vc animated:YES];
             }else{
-                [self createPartySuc];
+                [self resendSuc];
             }
         }else{
             [self showAlertRequestFailed:description];		
@@ -393,12 +403,12 @@
 	// Notifies users about errors associated with the interface
 	switch (result) {
 		case MessageComposeResultCancelled:{
-            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
+            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回会议详情" otherButtonTitles:nil];
             [sh showInView:self.tabBarController.view];
             break;
         }
 		case MessageComposeResultSent:
-			[self createPartySuc];
+			[self resendSuc];
 			break;
 		case MessageComposeResultFailed:{
             UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
@@ -415,7 +425,7 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 0) {
-        [self createPartySuc];
+        [self resendSuc];
     }else{
         [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
     }
@@ -436,5 +446,4 @@
     }
     return defaultText;
 }
-
 @end

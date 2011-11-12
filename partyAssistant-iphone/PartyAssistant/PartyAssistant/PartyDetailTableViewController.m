@@ -9,7 +9,7 @@
 #import "PartyDetailTableViewController.h"
 
 @implementation PartyDetailTableViewController
-@synthesize baseinfo;
+@synthesize baseinfo, peopleCountArray;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -40,6 +40,15 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
+    self.navigationController.title = @"活动详情";
+    self.editButtonItem.action = @selector(editBtnAction);
+    self.editButtonItem.title = @"编辑";
+    self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editPartySuccessAction:) name:EDIT_PARTY_SUCCESS object:nil];
+    if (!peopleCountArray) {
+        self.peopleCountArray = [[NSArray alloc] initWithObjects:@"...",@"...",@"...",@"...", nil];
+    }
 }
 
 - (void)viewDidUnload
@@ -94,17 +103,34 @@
     return 1;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        return @"基本信息";
+    }else if(section ==1){
+        return @"报名统计";
+    }else{
+        return @"";
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
+{
+    if(indexPath.section == 0 && indexPath.row == 3) {
+        return 120.0f;
+    }
+    return 44.0f;
+}
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        
+    UITableViewCell *cell = nil; //[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
     // Configure the cell...
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
@@ -142,7 +168,7 @@
             cell.textLabel.text = @"邀请人:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 1;
-            lb_1.text = @"... 人";
+            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:0]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -150,7 +176,7 @@
             cell.textLabel.text = @"已报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
-            lb_1.text = @"... 人";
+            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:1]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -158,7 +184,7 @@
             cell.textLabel.text = @"不报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 3;
-            lb_1.text = @"... 人";
+            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:2]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -166,7 +192,7 @@
             cell.textLabel.text = @"未报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 4;
-            lb_1.text = @"... 人";
+            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:3]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -238,6 +264,7 @@
             vc.clientStatusFlag = @"donothing";
         }
         vc.partyId = [self.baseinfo.partyId intValue];
+        vc.baseinfo = self.baseinfo;
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
@@ -266,17 +293,8 @@
             NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
             NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
             NSArray *countArray = [NSArray arrayWithObjects:allClientcount,appliedClientcount,refusedClientcount,donothingClientcount, nil];
-            for (int i = 0; i<4; i++) {
-                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:1];
-                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-                for(int j=0;j<[cell.subviews count];j++){
-                    if ([[cell.subviews objectAtIndex:j] isMemberOfClass:[UILabel class]]) {
-                        UILabel *lbl = [cell.subviews objectAtIndex:j];
-                        lbl.text = [NSString stringWithFormat:@"%@ 人", [countArray objectAtIndex:i]];
-                        break;
-                    }
-                }
-            }
+            self.peopleCountArray = countArray;
+            [self.tableView reloadData];
         }else{
             [self showAlertRequestFailed:description];		
         }
@@ -288,6 +306,19 @@
 //	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)editBtnAction{
+    EditPartyTableViewController *vc = [[EditPartyTableViewController alloc] initWithNibName:@"EditPartyTableViewController" bundle:[NSBundle mainBundle]];
+    vc.baseInfoObject = self.baseinfo;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)editPartySuccessAction:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    self.baseinfo = [userinfo objectForKey:@"baseinfo"];
+    [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
+    [self.tableView reloadData];
 }
 
 @end

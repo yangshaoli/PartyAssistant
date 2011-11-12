@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "ContactListViewController.h"
 #import "ContactListNavigationController.h"
+#import "ReceiverTableViewCell.h"
 
 @interface SendEmailToClientsViewController : UITableViewController
 

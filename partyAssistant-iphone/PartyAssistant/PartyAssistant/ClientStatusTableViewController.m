@@ -9,7 +9,7 @@
 #import "ClientStatusTableViewController.h"
 
 @implementation ClientStatusTableViewController
-@synthesize clientsArray,clientStatusFlag,partyId;
+@synthesize clientsArray,clientStatusFlag,partyId,baseinfo;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -33,6 +33,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次邀请" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
+    self.navigationItem.rightBarButtonItem = resendBtn;
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -59,7 +62,6 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"%@",self.clientsArray);
             [self.tableView reloadData];
         }else{
             [self showAlertRequestFailed:description];		
@@ -219,22 +221,17 @@
     activity.frame = btn.frame;
     [activity startAnimating];
     [cell addSubview:activity];
-    NSLog(@"1");
     [request setDidFinishSelector:nil];
     [request setDidFailSelector:nil];
     [request startSynchronous];
-    NSLog(@"aa");
     NSError *error = [request error];
-    NSLog(@"22：%@",error);
     if (!error) {
-        NSLog(@"2");
         [activity removeFromSuperview];
         NSString *response = [request responseString];
         SBJsonParser *parser = [[SBJsonParser alloc] init];
         NSDictionary *result = [parser objectWithString:response];
         NSString *description = [result objectForKey:@"description"];
         if ([request responseStatusCode] == 200) {
-            NSLog(@"3");
             if ([description isEqualToString:@"ok"]) {
                 [btn removeFromSuperview];
                 for (int i=0; i<[[cell subviews] count]; i++) {
@@ -252,18 +249,15 @@
                 btn.hidden = NO;
             }
         }else if([request responseStatusCode] == 404){
-            NSLog(@"4");
             [self showAlertRequestFailed:REQUEST_ERROR_404];
             btn.hidden = NO;
             btn.enabled = YES;
         }else{
-            NSLog(@"5");
             btn.hidden = NO;
             btn.enabled = YES;
             [self showAlertRequestFailed:REQUEST_ERROR_500];
         }
     } else {
-        NSLog(@"6");
         [activity removeFromSuperview];
         btn.hidden = NO;
         btn.enabled = YES;
@@ -328,6 +322,75 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+}
+
+- (void)resendBtnAction{
+    [self showWaiting];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/",GET_MSG_IN_COPY_PARTY,self.baseinfo.partyId]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request setDidFinishSelector:@selector(resendRequestFinished:)];
+    [request setDidFailSelector:@selector(resendRequestFailed:)];
+    [request startAsynchronous];
+}
+
+- (void)resendRequestFinished:(ASIHTTPRequest *)request{
+    [self dismissWaiting];
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
+	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
+    //	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            NSString *msgType = [dataSource objectForKey:@"msgType"];
+            NSMutableArray *receiverObjectsArray = [[NSMutableArray alloc] initWithCapacity:[clientsArray count]];
+            for (int i=0; i<[clientsArray count]; i++) {
+                ClientObject *client = [[ClientObject alloc] init];
+                client.cID = [[[clientsArray objectAtIndex:i] objectForKey:@"cID"] intValue];
+                client.cName = [[clientsArray objectAtIndex:i] objectForKey:@"cName"];
+                client.cVal = [[clientsArray objectAtIndex:i] objectForKey:@"cValue"];
+                [receiverObjectsArray addObject:client];
+            }
+            if ([msgType isEqualToString:@"SMS"]) {
+                ResendSMSTableViewController *vc = [[ResendSMSTableViewController alloc] initWithNibName:@"ResendSMSTableViewController" bundle:[NSBundle mainBundle]];
+                vc.receiverArray = receiverObjectsArray;
+                SMSObject *sobj = [[SMSObject alloc] init];
+                sobj.receiversArray = receiverObjectsArray;
+                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
+                sobj.smsContent = [dataSource objectForKey:@"content"];
+                sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
+                sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
+                vc.smsObject = sobj;
+                vc.baseinfo = self.baseinfo;
+                NSLog(@"content:%@",vc.smsObject.smsContent);
+                //            [vc setupReceiversView];
+                [self.navigationController pushViewController:vc animated:YES];
+            }
+            
+            
+            [self.tableView reloadData];
+            //        [self setBottomRefreshViewYandDeltaHeight];
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+}
+
+- (void)resendRequestFailed:(ASIHTTPRequest *)request
+{
+    //	NSError *error = [request error];
+	//[self dismissWaiting];
+	//[self showAlertRequestFailed: error.localizedDescription];
 }
 
 @end

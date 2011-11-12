@@ -9,3 +9,4 @@
 #define SELECT_CONTACT_MANNER @"SelectContactManner"
 #define SELECT_RECEIVER_IN_SEND_SMS @"SelectReceiverInSendSMS"
 #define CREATE_PARTY_SUCCESS @"CreatePartySuccess"
+#define EDIT_PARTY_SUCCESS @"EditPartySuccess"

@@ -1,15 +1,15 @@
 //
-//  CopyPartyTableViewController.m
+//  EditPartyTableViewController.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-11-7.
+//  Created by 超 李 on 11-11-12.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "CopyPartyTableViewController.h"
+#import "EditPartyTableViewController.h"
 
-@implementation CopyPartyTableViewController
-@synthesize baseinfo,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
+@implementation EditPartyTableViewController
+@synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,8 +38,8 @@
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    UIBarButtonItem *nextBtn = [[UIBarButtonItem alloc] initWithTitle:@"下一步" style:UIBarButtonItemStyleBordered target:self action:@selector(nextBtnAction)];
-    self.navigationItem.rightBarButtonItem = nextBtn;
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
+    self.navigationItem.rightBarButtonItem = doneBtn;
 }
 
 - (void)viewDidUnload
@@ -89,20 +89,17 @@
     return 4;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    if (section==0) {
-        return @"基本信息";
-    }
-    return @"给朋友发邀请";
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
 {
     if(indexPath.section == 0 && indexPath.row == 3) {
         return 120.0f;
     }
     return 44.0f;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    return @"基本信息";
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -118,7 +115,7 @@
         UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
         starttimeLabel.textAlignment = UITextAlignmentRight;
         starttimeLabel.backgroundColor = [UIColor clearColor];
-        starttimeLabel.text = baseinfo.starttimeStr;
+        starttimeLabel.text = baseInfoObject.starttimeStr;
         //            starttimeLabel.text = @"2011-11-11 11:00";
         [cell addSubview:starttimeLabel];
     }else if(indexPath.row == 1){
@@ -128,7 +125,7 @@
         }
         locationTextField.textAlignment = UITextAlignmentRight;
         locationTextField.delegate = self;
-        locationTextField.text = baseinfo.location;
+        locationTextField.text = baseInfoObject.location;
         [cell addSubview:locationTextField];
     }else if(indexPath.row == 2){
         cell.textLabel.text = @"人数上限:";
@@ -140,7 +137,7 @@
         UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
         peoplemaximumLabel.backgroundColor = [UIColor clearColor];
         peoplemaximumLabel.textAlignment = UITextAlignmentRight;
-        peoplemaximumLabel.text = [baseinfo.peopleMaximum stringValue];
+        peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
         //peoplemaximumLabel.text = @"1";
         if (![peoplemaximumLabel.text isEqualToString:@"0"]) {
             peoplemaximumLabel.textColor = [UIColor redColor];
@@ -151,12 +148,11 @@
         if(!descriptionTextView){
             self.descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 200, 100)];
         }
-        descriptionTextView.text = baseinfo.description;
+        descriptionTextView.text = baseInfoObject.description;
         descriptionTextView.backgroundColor = [UIColor clearColor];
         //descriptionTextView.text = baseInfoObject.description;
         [cell addSubview:descriptionTextView];
     }
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -198,13 +194,12 @@
     return YES;
 }
 */
-
-
 #pragma mark - Save the Info
 
 - (void)saveInfo{
-    self.baseinfo.description = self.descriptionTextView.text;
-    self.baseinfo.location = self.locationTextField.text;
+    self.baseInfoObject.description = self.descriptionTextView.text;
+    self.baseInfoObject.location = self.locationTextField.text;
+    [self.baseInfoObject formatDateToString];
 }
 
 #pragma mark - Table view delegate
@@ -219,62 +214,59 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     [self saveInfo];
-    if (indexPath.section == 0) {
-        if (indexPath.row == 0) {
-            NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
-            UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
-            actionSheet.tag = 0;
-            if (!self.datePicker) {
-                self.datePicker = [[UIDatePicker alloc] init];
-            }
-            if (self.baseinfo.starttimeDate == nil) {
-                [datePicker setDate: [NSDate date]];
-            }else{
-                [datePicker setDate:self.baseinfo.starttimeDate];
-            }
-            [actionSheet addSubview:datePicker];
-            [actionSheet showInView:self.tabBarController.view];
-        }else if(indexPath.row == 2){
-            NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
-            UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
-            actionSheet.tag = 1;
-            if(!peoplemaxiumPicker){
-                self.peoplemaxiumPicker = [[UIPickerView alloc] init];
-            }
-            NSInteger hundreds = [self.baseinfo.peopleMaximum intValue]/100;
-            NSInteger tens = [self.baseinfo.peopleMaximum intValue]%100/10;
-            NSInteger nums = [self.baseinfo.peopleMaximum intValue]%10;
-            [peoplemaxiumPicker selectRow:hundreds inComponent:0 animated:NO];
-            [peoplemaxiumPicker selectRow:tens inComponent:1 animated:NO];
-            [peoplemaxiumPicker selectRow:nums inComponent:2 animated:NO];
-            peoplemaxiumPicker.delegate = self;
-            peoplemaxiumPicker.showsSelectionIndicator = YES;
-            [actionSheet addSubview:peoplemaxiumPicker];
-            [actionSheet showInView:self.tabBarController.view];
+    if (indexPath.row == 0) {
+        NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
+        actionSheet.tag = 0;
+        if (!self.datePicker) {
+            self.datePicker = [[UIDatePicker alloc] init];
         }
+        if (!self.baseInfoObject.starttimeDate) {
+            [datePicker setDate:[NSDate date]];
+        }else{
+            [datePicker setDate:self.baseInfoObject.starttimeDate];
+        }
+        [actionSheet addSubview:datePicker];
+        [actionSheet showInView:self.tabBarController.view];
+    }else if(indexPath.row == 2){
+        NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
+        actionSheet.tag = 1;
+        if(!peoplemaxiumPicker){
+            self.peoplemaxiumPicker = [[UIPickerView alloc] init];
+        }
+        NSInteger hundreds = [self.baseInfoObject.peopleMaximum intValue]/100;
+        NSInteger tens = [self.baseInfoObject.peopleMaximum intValue]%100/10;
+        NSInteger nums = [self.baseInfoObject.peopleMaximum intValue]%10;
+        [peoplemaxiumPicker selectRow:hundreds inComponent:0 animated:NO];
+        [peoplemaxiumPicker selectRow:tens inComponent:1 animated:NO];
+        [peoplemaxiumPicker selectRow:nums inComponent:2 animated:NO];
+        peoplemaxiumPicker.delegate = self;
+        peoplemaxiumPicker.showsSelectionIndicator = YES;
+        [actionSheet addSubview:peoplemaxiumPicker];
+        [actionSheet showInView:self.tabBarController.view];
     }
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (actionSheet.tag == 0) {
-        self.baseinfo.starttimeDate = [datePicker date];
-        [self.baseinfo formatDateToString];
-        [self.tableView reloadData];
+        self.baseInfoObject.starttimeDate = [datePicker date];
+        [self.baseInfoObject formatDateToString];
     }else{
         NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
         NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
         NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
-        self.baseinfo.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
-        [self.tableView reloadData];
+        self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
     }
-    
+    [self saveInfo];
+    [self.tableView reloadData];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
-    self.baseinfo.location = textField.text;
+    self.baseInfoObject.location = textField.text;
     return NO;
 }
 
@@ -290,57 +282,39 @@
     return [NSString stringWithFormat:@"%d",row];
 }
 
-- (void)nextBtnAction{
+- (void)doneBtnAction{
+    [self saveInfo];
     [self showWaiting];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/",GET_MSG_IN_COPY_PARTY,self.baseinfo.partyId]];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSURL *url = [NSURL URLWithString:EDIT_PARTY];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:self.baseInfoObject.starttimeDate forKey:@"starttime"];
+    [request setPostValue:self.baseInfoObject.location forKey:@"location"];
+    [request setPostValue:self.baseInfoObject.description forKey:@"description"];
+    [request setPostValue:self.baseInfoObject.peopleMaximum forKey:@"peopleMaximum"];
+    [request setPostValue:self.baseInfoObject.partyId forKey:@"partyID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
-    [self dismissWaiting];
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
 	NSString *description = [result objectForKey:@"description"];
-	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
-	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
-    //	[self dismissWaiting];
+	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
-            NSDictionary *dataSource = [result objectForKey:@"datasource"];
-            NSString *msgType = [dataSource objectForKey:@"msgType"];
-            NSArray *receiverArray = [dataSource objectForKey:@"receiverArray"];
-            NSMutableArray *receiverObjectsArray = [[NSMutableArray alloc] initWithCapacity:[receiverArray count]];
-            for (int i=0; i<[receiverArray count]; i++) {
-                ClientObject *client = [[ClientObject alloc] init];
-                client.cID = [[[receiverArray objectAtIndex:i] objectForKey:@"cID"] intValue];
-                client.cName = [[receiverArray objectAtIndex:i] objectForKey:@"cName"];
-                client.cVal = [[receiverArray objectAtIndex:i] objectForKey:@"cValue"];
-                [receiverObjectsArray addObject:client];
-            }
-            if ([msgType isEqualToString:@"SMS"]) {
-                SendSMSInCopyPartyTableViewController *vc = [[SendSMSInCopyPartyTableViewController alloc] initWithNibName:@"SendSMSInCopyPartyTableViewController" bundle:[NSBundle mainBundle]];
-                vc.receiverArray = receiverObjectsArray;
-                SMSObject *sobj = [[SMSObject alloc] init];
-                sobj.receiversArray = receiverObjectsArray;
-                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
-                sobj.smsContent = [dataSource objectForKey:@"content"];
-                sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
-                sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
-                vc.smsObject = sobj;
-                vc.baseinfo = self.baseinfo;
-                NSLog(@"content:%@",vc.smsObject.smsContent);
-        //            [vc setupReceiversView];
-                [self.navigationController pushViewController:vc animated:YES];
-            }
-            
-            
-            [self.tableView reloadData];
-            //        [self setBottomRefreshViewYandDeltaHeight];
+            [self.navigationController popViewControllerAnimated:YES];
+            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.baseInfoObject,@"baseinfo", nil];
+            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS object:nil userInfo:userinfo];
+            [[NSNotificationCenter defaultCenter] postNotification:notification];
         }else{
             [self showAlertRequestFailed:description];		
         }
@@ -349,7 +323,9 @@
     }else{
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
+	
 }
+
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
@@ -357,4 +333,5 @@
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
 }
+
 @end

@@ -328,6 +328,14 @@
 {
     [self saveInfo];
     SendSMSToClientsViewController *vc = [[SendSMSToClientsViewController alloc] initWithNibName:@"SendSMSToClientsViewController" bundle:[NSBundle mainBundle]];
+    SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+    SMSObject *obj = [s getSMSObject];
+    if ([obj.smsContent isEqualToString:@""]) {
+        obj.smsContent = [self getDefaultContent:self.baseInfoObject];
+        [s saveSMSObject];
+    }
+    
+    
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -336,5 +344,20 @@
     [self saveInfo];
     SendEmailToClientsViewController *vc = [[SendEmailToClientsViewController alloc] initWithNibName:@"SendEmailToClientsViewController" bundle:[NSBundle mainBundle]];
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo{
+    NSString *defaultText = @"";
+    NSString *userName = @"";
+    if ([paraBaseInfo.location isEqualToString:@""] && [paraBaseInfo.starttimeStr isEqualToString:@""]) {
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@，时间/地点待定，另行通知",userName,paraBaseInfo.description];
+    }else if([paraBaseInfo.location isEqualToString:@""]){
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@ 活动，时间为：%@，地点待定，敬请光临",userName,paraBaseInfo.description,paraBaseInfo.starttimeStr];
+    }else if([paraBaseInfo.starttimeStr isEqualToString:@""]){
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@ 活动，地点为：%@，时间待定，敬请光临",userName,paraBaseInfo.description,paraBaseInfo.location];
+    }else{
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：于%@ 在 %@ 举办的%@，敬请光临",userName,paraBaseInfo.starttimeStr,paraBaseInfo.location, paraBaseInfo.description];
+    }
+    return defaultText;
 }
 @end

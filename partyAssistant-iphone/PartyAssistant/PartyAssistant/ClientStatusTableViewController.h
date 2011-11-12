@@ -13,14 +13,19 @@
 #import "JSON.h"
 #import "URLSettings.h"
 #import "HTTPRequestErrorMSG.h"
+#import "BaseInfoObject.h"
+#import "ClientObject.h"
+#import "ResendSMSTableViewController.h"
 
 @interface ClientStatusTableViewController : UITableViewController{
     NSArray *clientsArray;
     NSString *clientStatusFlag;
+    BaseInfoObject *baseinfo;
     int partyId;
 }
 
 @property(nonatomic, retain)NSArray *clientsArray;
 @property(nonatomic, retain)NSString *clientStatusFlag;
 @property(nonatomic, assign)int partyId;
+@property(nonatomic, retain)BaseInfoObject *baseinfo;
 @end

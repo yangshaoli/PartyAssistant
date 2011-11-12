@@ -16,6 +16,8 @@
 //    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
 //    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
 //    [_window addSubview:nav.view];
+//    [login release];
+//    [nav release];
 //}
 
 

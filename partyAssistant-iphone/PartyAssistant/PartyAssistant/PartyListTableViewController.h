@@ -16,7 +16,7 @@
 #import "CopyPartyTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
 
-@interface PartyListTabelViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>{
+@interface PartyListTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>{
     NSMutableArray *partyList;
     BOOL _isNeedRefresh;
     BOOL _isRefreshing;

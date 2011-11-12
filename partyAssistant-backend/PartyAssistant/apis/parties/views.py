@@ -35,7 +35,6 @@ SMS_APPLY_TIPS_CONTENT = u'(报名点击:aaa, 不报名点击:bbb)'
 @commit_on_success
 def createParty(request):
     if request.method == 'POST' :
-        print request.POST
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
         subject = request.POST['subject']
@@ -103,6 +102,36 @@ def createParty(request):
                     send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
                 except:
                     data['Email'] = u'邮件发送失败'
+        return {'partyId':party.id}
+
+@csrf_exempt
+@apis_json_response_decorator
+def editParty(request):
+    if request.method == 'POST':
+        partyID = request.POST['partyID']
+        location = request.POST['location']
+        starttime = request.POST['starttime']
+        peopleMaximum = request.POST['peopleMaximum']
+        description = request.POST['description']
+        uID = request.POST['uID']
+        
+        try:
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S')
+        except Exception:
+            starttime = None
+        if len(location) > 256:
+            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
+        
+        user = User.objects.get(pk = uID)
+        try:
+            party = Party.objects.get(pk = partyID, creator = user)
+        except Exception:
+            raise myException(u'您要编辑的会议已被删除')
+        party.time = starttime
+        party.descrption = description
+        party.address = location
+        party.limit_num = peopleMaximum
+        party.save()
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -191,7 +220,6 @@ def GetPartyClientSeperatedList(request, pid, type):
     elif type == 'donothing':
         clientparty_list = ClientParty.objects.filter(party = party, apply_status = u"未报名")
     clientList = []
-    print clientList
     for clientparty in clientparty_list:
         if clientparty.client.phone == '':
             cValue = clientparty.client.email
@@ -219,7 +247,6 @@ def GetPartyClientSeperatedList(request, pid, type):
 @csrf_exempt
 @apis_json_response_decorator
 def ChangeClientStatus(request):
-    print 1
     clientparty = ClientParty.objects.get(pk = request.POST['cpID'])
     action = request.POST['cpAction']
     if action == 'apply':
@@ -228,3 +255,64 @@ def ChangeClientStatus(request):
         clientparty.apply_status = u'不参加'
     clientparty.save()
     return 'ok'
+
+@csrf_exempt
+@apis_json_response_decorator
+def resendMsg(request):
+    if request.method == "POST":
+        receivers = eval(request.POST['receivers'])
+        content = request.POST['content']
+        subject = request.POST['subject']
+        _isapplytips = request.POST['_isapplytips']
+        _issendbyself = request.POST['_issendbyself']
+        msgType = request.POST['msgType']
+        partyID = request.POST['partyID']
+        uID = request.POST['uID']
+        addressType = request.POST['addressType']
+        user = User.objects.get(pk = uID)
+        try:
+            party = Party.objects.get(pk = partyID, creator = user)
+        except Exception:
+            raise myException(u'该会议会议已被删除')
+        for i in range(len(receivers)):
+            receiver = receivers[i]
+            
+            if msgType == 'SMS':
+                client, is_created = Client.objects.get_or_create(phone = regPhoneNum(receiver['cValue']),
+                                                              name = receiver['cName'],
+                                                              creator = user,
+                                                              )
+            else:
+                client, is_created = Client.objects.get_or_create(phone = regPhoneNum(receiver['cValue']),
+                                                              name = receiver['cName'],
+                                                              creator = user,
+                                                              )
+            ClientParty.objects.get_or_create(
+                                              party = party,
+                                              client = client,
+                                              apply_status = u'未报名'
+                                              ) 
+            receiversDic = {
+                            'addressType':addressType,
+                            'addressData':receivers
+                            }
+            receiversString = simplejson.dumps(receiversDic)
+            if msgType == 'SMS':
+                msg = SMSMessage.objects.create(receivers = receiversString, content = content, party = party, apply_tips = _isapplytips, send_by_self = _issendbyself)
+            else:
+                if _isapplytips or _isapplytips > 0 :
+                    enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + receiver.cVal + '/' + party.id
+                    content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
+                EmailMessage.objects.create(
+                                            receivers = receiversString,
+                                            subject = subject,
+                                            content = content,
+                                            party = party,
+                                            apply_tips = _isapplytips,
+                                            send_by_self = _issendbyself,
+                                            )
+                try :     
+                    send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
+                except:
+                    data['Email'] = u'邮件发送失败'
+        return {'partyId':party.id}

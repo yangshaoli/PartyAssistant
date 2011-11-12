@@ -45,21 +45,21 @@
 @synthesize emailTextField = _emailTextField;
 
 
-//- (void)dealloc {
-//    [super dealloc];
-//    
-//    [_tableView release];
-//    
-//    [_phoneNumCell release];
-//    [_pwdCell release];
-//    [_pwdCheckCell release];
-//    [_emailCell release];
-//    
-//    [_phoneNumTextField release];
-//    [_pwdTextField release];
-//    [_pwdCheckTextField release];
-//    [_emailTextField release];
-//}
+- (void)dealloc {
+    [super dealloc];
+    
+    [_tableView release];
+    
+    [_phoneNumCell release];
+    [_pwdCell release];
+    [_pwdCheckCell release];
+    [_emailCell release];
+    
+    [_phoneNumTextField release];
+    [_pwdTextField release];
+    [_pwdCheckTextField release];
+    [_emailTextField release];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -86,7 +86,7 @@
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"确定" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
-    //[registerButton release];
+    [registerButton release];
     
     self.navigationItem.title = @"注册";
     // Do any additional setup after loading the view from its nib.
@@ -192,7 +192,7 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
-    //[alert release];
+    [alert release];
 }
 
 - (void)showNotLegalInput {
@@ -267,7 +267,7 @@
 - (void)HUDWasHidden:(MBProgressHUD *)hUD {
     // Remove _HUD from screen when the _HUD was hidded
     [_HUD removeFromSuperview];
-    //[_HUD release];
+    [_HUD release];
 	_HUD = nil;
 }
 

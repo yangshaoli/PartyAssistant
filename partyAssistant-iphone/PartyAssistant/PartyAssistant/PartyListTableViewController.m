@@ -6,9 +6,9 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "PartyListTabelViewController.h"
+#import "PartyListTableViewController.h"
 
-@implementation PartyListTabelViewController
+@implementation PartyListTableViewController
 @synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex;
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -244,17 +244,21 @@
             [self.tableView reloadData];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
+            self.navigationItem.rightBarButtonItem.customView = nil;
             [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
+        self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     }else{
+        self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    self.navigationItem.rightBarButtonItem.customView = nil;
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];

@@ -1,8 +1,8 @@
 //
-//  SendSMSInCopyPartyTableViewController.h
+//  ResendSMSTabelViewController.h
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-11-7.
+//  Created by 超 李 on 11-11-12.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
@@ -26,8 +26,7 @@
 #import "PartyListTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
 
-
-@interface SendSMSInCopyPartyTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
+@interface ResendSMSTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
 {
     BaseInfoObject  *baseinfo;
     SMSObject *smsObject;
@@ -53,6 +52,6 @@
 - (void)doneBtnAction;
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch;
 - (void)sendBySelfSwitchAction:(UISwitch *)curSwitch;
-- (NSString *)getDefaultContent:(BaseInfoObject *)baseinfo;
+- (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo;
 
 @end

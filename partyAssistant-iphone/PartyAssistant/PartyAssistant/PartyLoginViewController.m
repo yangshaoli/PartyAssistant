@@ -35,19 +35,19 @@
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
 
-//- (void)dealloc {
-//    [super dealloc];
-//    
-//    [_tableView release];
-//    
-//    [_loginButton release];
-//    
-//    [_userNameTableCell release];
-//    [_pwdTableCell release];
-//    
-//    [_userNameTextField release];
-//    [_pwdTextField release];
-//}
+- (void)dealloc {
+    [super dealloc];
+    
+    [_tableView release];
+    
+    [_loginButton release];
+    
+    [_userNameTableCell release];
+    [_pwdTableCell release];
+    
+    [_userNameTextField release];
+    [_pwdTextField release];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -81,7 +81,7 @@
     _loginButton.saturation = 0.2f;
     _loginButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.0f];
     [_loginButton setTitle:@"登录" forState:UIControlStateNormal];
-    [_loginButton addTarget:self action:@selector(loginCheck) forControlEvents:UIControlEventTouchUpInside];
+    //[_loginButton addTarget:self action:@selector(loginCheck) forControlEvents:UIControlEventTouchUpInside];
     
     [tableFooterView addSubview:_loginButton];
     [_tableView setTableFooterView:tableFooterView];
@@ -93,9 +93,9 @@
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
-    //[registerButton release];
+    [registerButton release];
     
-    //[tableFooterView release];
+    [tableFooterView release];
 }
 
 - (void)viewDidUnload
@@ -173,7 +173,7 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
-    //[alert release];
+    [alert release];
 }
 
 - (void)showNotLegalInput {
@@ -188,7 +188,7 @@
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:registerVC animated:YES];
-    //[registerVC release];
+    [registerVC release];
 }
 
 #pragma mark -
@@ -223,7 +223,7 @@
 - (void)HUDWasHidden:(MBProgressHUD *)hUD {
     // Remove _HUD from screen when the _HUD was hidded
     [_HUD removeFromSuperview];
-    //[_HUD release];
+    [_HUD release];
 	_HUD = nil;
 }
 

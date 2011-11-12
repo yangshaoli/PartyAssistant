@@ -149,14 +149,14 @@
 
 - (void)updateLabelText:(NSString *)newText {
     if (labelText != newText) {
-        //[labelText release];
+        [labelText release];
         labelText = [newText copy];
     }
 }
 
 - (void)updateDetailsLabelText:(NSString *)newText {
     if (detailsLabelText != newText) {
-        //[detailsLabelText release];
+        [detailsLabelText release];
         detailsLabelText = [newText copy];
     }
 }
@@ -290,16 +290,16 @@
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
-    //[indicator release];
-    //[label release];
-   // [detailsLabel release];
-    //[labelText release];
-    //[detailsLabelText release];
-	//[graceTimer release];
-	//[minShowTimer release];
-	//[showStarted release];
-	//[customView release];
-    //[super dealloc];
+    [indicator release];
+    [label release];
+    [detailsLabel release];
+    [labelText release];
+    [detailsLabelText release];
+	[graceTimer release];
+	[minShowTimer release];
+	[showStarted release];
+	[customView release];
+    [super dealloc];
 }
 
 #pragma mark -
@@ -534,8 +534,8 @@
 	
 	self.indicator = nil;
 	
-    //[targetForExecution release];
-    //[objectForExecution release];
+    [targetForExecution release];
+    [objectForExecution release];
 	
     [self hide:useAnimation];
 }
