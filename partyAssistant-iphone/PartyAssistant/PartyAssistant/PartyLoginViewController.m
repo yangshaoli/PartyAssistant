@@ -10,6 +10,8 @@
 #import "GlossyButton.h"
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
+#import "PartyListTabelViewController.h"
+#import "AddNewPartyBaseInfoTableViewController.h"
 
 #define NotLegalTag 1
 #define NotPassTag  2
@@ -35,19 +37,19 @@
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
 
-//- (void)dealloc {
-//    [super dealloc];
-//    
-//    [_tableView release];
-//    
-//    [_loginButton release];
-//    
-//    [_userNameTableCell release];
-//    [_pwdTableCell release];
-//    
-//    [_userNameTextField release];
-//    [_pwdTextField release];
-//}
+- (void)dealloc {
+    [super dealloc];
+    
+    [_tableView release];
+    
+    [_loginButton release];
+    
+    [_userNameTableCell release];
+    [_pwdTableCell release];
+    
+    [_userNameTextField release];
+    [_pwdTextField release];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -93,9 +95,9 @@
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
-    //[registerButton release];
+    [registerButton release];
     
-    //[tableFooterView release];
+    [tableFooterView release];
 }
 
 - (void)viewDidUnload
@@ -148,13 +150,26 @@
             
             break;
     }
-    BOOL result = NO;
+    BOOL result = YES;
     if (result) {
        //use different work flow
         
         //1.modal
         
-        //2.nav 
+        //2.nav
+        if (self.isModal) {
+            
+        } else {
+            //2
+            PartyListTabelViewController *list = [[PartyListTabelViewController alloc] initWithNibName:nil bundle:nil];
+            AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:nil bundle:nil];
+            UITabBarController *tab = [[UITabBarController alloc] init];
+            tab.viewControllers = [NSArray arrayWithObjects: list, addPage, nil];
+            [self.navigationController pushViewController:tab animated:YES];
+            [list release];
+            [addPage release];
+        }
+        
     } else {
         [self showNotPassChekAlert];
     }
@@ -173,7 +188,7 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
-    //[alert release];
+    [alert release];
 }
 
 - (void)showNotLegalInput {
@@ -188,7 +203,7 @@
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:registerVC animated:YES];
-    //[registerVC release];
+    [registerVC release];
 }
 
 #pragma mark -
@@ -223,7 +238,7 @@
 - (void)HUDWasHidden:(MBProgressHUD *)hUD {
     // Remove _HUD from screen when the _HUD was hidded
     [_HUD removeFromSuperview];
-    //[_HUD release];
+    [_HUD release];
 	_HUD = nil;
 }
 

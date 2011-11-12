@@ -12,7 +12,7 @@
 		891A4D8514579B3C00A2CF47 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8414579B3C00A2CF47 /* CoreGraphics.framework */; };
 		891A4D8B14579B3C00A2CF47 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D8914579B3C00A2CF47 /* InfoPlist.strings */; };
 		891A4D8D14579B3C00A2CF47 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D8C14579B3C00A2CF47 /* main.m */; };
-		891A4D9114579B3C00A2CF47 /* PartyAssistantAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D9014579B3C00A2CF47 /* PartyAssistantAppDelegate.m */; };
+		891A4D9114579B3C00A2CF47 /* PartyAssistantAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 891A4D9014579B3C00A2CF47 /* PartyAssistantAppDelegate.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		891A4D9414579B3C00A2CF47 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9214579B3C00A2CF47 /* MainStoryboard.storyboard */; };
 		891A4D9914579B3C00A2CF47 /* first.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9814579B3C00A2CF47 /* first.png */; };
 		891A4D9B14579B3C00A2CF47 /* first@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 891A4D9A14579B3C00A2CF47 /* first@2x.png */; };
@@ -97,13 +97,13 @@
 		899D62FB145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D62F9145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib */; };
 		899D6304145FFB6B00B9B4EC /* ContactListNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D6302145FFB6B00B9B4EC /* ContactListNavigationController.m */; };
 		899D6305145FFB6B00B9B4EC /* ContactListNavigationController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D6303145FFB6B00B9B4EC /* ContactListNavigationController.xib */; };
-		899D8C69146B6D9C00B48698 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C66146B6D9C00B48698 /* Common.m */; };
-		899D8C6A146B6D9C00B48698 /* GlossyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C68146B6D9C00B48698 /* GlossyButton.m */; };
-		899D8C6D146B6DB000B48698 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C6C146B6DB000B48698 /* DataManager.m */; };
-		899D8C70146B6DD300B48698 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C6F146B6DD300B48698 /* MBProgressHUD.m */; };
-		899D8C77146B6DE500B48698 /* PartyLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C72146B6DE500B48698 /* PartyLoginViewController.m */; };
+		899D8C69146B6D9C00B48698 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C66146B6D9C00B48698 /* Common.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		899D8C6A146B6D9C00B48698 /* GlossyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C68146B6D9C00B48698 /* GlossyButton.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		899D8C6D146B6DB000B48698 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C6C146B6DB000B48698 /* DataManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		899D8C70146B6DD300B48698 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C6F146B6DD300B48698 /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		899D8C77146B6DE500B48698 /* PartyLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C72146B6DE500B48698 /* PartyLoginViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		899D8C78146B6DE500B48698 /* PartyLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D8C73146B6DE500B48698 /* PartyLoginViewController.xib */; };
-		899D8C79146B6DE500B48698 /* PartyUserRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */; };
+		899D8C79146B6DE500B48698 /* PartyUserRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		899D8C7A146B6DE500B48698 /* PartyUserRegisterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */; };
 		89E7D926146280900059ADF4 /* SMSObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D925146280900059ADF4 /* SMSObjectService.m */; };
 		89E7D93014628C400059ADF4 /* UIViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92D14628C400059ADF4 /* UIViewControllerExtra.m */; };

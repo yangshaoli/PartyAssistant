@@ -110,9 +110,9 @@
     
 }
 
-//- (void)dealloc {
-//    [super dealloc];
-//}
+- (void)dealloc {
+    [super dealloc];
+}
 
 - (void)setHue:(CGFloat)hue {
     _hue = hue;
