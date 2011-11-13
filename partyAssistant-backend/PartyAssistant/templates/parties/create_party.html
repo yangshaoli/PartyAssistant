@@ -1,47 +1,10 @@
-{% extends 'base.html' %}
-{% block title %}创建活动{% endblock %}
+{% extends 'login_base.html' %}
 
 {% block content %}
-
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
- <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/time.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/ui.core.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.form.js"></script>
-    <link type="text/css" href="{{STATIC_URL}}css/main.css" rel="stylesheet" />
-    <link type="text/css" href="{{STATIC_URL}}css/datepicker.css" rel="stylesheet" />
-    <link type="text/css" href="{{STATIC_URL}}css/datepicker2.css" rel="stylesheet" />
-    <script type="text/javascript">
-        $("document").ready(function(){
-            $("#id_date").datepicker();
-             
-        });
-    </script>
-
-
-
 <form action='{% url create_party %}' method='post'>
-{% csrf_token %}
-<table>
-<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date"></input>
-                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time"></input><span class="required-tip">如：2010-01-01 23:09</span>
-                            	<div style="display: none; "></div>
-	                            {% if form.date.errors %}
-	                            	{{ form.date.errors }}
-	                            {% else %}
-	                            	{{ form.time.errors }}
-	                            {% endif %}</td>
-</tr>
-
-<tr><td>地址</td><td><textarea name='address'  class= 'textarea-remark2'></textarea>{{ form.address.errors}}</td>
-</tr>
-<tr><td>描述</td><td><textarea name='description' class='textarea-remark2'></textarea>{{ form.description.errors}}</td>
-</tr>
-<tr><td>人数上限</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
-</tr>
-</table>
-<input name='invite_type' type='hidden' value=''/>
-<input type='button' value='用手机短信发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'msg';this.form.submit()" />
-<input type='button' value='用电子邮件发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'email';this.form.submit()"/>
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" />
+	<input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" />
 </form>
 {% endblock%}

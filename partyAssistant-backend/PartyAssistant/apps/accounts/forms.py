@@ -11,11 +11,9 @@ class LoginForm(AuthenticationForm):
         pass
 
 class RegistrationForm(forms.Form):
-    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, 
-                    error_messages={'required': u'用户名不能为空', 'invalid': u'用户名格式不正确'})
+    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
     email = forms.EmailField(required=False, max_length=75)
-    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(), 
-                    error_messages={'required': u'密码不能为空', 'min_length': u'密码长度至少为6位'})
+    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
     confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
     
     def clean_username(self):
@@ -27,11 +25,12 @@ class RegistrationForm(forms.Form):
         return username
     
     def clean_email(self):
-        value = self.cleaned_data['email']
-        exists = User.objects.filter(email=value).count() > 0
+        email = self.cleaned_data['email']
+        exists = User.objects.filter(email=email).count() > 0
         if exists:
             raise forms.ValidationError(u'该邮箱已存在，请重新输入')
-        return value
+        
+        return email
     
     def clean(self):
         if ('confirm_password' in self.cleaned_data) and ('password' in self.cleaned_data):
@@ -41,16 +40,6 @@ class RegistrationForm(forms.Form):
                 del self.cleaned_data['confirm_password']
                 
         return self.cleaned_data
-    
-class AppRegistrationForm(forms.Form):
-    phone = forms.IntegerField()
-    
-    def clean_phone(self):
-        value = self.cleaned_data['phone']
-        phone = UserProfile.objects.filter(phone = value)
-        if phone:
-            raise forms.ValidationError(u'手机号已经注册过了')
-        return value
     
 class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput())

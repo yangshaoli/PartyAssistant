@@ -1,45 +1,10 @@
-<html>
-<head>
-  <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
- <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/time.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/ui.core.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.form.js"></script>
-    <link type="text/css" href="{{STATIC_URL}}css/main.css" rel="stylesheet" />
-    <link type="text/css" href="{{STATIC_URL}}css/datepicker.css" rel="stylesheet" />
-    <link type="text/css" href="{{STATIC_URL}}css/datepicker2.css" rel="stylesheet" />
-    <script type="text/javascript">
-        $("document").ready(function(){
-            $("#id_date").datepicker();          
-        });
-    </script>
-<title>创建活动</title>
-</head>
-<body>
+{% extends 'login_base.html' %}
 
+{% block content %}
 <form action='{% url edit_party party.id %}' method='post'>
-{% csrf_token %}
-<table>
-<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date" value='{{date}}' ></input>
-                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time" value='{{time}}'  ></input><span class="required-tip">如：2010-01-01 23:09</span>
-                            	<div style="display: none; "></div>
-	                            {% if form.date.errors %}
-	                            	{{ form.date.errors }}
-	                            {% else %}
-	                            	{{ form.time.errors }}
-	                            {% endif %}</td>
-</tr>
-
-<tr><td>地址</td><td><textarea rows="3" cols="20" name='address'  class= 'textarea-remark2'>{{ party.address }}</textarea>{{ form.address.errors}}</td>
-</tr>
-<tr><td>描述</td><td><textarea rows="3" cols="20"  name='description' class='textarea-remark2'>{{ party.description}}</textarea>{{ form.description.errors}}</td>
-</tr>
-<tr><td>人数上限</td><td><input name='limit_num' type='text' value='{{ party.limit_num }}' readOnly ></input>{{ form.limit_num.errors}}</td>
-</tr>
-</table>
-<input name='invite_type' type='hidden' value=''/>
-<input type='button' value='用手机短信发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'msg';this.form.submit()" />
-<input type='button' value='用电子邮件发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'email';this.form.submit()"/>
+	{% csrf_token %}
+	{{ form.as_p }}
+	<input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" />
+	<input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" />
 </form>
-</body>
-</html>
+{% endblock%}

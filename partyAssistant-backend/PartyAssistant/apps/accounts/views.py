@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 
-from apps.accounts.forms import AppRegistrationForm, \
-    GetPasswordForm, ChangePasswordForm, RegistrationForm
+from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, RegistrationForm
 from apps.accounts.models import UserProfile, TempActivateNote
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -13,6 +12,7 @@ from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
 import hashlib
 import random
+from django.contrib.auth import login, authenticate
 
 
 
@@ -26,22 +26,16 @@ def register(request):
             password = form.cleaned_data["password"]
             email = form.cleaned_data['email']
             User.objects.create_user(username, email, password)
+            
+            # django bug, must authenticate before login
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            
             return redirect('list_party')
     else:
         form = RegistrationForm()
 
     return TemplateResponse(request, 'accounts/register.html', {'form': form})
-
-def app_register(request):
-    if request.method == 'POST':
-        form = AppRegistrationForm(request.POST)
-        if form.is_valid():
-            phone = form.cleaned_data['phone']
-            user = User.objects.create_user(str(phone), '', hashlib.sha1(str(phone)))
-            UserProfile.objects.create(user=user, phone=phone, account_type=u'管理员') #在UserProfile中写入号码
-            return render_to_response('accounts/web_register_success.html', context_instance = RequestContext(request))
-    else:
-        return render_to_response('accounts/app_register.html',{'form' : AppRegistrationForm()}, context_instance = RequestContext(request))
 
 def activate(request, email , random_str):
     note = get_object_or_404(TempActivateNote, email = email, random_str = random_str, action = u'新建账户')
