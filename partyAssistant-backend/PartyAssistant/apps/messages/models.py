@@ -4,31 +4,24 @@ Created on 2011-11-8
 
 @author: liuxue
 '''
-from django.db import models
 from apps.parties.models import Party
-class BaseMessage(models.Model):
-    receivers = models.TextField()
-    
-    createtime = models.DateTimeField(auto_now_add = True)
-    party = models.ForeignKey(Party)
-    apply_tips = models.BooleanField(default = True)
-    send_by_self = models.BooleanField(default = True)
-    
-    def get_subclass_type(self):
-        if hasattr(self, "emailmessage"):
-            return 'Email'
-        else:
-            return 'SMS'
-        
-    def get_subclass_obj(self, *args):
-        if hasattr(self, "emailmessage"):
-            return self.emailmessage
-        else:
-            return self.smsmessage
+from django.db import models
+import datetime
 
-class EmailMessage(BaseMessage):
-    subject = models.CharField(max_length = 256)
+class EmailMessage(models.Model):
+    party = models.ForeignKey(Party)
+    subject = models.TextField()
     content = models.TextField()
+    is_apply_tips = models.BooleanField(default=True)
     
-class SMSMessage(BaseMessage):
+    last_modified_time = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return '%s %s' % (self.party.description[:10], datetime.datetime.strftime(self.party.start_time, '%m-%d %H:%M'))
+    
+class SMSMessage(models.Model):
     content = models.TextField()
+    createtime = models.DateTimeField(auto_now_add=True)
+    party = models.ForeignKey(Party)
+    _isApplyTips = models.BooleanField()
+    _isSendBySelf = models.BooleanField()    

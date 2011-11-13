@@ -10,57 +10,62 @@ class LoginForm(AuthenticationForm):
     def clean(self):
         pass
 
-class WebRegistrationForm(forms.Form):
-    username = forms.CharField(min_length = 6, max_length = 14)
-    email = forms.EmailField(max_length=75, widget=forms.TextInput())
-    password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
-    confirm_password = forms.CharField(required = False, max_length = 16,widget = forms.PasswordInput())
+class RegistrationForm(forms.Form):
+    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
+    email = forms.EmailField(required=False, max_length=75)
+    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
+    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
     
     def clean_username(self):
-        value = self.cleaned_data['username']
-        user = User.objects.filter(username = value)
-        if user:
-            raise forms.ValidationError(u'用户名已经存在，请重新输入')
-        return value
+        username = self.cleaned_data['username']
+        exists = User.objects.filter(username=username).count() > 0
+        if exists:
+            raise forms.ValidationError(u'该用户名已存在，请重新输入')
+        
+        return username
     
     def clean_email(self):
-        value = self.cleaned_data['email']
-        user = User.objects.filter(email = value)
-        if user:
+        email = self.cleaned_data['email']
+        exists = User.objects.filter(email=email).count() > 0
+        if exists:
             raise forms.ValidationError(u'该邮箱已存在，请重新输入')
-        return value
+        
+        return email
     
     def clean(self):
         if ('confirm_password' in self.cleaned_data) and ('password' in self.cleaned_data):
             if (self.cleaned_data['confirm_password'] != self.cleaned_data['password']):
-                self._errors["confirm_password"] = ErrorList([u"两次输入密码不匹配"])
+                self._errors["confirm_password"] = ErrorList([u'密码与确认密码不匹配'])
                 del self.cleaned_data['password']
                 del self.cleaned_data['confirm_password']
+                
         return self.cleaned_data
-    
-class AppRegistrationForm(forms.Form):
-    phone = forms.IntegerField()
-    
-    def clean_phone(self):
-        value = self.cleaned_data['phone']
-        phone = UserProfile.objects.filter(phone = value)
-        if phone:
-            raise forms.ValidationError(u'手机号已经注册过了')
-        return value
     
 class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput())
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
-    new_password = forms.CharField(min_length = 6, max_length = 16,widget = forms.PasswordInput())
-    confirm_password = forms.CharField(required = False, max_length = 16,widget = forms.PasswordInput())
+    old_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
+    new_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
+    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
     
+    def __init__(self, request, data):
+        if request:
+            super(ChangePasswordForm, self).__init__(data)
+        else:
+            super(ChangePasswordForm, self).__init__()
+        self.request = request
     
     def clean(self):
+        if 'old_password' in self.cleaned_data:
+            if not self.request.user.check_password(self.cleaned_data['old_password']):
+                self._errors['old_password'] = ErrorList([u'原密码输入错误'])
+                del self.cleaned_data['old_password']
+        
         if ('confirm_password' in self.cleaned_data) and ('new_password' in self.cleaned_data):
             if (self.cleaned_data['confirm_password'] != self.cleaned_data['new_password']):
-                self._errors["confirm_password"] = ErrorList([u"两次输入密码不匹配"])
+                self._errors["confirm_password"] = ErrorList([u'新密码与确认密码不匹配'])
                 del self.cleaned_data['new_password']
                 del self.cleaned_data['confirm_password']
+                
         return self.cleaned_data

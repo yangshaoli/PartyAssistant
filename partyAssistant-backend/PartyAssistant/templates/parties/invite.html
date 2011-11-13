@@ -48,6 +48,7 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 }
 
 </style> 
+<a href="{% url edit_party party.id %}">返回</a>
  <form action="{% url email_invite party.id%}" method="POST">{% csrf_token %}
 	<table width="100%" border="0">
 		<tbody>
@@ -66,7 +67,7 @@ position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left;
 			<tr><th scope="row" class="th-title"><label>带报名提示？:</label></th><td><input name="enroll_link" type="checkbox" checked value="1"/></td></tr>
 	   </tbody>
     </table>
-    <input type="submit" />
+    <input type="submit" value="submit" />
 </form>
 <div id="addressee_list">
     <div class="addressee_list_row">

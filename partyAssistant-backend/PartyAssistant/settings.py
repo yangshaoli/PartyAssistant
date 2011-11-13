@@ -10,15 +10,6 @@ ADMINS = (
     ('AIMeeting', 'admin@aimeeting.com'),
 )
 
-SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
-DOMAIN_NAME = 'http://127.0.0.1:8000'
-LOGIN_REDIRECT_URL = '/parties/create_party'
-
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
-
-MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -140,7 +131,7 @@ INSTALLED_APPS = (
     'apps.accounts',
     'apps.clients',
     'apps.parties',
-    'apps.messages',
+    'apps.messages', 
 )
 
 
@@ -167,3 +158,9 @@ LOGGING = {
     }
 }
 
+SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+LOGIN_REDIRECT_URL = '/parties/list_party'
+
+SMS_ISP_USERNAME = 's1002020649'
+SMS_ISP_PASSWORD = '13488891003'

@@ -2,7 +2,7 @@
 <head>
 <title>受邀联系人列表
 </title>
-<script type="text/javascript" src="/media/js/jquery-1.4.2.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript">
 $(document).ajaxSend(function(event, xhr, settings) {
     function getCookie(name) {
@@ -69,7 +69,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
   });
  });
  function back(){
-   location.href='parties_list.html' ;
+   location.href='{% url show_party party.id %}' ;
  }
 </script>
 </head>
@@ -79,8 +79,16 @@ $(document).ajaxSend(function(event, xhr, settings) {
 <table>
 {% for client_party in client_party_list %}
 <tr>
-<td><input type="text" name='l2' value='{{ client_party.client.name }}' disabled ></input></td>
-<td><input type="text" name='l1' value='{{ client_party.client.mobilephone }}' disabled></input></td>
+<td>{% if client_party.client.name != '' %}
+<input type="text" name='l2' value='{{ client_party.client.name }}' disabled ></input>
+{% else %}
+<input type="text" name='l2' value='佚名' disabled ></input>
+{% endif %}</td>
+<td>{% if client_party.client.invite_type == 'phone' %}
+<input type="text" name='l1' value='{{ client_party.client.phone }}' disabled></input>
+{% else %}
+<input type="text" name='l1' value='{{ client_party.client.email }}' disabled></input>
+{% endif %}</td>
 <td><select id = "{{client_party.id}}"  class = "apply_status" >
     {% if client_party.apply_status == '报名' %}
     <option  value='报名' selected="selected">报名</option>

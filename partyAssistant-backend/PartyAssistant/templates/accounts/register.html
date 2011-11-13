@@ -1,0 +1,9 @@
+{% extends 'not_login_base.html' %}
+
+{% block content %}
+	<form action="{% url register %}" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input id="id_register_submit" type="submit" value="submit" />
+	</form>
+{% endblock %}
