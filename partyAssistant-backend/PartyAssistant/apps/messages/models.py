@@ -20,8 +20,13 @@ class EmailMessage(models.Model):
         return '%s %s' % (self.party.description[:10], datetime.datetime.strftime(self.party.start_time, '%m-%d %H:%M'))
     
 class SMSMessage(models.Model):
-    content = models.TextField()
-    createtime = models.DateTimeField(auto_now_add=True)
     party = models.ForeignKey(Party)
-    _isApplyTips = models.BooleanField()
-    _isSendBySelf = models.BooleanField()    
+    content = models.TextField()
+    is_apply_tips = models.BooleanField(default=True)
+    is_send_by_self = models.BooleanField(default=True)
+    
+    last_modified_time = models.DateTimeField(auto_now=True)
+    
+    def __unicode__(self):
+        return '%s %s' % (self.party.description[:10], datetime.datetime.strftime(self.party.start_time, '%m-%d %H:%M'))
+    
