@@ -118,7 +118,8 @@ def email_invite(request, party_id):
                     send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
             else:
                 send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
-            
+            party.invite_type = 'email' #将邀请方式修改为email
+            party.save()
             return redirect('list_party')
     else:
         form = EmailInviteForm()
@@ -141,37 +142,44 @@ def delete_party_notice(request,party_id):
     return delete_party(request,party_id) 
 
 def copy_party(request,party_id):#复制party和联系人
-    if request.method == 'GET':
-        old_party = Party.objects.get(pk=int(party_id))        
-        date = datetime.datetime.strftime(old_party.time,'%Y-%m-%d')
-        time = datetime.datetime.strftime(old_party.time,'%H:%M:%S')
-        return render_to_response('parties/copy_party.html',{'old_party':old_party,'date':date,'time':time,'form':CreatePartyForm()},context_instance=RequestContext(request))
-    else :
-        old_party = Party.objects.get(pk=int(party_id))
-        form = CreatePartyForm(request.POST)
-        if form.is_valid():        
-            time = form.cleaned_data['time']
-            address=form.cleaned_data['address']
-            description=form.cleaned_data['description']  
-            limit_num = form.cleaned_data['limit_num']   
-            new_party=Party.objects.create(
-                           time=time,
-                           address=address,
-                           description=description,                           
-                           creator=request.user,
-                           limit_num=limit_num                                  
-                           );
-            #复制联系人
-            client_party_list = PartiesClients.objects.filter(party=old_party) 
-            for client_party in client_party_list:
-                PartiesClients.objects.create(
-                                            client =client_party.client,
-                                            party=new_party,
-                                            apply_status=u'被邀请'
-                                            )       
-            return list_party(request)
-        else:
-            return render_to_response('parties/copy_party.html',{'form':form,'old_party':old_party}, context_instance=RequestContext(request)) 
+    
+    party = Party.objects.get(pk=party_id)
+    
+    clients = Client.objects.filter(party=party)
+    
+    return render_to_response('parties/create_party.html',{'form':CreatePartyForm(instance=party)},context_instance=RequestContext(request))
+#
+#    if request.method == 'GET':
+#        old_party = Party.objects.get(pk=int(party_id))        
+#        date = datetime.datetime.strftime(old_party.time,'%Y-%m-%d')
+#        time = datetime.datetime.strftime(old_party.time,'%H:%M:%S')
+#        return render_to_response('parties/copy_party.html',{'old_party':old_party,'date':date,'time':time,'form':CreatePartyForm()},context_instance=RequestContext(request))
+#    else :
+#        old_party = Party.objects.get(pk=int(party_id))
+#        form = CreatePartyForm(request.POST)
+#        if form.is_valid():        
+#            time = form.cleaned_data['time']
+#            address=form.cleaned_data['address']
+#            description=form.cleaned_data['description']  
+#            limit_num = form.cleaned_data['limit_num']   
+#            new_party=Party.objects.create(
+#                           time=time,
+#                           address=address,
+#                           description=description,                           
+#                           creator=request.user,
+#                           limit_num=limit_num                                  
+#                           );
+#            #复制联系人
+#            client_party_list = PartiesClients.objects.filter(party=old_party) 
+#            for client_party in client_party_list:
+#                PartiesClients.objects.create(
+#                                            client =client_party.client,
+#                                            party=new_party,
+#                                            apply_status=u'被邀请'
+#                                            )       
+#            return list_party(request)
+#        else:
+#            return render_to_response('parties/copy_party.html',{'form':form,'old_party':old_party}, context_instance=RequestContext(request)) 
     
 
 '''

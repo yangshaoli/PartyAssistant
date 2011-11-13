@@ -15,6 +15,12 @@ APPLY_STATUS = (
     ('reject', 'reject'),
 )
 
+INVITE_TYPE = (
+    ('email', 'email'),
+    ('phone', 'phone'),
+    ('public', 'public'),
+)
+
 class Party(models.Model):
     creator = models.ForeignKey(User)
     start_time = models.DateTimeField()
@@ -26,6 +32,7 @@ class Party(models.Model):
     
     created_time = models.DateTimeField(auto_now_add=True)
     last_modified_time = models.DateTimeField(auto_now=True)
+    invite_type = models.CharField(max_length=8, blank=True, null=True, choices=INVITE_TYPE)
     
     def __unicode__(self):
         return '%s %s' % (self.description[:10], datetime.datetime.strftime(self.start_time, '%m-%d %H:%M'))
