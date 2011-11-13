@@ -6,5 +6,5 @@ Created on 2011-10-27
 from django.shortcuts import redirect
 
 def home(request):
-    return redirect('login')
+    return redirect('list_party')
     
