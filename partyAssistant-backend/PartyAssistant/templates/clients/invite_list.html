@@ -40,8 +40,7 @@
 </tr>
 {% endfor %}
 </table>
-{% if applystatus == 'noanswer' %}
-<a href='#'>再次发送邀请</a>
-{% endif %}
+<a href='{% url email_invite party.id %}/?apple={{ applystatus }}'>再次发送邀请</a>
+  
 </body>
 </html>
