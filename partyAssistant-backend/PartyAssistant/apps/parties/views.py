@@ -6,8 +6,8 @@ Created on 2011-10-27
 '''
 
 from apps.clients.models import Client
-from apps.messages.forms import EmailInviteForm
-from apps.messages.models import EmailMessage
+from apps.messages.forms import EmailInviteForm, SMSInviteForm
+from apps.messages.models import EmailMessage, SMSMessage
 from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -118,8 +118,10 @@ def email_invite(request, party_id):
                     send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
             else:
                 send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
-            party.invite_type = 'email' #将邀请方式修改为email
+            
+            party.invite_type = 'email' # 将邀请方式修改为email
             party.save()
+            
             return redirect('list_party')
     else:
         client_email_list = []
@@ -137,7 +139,69 @@ def email_invite(request, party_id):
         form = EmailInviteForm(data)
     
     return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
+
+@login_required
+@transaction.commit_on_success
+def sms_invite(request, party_id):
+    party = get_object_or_404(Party, id=party_id)
     
+    if request.method == 'POST':
+        form = SMSInviteForm(request.POST)
+        if form.is_valid():
+            sms_message, created = SMSMessage.objects.get_or_create(party=party, 
+                defaults={'content': form.cleaned_data['content']})
+            if not created:
+                sms_message.content = form.cleaned_data['content']
+                sms_message.save()
+            
+            client_phone_list = form.cleaned_data['client_phone_list'].split(',')
+            parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
+            clients = Client.objects.filter(creator=request.user)
+            
+            for phone in client_phone_list:
+                client_temp = None
+                for client in clients:
+                    if client.phone == phone.strip():
+                        client_temp = client
+                        break
+                
+                if not client_temp:
+                    client_temp = Client.objects.create(
+                        creator=request.user, 
+                        name=phone, 
+                        email=phone, 
+                        invite_type='phone'
+                    )
+                
+                party_client_temp = None
+                for party_client in parties_clients:
+                    if party_client.client == client_temp:
+                        party_client_temp = party_client
+                        break
+                
+                if not party_client_temp:
+                    party_client = PartiesClients.objects.create(
+                        party=party, 
+                        client=client_temp
+                    )
+            
+            # TODO: generate shot link and send sms message
+            if form.cleaned_data['is_apply_tips']:
+                for phone in client_phone_list:
+                    pass
+            else:
+                pass
+            
+            party.invite_type = 'phone' #将邀请方式修改为phone
+            party.save()
+            
+            return redirect('list_party')
+    else:
+        form = SMSInviteForm()
+    
+    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
+
+
 def delete_party_notice(request,party_id):
     party = get_object_or_404(Party,pk=party_id)
     PartiesClients_list = PartiesClients.objects.filter(party=party)
