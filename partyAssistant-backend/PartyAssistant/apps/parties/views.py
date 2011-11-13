@@ -80,7 +80,7 @@ def email_invite(request, party_id):
                 email_message.content = form.cleaned_data['content']
                 email_message.save()
             
-            client_email_list = form.cleaned_data['client_email_list']
+            client_email_list = form.cleaned_data['client_email_list'].split(',')
             parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
             clients = Client.objects.filter(creator=request.user)
             
@@ -115,11 +115,11 @@ def email_invite(request, party_id):
                 for email in client_email_list:
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + email + '/' + party_id
                     email_message.content = email_message.content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
-                    send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, email)
+                    send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
             else:
                 send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
             
-            return redirect('list_party', party_id=party_id)
+            return redirect('list_party')
     else:
         form = EmailInviteForm()
     
@@ -220,10 +220,10 @@ def list_party(request):
 def view_party(request, party_id):
     party = Party.objects.get(pk=party_id)
     client = {
-        u'invite' : Client.objects.exclude(invite_type='public'),
-        u'enrolled' : PartiesClients.objects.filter(party=party_id,apply_status=u'已报名'),
-        u'noenroll' : PartiesClients.objects.filter(party=party_id,apply_status=u'未报名'),
-        u'reject' : PartiesClients.objects.filter(party=party_id,apply_status=u'不参加'),
+        u'invite' : PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public'), #Client.objects.exclude(invite_type='public'),
+        u'apply' : PartiesClients.objects.filter(party=party_id,apply_status='apply'),
+        u'noanswer' : PartiesClients.objects.filter(party=party_id,apply_status='noanswer'),
+        u'reject' : PartiesClients.objects.filter(party=party_id,apply_status='reject'),
     }
     ctx = {
         'party' : party,
