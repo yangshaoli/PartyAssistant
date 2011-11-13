@@ -81,13 +81,10 @@
 {
     NSMutableArray *nArray = [[NSMutableArray alloc] initWithCapacity:[self.receiversArray count]];
     for (int i=0; i<[receiversArray count]; i++) {
-        NSLog(@"here:%d",i);
         ClientObject *client = [self.receiversArray objectAtIndex:i];
         NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:client.cID],@"cID",client.cName,@"cName",client.cVal,@"cValue", nil];
         [nArray addObject:dic];
     }
-    NSLog(@"%@",nArray);
-    NSLog(@"%@",[nArray JSONRepresentation]);
     return [nArray JSONRepresentation];
 }
 @end

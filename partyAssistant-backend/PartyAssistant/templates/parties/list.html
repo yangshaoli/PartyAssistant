@@ -4,6 +4,6 @@
 <a href="{% url create_party %}">创建活动</a><br/><br/>
 
 {% for party in party_list %}
-	<a href="{% url view_party party.id %}">{{ party.description|ljust:"10" }} {{ party.start_time|date:"m-d H:i" }}</a>&nbsp;<a href="{% url delete_party party.id %}">delete</a>&nbsp;<a href="{% url edit_party party.id %}">edit</a><br />
+	<a href="{% url view_party party.id %}">{{ party.description|ljust:"10" }} {{ party.start_time|date:"m-d H:i" }}</a>&nbsp;<a href="{% url delete_party party.id %}">delete</a>&nbsp;<a href="{% url edit_party party.id %}">edit</a>&nbsp;<a href="{% url copy_party party.id %}">copy</a><br />
 {% endfor %}
 {% endblock %}

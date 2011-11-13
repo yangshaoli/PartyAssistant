@@ -14,6 +14,7 @@
 #import "UITableViewControllerExtra.h"
 #import "PartyDetailTableViewController.h"
 #import "CopyPartyTableViewController.h"
+#import "HTTPRequestErrorMSG.h"
 
 @interface PartyListTabelViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>{
     NSMutableArray *partyList;
