@@ -5,12 +5,11 @@ Created on 2011-10-27
 @author: liuxue
 '''
 
-from apps.clients.models import Client, PartiesClients
+from apps.clients.models import Client
+from apps.messages.forms import EmailInviteForm
 from apps.messages.models import EmailMessage
-from apps.parties.forms import EmailInviteForm
+from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
@@ -74,12 +73,12 @@ def email_invite(request, party_id):
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
         if form.is_valid():
-            email, created = EmailMessage.objects.get_or_create(party=party, 
+            email_message, created = EmailMessage.objects.get_or_create(party=party, 
                 defaults={'subject': u'[PartyAssistant]您收到一个活动邀请', 'content': form.cleaned_data['content']})
             if not created:
-                email.subject = u'[PartyAssistant]您收到一个活动邀请'
-                email.content = form.cleaned_data['content']
-                email.save()
+                email_message.subject = u'[PartyAssistant]您收到一个活动邀请'
+                email_message.content = form.cleaned_data['content']
+                email_message.save()
             
             client_email_list = form.cleaned_data['client_email_list']
             parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
@@ -107,15 +106,18 @@ def email_invite(request, party_id):
                         break
                 
                 if not party_client_temp:
-                    party.clients.add(client_temp)
+                    party_client = PartiesClients.objects.create(
+                        party=party, 
+                        client=client_temp
+                    )
             
             if form.cleaned_data['is_apply_tips']:
                 for email in client_email_list:
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + email + '/' + party_id
-                    email.content = email.content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
-                    send_emails(email.subject, email.content, SYS_EMAIL_ADDRESS, email)
+                    email_message.content = email_message.content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
+                    send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, email)
             else:
-                send_emails(email.subject, email.content, SYS_EMAIL_ADDRESS, client_email_list)
+                send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
             
             return redirect('list_party', party_id=party_id)
     else:
@@ -125,7 +127,7 @@ def email_invite(request, party_id):
     
 def delete_party_notice(request,party_id):
     party = get_object_or_404(Party,pk=party_id)
-    clientparty_list = ClientParty.objects.filter(party=party)
+    clientparty_list = PartiesClients.objects.filter(party=party)
     for clientparty in clientparty_list:
         client = clientparty.client
         if client.invite_type == 'email':

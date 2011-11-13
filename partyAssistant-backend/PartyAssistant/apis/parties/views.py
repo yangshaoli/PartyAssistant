@@ -13,8 +13,8 @@ from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
  
-from apps.parties.models import Party
-from apps.clients.models import ClientParty , Client
+from apps.parties.models import Party, PartiesClients
+from apps.clients.models import Client
 from utils.tools.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.tools.paginator_tool import process_paginator
 from utils.tools.my_exception import myException
@@ -61,7 +61,7 @@ def createParty(request):
         for i in range(len(receivers)):
             receiver = receivers[i]
             if msgType == 'SMS':
-                ClientParty.objects.create(party = party,
+                PartiesClients.objects.create(party = party,
                                            client = Client.objects.get_or_create(phone = regPhoneNum(receiver['cValue']),
                                                                                  name = receiver['cName'],
                                                                                  creator = user,
@@ -69,7 +69,7 @@ def createParty(request):
                                        apply_status = u'未报名'
                                        )
             else:
-                ClientParty.objects.create(
+                PartiesClients.objects.create(
                                            party = party,
                                            client = Client.objects.get_or_create(email = receiver['cValue'],
                                                                                  name = receiver['cName'],
@@ -176,7 +176,7 @@ def GetPartyMsg(request, pid):
                 description = u'用户不存在'    
         ClientObjectArray = []   
         ClientObject = {}
-        clientpartylist = ClientParty.objects.filter(party = party)
+        clientpartylist = PartiesClients.objects.filter(party = party)
         msgType = ''
         client = None
         content = ''

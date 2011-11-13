@@ -13,10 +13,11 @@ class EmailInviteForm(forms.Form):
     
     def clean_client_email_list(self):
         client_email_list = self.cleaned_data['client_email_list']
-        email_list = client_email_list.split(',').strip()
+        email_list = client_email_list.split(',')
         
         validate_flag = True
         for email in email_list:
+            email = email.strip()
             try:
                 validate_email(email)
             except:
@@ -25,3 +26,5 @@ class EmailInviteForm(forms.Form):
         
         if not validate_flag:
             raise forms.ValidationError(u'email list error.')
+        
+        return client_email_list

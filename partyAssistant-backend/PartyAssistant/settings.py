@@ -131,6 +131,7 @@ INSTALLED_APPS = (
     'apps.accounts',
     'apps.clients',
     'apps.parties',
+    'apps.messages', 
 )
 
 
