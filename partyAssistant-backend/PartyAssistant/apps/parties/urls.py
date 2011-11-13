@@ -9,14 +9,7 @@ urlpatterns = patterns('apps.parties.views',
     url(r'^(?P<party_id>\d+)/sms_invite/$', 'sms_invite',name='sms_invite'), 
     
     url(r'^copy_party/(?P<party_id>\d+)/$','copy_party', name='copy_party'),
-    
-    url(r'^delete_party_notice/(?P<party_id>\d+)/$','delete_party_notice',name='delete_party_notice'),
-    
- 
-    
+      
     url(r'^message_invite/$','message_invite',name='message_invite'),
-    
-    url(r'^list_party/$','list_party',name='list_party'),
- 
     url(r'^(?P<party_id>\d+)/$','view_party',name='view_party'),
 )

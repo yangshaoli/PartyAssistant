@@ -31,7 +31,7 @@ def register(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             
-            return redirect('list_party')
+            return redirect('list')
     else:
         form = RegistrationForm()
 

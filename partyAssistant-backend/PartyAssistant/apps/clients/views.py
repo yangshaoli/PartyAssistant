@@ -78,5 +78,5 @@ def invite_list(request,party_id,apply_status):
     else:        
         party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
     
-    return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party}) 
+    return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party,'applystatus':apply_status}) 
 
