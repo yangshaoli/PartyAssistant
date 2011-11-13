@@ -10,15 +10,6 @@ ADMINS = (
     ('AIMeeting', 'admin@aimeeting.com'),
 )
 
-SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
-DOMAIN_NAME = 'http://127.0.0.1:8000'
-LOGIN_REDIRECT_URL = '/parties/create_party'
-
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
-
-MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -107,7 +98,7 @@ MIDDLEWARE_CLASSES = (
     'middlewares.detect_mobile_browser_middleware.DetectMobileBrowserMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+#    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'middlewares.variant_template_middleware.VariantTemplateMiddleware', 
@@ -137,9 +128,10 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
 
-    'accounts',
-    'clients',
-    'parties',
+    'apps.accounts',
+    'apps.clients',
+    'apps.parties',
+    'apps.messages', 
 )
 
 
@@ -166,3 +158,9 @@ LOGGING = {
     }
 }
 
+SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+LOGIN_REDIRECT_URL = '/parties/list_party'
+
+SMS_ISP_USERNAME = 's1002020649'
+SMS_ISP_PASSWORD = '13488891003'

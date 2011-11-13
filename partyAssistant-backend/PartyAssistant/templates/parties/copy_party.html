@@ -1,18 +1,17 @@
 <html>
 <head>
-  <script type="text/javascript" src="/media/js/jquery-1.4.2.js"></script>
- <script type="text/javascript" src="/media/js/ui.datepicker.js"></script>
-    <script type="text/javascript" src="/media/js/time.js"></script>
-    <script type="text/javascript" src="/media/js/ui.core.js"></script>
-    <script type="text/javascript" src="/media/js/jquery.form.js"></script>
-    <link type="text/css" href="/media/css/main.css" rel="stylesheet" />
-    <link type="text/css" href="/media/css/datepicker.css" rel="stylesheet" />
-    <link type="text/css" href="/media/css/datepicker2.css" rel="stylesheet" />
+  <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+ <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/time.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/ui.core.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.form.js"></script>
+    <link type="text/css" href="{{STATIC_URL}}css/main.css" rel="stylesheet" />
+    <link type="text/css" href="{{STATIC_URL}}css/datepicker.css" rel="stylesheet" />
+    <link type="text/css" href="{{STATIC_URL}}css/datepicker2.css" rel="stylesheet" />
     <script type="text/javascript">
         $("document").ready(function(){
-            $("#id_start_date").datepicker();
-            $("#id_end_date").datepicker();
-        });
+            $("#id_date").datepicker();
+            });
     </script>
 <title>复制活动</title>
 </head>
@@ -31,11 +30,11 @@
 	                            {% endif %}</td>
 </tr>
 
-<tr><td>地址</td><td><input type='textfield' name='address'  value='{{ old_party.address }}' class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
+<tr><td>地址</td><td><textarea name='address'   class= 'textarea-remark2'>{{ old_party.address }} </textarea>{{ form.address.errors}}</td>
 </tr>
-<tr><td>描述</td><td><input type='textfield' name='description' class='textarea-remark2' value='{{ old_party.description}}' ></input>{{ form.description.errors}}</td>
+<tr><td>描述</td><td><textarea name='description' class='textarea-remark2'  >{{ old_party.description}} </textarea>{{ form.description.errors}}</td>
 </tr>
-<tr><td>限制人数</td><td><input name='limit_num' type='text' value='{{ old_party.limit_num }}'></input>{{ form.limit_num.errors}}</td>
+<tr><td>人数上限</td><td><input name='limit_num' type='text' value='{{ old_party.limit_num }}'></input>{{ form.limit_num.errors}}</td>
 </tr>
 </table>
 <input name='invite_type' type='hidden' value=''/>

@@ -1,5 +1,6 @@
 <html>
 <head>
+ 
 <title>受邀联系人列表
 </title>
 
@@ -11,28 +12,27 @@
   }
 </script>
 </head>
+ 
 <body>{% csrf_token %}
-<input type='button' value='返回' onclick="back();"></input>
-<input type='button' value='刷新' onclick="refresh();"></input>
 <table>
-{% for client_party in client_party_list %}
+{% for party_client in party_clients_list %}
 <tr>
+ 
 <td><input type="text" name='l2' value='{{ client_party.client.name }}' disabled ></input></td>
 <td><input type="text" name='l1' value='{{ client_party.client.mobilephone }}' disabled></input></td>
-<td><select id = "{{client_party.id}}"  class = "apply_status" >
+<td><select id = "{{client_party.id}}">
 {% if applystatus == 'all' or applystatus == 'noanwser'  %}  
-    <td><a href='{% url change_status client_party.id apply %}'>参加</a> &nbsp;&nbsp;&nbsp;<a href='{% url change_status client_party.id  notapply %}'>参加</a> </td>
+    <td><a href='{% url change_status client_party.id apply %}？applystatus=apply&next={{ applystatus }}'>参加</a> &nbsp;&nbsp;&nbsp;<a href='{% url change_status client_party.id %}？applystatus=notapply&next={{ applystatus }}'>不参加</a> </td>
 {% endif %}
 {% if applystatus == 'apply' %}  
-    <td><a href='{% url change_status client_party.id notapply %}'>参加</a> </td>
+    <td><a href='{% url change_status client_party.id %}？applystatus=notapply&next={{ applystatus }}'>不参加</a> </td>
 {% endif %}
 {% if applystatus == 'notapply' %}  
-    <td><a href='{% url change_status  client_party.id apply %}'>参加</a>  </td>
+    <td><a href='{% url change_status  client_party.id %}？applystatus=apply&next={{ applystatus }}'>参加</a>  </td>
 {% endif %}
+ 
 </tr>
 {% endfor %}
-
 </table>
-
 </body>
 </html>

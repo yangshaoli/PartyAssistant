@@ -1,3 +1,10 @@
+#mac os noise
+.DS_Store
+
+#xcode noise
+partyAssistant-iphone/PartyAssistant/PartyAssistant.xcodeproj/project.xcworkspace/
+partyAssistant-iphone/PartyAssistant/PartyAssistant.xcodeproj/xcuserdata/
+
 .project
 .pydevproject
 *.settings*

@@ -3,16 +3,29 @@
 {% block content %}
 
 <ul>
-	<li><span>开始时间：</span>{{party.start_time}}</li>
-	<li><span>结束时间：</span>{{party.end_time}}</li>
+	<li><span>日期：</span>{{date}}</li>
+	<li><span>时间：</span>{{time}}</li>
 	<li><span>地点：</span>{{party.address}}</li>
 	<li><span>人数限制：</span>{{party.limit_num}}</li>
 	<li><span>描述：</span>{{party.description}}</li>
 </ul>
 <br>
+<a href="{% url modify_party party.id %}">编辑</a>&nbsp;&nbsp;<a href="#" onclick="(function(){
+var confirm=window.confirm('删除不可恢复，是否确认删除？');
+if(confirm){
+  var clienttip=window.confirm('删除是否提示客户');
+  if(clienttip){
+    this.location='{% url delete_party_notice party.id%}';
+  }else{
+    this.location='{% url delete_party party.id %}';
+  }
+}
+
+})()">删除</a><br/>
 <a href="{% url invite_list party.id %}">邀请人数</a>: {{client.invite.count}}<br/>
 <a href="{% url enrolled_list party.id %}">报名人数</a>: {{client.enrolled.count}}<br/>
 <a href="{% url noenroll_list party.id %}">未响应人数</a>: {{client.noenroll.count}}<br/>
 <a href="{% url reject_list party.id %}">不报名人数</a>: {{client.reject.count}}<br/>
+<a href="{% url list_party %}">返回</a><br/>
 {{noroll.count}}
 {% endblock %}
