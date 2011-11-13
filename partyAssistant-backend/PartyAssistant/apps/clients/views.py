@@ -61,9 +61,9 @@ def invite_enroll(request, email, party_id):
 @author: liuxue
 '''
 
-def change_apply_status(request,party_client_id):
+def change_apply_status(request):
     if request.method == 'GET':
-        client_party = PartiesClients.objects.get(pk=party_client_id)      
+        client_party = PartiesClients.objects.get(pk=int(request.GET['party_client_id']))      
         client_party.apply_status = request.GET['applystatus']
         client_party.save()
         return invite_list(request,client_party.party.id,request.GET['next'])    

@@ -14,26 +14,34 @@
 <body>{% csrf_token %}
 <a href='{% url view_party party.id %}'>返回</a>
 <table>
+<tr>
+<td>联系人名称</td>
+<td>电话/Email</td>
+<td> &nbsp;</td>
+</tr>
 {% for party_client in party_clients_list %}
 <tr>
  
-<td><input type="text" name='l2' value='{{ party_client.client.name }}' disabled ></input></td>
-<td><input type="text" name='l1' value='{{ party_client.client.phone }}' disabled></input></td>
-
+<td>{{ party_client.client.name }} </td>
+<td>{{ party_client.client.phone }}</td>
+   <td>
 {% if applystatus == 'all' or applystatus == 'noanswer'  %}  
-    <td><a href="{% url change_status party_client.id %}?applystatus=apply&next={{ applystatus }}">参加</a> 
+ <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a> 
     &nbsp;&nbsp;&nbsp;
-    <a href="{% url change_status party_client.id %}?applystatus=reject&next={{ applystatus }}">不参加</a> </td>
+    <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}">不参加</a>
 {% endif %}
 {% if applystatus == 'apply' %}  
-    <td><a href='{% url change_status party_client.id %}?applystatus=reject&next={{ applystatus }}'>不参加</a> </td>
+    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}'>不参加</a>
 {% endif %}
 {% if applystatus == 'reject' %}  
-    <td><a href='{% url change_status  party_client.id  %}?applystatus=apply&next={{ applystatus }}'>参加</a>  </td>
+    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}'>参加</a> 
 {% endif %}
- 
+ </td>
 </tr>
 {% endfor %}
 </table>
+{% if applystatus == 'noanswer' %}
+<a href='#'>再次发送邀请</a>
+{% endif %}
 </body>
 </html>
