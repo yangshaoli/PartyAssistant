@@ -125,18 +125,27 @@ def email_invite(request, party_id):
             return redirect('list_party')
     else:
         client_email_list = []
-        clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
-        for client in clients:
-            client_email_list.append(client.client.email)
-        client_email_list = ','.join(client_email_list)
-        content = EmailMessage.objects.get(party=party).content
+        content = ''
+        if request.GET['apply']:
+            apply_status = str(request.GET['apply'])
+            print apply_status
+            clients = PartiesClients.objects.filter(party=party_id).filter(apply_status=apply_status)
+        else:
+            clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         
         if clients:
+            for client in clients:
+                client_email_list.append(client.client.email)
+            client_email_list = ','.join(client_email_list)
+
+            content = EmailMessage.objects.get(party=party).content
             data = {
             'client_email_list': client_email_list, 
             'content': content
         }
-        form = EmailInviteForm(data)
+            form = EmailInviteForm(data)
+        else:
+            form = EmailInviteForm()
     
     return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
 

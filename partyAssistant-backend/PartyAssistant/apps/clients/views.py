@@ -73,9 +73,9 @@ def change_apply_status(request):
 #受邀人员列表
 def invite_list(request,party_id,invite_type):
     party = Party.objects.get(id=party_id)
-    party_clients_list = PartiesClients.objects.filter(party=party).filter(invite_type=invite_type)
-    
-    return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party}) 
+    party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=invite_type)
+    print party_clients_list
+    return render_to_response('clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party}) 
 
 
 
