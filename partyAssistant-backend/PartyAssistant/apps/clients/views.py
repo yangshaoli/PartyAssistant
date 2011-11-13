@@ -71,11 +71,11 @@ def change_apply_status(request):
 
 
 #受邀人员列表
-def invite_list(request,party_id,apply_status):
+def invite_list(request, party_id):
+    apply_status = request.GET.get('apply', 'all')
     party = Party.objects.get(id=party_id)
  
     if apply_status == 'all':
- 
         party_clients_list = PartiesClients.objects.filter(party=party)
     else:        
         party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
