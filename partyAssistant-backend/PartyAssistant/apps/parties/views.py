@@ -127,9 +127,9 @@ def email_invite(request, party_id):
     
 def delete_party_notice(request,party_id):
     party = get_object_or_404(Party,pk=party_id)
-    clientparty_list = PartiesClients.objects.filter(party=party)
-    for clientparty in clientparty_list:
-        client = clientparty.client
+    PartiesClients_list = PartiesClients.objects.filter(party=party)
+    for PartiesClients in PartiesClients_list:
+        client = PartiesClients.client
         if client.invite_type == 'email':
             title=u'活动取消通知'
             content=u'尊敬的 '+client.name+' :'+' 于'+party.time.strftime('%Y-%m-%d %H:%M')+' 在'+party.address+'的活动取消'
@@ -162,9 +162,9 @@ def copy_party(request,party_id):#复制party和联系人
                            limit_num=limit_num                                  
                            );
             #复制联系人
-            client_party_list = ClientParty.objects.filter(party=old_party) 
+            client_party_list = PartiesClients.objects.filter(party=old_party) 
             for client_party in client_party_list:
-                ClientParty.objects.create(
+                PartiesClients.objects.create(
                                             client =client_party.client,
                                             party=new_party,
                                             apply_status=u'被邀请'
@@ -200,7 +200,7 @@ def message_invite(request):
 #                    #将收件人加入clients,状态为'未报名'
 #                    if Client.objects.filter(email=addressee, creator=User.objects.get(pk=request.user.id)).count() == 0:
 #                        client = Client.objects.create(email=addressee, creator=User.objects.get(pk=request.user.id), invite_type='email')
-#                        ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'未报名')
+#                        PartiesClients.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'未报名')
 #            return render_to_response('message.html', context_instance=RequestContext(request))
 #    else:
 #        form = InviteForm()
@@ -223,9 +223,9 @@ def show_party(request, party_id):
     time = datetime.datetime.strftime(party.time,'%H:%M')
     client = {
         u'invite' : Client.objects.exclude(invite_type='public'),
-        u'enrolled' : ClientParty.objects.filter(party=party_id,apply_status=u'已报名'),
-        u'noenroll' : ClientParty.objects.filter(party=party_id,apply_status=u'未报名'),
-        u'reject' : ClientParty.objects.filter(party=party_id,apply_status=u'不参加'),
+        u'enrolled' : PartiesClients.objects.filter(party=party_id,apply_status=u'已报名'),
+        u'noenroll' : PartiesClients.objects.filter(party=party_id,apply_status=u'未报名'),
+        u'reject' : PartiesClients.objects.filter(party=party_id,apply_status=u'不参加'),
     }
     ctx = {
         'party' : party,
