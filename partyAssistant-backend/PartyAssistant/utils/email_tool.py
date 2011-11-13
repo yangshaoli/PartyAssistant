@@ -15,18 +15,19 @@ email_re = re.compile(
 
 error_re = re.compile('Invalid Parameter')
 def send_emails(subject, content, from_address, to_list):
-    connection = mail.get_connection()
-    tmp_flag = True
-    while tmp_flag:
-        try:
-            a = connection.open()
-            tmp_flag = False
-        except Exception:
-            pass
-    email1 = mail.EmailMessage(subject, content, from_address, to_list, connection = connection)
-    email1.content_subtype = "html"
-    m = email1.send()
-    connection.close()
+#    connection = mail.get_connection()
+#    tmp_flag = True
+#    while tmp_flag:
+#        try:
+#            a = connection.open()
+#            tmp_flag = False
+#        except Exception:
+#            pass
+#    email1 = mail.EmailMessage(subject, content, from_address, to_list, connection = connection)
+#    email1.content_subtype = "html"
+#    m = email1.send()
+#    connection.close()
+    pass
     
 def get_str(s):
     try:
