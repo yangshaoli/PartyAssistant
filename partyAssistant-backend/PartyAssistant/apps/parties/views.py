@@ -14,7 +14,6 @@ from django.template import RequestContext
 from forms import CreatePartyForm, InviteForm
 from utils.tools.email_tool import send_emails
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
-
 from apps.clients.models import Client, ClientParty
 
 import datetime
@@ -49,8 +48,25 @@ def create_party(request):
 
 def delete_party(request,party_id):
     party=get_object_or_404(Party,pk=party_id)
+    clientpartylist = ClientParty.objects.filter(party=party)
+    for clientparty in clientpartylist:
+        ClientParty.delete(clientparty)
     Party.delete(party)
-    return render_to_response('list_party.html',{'message','delete success jump to list_party'})
+    return list_party(request)
+def delete_party_notice(request,party_id):
+    party = get_object_or_404(Party,pk=party_id)
+    clientparty_list = ClientParty.objects.filter(party=party)
+    for clientparty in clientparty_list:
+        client = clientparty.client
+        if client.invite_type == 'email':
+            title=u'活动取消通知'
+            content=u'尊敬的 '+client.name+' :'+' 于'+party.time.strftime('%Y-%m-%d %H:%M')+' 在'+party.address+'的活动取消'
+            send_emails(title,content,SYS_EMAIL_ADDRESS,[client.email])
+        if client.invite_type == 'phone':
+            content=u'尊敬的 '+client.name+' :'+' 于'+party.time.strftime('%Y-%m-%d %H:%M')+' 在'+party.address+'的活动取消'
+            print '发送短信 '  
+            print content   
+    return delete_party(request,party_id) 
 
 def copy_party(request,party_id):#复制party和联系人
     if request.method == 'GET':
@@ -90,12 +106,14 @@ def edit_party(request,party_id):
     if request.method=='GET':
         party = Party.objects.get(pk=party_id)
         date = datetime.datetime.strftime(party.time,'%Y-%m-%d')
-        time = datetime.datetime.strftime(party.time,'%H:%M:%S')
+        time = datetime.datetime.strftime(party.time,'%H:%M')
         form = CreatePartyForm()
         return render_to_response('parties/edit_party.html',{'form':form,'party':party,'date':date,'time':time}, context_instance=RequestContext(request));
     else :
         party = Party.objects.get(pk=party_id)
         form = CreatePartyForm(request.POST)
+        date = datetime.datetime.strftime(party.time,'%Y-%m-%d')
+        time = datetime.datetime.strftime(party.time,'%H:%M:%S')
         if form.is_valid():        
             party.time = form.cleaned_data['time']
             party.address=form.cleaned_data['address']
@@ -158,6 +176,8 @@ def list_party(request):
 
 def show_party(request, party_id):
     party = Party.objects.get(pk=party_id)
+    date = datetime.datetime.strftime(party.time,'%Y-%m-%d')
+    time = datetime.datetime.strftime(party.time,'%H:%M')
     client = {
         u'invite' : Client.objects.exclude(invite_type='public'),
         u'enrolled' : ClientParty.objects.filter(party=party_id,apply_status=u'已报名'),
@@ -167,5 +187,7 @@ def show_party(request, party_id):
     ctx = {
         'party' : party,
         'client': client,
+        'date'  : date,
+        'time'  : time
     }
     return render_to_response('parties/show.html', ctx ,context_instance=RequestContext(request))

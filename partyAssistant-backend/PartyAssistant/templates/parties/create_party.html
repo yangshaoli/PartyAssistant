@@ -33,11 +33,11 @@
 	                            {% endif %}</td>
 </tr>
 
-<tr><td>地址</td><td><input type='textfield' name='address'  class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
+<tr><td>地址</td><td><textarea name='address'  class= 'textarea-remark2'></textarea>{{ form.address.errors}}</td>
 </tr>
-<tr><td>描述</td><td><input type='textfield' name='description' class='textarea-remark2'></input>{{ form.description.errors}}</td>
+<tr><td>描述</td><td><textarea name='description' class='textarea-remark2'></textarea>{{ form.description.errors}}</td>
 </tr>
-<tr><td>限制人数</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
+<tr><td>人数上限</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
 </tr>
 </table>
 <input name='invite_type' type='hidden' value=''/>
