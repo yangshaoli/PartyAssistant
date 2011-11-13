@@ -18,7 +18,7 @@ from forms import CreatePartyForm, InviteForm
 from models import Party
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from utils.tools.email_tool import send_emails
-import datetime
+import datetime, copy
 
 
 
@@ -228,12 +228,23 @@ def delete_party_notice(request,party_id):
     return delete_party(request,party_id) 
 
 def copy_party(request,party_id):#复制party和联系人
+    old_party = Party.objects.get(pk=party_id)
+    new_party = copy.deepcopy(old_party)
+    new_party.id = None
+    new_party.save()
+    old_message = EmailMessage.objects.get(party=old_party)
+    new_message = copy.deepcopy(old_message)
+    new_message.id = None
+    new_message.party = new_party
+    new_message.save()
     
-    party = Party.objects.get(pk=party_id)
+    clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
+    for client in clients:
+        c = PartiesClients.objects.create(client_id=client.id, party=new_party,apply_status='noanwser')
+        c.save()
     
-    clients = Client.objects.filter(party=party)
     
-    return render_to_response('parties/create_party.html',{'form':CreatePartyForm(instance=party)},context_instance=RequestContext(request))
+    return render_to_response('parties/edit_party.html',{'form':CreatePartyForm(instance=new_party), 'party':new_party},context_instance=RequestContext(request))
 #
 #    if request.method == 'GET':
 #        old_party = Party.objects.get(pk=int(party_id))        
