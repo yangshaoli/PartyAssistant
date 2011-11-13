@@ -71,12 +71,12 @@ def change_apply_status(request,party_client_id):
 
 
 #受邀人员列表
-def invite_list(request,party_id,invite_type):
+def invite_list(request,party_id,apply_status):
     party = Party.objects.get(id=party_id)
-    if invite_type == 'all':
+    if apply_status == 'all':
         party_clients_list = PartiesClients.objects.filter(party=party)
     else:        
-        party_clients_list = PartiesClients.objects.filter(party=party).filter(invite_type=invite_type)
+        party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
     
     return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party}) 
 
