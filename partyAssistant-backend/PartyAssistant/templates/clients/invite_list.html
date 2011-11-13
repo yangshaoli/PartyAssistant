@@ -4,17 +4,17 @@
 </title></head>
 <body>{% csrf_token %}
 <table>
-{% for client_party in client_party_list %}
+{% for party_client in party_clients_list %}
 <tr>
 <td> 
-<input type="text" name='l2' value='{{ client_party.client.name }}' disabled ></input>
+<input type="text" name='l2' value='{{ party_client.client.name }}' disabled ></input>
 </td>
 <td>{% if client_party.client.invite_type == 'phone' %}
-<input type="text" name='l1' value='{{ client_party.client.phone }}' disabled></input>
+<input type="text" name='l1' value='{{ party_client.client.phone }}' disabled></input>
 {% else %}
-<input type="text" name='l1' value='{{ client_party.client.email }}' disabled></input>
+<input type="text" name='l1' value='{{ party_client.client.email }}' disabled></input>
 {% endif %}</td>
-<td><select id = "{{client_party.id}}"  class = "apply_status" >
+<td><select id = "{{party_client.id}}"  class = "apply_status" >
      <option  value='报名' selected="selected">报名</option>
      <option value='未报名'>未报名</option>
      <option value='不报名'>不报名</option>
