@@ -9,6 +9,7 @@
 #import "PartyDetailTableViewController.h"
 
 @implementation PartyDetailTableViewController
+@synthesize baseinfo;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,6 +39,7 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
 }
 
 - (void)viewDidUnload
@@ -77,14 +79,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     if (section == 0) {
         return 4;
@@ -124,14 +124,14 @@
             [cell addSubview:locationLabel];
         }else if(indexPath.row == 2){
             cell.textLabel.text = @"人数上限:";
-            UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(260, 0, 30, 44)];
+            UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
             peopleStrLable.backgroundColor = [UIColor clearColor];
             peopleStrLable.textAlignment = UITextAlignmentRight;
-            peopleStrLable.text = [NSString stringWithFormat:@"%d 人", self.baseinfo.peopleMaximum];
+            peopleStrLable.text = [NSString stringWithFormat:@"%@ 人", self.baseinfo.peopleMaximum];
             [cell addSubview:peopleStrLable];
         }else{
             cell.textLabel.text = @"描述:";
-            UITextView *descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 200, 100)];
+            UITextView *descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 190, 100)];
             descriptionTextView.text = self.baseinfo.description;
             descriptionTextView.backgroundColor = [UIColor clearColor];
             descriptionTextView.editable = NO;
@@ -140,33 +140,38 @@
     }else if(indexPath.section == 1){
         if (indexPath.row == 0) {
             cell.textLabel.text = @"邀请人:";
-            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 1;
             lb_1.text = @"... 人";
             lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
         }else if(indexPath.row == 1){
             cell.textLabel.text = @"已报名:";
-            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = @"... 人";
             lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
         }else if(indexPath.row == 2){
             cell.textLabel.text = @"不报名:";
-            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 3;
             lb_1.text = @"... 人";
             lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
         }else if(indexPath.row == 3){
             cell.textLabel.text = @"未报名:";
-            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 310, 44)];
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 4;
             lb_1.text = @"... 人";
             lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
         }
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return cell;
 }
@@ -230,6 +235,54 @@
         
         }
     }
+}
+
+- (void)loadClientCount
+{
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@" ,GET_PARTY_CLIENT_MAIN_COUNT,self.baseinfo.partyId]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
+            NSNumber *appliedClientcount = [dataSource objectForKey:@"appliedClientcount"];
+            NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
+            NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
+            NSArray *countArray = [NSArray arrayWithObjects:allClientcount,appliedClientcount,refusedClientcount,donothingClientcount, nil];
+            for (int i = 0; i<4; i++) {
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:1];
+                UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+                for(int j=0;j<[cell.subviews count];j++){
+                    if ([[cell.subviews objectAtIndex:j] isMemberOfClass:[UILabel class]]) {
+                        UILabel *lbl = [cell.subviews objectAtIndex:j];
+                        lbl.text = [NSString stringWithFormat:@"%@ 人", [countArray objectAtIndex:i]];
+                        break;
+                    }
+                }
+            }
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	//[self dismissWaiting];
+	//[self showAlertRequestFailed: error.localizedDescription];
 }
 
 @end

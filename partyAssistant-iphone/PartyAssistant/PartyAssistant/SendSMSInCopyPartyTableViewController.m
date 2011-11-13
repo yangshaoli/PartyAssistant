@@ -9,7 +9,7 @@
 #import "SendSMSInCopyPartyTableViewController.h"
 
 @implementation SendSMSInCopyPartyTableViewController
-@synthesize smsObject,baseinfo;
+@synthesize receiverArray,contentTextView,receiversView,_isShowAllReceivers,countlbl,smsObject,baseinfo;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -33,12 +33,25 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    UIBarButtonItem *doneBtn=[[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
+    self.navigationItem.rightBarButtonItem = doneBtn;
+    if (!_isShowAllReceivers) {
+        self._isShowAllReceivers = NO;
+    }
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
- 
+    
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reorganizeReceiverField:) name:SELECT_RECEIVER_IN_SEND_SMS object:nil];
+    
+    if (!receiversView) {
+        self.receiversView = [[UIView alloc] initWithFrame:CGRectMake(80, 0, 140, 44)];
+        self.receiversView.backgroundColor = [UIColor clearColor];
+    }
+    if (!receiverArray) {
+        self.receiverArray = [[NSMutableArray alloc] initWithArray:smsObject.receiversArray];
+    }
 }
 
 - (void)viewDidUnload
@@ -78,16 +91,16 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    if (section == 2) {
+        return 2;
+    }
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -95,13 +108,72 @@
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     
     // Configure the cell...
+    if (indexPath.section == 0) {
+        cell.textLabel.text = @"收件人";
+        cell.textLabel.textAlignment = UITextAlignmentLeft;
+
+        UIButton *addBTN = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        [addBTN setFrame:CGRectMake(280, 10, 30, 30)];
+        [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:addBTN];
+        [cell addSubview:self.receiversView];
+        [self setupReceiversView];
+    }else if(indexPath.section == 1){
+        if (!contentTextView) {
+            self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,180)];
+        }
+        contentTextView.text = self.smsObject.smsContent;
+        contentTextView.backgroundColor = [UIColor clearColor];
+        [cell addSubview:contentTextView];
+        cell.textLabel.text  = @"短信内容";
+    }else if(indexPath.section == 2){
+        if (indexPath.row == 0) {
+            UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
+            [applyTipsSwitch setOn:self.smsObject._isApplyTips];
+            [applyTipsSwitch addTarget:self action:@selector(applyTipsSwitchAction:) forControlEvents:UIControlEventValueChanged];
+            cell.textLabel.text = @"带报名提示：";
+            [cell addSubview:applyTipsSwitch];
+        }else{
+            UISwitch *sendBySelfSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
+            [sendBySelfSwitch setOn:self.smsObject._isSendBySelf];
+            [sendBySelfSwitch addTarget:self action:@selector(sendBySelfSwitchAction:) forControlEvents:UIControlEventValueChanged];
+            cell.textLabel.text = @"通过自己的手机发送：";
+            [cell addSubview:sendBySelfSwitch];
+        }
+    }else{
+        UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [setDefaultBtn setFrame:CGRectMake(10, 0, 300, 44)];
+        [setDefaultBtn setTitle:@"恢复默认内容" forState:UIControlStateNormal];
+        [setDefaultBtn addTarget:self action:@selector(setDefaultAction) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:setDefaultBtn];
+        cell.backgroundColor = [UIColor clearColor];
+    }
     
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
+}
+
+- (void)setDefaultAction{
+    
+}
+
+- (void)addReceiver{
+
+    ContactListViewController *clvc = [[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
+    clvc.msgType = @"SMS";
+    clvc.selectedContactorsArray = self.receiverArray;
+    ContactListNavigationController *vc = [[ContactListNavigationController alloc] initWithRootViewController:clvc];
+    [self presentModalViewController:vc animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 1) {
+        return 180;
+    }
+    return 44.0f;
 }
 
 /*
@@ -154,6 +226,202 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    if (indexPath.section==0) {
+        self._isShowAllReceivers = !_isShowAllReceivers;
+        [self setupReceiversView];
+    }
+}
+
+- (void)reorganizeReceiverField:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    self.receiverArray = [userinfo objectForKey:@"selectedCArray"];
+    [self setupReceiversView];
+}
+- (void)setupReceiversView{
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    
+    CGRect cframe = cell.textLabel.frame;
+    NSArray *subVArray = [self.receiversView subviews];
+    for (int j = 0;j < [subVArray count];j++) {
+        [[subVArray objectAtIndex:j] removeFromSuperview];
+    }
+    [self.countlbl removeFromSuperview];
+    self.countlbl = nil;
+    if (_isShowAllReceivers) {
+        for (int i = 0 ;i < [receiverArray count];i++) {
+            ReceiverLabel *rlbl = [[ReceiverLabel alloc] initWithReceiverObject:[receiverArray objectAtIndex:i] index:i];
+            [self.receiversView addSubview:rlbl];
+        }
+        if ([receiverArray count] == 0) {
+            UILabel *defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 140, 44)];
+            defaultLabel.backgroundColor = [UIColor clearColor];
+            defaultLabel.text = @"请添加收件人";
+            defaultLabel.textColor = [UIColor lightGrayColor];
+            [self.receiversView addSubview:defaultLabel];
+            self.receiversView.frame = CGRectMake(receiversView.frame.origin.x, receiversView.frame.origin.y, receiversView.frame.size.width, 44.0f);
+            cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, 44.0f);
+        }else{
+            self.receiversView.frame = CGRectMake(receiversView.frame.origin.x, receiversView.frame.origin.y, receiversView.frame.size.width, [receiverArray count]*44.0f);
+            cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, [receiverArray count]*44.0f);
+        }
+    }else{
+        if ([receiverArray count]>0) {
+            ReceiverLabel *rlbl = [[ReceiverLabel alloc] initWithReceiverObject:[receiverArray objectAtIndex:0] index:0];
+            [self.receiversView addSubview:rlbl];
+            self.countlbl = [[UILabel alloc] initWithFrame:CGRectMake(receiversView.frame.origin.x+receiversView.frame.size.width+5, 0, 50, 44)];
+            countlbl.text = [NSString stringWithFormat:@"共%d人",[self.receiverArray count]];
+            countlbl.backgroundColor = [UIColor clearColor];
+            countlbl.adjustsFontSizeToFitWidth = YES;
+            [cell addSubview:countlbl];
+        }else{
+            UILabel *defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 140, 44)];
+            defaultLabel.backgroundColor = [UIColor clearColor];
+            defaultLabel.text = @"请添加收件人";
+            defaultLabel.textColor = [UIColor lightGrayColor];
+            [self.receiversView addSubview:defaultLabel];
+        }
+        self.receiversView.frame = CGRectMake(receiversView.frame.origin.x, receiversView.frame.origin.y, receiversView.frame.size.width, 44.0f);
+        cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, 44.0f);
+    }
+    cell.textLabel.frame = CGRectMake(cframe.origin.x,cframe.origin.y,cframe.size.width,40);
+    cell.textLabel.backgroundColor = [UIColor clearColor];
+}
+
+- (void)saveSMSInfo{
+    self.smsObject.smsContent = [self.contentTextView text];
+    self.smsObject.receiversArray = self.receiverArray;
+}
+
+- (void)createPartySuc{
+    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    [self dismissModalViewControllerAnimated:NO];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (void)doneBtnAction{
+    [self saveSMSInfo];
+    [self showWaiting];
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSURL *url = [NSURL URLWithString:CREATE_PARTY];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    NSLog(@"receiver:%@",[[self.receiverArray objectAtIndex:0] cName]);
+    NSLog(@"obj:%@",[[self.smsObject.receiversArray objectAtIndex:0] cName]);
+    NSLog(@"receiver:%@",[self.smsObject setupReceiversArrayData]);
+    [request setPostValue:[self.smsObject setupReceiversArrayData] forKey:@"receivers"];
+    [request setPostValue:self.smsObject.smsContent forKey:@"content"];
+    [request setPostValue:@"" forKey:@"subject"];
+    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
+    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
+    [request setPostValue:@"SMS" forKey:@"msgType"];
+    [request setPostValue:@"iphone" forKey:@"addressType"];
+    [request setPostValue:self.baseinfo.starttimeDate forKey:@"starttime"];
+    [request setPostValue:self.baseinfo.location forKey:@"location"];
+    [request setPostValue:self.baseinfo.description forKey:@"description"];
+    [request setPostValue:self.baseinfo.peopleMaximum forKey:@"peopleMaximum"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    //    NSString *tempPath = NSTemporaryDirectory();
+    //    for(NSNumber *i in imageNamesArray){
+    //        NSString *imageName = [NSString stringWithFormat:@"tempPostingImage_%@.jpg",i];
+    //        NSString *imageFile = [tempPath stringByAppendingPathComponent:imageName];
+    //        [request addFile:imageFile withFileName:nil andContentType:@"image/jpeg" forKey:@"images"];
+    //    }
+    //    [request setDelegate:self];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+    
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            if (self.smsObject._isSendBySelf) {
+                MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
+                if (self.smsObject._isApplyTips) {
+                    vc.body = [self.smsObject.smsContent stringByAppendingString:@""];
+                }else{
+                    vc.body = self.smsObject.smsContent;
+                };
+                NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+                for(int i=0;i<[self.receiverArray count];i++){
+                    [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                }
+                vc.recipients = aArray;
+                vc.messageComposeDelegate = self;
+                [self presentModalViewController:vc animated:YES];
+            }else{
+                [self createPartySuc];
+            }
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+	
+}
+
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)applyTipsSwitchAction:(UISwitch *)curSwitch{
+    self.smsObject._isApplyTips = curSwitch.on;
+    [self saveSMSInfo];
+}
+- (void)sendBySelfSwitchAction:(UISwitch *)curSwitch{
+    self.smsObject._isSendBySelf = curSwitch.on;
+    [self saveSMSInfo];
+    
+}
+
+- (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
+	
+	// Notifies users about errors associated with the interface
+	switch (result) {
+		case MessageComposeResultCancelled:{
+            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
+            [sh showInView:self.tabBarController.view];
+            break;
+        }
+		case MessageComposeResultSent:
+			[self createPartySuc];
+			break;
+		case MessageComposeResultFailed:{
+            UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            [av show];
+			break;
+        }
+		default:
+			break;
+	}
+}
+
+
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        [self createPartySuc];
+    }else{
+        [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
+    }
+    
 }
 
 @end

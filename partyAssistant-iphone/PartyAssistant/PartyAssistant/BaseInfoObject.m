@@ -30,6 +30,7 @@
 
 - (void) encodeWithCoder: (NSCoder *) encoder {
     [encoder encodeObject: self.starttimeStr forKey:@"starttimeStr"];
+    [encoder encodeObject: self.starttimeDate forKey:@"starttimeDate"];
 	[encoder encodeObject: self.location forKey:@"location"];
 	[encoder encodeObject: self.description forKey:@"description"];
 	[encoder encodeObject: self.peopleMaximum forKey:@"peopleMaximum"];
@@ -39,12 +40,12 @@
 
 - (id) initWithCoder: (NSCoder *) decoder {
     self.starttimeStr = [decoder decodeObjectForKey:@"starttimeStr"];
+    self.starttimeDate = [decoder decodeObjectForKey:@"starttimeDate"];
 	self.location = [decoder decodeObjectForKey:@"location"];
 	self.description = [decoder decodeObjectForKey:@"description"];
 	self.peopleMaximum = [decoder decodeObjectForKey:@"peopleMaximum"];
     self.userObject = [decoder decodeObjectForKey:@"userObject"];
     self.partyId = [decoder decodeObjectForKey:@"partyId"];
-	
 	return self;
 }
 
@@ -53,14 +54,33 @@
     self.starttimeDate = nil;
     self.location = @"";
     self.description = @"";
-    self.peopleMaximum = 0;
+    self.peopleMaximum = [NSNumber numberWithInt:0];
     self.userObject = [[UserObjectService sharedUserObjectService] getUserObject];
-    self.partyId = 0;
-}
-- (void)formatDateToString{
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init]; 
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"]; 
-    self.starttimeStr = [dateFormatter stringFromDate:self.starttimeDate];
+    self.partyId = [NSNumber numberWithInt:-1];
 }
 
+- (void)formatDateToString{
+    if (self.starttimeDate == nil) {
+        self.starttimeStr = @"";
+    }else{
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init]; 
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"]; 
+        self.starttimeStr = [dateFormatter stringFromDate:self.starttimeDate];
+    }
+}
+
+- (void)formatStringToDate{
+    if (self.starttimeStr == nil) {
+        self.starttimeStr = @"";
+        self.starttimeDate = nil;
+    }else if([self.starttimeStr isEqualToString:@""]){
+        self.starttimeStr = @"";
+        self.starttimeDate = nil;
+    }else{
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init]; 
+        [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"]; 
+        
+        self.starttimeDate = [dateFormatter dateFromString:self.starttimeStr];
+    }
+}
 @end

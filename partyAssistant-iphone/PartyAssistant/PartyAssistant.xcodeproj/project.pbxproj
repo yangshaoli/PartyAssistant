@@ -97,6 +97,14 @@
 		899D62FB145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D62F9145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib */; };
 		899D6304145FFB6B00B9B4EC /* ContactListNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D6302145FFB6B00B9B4EC /* ContactListNavigationController.m */; };
 		899D6305145FFB6B00B9B4EC /* ContactListNavigationController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D6303145FFB6B00B9B4EC /* ContactListNavigationController.xib */; };
+		899D8C69146B6D9C00B48698 /* Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C66146B6D9C00B48698 /* Common.m */; };
+		899D8C6A146B6D9C00B48698 /* GlossyButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C68146B6D9C00B48698 /* GlossyButton.m */; };
+		899D8C6D146B6DB000B48698 /* DataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C6C146B6DB000B48698 /* DataManager.m */; };
+		899D8C70146B6DD300B48698 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C6F146B6DD300B48698 /* MBProgressHUD.m */; };
+		899D8C77146B6DE500B48698 /* PartyLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C72146B6DE500B48698 /* PartyLoginViewController.m */; };
+		899D8C78146B6DE500B48698 /* PartyLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D8C73146B6DE500B48698 /* PartyLoginViewController.xib */; };
+		899D8C79146B6DE500B48698 /* PartyUserRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */; };
+		899D8C7A146B6DE500B48698 /* PartyUserRegisterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */; };
 		89E7D926146280900059ADF4 /* SMSObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D925146280900059ADF4 /* SMSObjectService.m */; };
 		89E7D93014628C400059ADF4 /* UIViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92D14628C400059ADF4 /* UIViewControllerExtra.m */; };
 		89E7D93114628C400059ADF4 /* UITableViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92F14628C400059ADF4 /* UITableViewControllerExtra.m */; };
@@ -244,6 +252,7 @@
 		8947F0251458018100017ED1 /* ClientObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientObject.m; sourceTree = "<group>"; };
 		8947F02B1458044400017ED1 /* BaseInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoService.h; sourceTree = "<group>"; };
 		8947F02C1458044400017ED1 /* BaseInfoService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseInfoService.m; sourceTree = "<group>"; };
+		898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRequestErrorMSG.h; sourceTree = "<group>"; };
 		899BE859145A9431000BAFEC /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		899BE860145A9750000BAFEC /* SendEmailToClientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendEmailToClientsViewController.h; sourceTree = "<group>"; };
 		899BE861145A9750000BAFEC /* SendEmailToClientsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendEmailToClientsViewController.m; sourceTree = "<group>"; };
@@ -260,6 +269,20 @@
 		899D6301145FFB6B00B9B4EC /* ContactListNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactListNavigationController.h; sourceTree = "<group>"; };
 		899D6302145FFB6B00B9B4EC /* ContactListNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactListNavigationController.m; sourceTree = "<group>"; };
 		899D6303145FFB6B00B9B4EC /* ContactListNavigationController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactListNavigationController.xib; sourceTree = "<group>"; };
+		899D8C65146B6D9C00B48698 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		899D8C66146B6D9C00B48698 /* Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Common.m; sourceTree = "<group>"; };
+		899D8C67146B6D9C00B48698 /* GlossyButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlossyButton.h; sourceTree = "<group>"; };
+		899D8C68146B6D9C00B48698 /* GlossyButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlossyButton.m; sourceTree = "<group>"; };
+		899D8C6B146B6DB000B48698 /* DataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataManager.h; sourceTree = "<group>"; };
+		899D8C6C146B6DB000B48698 /* DataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataManager.m; sourceTree = "<group>"; };
+		899D8C6E146B6DD300B48698 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		899D8C6F146B6DD300B48698 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		899D8C71146B6DE500B48698 /* PartyLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyLoginViewController.h; sourceTree = "<group>"; };
+		899D8C72146B6DE500B48698 /* PartyLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyLoginViewController.m; sourceTree = "<group>"; };
+		899D8C73146B6DE500B48698 /* PartyLoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyLoginViewController.xib; sourceTree = "<group>"; };
+		899D8C74146B6DE500B48698 /* PartyUserRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyUserRegisterViewController.h; sourceTree = "<group>"; };
+		899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyUserRegisterViewController.m; sourceTree = "<group>"; };
+		899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyUserRegisterViewController.xib; sourceTree = "<group>"; };
 		89E7D924146280900059ADF4 /* SMSObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSObjectService.h; sourceTree = "<group>"; };
 		89E7D925146280900059ADF4 /* SMSObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSObjectService.m; sourceTree = "<group>"; };
 		89E7D92C14628C400059ADF4 /* UIViewControllerExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerExtra.h; sourceTree = "<group>"; };
@@ -353,6 +376,7 @@
 		891A4D8614579B3C00A2CF47 /* PartyAssistant */ = {
 			isa = PBXGroup;
 			children = (
+				899D8C63146B6C2500B48698 /* Accounts */,
 				89326531145E7440006E827D /* CustomClass */,
 				89391AA414592EDB00721F90 /* External */,
 				8947F027145803CE00017ED1 /* Services */,
@@ -367,6 +391,7 @@
 				891A4D8714579B3C00A2CF47 /* Supporting Files */,
 				893C221A14611A6200966B11 /* NotificationSettings.h */,
 				89E7D935146373480059ADF4 /* URLSettings.h */,
+				898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */,
 			);
 			path = PartyAssistant;
 			sourceTree = "<group>";
@@ -484,6 +509,12 @@
 		89326531145E7440006E827D /* CustomClass */ = {
 			isa = PBXGroup;
 			children = (
+				899D8C6E146B6DD300B48698 /* MBProgressHUD.h */,
+				899D8C6F146B6DD300B48698 /* MBProgressHUD.m */,
+				899D8C65146B6D9C00B48698 /* Common.h */,
+				899D8C66146B6D9C00B48698 /* Common.m */,
+				899D8C67146B6D9C00B48698 /* GlossyButton.h */,
+				899D8C68146B6D9C00B48698 /* GlossyButton.m */,
 				89326535145E8233006E827D /* ReceiverLabel.h */,
 				89326536145E8233006E827D /* ReceiverLabel.m */,
 				89326543145E990E006E827D /* ContactListViewController.h */,
@@ -632,6 +663,8 @@
 		8947F027145803CE00017ED1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				899D8C6B146B6DB000B48698 /* DataManager.h */,
+				899D8C6C146B6DB000B48698 /* DataManager.m */,
 				89391AB914592F3900721F90 /* SynthesizeSingleton.h */,
 				8947F02B1458044400017ED1 /* BaseInfoService.h */,
 				8947F02C1458044400017ED1 /* BaseInfoService.m */,
@@ -643,6 +676,19 @@
 				89277DFC14666C0700B05020 /* PartyListService.m */,
 			);
 			name = Services;
+			sourceTree = "<group>";
+		};
+		899D8C63146B6C2500B48698 /* Accounts */ = {
+			isa = PBXGroup;
+			children = (
+				899D8C71146B6DE500B48698 /* PartyLoginViewController.h */,
+				899D8C72146B6DE500B48698 /* PartyLoginViewController.m */,
+				899D8C73146B6DE500B48698 /* PartyLoginViewController.xib */,
+				899D8C74146B6DE500B48698 /* PartyUserRegisterViewController.h */,
+				899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */,
+				899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */,
+			);
+			name = Accounts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -732,6 +778,8 @@
 				89277E071467851700B05020 /* CopyPartyTableViewController.xib in Resources */,
 				89277E0C1467A4A500B05020 /* SendSMSInCopyPartyTableViewController.xib in Resources */,
 				89277E111467A4C900B05020 /* SendEmailInCopyPartyTableViewController.xib in Resources */,
+				899D8C78146B6DE500B48698 /* PartyLoginViewController.xib in Resources */,
+				899D8C7A146B6DE500B48698 /* PartyUserRegisterViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -823,6 +871,12 @@
 				89277E061467851700B05020 /* CopyPartyTableViewController.m in Sources */,
 				89277E0B1467A4A500B05020 /* SendSMSInCopyPartyTableViewController.m in Sources */,
 				89277E101467A4C900B05020 /* SendEmailInCopyPartyTableViewController.m in Sources */,
+				899D8C69146B6D9C00B48698 /* Common.m in Sources */,
+				899D8C6A146B6D9C00B48698 /* GlossyButton.m in Sources */,
+				899D8C6D146B6DB000B48698 /* DataManager.m in Sources */,
+				899D8C70146B6DD300B48698 /* MBProgressHUD.m in Sources */,
+				899D8C77146B6DE500B48698 /* PartyLoginViewController.m in Sources */,
+				899D8C79146B6DE500B48698 /* PartyUserRegisterViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

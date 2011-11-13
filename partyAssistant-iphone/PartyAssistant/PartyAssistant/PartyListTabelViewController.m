@@ -45,6 +45,8 @@
     self.partyList = [[NSMutableArray alloc] initWithArray:[[PartyListService sharedPartyListService] getPartyList]];
     if ([partyList count] == 0) {
         self._isNeedRefresh = YES;
+    }else{
+        self._isNeedRefresh = NO;
     }
     if (self._isNeedRefresh) {
         [self refreshBtnAction];
@@ -101,22 +103,30 @@
     return [self.partyList count];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
+{
+    return 60.0f;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     
     // Configure the cell...
     BaseInfoObject *baseinfo = [partyList objectAtIndex:indexPath.row];
-    NSRange range;
-    range.location = 16;
-    range.length = baseinfo.description.length - 16;
-    cell.textLabel.text = [baseinfo.description stringByReplacingCharactersInRange:range withString:@"..."];
-    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(200, 20, 110, 24)];
+    if (baseinfo.description.length > 16) {
+        NSRange range;
+        range.location = 16;
+        range.length = baseinfo.description.length - 16;
+        cell.textLabel.text = [baseinfo.description stringByReplacingCharactersInRange:range withString:@"..."];
+    }else{
+        cell.textLabel.text = baseinfo.description;
+    }
+    
+    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(130, 44, 150, 16)];
     timeLabel.textAlignment = UITextAlignmentRight;
     timeLabel.text = baseinfo.starttimeStr;
     timeLabel.textColor = [UIColor lightGrayColor];
@@ -184,9 +194,11 @@
 - (void)refreshBtnAction{
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    NSURL *url = [NSURL URLWithString:GET_PARTY_LIST];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSString stringWithFormat:@"%@uid=%d",url,user.uID]];
+    int page = 1;
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,page]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
+    [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -198,54 +210,62 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-	NSNumber* code = [[result objectForKey:@"status"] objectForKey:@"code"];
-	NSString *description = [[result objectForKey:@"status"] objectForKey:@"description"];
+	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
 //	[self dismissWaiting];
-	if ([code intValue]==200 && [description isEqualToString:@"ok"]) {
-		NSDictionary *dataSource = [result objectForKey:@"datasource"];
-        self.pageIndex = [[dataSource objectForKey:@"page"] intValue];
-        
-        if (pageIndex == 0) {
-            pageIndex = 1;
+    if([request responseStatusCode] == 200){
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            self.pageIndex = [[dataSource objectForKey:@"page"] intValue];
+            
+            if (pageIndex == 0) {
+                pageIndex = 1;
+            }
+            
+            NSArray *allDatas = [dataSource objectForKey:@"partyList"];
+            [self.partyList removeAllObjects];
+            for(int i=0;i<[allDatas count];i++){
+                NSDictionary *party = [allDatas objectAtIndex:i];
+                BaseInfoObject *biObj = [[BaseInfoObject alloc] init];
+                if ([party objectForKey:@"starttime"] == [NSNull null]) {
+                    biObj.starttimeStr = @"";
+                }else{
+                    biObj.starttimeStr = [party objectForKey:@"starttime"];
+                }
+                biObj.description = [party objectForKey:@"description"];
+                biObj.peopleMaximum = [party objectForKey:@"peopleMaximum"];
+                biObj.location = [party objectForKey:@"location"];
+                biObj.partyId = [party objectForKey:@"partyId"];
+                [biObj formatStringToDate];
+                [self.partyList addObject:biObj];
+            }
+            self.navigationItem.rightBarButtonItem.customView = nil;
+            [self.tableView reloadData];
+            //        [self setBottomRefreshViewYandDeltaHeight];
+        }else{
+            [self showAlertRequestFailed:description];		
         }
-        
-        NSArray *allDatas = [dataSource objectForKey:@"partyList"];
-        [self.partyList removeAllObjects];
-        for(int i=0;i<[partyList count];i++){
-            NSDictionary *party = [partyList objectAtIndex:i];
-            BaseInfoObject *biObj = [[BaseInfoObject alloc] init];
-            biObj.starttimeDate = [party objectForKey:@"starttime"];
-            biObj.description = [party objectForKey:@"description"];
-            biObj.peopleMaximum = [party objectForKey:@"peopleMaximum"];
-            biObj.location = [party objectForKey:@"location"];
-            biObj.partyId = [party objectForKey:@"partyId"];
-            [biObj formatDateToString];
-            [self.partyList addObject:biObj];
-        }
-        
-        
-        [self.tableView reloadData];
-//        [self setBottomRefreshViewYandDeltaHeight];
-	}else{
-		[self showAlertRequestFailed:description];		
-	}
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
 	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"复制",@"删除",@"分享", nil];
-    UITableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
+//    UITableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
     sheet.tag = indexPath.row;
-    [sheet showInView:self.view];
+    [sheet showInView:self.tabBarController.view];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex

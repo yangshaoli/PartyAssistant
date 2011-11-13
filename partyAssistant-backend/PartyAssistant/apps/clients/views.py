@@ -80,18 +80,3 @@ def invite_list(request,party_id,invite_type):
     
     return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party}) 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

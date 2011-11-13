@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseInfoObject.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "UITableViewControllerExtra.h"
+
 
 @interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{
     BaseInfoObject *baseinfo;

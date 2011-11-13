@@ -10,9 +10,15 @@ from django.db import models
 import datetime
 
 APPLY_STATUS = (
-    (u'已报名', u'已报名'),
-    (u'未报名', u'未报名'),
-    (u'不参加', u'不参加'),
+    ('apply', 'apply'),
+    ('noanswer', 'noanswer'),
+    ('reject', 'reject'),
+)
+
+INVITE_TYPE = (
+    ('email', 'email'),
+    ('phone', 'phone'),
+    ('public', 'public'),
 )
 
 class Party(models.Model):
@@ -26,6 +32,7 @@ class Party(models.Model):
     
     created_time = models.DateTimeField(auto_now_add=True)
     last_modified_time = models.DateTimeField(auto_now=True)
+    invite_type = models.CharField(max_length=8, blank=True, null=True, choices=INVITE_TYPE)
     
     def __unicode__(self):
         return '%s %s' % (self.description[:10], datetime.datetime.strftime(self.start_time, '%m-%d %H:%M'))
@@ -33,4 +40,4 @@ class Party(models.Model):
 class PartiesClients(models.Model):
     client = models.ForeignKey(Client)
     party = models.ForeignKey(Party)
-    apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default=u'未报名')
+    apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default='noanswer')

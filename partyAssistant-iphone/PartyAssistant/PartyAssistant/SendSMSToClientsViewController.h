@@ -26,8 +26,9 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "PartyListTabelViewController.h"
+#import "HTTPRequestErrorMSG.h"
 
-@interface SendSMSToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate>
+@interface SendSMSToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
 {
     UIView *receiversView;
     NSMutableArray *receiverArray;
