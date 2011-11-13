@@ -9,47 +9,85 @@
 #import "SMSObject.h"
 
 @implementation SMSObject
-@synthesize smsID,smsContent,_isSendBySelf,_isApplyTips,receiversArray;
+@synthesize smsID,smsContent,_isSendBySelf,_isApplyTips,receiversArray,receiversArrayJson;
 
 - (id)init
 {
     self = [super init];
     if (self) {
-		self.smsID = [NSNumber numberWithInt:-1];
+		self.smsID = -1;
         self.smsContent = @"";
         self._isSendBySelf = YES;
         self._isApplyTips = YES;
         self.receiversArray = nil;
+        self.receiversArrayJson = nil;
+    }
+    
+    return self;
+}
+
+- (id)initWithDefaultContent:(BaseInfoObject *)baseinfo
+{
+    self = [super init];
+    if (self) {
+		self.smsID = -1;
+        self.smsContent = @"";
+        self._isSendBySelf = YES;
+        self._isApplyTips = YES;
+        self.receiversArray = nil;
+    }
+    if ([self.smsContent isEqualToString:@""]) {
+        if (baseinfo == nil) {
+            BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
+            baseinfo = [s getBaseInfo];
+        }
+        
     }
     
     return self;
 }
 
 - (void) encodeWithCoder: (NSCoder *) encoder {
-    
-    [encoder encodeObject: self.smsID forKey:@"smsID"];
+    self.receiversArrayJson = [self setupReceiversArrayData];
+    [encoder encodeObject: [NSNumber numberWithInteger: self.smsID] forKey:@"smsID"];
 	[encoder encodeObject: self.smsContent forKey:@"smsContent"];
 	[encoder encodeObject: [NSNumber numberWithBool:self._isSendBySelf] forKey:@"_isSendBySelf"];
 	[encoder encodeObject: [NSNumber numberWithBool:self._isApplyTips] forKey:@"_isApplyTips"];
     [encoder encodeObject: self.receiversArray forKey:@"receiversArray"];
+    [encoder encodeObject: self.receiversArrayJson  forKey:@"receiversArrayJson"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
-    self.smsID = [decoder decodeObjectForKey:@"smsID"];
+    self.smsID = [[decoder decodeObjectForKey:@"smsID"] integerValue];
 	self.smsContent = [decoder decodeObjectForKey:@"smsContent"];
 	self._isSendBySelf = [[decoder decodeObjectForKey:@"_isSendBySelf"] boolValue];
 	self._isApplyTips = [[decoder decodeObjectForKey:@"_isApplyTips"] boolValue];
     self.receiversArray = [decoder decodeObjectForKey:@"receiversArray"];
+    self.receiversArrayJson = [decoder decodeObjectForKey:@"receiversArrayJson"];
 	
 	return self;
 }
 
 - (void)clearObject{
-	self.smsID = [NSNumber numberWithInt:-1];
+	self.smsID = -1;
     self.smsContent = @"";
     self._isSendBySelf = YES;
     self._isApplyTips = YES;
     self.receiversArray = nil;
+    self.receiversArrayJson = nil;
 }
 
+- (NSString *)setupReceiversArrayData
+{
+    NSMutableArray *nArray = [[NSMutableArray alloc] initWithCapacity:[self.receiversArray count]];
+    for (int i=0; i<[receiversArray count]; i++) {
+        NSLog(@"here:%d",i);
+        ClientObject *client = [self.receiversArray objectAtIndex:i];
+        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:client.cID],@"cID",client.cName,@"cName",client.cVal,@"cValue", nil];
+        [nArray addObject:dic];
+    }
+    NSLog(@"%@",nArray);
+    NSLog(@"%@",[nArray JSONRepresentation]);
+    return [nArray JSONRepresentation];
+}
 @end

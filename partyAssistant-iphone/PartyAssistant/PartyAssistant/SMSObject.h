@@ -7,22 +7,29 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "BaseInfoObject.h"
+#import "BaseInfoService.h"
+#import "ClientObject.h"
+#import "JSON.h"
 
 @interface SMSObject : NSObject
 {
-    NSNumber *smsID;
+    NSInteger smsID;
     NSString *smsContent;
     BOOL _isSendBySelf;
     BOOL _isApplyTips;
     NSArray *receiversArray;
+    NSString *receiversArrayJson;
 }
 
-@property(nonatomic,retain)NSNumber *smsID;
+@property(nonatomic,assign)NSInteger smsID;
 @property(nonatomic,retain)NSString *smsContent;
 @property(nonatomic,assign)BOOL _isSendBySelf;
 @property(nonatomic,assign)BOOL _isApplyTips;
 @property(nonatomic,retain)NSArray *receiversArray;
+@property(nonatomic,retain)NSString *receiversArrayJson;
 
 - (void)clearObject;
+- (NSString *)setupReceiversArrayData;
 
 @end

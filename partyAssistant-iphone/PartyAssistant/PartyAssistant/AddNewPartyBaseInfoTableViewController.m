@@ -45,6 +45,7 @@
     if ([baseInfoObject.starttimeStr isEqualToString:@""]) {
         baseInfoObject.starttimeDate = [NSDate date];
         [baseInfoObject formatDateToString];
+        [baseinfoService saveBaseInfo];
     }
 }
 
@@ -292,6 +293,7 @@
 {
     if (actionSheet.tag == 0) {
         self.baseInfoObject.starttimeDate = [datePicker date];
+        NSLog(@"date:%@",[datePicker date]);
         [self.baseInfoObject formatDateToString];
         [self.tableView reloadData];
     }else{

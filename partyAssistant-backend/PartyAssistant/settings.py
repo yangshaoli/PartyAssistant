@@ -107,7 +107,7 @@ MIDDLEWARE_CLASSES = (
     'middlewares.detect_mobile_browser_middleware.DetectMobileBrowserMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+#    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'middlewares.variant_template_middleware.VariantTemplateMiddleware', 

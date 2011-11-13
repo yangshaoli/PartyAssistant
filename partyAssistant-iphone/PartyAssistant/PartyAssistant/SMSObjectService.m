@@ -39,7 +39,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(SMSObjectService)
     if (!self.smsObject) {
         return;
     }
-    
     NSMutableData *theData = [NSMutableData data];
     NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
     

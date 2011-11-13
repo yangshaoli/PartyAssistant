@@ -15,10 +15,28 @@
 {
     self = [super init];
     if (self) {
-        // Initialization code here.
+		self.uID = 1;
+        self.phoneNum = @"";
     }
     
     return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *) encoder {
+    [encoder encodeObject: [NSNumber numberWithInteger:self.uID] forKey:@"uID"];
+	[encoder encodeObject: self.phoneNum forKey:@"phoneNum"];
+}
+
+- (id) initWithCoder: (NSCoder *) decoder {
+    self.uID = [[decoder decodeObjectForKey:@"uID"] integerValue];
+	self.phoneNum = [decoder decodeObjectForKey:@"phoneNum"];
+	
+	return self;
+}
+
+- (void)clearObject{
+	self.uID = 1;
+    self.phoneNum = @"";
 }
 
 @end

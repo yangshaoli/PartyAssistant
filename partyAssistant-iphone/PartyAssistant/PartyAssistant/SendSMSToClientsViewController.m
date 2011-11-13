@@ -33,7 +33,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.tabBarController.selectedIndex = 1;
     UIBarButtonItem *doneBtn=[[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.rightBarButtonItem = doneBtn;
     if (!_isShowAllReceivers) {
@@ -346,16 +345,17 @@
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:self.smsObject.receiversArray forKey:@"receivers"];
+    [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
     [request setPostValue:@"" forKey:@"subject"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
+    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
     [request setPostValue:@"SMS" forKey:@"msgType"];
     [request setPostValue:baseinfo.starttimeDate forKey:@"starttime"];
     [request setPostValue:baseinfo.location forKey:@"location"];
     [request setPostValue:baseinfo.description forKey:@"description"];
     [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
-    [request setPostValue:user.uID forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
 //    NSString *tempPath = NSTemporaryDirectory();
 //    for(NSNumber *i in imageNamesArray){
 //        NSString *imageName = [NSString stringWithFormat:@"tempPostingImage_%@.jpg",i];
@@ -366,12 +366,15 @@
     request.timeOutSeconds = 30;
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    NSLog(@"send");
     
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
+    NSLog(@"receive");
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
 	NSString *response = [request responseString];
+    NSLog(@"res:%@",response);
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
 	NSNumber* code = [[result objectForKey:@"status"] objectForKey:@"code"];
@@ -449,6 +452,5 @@
     }
     
 }
-
 
 @end
