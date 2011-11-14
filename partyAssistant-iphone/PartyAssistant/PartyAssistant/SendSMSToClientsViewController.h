@@ -52,7 +52,7 @@
 - (void)setupReceiversView;
 - (void)setDefaultAction;
 - (void)saveSMSInfo;
-- (void)doneBtnAction;
+- (void)sendCreateRequest;
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch;
 - (void)sendBySelfSwitchAction:(UISwitch *)curSwitch;
 - (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo;

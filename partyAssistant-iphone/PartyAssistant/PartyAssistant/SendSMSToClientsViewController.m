@@ -8,6 +8,10 @@
 
 #import "SendSMSToClientsViewController.h"
 
+#define APPLY_TIPS_ALERT_TAG 12
+#define SET_DEFAULT_ALERT_TAG 11
+#define DONE_ALERT_TAG 13
+
 @implementation SendSMSToClientsViewController
 @synthesize receiverArray,contentTextView,receiversView,_isShowAllReceivers,countlbl,smsObject,receiverCell;
 
@@ -171,7 +175,7 @@
 
 - (void)setDefaultAction{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"您将丢失该页面所有内容，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-    alertView.tag = 11;
+    alertView.tag = SET_DEFAULT_ALERT_TAG;
     [alertView show];
 }
 
@@ -213,7 +217,6 @@
     }else if(indexPath.section == 0){
         return 44.0*3;
     }
-    NSLog(@"!!!!!!");
     return 44.0f;
 }
 
@@ -347,6 +350,15 @@
 
 - (void)doneBtnAction{
     [self saveSMSInfo];
+    if ([self.receiverArray count] == 0) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+        alertV.tag = DONE_ALERT_TAG;
+        [alertV show];
+    }else{
+        [self sendCreateRequest];
+    }
+}
+- (void)sendCreateRequest{
     [self showWaiting];
     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
     BaseInfoObject *baseinfo = [bs getBaseInfo];
@@ -420,6 +432,11 @@
 
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch{
     self.smsObject._isApplyTips = curSwitch.on;
+    if (!self.smsObject._isApplyTips) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"关闭报名提示后，在该短信中将不包含报名链接." delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+        alertV.tag = APPLY_TIPS_ALERT_TAG;
+        [alertV show];
+    }
     [self saveSMSInfo];
 }
 - (void)sendBySelfSwitchAction:(UISwitch *)curSwitch{
@@ -478,16 +495,22 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if (buttonIndex == 1) {
-        [self.smsObject clearObject];
-        BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
-        BaseInfoObject *baseinfo  = [s getBaseInfo];
-        self.smsObject.smsContent = [self getDefaultContent:baseinfo];
-        SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
-        [ss saveSMSObject];
-        receiverCell.receiverArray = self.receiverArray;
-        [receiverCell setupCellData];
-        [self.tableView reloadData];
+    if(alertView.tag == SET_DEFAULT_ALERT_TAG){
+        if (buttonIndex == 1) {
+            [self.smsObject clearObject];
+            BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
+            BaseInfoObject *baseinfo  = [s getBaseInfo];
+            self.smsObject.smsContent = [self getDefaultContent:baseinfo];
+            SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
+            [ss saveSMSObject];
+            receiverCell.receiverArray = self.receiverArray;
+            [receiverCell setupCellData];
+            [self.tableView reloadData];
+        }
+    }if (alertView.tag == DONE_ALERT_TAG) {
+        if (buttonIndex == 1) {
+            [self sendCreateRequest];
+        }
     }
 }
 
