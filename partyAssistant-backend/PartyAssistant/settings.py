@@ -148,7 +148,7 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         }, 
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '%(levelname)s %(asctime)s %(message)s'
         },
     },
     'handlers': {
@@ -164,7 +164,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG', 
             'class': 'logging.handlers.RotatingFileHandler', 
-            'formatter': 'verbose', 
+            'formatter': 'simple', 
             'filename': 'airenao.log', 
             'maxBytes': 1048576, 
             'backupCount': 10
