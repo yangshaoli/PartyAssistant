@@ -254,11 +254,16 @@ def copy_party(request,party_id):#复制party和联系人
     new_party = copy.deepcopy(old_party)
     new_party.id = None
     new_party.save()
-    old_message = EmailMessage.objects.get(party=old_party)
-    new_message = copy.deepcopy(old_message)
-    new_message.id = None
-    new_message.party = new_party
-    new_message.save()
+    old_message = None
+    try:
+        old_message = get_object_or_404(EmailMessage, party=old_party)
+    except:
+        pass
+    else:
+        new_message = copy.deepcopy(old_message)
+        new_message.id = None
+        new_message.party = new_party
+        new_message.save()
     
     clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
     for client in clients:
