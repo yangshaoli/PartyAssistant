@@ -23,7 +23,14 @@
 <tr>
  
 <td>{{ party_client.client.name }} </td>
-<td>{{ party_client.client.phone }}</td>
+<td>
+{% if party.invite_type == 'email' %}
+{{ party_client.client.email }}
+{% endif %}
+{% if party.invite_type == 'phone' %}
+{{ party_client.client.phone }}
+{% endif %}
+</td>
    <td>
 {% if applystatus == 'all' or applystatus == 'noanswer'  %}  
  <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a> 
