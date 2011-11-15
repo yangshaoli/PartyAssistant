@@ -129,7 +129,6 @@ def email_invite(request, party_id):
         
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
-            
             clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         else:
             clients = PartiesClients.objects.filter(party=party_id).filter(apply_status=apply_status).exclude(client__invite_type='public')
@@ -141,10 +140,10 @@ def email_invite(request, party_id):
 
             content = EmailMessage.objects.get(party=party).content
             data = {
-            'client_email_list': client_email_list, 
-            'content': content,
-            'is_apply_tips' : True
-        }
+                'client_email_list': client_email_list, 
+                'content': content,
+                'is_apply_tips' : True
+            }
             form = EmailInviteForm(data)
         else:
             form = EmailInviteForm()
@@ -208,9 +207,31 @@ def sms_invite(request, party_id):
             
             return redirect('list_party')
     else:
-        form = SMSInviteForm()
-    
-    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
+        client_phone_list = []
+        content = ''
+        
+        apply_status = request.GET.get('apply', 'all')
+        if apply_status == 'all':
+            clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
+        else:
+            clients = PartiesClients.objects.filter(party=party_id).filter(apply_status=apply_status).exclude(client__invite_type='public')
+        
+        if clients:
+            for client in clients:
+                client_phone_list.append(client.client.phone)
+            client_phone_list = ','.join(client_phone_list)
+
+            content = SMSMessage.objects.get(party=party).content
+            data = {
+                'client_email_list': client_phone_list, 
+                'content': content,
+                'is_apply_tips' : True
+            }
+            form = SMSInviteForm(data)
+        else:
+            form = SMSInviteForm()
+            
+    return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party})
 
 
 def delete_party_notice(request,party_id):

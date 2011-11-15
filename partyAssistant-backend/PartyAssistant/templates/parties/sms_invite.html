@@ -1,0 +1,9 @@
+{% extends 'login_base.html' %}
+
+{% block content %}
+	<form action="{% url sms_invite party.id %}" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input id="id_sms_invite_submit" type="submit" value="submit" />
+	</form>
+{% endblock %}
