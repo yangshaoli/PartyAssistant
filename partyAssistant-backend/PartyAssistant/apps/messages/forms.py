@@ -10,7 +10,7 @@ import re
 class EmailInviteForm(forms.Form):
     client_email_list = forms.CharField(widget=forms.Textarea())
     content = forms.CharField(widget=forms.Textarea())
-    is_apply_tips = forms.BooleanField()
+    is_apply_tips = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     
     def clean_client_email_list(self):
         client_email_list = self.cleaned_data['client_email_list']
