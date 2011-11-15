@@ -65,6 +65,10 @@
         self.receiverCell = [[ReceiverTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
         receiverCell.selectionStyle = UITableViewCellSelectionStyleNone;
         receiverCell.receiverArray = self.receiverArray;
+        UIButton *addBTN = [UIButton buttonWithType:UIButtonTypeContactAdd];
+        [addBTN setFrame:CGRectMake(280, 10, 30, 30)];
+        [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
+        [receiverCell addSubview:addBTN];
     }
 }
 
@@ -122,13 +126,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     if (indexPath.section == 0) {
-        NSLog(@"123");
-        UIButton *addBTN = [UIButton buttonWithType:UIButtonTypeContactAdd];
-        [addBTN setFrame:CGRectMake(280, 10, 30, 30)];
-        [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
-        [receiverCell addSubview:addBTN];
         [receiverCell setupCellData];
-        NSLog(@"height:%f",receiverCell.frame.size.height);
         return self.receiverCell;
     }else{
         UITableViewCell *cell = nil;// [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -137,7 +135,9 @@
         }
             
         // Configure the cell...
-        if(indexPath.section == 1){
+        if (indexPath.section == 0) {
+            
+        }else if(indexPath.section == 1){
             if (!contentTextView) {
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,180)];
             }
@@ -180,12 +180,6 @@
 }
 
 - (void)addReceiver{
-//    ABPeoplePickerNavigationController *adPickerNavigationController = [[ABPeoplePickerNavigationController alloc] init];
-//    adPickerNavigationController.displayedProperties = [NSArray arrayWithObjects:[NSNumber numberWithInt:kABPersonPhoneProperty],nil];
-//    adPickerNavigationController.peoplePickerDelegate = self;
-//    [self presentModalViewController:adPickerNavigationController animated:YES];
-//    ContactListViewController *vc=[[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
-//    [self.navigationController pushViewController:vc animated:YES];
     ContactListViewController *clvc = [[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
     clvc.msgType = @"SMS";
     clvc.selectedContactorsArray = self.receiverArray;
@@ -277,57 +271,9 @@
     self.receiverArray = [userinfo objectForKey:@"selectedCArray"];
     receiverCell.receiverArray = self.receiverArray;
     [self.receiverCell setupCellData];
-//    [self.tableView beginUpdates];
+    [self saveSMSInfo];
 }
-//- (void)setupReceiversView{
-//    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-//    
-//    CGRect cframe = cell.textLabel.frame;
-//    NSArray *subVArray = [self.receiversView subviews];
-//    for (int j = 0;j < [subVArray count];j++) {
-//        [[subVArray objectAtIndex:j] removeFromSuperview];
-//    }
-//    [self.countlbl removeFromSuperview];
-//    self.countlbl = nil;
-//    if (_isShowAllReceivers) {
-//        for (int i = 0 ;i < [receiverArray count];i++) {
-//            ReceiverLabel *rlbl = [[ReceiverLabel alloc] initWithReceiverObject:[receiverArray objectAtIndex:i] index:i];
-//            [self.receiversView addSubview:rlbl];
-//        }
-//        if ([receiverArray count] == 0) {
-//            UILabel *defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 140, 44)];
-//            defaultLabel.backgroundColor = [UIColor clearColor];
-//            defaultLabel.text = @"请添加收件人";
-//            defaultLabel.textColor = [UIColor lightGrayColor];
-//            [self.receiversView addSubview:defaultLabel];
-//            self.receiversView.frame = CGRectMake(receiversView.frame.origin.x, receiversView.frame.origin.y, receiversView.frame.size.width, 44.0f);
-//            cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, 44.0f);
-//        }else{
-//            self.receiversView.frame = CGRectMake(receiversView.frame.origin.x, receiversView.frame.origin.y, receiversView.frame.size.width, [receiverArray count]*44.0f);
-//            cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, [receiverArray count]*44.0f);
-//        }
-//    }else{
-//        if ([receiverArray count]>0) {
-//            ReceiverLabel *rlbl = [[ReceiverLabel alloc] initWithReceiverObject:[receiverArray objectAtIndex:0] index:0];
-//            [self.receiversView addSubview:rlbl];
-//            self.countlbl = [[UILabel alloc] initWithFrame:CGRectMake(receiversView.frame.origin.x+receiversView.frame.size.width+5, 0, 50, 44)];
-//            countlbl.text = [NSString stringWithFormat:@"共%d人",[self.receiverArray count]];
-//            countlbl.backgroundColor = [UIColor clearColor];
-//            countlbl.adjustsFontSizeToFitWidth = YES;
-//            [cell addSubview:countlbl];
-//        }else{
-//            UILabel *defaultLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 140, 44)];
-//            defaultLabel.backgroundColor = [UIColor clearColor];
-//            defaultLabel.text = @"请添加收件人";
-//            defaultLabel.textColor = [UIColor lightGrayColor];
-//            [self.receiversView addSubview:defaultLabel];
-//        }
-//        self.receiversView.frame = CGRectMake(receiversView.frame.origin.x, receiversView.frame.origin.y, receiversView.frame.size.width, 44.0f);
-//        cell.frame = CGRectMake(cell.frame.origin.x, cell.frame.origin.y, cell.frame.size.width, 44.0f);
-//    }
-//    cell.textLabel.frame = CGRectMake(cframe.origin.x,cframe.origin.y,cframe.size.width,40);
-//    cell.textLabel.backgroundColor = [UIColor clearColor];
-//}
+
 
 - (void)saveSMSInfo{
     self.smsObject.smsContent = [self.contentTextView text];

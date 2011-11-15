@@ -11,14 +11,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 @interface ReceiverLabel : UILabel
-{
-    const CGFloat maxWidth;
-    const CGFloat maxHeight;
-}
 
-@property(nonatomic, assign)CGFloat maxWidth;
-@property(nonatomic, assign)CGFloat maxHeight;
-
-- (id)initWithReceiverObject:(ClientObject *)receiver index:(NSInteger)lbIndex;
+- (id)initWithReceiverObject:(ClientObject *)receiver lbFrame:(CGRect)lbFrame;
 
 @end

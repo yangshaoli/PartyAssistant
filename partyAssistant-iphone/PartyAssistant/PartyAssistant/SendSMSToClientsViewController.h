@@ -49,7 +49,6 @@
 @property(nonatomic, retain)ReceiverTableViewCell *receiverCell;
 
 - (void)reorganizeReceiverField:(NSNotification *)notification;
-- (void)setupReceiversView;
 - (void)setDefaultAction;
 - (void)saveSMSInfo;
 - (void)sendCreateRequest;

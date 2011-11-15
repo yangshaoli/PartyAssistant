@@ -25,6 +25,7 @@
 #import "UserObjectService.h"
 #import "PartyListTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
+#import "ReceiverTableViewCell.h"
 
 
 @interface SendSMSInCopyPartyTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
@@ -36,6 +37,7 @@
     UITextView *contentTextView;
     BOOL _isShowAllReceivers;
     UILabel *countlbl;
+    ReceiverTableViewCell *receiverCell;
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseinfo;
@@ -45,9 +47,9 @@
 @property(nonatomic, retain)UITextView *contentTextView;
 @property(nonatomic, assign)BOOL _isShowAllReceivers;
 @property(nonatomic, retain)UILabel *countlbl;
+@property(nonatomic, retain)ReceiverTableViewCell *receiverCell;
 
 - (void)reorganizeReceiverField:(NSNotification *)notification;
-- (void)setupReceiversView;
 - (void)setDefaultAction;
 - (void)saveSMSInfo;
 - (void)doneBtnAction;

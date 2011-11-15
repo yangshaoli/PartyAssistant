@@ -542,8 +542,6 @@
 				899D8C66146B6D9C00B48698 /* Common.m */,
 				899D8C67146B6D9C00B48698 /* GlossyButton.h */,
 				899D8C68146B6D9C00B48698 /* GlossyButton.m */,
-				89326535145E8233006E827D /* ReceiverLabel.h */,
-				89326536145E8233006E827D /* ReceiverLabel.m */,
 				89326543145E990E006E827D /* ContactListViewController.h */,
 				89326544145E990E006E827D /* ContactListViewController.m */,
 				89326545145E990E006E827D /* ContactListViewController.xib */,
@@ -562,6 +560,8 @@
 				89E7D92F14628C400059ADF4 /* UITableViewControllerExtra.m */,
 				89E7D93214628C670059ADF4 /* IndicatorMessageView.h */,
 				89E7D93314628C680059ADF4 /* IndicatorMessageView.m */,
+				89326535145E8233006E827D /* ReceiverLabel.h */,
+				89326536145E8233006E827D /* ReceiverLabel.m */,
 				8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */,
 				8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */,
 			);
