@@ -19,6 +19,7 @@ from models import Party
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from utils.tools.email_tool import send_emails
 import copy
+import datetime
 
 
 
@@ -123,8 +124,7 @@ def email_invite(request, party_id):
             return redirect('list_party')
     else:
         client_email_list = []
-        content = ''
-        
+        content = ''    
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
             clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
@@ -144,7 +144,21 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
         else:
-            form = EmailInviteForm()
+            content = content+request.user.username+u'邀请你参加：'
+            if party.start_time == '' and party.address == '':
+                content = content+party.description+u',时间、地点，另行通知。'
+            elif party.start_time != '' and party.address == '':
+                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+',地点，另行通知。'     
+            elif party.start_time == '' and party.address != '':
+                content = content+u'在'+party.address+party.description+u',时间待定。'
+            else:  
+                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+            data = {
+                'client_email_list': '', 
+                'content': content,
+                'is_apply_tips' : True
+            }
+            form = EmailInviteForm(data)
     
     return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
 
