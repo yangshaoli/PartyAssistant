@@ -11,7 +11,7 @@
 <br>
 
 <a href="{%url email_invite party.id %}?apply=all">重新邀请</a>
-<a href="{%url edit_party 1 %}">编辑</a>&nbsp;&nbsp;<a href="#" onclick='{% url delete_party party.id %}'>删除</a><br/>
+<a href="{%url edit_party 1 %}">编辑</a>&nbsp;&nbsp;<a href='{% url delete_party party.id %}'>删除</a><br/>
 <a href="{% url invite_list party.id %}?apply=all">邀请人数</a>: {{client.invite.count}}<br/>
 <a href="{% url invite_list party.id %}?apply=apply">报名人数</a>: {{client.apply.count}}<br/>
 <a href="{% url invite_list party.id %}?apply=noanswer">未响应人数</a>: {{client.noanswer.count}}<br/>
