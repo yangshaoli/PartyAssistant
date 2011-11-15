@@ -171,13 +171,13 @@
     }
 	
     if (mode == MBProgressHUDModeDeterminate) {
-        self.indicator = [[MBRoundProgressView alloc] init];
+        self.indicator = [[[MBRoundProgressView alloc] init] autorelease];
     }
     else if (mode == MBProgressHUDModeCustomView && self.customView != nil){
         self.indicator = self.customView;
     } else {
-		self.indicator = [[UIActivityIndicatorView alloc]
-						   initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+		self.indicator = [[[UIActivityIndicatorView alloc]
+						   initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge] autorelease];
         [(UIActivityIndicatorView *)indicator startAnimating];
 	}
 	
@@ -200,7 +200,7 @@
 	MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:view];
 	[view addSubview:hud];
 	[hud show:animated];
-	return hud;
+	return [hud autorelease];
 }
 
 + (BOOL)hideHUDForView:(UIView *)view animated:(BOOL)animated {
@@ -484,8 +484,8 @@
 - (void)showWhileExecuting:(SEL)method onTarget:(id)target withObject:(id)object animated:(BOOL)animated {
 	
     methodForExecution = method;
-    targetForExecution = target;
-    objectForExecution = object;
+    targetForExecution = [target retain];
+    objectForExecution = [object retain];
 	
     // Launch execution in new thread
 	taskInProgress = YES;
@@ -496,14 +496,16 @@
 }
 
 - (void)launchExecution {
-
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
     // Start executing the requested task
     [targetForExecution performSelector:methodForExecution withObject:objectForExecution];
 	
     // Task completed, update view in main thread (note: view operations should
     // be done only in the main thread)
     [self performSelectorOnMainThread:@selector(cleanUp) withObject:nil waitUntilDone:NO];
-
+	
+    [pool release];
 }
 
 - (void)animationFinished:(NSString *)animationID finished:(BOOL)finished context:(void*)context {

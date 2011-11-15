@@ -10,6 +10,8 @@
 #import "GlossyButton.h"
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
+#import "PartyListTableViewController.h"
+#import "AddNewPartyBaseInfoTableViewController.h"
 
 #define NotLegalTag 1
 #define NotPassTag  2
@@ -81,7 +83,7 @@
     _loginButton.saturation = 0.2f;
     _loginButton.titleLabel.font = [UIFont boldSystemFontOfSize:18.0f];
     [_loginButton setTitle:@"登录" forState:UIControlStateNormal];
-    //[_loginButton addTarget:self action:@selector(loginCheck) forControlEvents:UIControlEventTouchUpInside];
+    [_loginButton addTarget:self action:@selector(loginCheck) forControlEvents:UIControlEventTouchUpInside];
     
     [tableFooterView addSubview:_loginButton];
     [_tableView setTableFooterView:tableFooterView];
@@ -148,13 +150,26 @@
             
             break;
     }
-    BOOL result = NO;
+    BOOL result = YES;
     if (result) {
        //use different work flow
         
         //1.modal
         
-        //2.nav 
+        //2.nav
+        if (self.isModal) {
+            
+        } else {
+            //2
+            PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+            AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:nil bundle:nil];
+            UITabBarController *tab = [[UITabBarController alloc] init];
+            tab.viewControllers = [NSArray arrayWithObjects: list, addPage, nil];
+            [self.navigationController pushViewController:tab animated:YES];
+            [list release];
+            [addPage release];
+        }
+        
     } else {
         [self showNotPassChekAlert];
     }
