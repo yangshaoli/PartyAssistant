@@ -56,10 +56,8 @@ def edit_party(request, party_id):
         if form.is_valid():
             party = form.save()
             
-            if 'sms_invite' in request.POST:
-                return redirect('sms_invite', party_id=party.id)
-            else:
-                return redirect('email_invite', party_id=party.id)
+            return list_party(request)          
+
     else:
         form = CreatePartyForm(instance=party)
     
@@ -251,27 +249,37 @@ def delete_party_notice(request,party_id):
 
 def copy_party(request,party_id):#复制party和联系人
     old_party = Party.objects.get(pk=party_id)
-    new_party = copy.deepcopy(old_party)
-    new_party.id = None
-    new_party.save()
-    old_message = None
-    try:
-        old_message = get_object_or_404(EmailMessage, party=old_party)
-    except:
-        pass
-    else:
-        new_message = copy.deepcopy(old_message)
-        new_message.id = None
-        new_message.party = new_party
-        new_message.save()
+    if request.method == 'GET':        
+        new_party = copy.deepcopy(old_party)
+        new_party.id = None
+        new_party.save()
+        old_message = None
+        try:
+            old_message = get_object_or_404(EmailMessage, party=old_party)
+        except:
+            pass
+        else:
+            new_message = copy.deepcopy(old_message)
+            new_message.id = None
+            new_message.party = new_party
+            new_message.save()
+        
+        clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
+        for client in clients:
+            c = PartiesClients.objects.create(client_id=client.id, party=new_party,apply_status='noanwser')
+            c.save()
     
-    clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
-    for client in clients:
-        c = PartiesClients.objects.create(client_id=client.id, party=new_party,apply_status='noanwser')
-        c.save()
-
-    return render_to_response('parties/edit_party.html',{'form':CreatePartyForm(instance=new_party), 'party':new_party},context_instance=RequestContext(request))
-
+        return TemplateResponse(request, 'parties/copy_party.html',{'form':CreatePartyForm(instance=new_party), 'party':new_party})
+    else:
+        form = CreatePartyForm(request.POST, instance=old_party)
+        if form.is_valid():
+            party = form.save()
+            
+            if 'sms_invite' in request.POST:
+                return redirect('sms_invite', party_id=party.id)
+            else:
+                return redirect('email_invite', party_id=party.id)
+            
 def message_invite(request):
     form = InviteForm()
     return render_to_response('parties/invite.html',{'form':form, 'title':u'发送短信通知'}, context_instance=RequestContext(request))

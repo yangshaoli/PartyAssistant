@@ -4,10 +4,6 @@
 <form action='{% url edit_party party.id %}' method='post'>
 	{% csrf_token %}
 	{{ form.as_p }}
-    {% if party.invite_type == 'sms' %}
-	<input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" />
-    {% else %}
-	<input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" />
-    {% endif %}
+    <input type='submit' value='submit'></input>
 </form>
 {% endblock%}
