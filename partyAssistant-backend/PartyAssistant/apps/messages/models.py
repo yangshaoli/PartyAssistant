@@ -29,4 +29,8 @@ class SMSMessage(models.Model):
     
     def __unicode__(self):
         return '%s %s' % (self.party.description[:10], datetime.datetime.strftime(self.party.start_time, '%m-%d %H:%M'))
+
+class Outbox(models.Model):
+    address = models.EmailField()
+    email = models.ForeignKey(EmailMessage)
     

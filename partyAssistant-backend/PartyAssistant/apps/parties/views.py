@@ -7,7 +7,7 @@ Created on 2011-10-27
 
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
-from apps.messages.models import EmailMessage, SMSMessage
+from apps.messages.models import EmailMessage, SMSMessage, Outbox
 from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -114,10 +114,13 @@ def email_invite(request, party_id):
                 for email in client_email_list:
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + email + '/' + party_id
                     email_message.content = email_message.content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
-                    send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
+                    send_message = Outbox.objects.create(address=email, email=email_message)
+                    send_message.save()
+                    #send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
             else:
-                send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
- 
+                #send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
+                send_message = Outbox.objects.create(address=email, email=email_message)
+                send_message.save()
             party.invite_type = 'email' #将邀请方式修改为email
             party.save()
  
