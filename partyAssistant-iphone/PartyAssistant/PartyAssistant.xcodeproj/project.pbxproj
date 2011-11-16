@@ -110,6 +110,8 @@
 		899D8C7A146B6DE500B48698 /* PartyUserRegisterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */; };
 		89AB0489146E14D5008DC8C9 /* ResendSMSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89AB0487146E14D5008DC8C9 /* ResendSMSTableViewController.m */; };
 		89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89AB0488146E14D5008DC8C9 /* ResendSMSTableViewController.xib */; };
+		89B173921473469C0066B58E /* EmailObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B173911473469C0066B58E /* EmailObjectService.m */; };
+		89B17396147346C60066B58E /* EmailObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B17395147346C60066B58E /* EmailObject.m */; };
 		89E7D926146280900059ADF4 /* SMSObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D925146280900059ADF4 /* SMSObjectService.m */; };
 		89E7D93014628C400059ADF4 /* UIViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92D14628C400059ADF4 /* UIViewControllerExtra.m */; };
 		89E7D93114628C400059ADF4 /* UITableViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92F14628C400059ADF4 /* UITableViewControllerExtra.m */; };
@@ -298,6 +300,10 @@
 		89AB0487146E14D5008DC8C9 /* ResendSMSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendSMSTableViewController.m; sourceTree = "<group>"; };
 		89AB0488146E14D5008DC8C9 /* ResendSMSTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResendSMSTableViewController.xib; sourceTree = "<group>"; };
 		89AB048B146E14EC008DC8C9 /* ResendSMSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendSMSTableViewController.h; sourceTree = "<group>"; };
+		89B173901473469C0066B58E /* EmailObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; path = EmailObjectService.h; sourceTree = "<group>"; };
+		89B173911473469C0066B58E /* EmailObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObjectService.m; sourceTree = "<group>"; };
+		89B17394147346C60066B58E /* EmailObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmailObject.h; sourceTree = "<group>"; };
+		89B17395147346C60066B58E /* EmailObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObject.m; sourceTree = "<group>"; };
 		89E7D924146280900059ADF4 /* SMSObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSObjectService.h; sourceTree = "<group>"; };
 		89E7D925146280900059ADF4 /* SMSObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSObjectService.m; sourceTree = "<group>"; };
 		89E7D92C14628C400059ADF4 /* UIViewControllerExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerExtra.h; sourceTree = "<group>"; };
@@ -529,6 +535,8 @@
 				8947F0251458018100017ED1 /* ClientObject.m */,
 				89E7D936146378150059ADF4 /* UserObject.h */,
 				89E7D937146378150059ADF4 /* UserObject.m */,
+				89B17394147346C60066B58E /* EmailObject.h */,
+				89B17395147346C60066B58E /* EmailObject.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -703,6 +711,8 @@
 				89E7D93A146378CD0059ADF4 /* UserObjectService.m */,
 				89277DFB14666C0700B05020 /* PartyListService.h */,
 				89277DFC14666C0700B05020 /* PartyListService.m */,
+				89B173901473469C0066B58E /* EmailObjectService.h */,
+				89B173911473469C0066B58E /* EmailObjectService.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -913,6 +923,8 @@
 				89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */,
 				89AB0489146E14D5008DC8C9 /* ResendSMSTableViewController.m in Sources */,
 				8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */,
+				89B173921473469C0066B58E /* EmailObjectService.m in Sources */,
+				89B17396147346C60066B58E /* EmailObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

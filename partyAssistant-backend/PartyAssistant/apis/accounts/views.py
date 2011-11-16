@@ -7,6 +7,7 @@ Created on 2011-11-7
 
 from django.http import HttpResponse
 from django.utils import simplejson
+from django.contrib.auth import authenticate
 
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
@@ -52,6 +53,8 @@ def accountRegist(request):
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
         if not re_username.match(username):
             raise myException(ERROR_ACCOUNTREGIST_USERNAME_INVALID_FORMAT)
+        if User.objects.filter(username = username):
+            raise myException(ERROR_ACCOUNTREGIST_USER_EXIST)
         user = User.objects.create_user(username, '', password)
         return {'uid':user.id}
 

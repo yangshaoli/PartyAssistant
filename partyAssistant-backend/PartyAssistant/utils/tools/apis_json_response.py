@@ -19,6 +19,7 @@ def apis_json_response_decorator(func):
             return HttpResponse(data)
         except Exception, e:
             if isinstance(e, myException):
+                print e.description
                 data = {
                         'status':e.status,
                         'description':e.description,

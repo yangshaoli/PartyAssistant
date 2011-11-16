@@ -193,6 +193,7 @@
     
     ABRecordRef card = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
     if ([msgType isEqualToString:@"SMS"]) {
+        NSLog(@"here");
         ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
         if(ABMultiValueGetCount(phone) == 0){
             [self alertError:@"对不起，该联系人没有电话信息"];
@@ -217,6 +218,7 @@
             }
         }
     }else{
+        NSLog(@"there");
         ABMultiValueRef email = ABRecordCopyValue(card, kABPersonEmailProperty);
         if(ABMultiValueGetCount(email) == 0){
             [self alertError:@"对不起，该联系人没有电话信息"];
@@ -255,11 +257,20 @@
         ABAddressBookRef addressBook = ABAddressBookCreate();
         
         ABRecordRef card = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
-        ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
-        if (msgVal == nil) {
-            [self addInfoToArray:cell.tag uname:cell.textLabel.text value:(__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, 0)];
+        if ([msgType isEqualToString:@"SMS"]) {
+            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+            if (msgVal == nil) {
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:(__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, 0)];
+            }else{
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:msgVal];
+            }
         }else{
-            [self addInfoToArray:cell.tag uname:cell.textLabel.text value:msgVal];
+            ABMultiValueRef email = ABRecordCopyValue(card, kABPersonEmailProperty);
+            if (msgVal == nil) {
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:(__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(email, 0)];
+            }else{
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:msgVal];
+            }
         }
     }
     //[cell.imageView setFrame:CGRectMake(250, 7, 30, 30)];
