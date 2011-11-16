@@ -221,7 +221,7 @@
     self.navigationController.navigationBarHidden = YES;
     
     PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
-    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:nil bundle:nil];
+    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     

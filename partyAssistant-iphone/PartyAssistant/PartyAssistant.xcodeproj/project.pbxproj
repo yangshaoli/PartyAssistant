@@ -80,6 +80,7 @@
 		893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 893C2220146162AE00966B11 /* QuartzCore.framework */; };
 		8944F6FE14735D81001E30C6 /* PartyUserNameInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */; };
 		8944F6FF14735D81001E30C6 /* PartyUserNameInputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */; };
+		8944F7021473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8944F7011473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib */; };
 		8947F01D145800E100017ED1 /* PartyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F01C145800E100017ED1 /* PartyObject.m */; };
 		8947F020145800F400017ED1 /* BaseInfoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F01F145800F400017ED1 /* BaseInfoObject.m */; };
 		8947F0231458011300017ED1 /* SMSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0221458011300017ED1 /* SMSObject.m */; };
@@ -258,6 +259,7 @@
 		8944F6FB14735D81001E30C6 /* PartyUserNameInputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyUserNameInputViewController.h; sourceTree = "<group>"; };
 		8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyUserNameInputViewController.m; sourceTree = "<group>"; };
 		8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyUserNameInputViewController.xib; sourceTree = "<group>"; };
+		8944F7011473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AddNewPartyBaseInfoTableViewController.xib; sourceTree = "<group>"; };
 		8947F01B145800E100017ED1 /* PartyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyObject.h; sourceTree = "<group>"; };
 		8947F01C145800E100017ED1 /* PartyObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyObject.m; sourceTree = "<group>"; };
 		8947F01E145800F400017ED1 /* BaseInfoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoObject.h; sourceTree = "<group>"; };
@@ -479,6 +481,7 @@
 			children = (
 				891A4DCC1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.h */,
 				891A4DCD1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m */,
+				8944F7011473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib */,
 				899BE860145A9750000BAFEC /* SendEmailToClientsViewController.h */,
 				899BE861145A9750000BAFEC /* SendEmailToClientsViewController.m */,
 				899BE862145A9750000BAFEC /* SendEmailToClientsViewController.xib */,
@@ -831,6 +834,7 @@
 				89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */,
 				89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */,
 				8944F6FF14735D81001E30C6 /* PartyUserNameInputViewController.xib in Resources */,
+				8944F7021473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
