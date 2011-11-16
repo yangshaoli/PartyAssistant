@@ -27,7 +27,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "ReceiverTableViewCell.h"
 
-@interface ResendSMSTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
+@interface ResendSMSTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate, ContactListViewControllerDelegate>
 {
     BaseInfoObject  *baseinfo;
     SMSObject *smsObject;

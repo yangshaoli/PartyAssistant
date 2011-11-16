@@ -9,7 +9,7 @@
 #import "ContactListViewController.h"
 
 @implementation ContactListViewController
-@synthesize contactorsArray,selectedContactorsArray,contactorsArrayRef,msgType,currentSelectedRowIndex;
+@synthesize contactorsArray,selectedContactorsArray,contactorsArrayRef,msgType,currentSelectedRowIndex,contactListDelegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -268,8 +268,9 @@
 
 - (void)doneBtnAction{
     NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:self.selectedContactorsArray,@"selectedCArray", nil];
-    NSNotification *notification = [NSNotification notificationWithName:SELECT_RECEIVER_IN_SEND_SMS object:nil userInfo:userinfo];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    //NSNotification *notification = [NSNotification notificationWithName:SELECT_RECEIVER_IN_SEND_SMS object:nil userInfo:userinfo];
+    //[[NSNotificationCenter defaultCenter] postNotification:notification];
+    [contactListDelegate reorganizeReceiverField:userinfo];
     [self dismissModalViewControllerAnimated:YES];
 }
 

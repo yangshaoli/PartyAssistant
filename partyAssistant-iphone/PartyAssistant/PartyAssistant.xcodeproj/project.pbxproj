@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7570FE6F14727DEB00DE092A /* PartyUserNameInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7570FE6D14727DEB00DE092A /* PartyUserNameInputViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7570FE7014727DEB00DE092A /* PartyUserNameInputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7570FE6E14727DEB00DE092A /* PartyUserNameInputViewController.xib */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		891A4D8114579B3C00A2CF47 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8014579B3C00A2CF47 /* UIKit.framework */; };
 		891A4D8314579B3C00A2CF47 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 891A4D8214579B3C00A2CF47 /* Foundation.framework */; };
@@ -131,6 +133,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7570FE6C14727DEB00DE092A /* PartyUserNameInputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyUserNameInputViewController.h; sourceTree = "<group>"; };
+		7570FE6D14727DEB00DE092A /* PartyUserNameInputViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyUserNameInputViewController.m; sourceTree = "<group>"; };
+		7570FE6E14727DEB00DE092A /* PartyUserNameInputViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyUserNameInputViewController.xib; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		891A4D7C14579B3C00A2CF47 /* PartyAssistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PartyAssistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -716,6 +721,9 @@
 				899D8C74146B6DE500B48698 /* PartyUserRegisterViewController.h */,
 				899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */,
 				899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */,
+				7570FE6C14727DEB00DE092A /* PartyUserNameInputViewController.h */,
+				7570FE6D14727DEB00DE092A /* PartyUserNameInputViewController.m */,
+				7570FE6E14727DEB00DE092A /* PartyUserNameInputViewController.xib */,
 			);
 			name = Accounts;
 			sourceTree = "<group>";
@@ -812,6 +820,7 @@
 				899BE0BF146CF4B000591957 /* ClientStatusTableViewController.xib in Resources */,
 				89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */,
 				89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */,
+				7570FE7014727DEB00DE092A /* PartyUserNameInputViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -913,6 +922,7 @@
 				89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */,
 				89AB0489146E14D5008DC8C9 /* ResendSMSTableViewController.m in Sources */,
 				8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */,
+				7570FE6F14727DEB00DE092A /* PartyUserNameInputViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

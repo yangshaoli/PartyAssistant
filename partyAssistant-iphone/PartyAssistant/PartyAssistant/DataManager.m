@@ -6,7 +6,21 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#import "ASIFormDataRequest.h"
 #import "DataManager.h"
+#import "NSString+SBJSON.h"
+#import "Reachability.h"
+#import "URLSettings.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+
+@interface DataManager ()
+
+- (void)saveUsrData:(NSDictionary *)jsonValue;
+- (void)saveUsrUID:(NSString *)UID;
+- (void)saveUsrName:(NSString *)name;
+
+@end
 
 @implementation DataManager
 
@@ -32,20 +46,32 @@ static DataManager *sharedDataManager = nil;
 }
 
 - (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
-    sleep(2);
-    return NetWorkConnectionCheckPass;
-    if (YES) {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
         return NetworkConnectionInvalidate;
     }
     //2.post name and pwd
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_LOGIN]];
+    [request setPostValue:name forKey:@"username"];
+    [request setPostValue:pwd forKey:@"password"]; 
+    [request startSynchronous];
+    
+    NSError *error = [request error];
+
     //3.get result
-    BOOL result = YES;
-    if (result) {
+    if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
+        NSString *receivedString = [request responseString];
+        NSDictionary *dic = [receivedString JSONValue];
+        [self saveUsrData:dic];
+        [pool release];
         return NetWorkConnectionCheckPass;
     } else {
+        //show error info
+        [pool release];
         return NetWorkConnectionCheckDeny;
     }
 }
@@ -62,21 +88,71 @@ static DataManager *sharedDataManager = nil;
 }
 
 - (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
-    sleep(2);
-    return NetWorkConnectionCheckPass;
-    if (YES) {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
         return NetworkConnectionInvalidate;
     }
     //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_REGIST]];
+    [request setPostValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
+    [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"]; 
+    [request startSynchronous];
+    NSError *error = [request error];
     //3.get result
-    BOOL result = YES;
-    if (result) {
+    if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
+        NSString *receivedString = [request responseString];
+        NSDictionary *dic = [receivedString JSONValue];
+        [self saveUsrData:dic];
+        [pool release];
         return NetWorkConnectionCheckPass;
     } else {
+        [pool release];
         return NetWorkConnectionCheckDeny;
     }
+}
+
+- (BOOL)checkIfUserNameSaved {
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    if ([userData.userName isEqualToString:@""] || !userData.userName) {
+        return NO;
+    }
+    return YES;
+}
+
+- (void)saveUsrData:(NSDictionary *)jsonValue {
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    [userData clearObject];
+    
+    NSDictionary *datasource = [jsonValue objectForKey:@"datasource"];
+    
+    NSString *name = [datasource objectForKey:@"name"];
+    if (name) {
+        userData.userName = name;
+    } else {
+        
+    }
+    
+    NSString *uid = [datasource objectForKey:@"uid"];
+    if (uid) {
+        userData.uID = [uid intValue];
+    } else {
+        
+    }
+    
+    [userObjectService saveUserObject];
+}
+
+- (void)saveUsrName:(NSString *)name {
+    
+}
+
+- (void)saveUsrUID:(NSString *)UID {
+    
 }
 @end
