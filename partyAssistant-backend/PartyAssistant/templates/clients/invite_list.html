@@ -47,7 +47,11 @@
 </tr>
 {% endfor %}
 </table>
-<a href='{% url email_invite party.id %}?apply={{ applystatus }}'>再次发送邀请</a>
-  
+{% if party.invite_type == 'email' %}
+<a href="{%url email_invite party.id %}?apply=all">重新邀请</a>
+{% endif %}
+{% if party.invite_type == 'phone' %}
+<a href="{%url sms_invite party.id %}?apply=all">重新邀请</a>
+{% endif %}
 </body>
 </html>

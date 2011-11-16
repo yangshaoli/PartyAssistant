@@ -9,8 +9,13 @@
 	<li><span>描述：</span>{{party.description}}</li>
 </ul>
 <br>
-
+{% if party.invite_type == 'email' %}
 <a href="{%url email_invite party.id %}?apply=all">重新邀请</a>
+{% endif %}
+{% if party.invite_type == 'phone' %}
+<a href="{%url sms_invite party.id %}?apply=all">重新邀请</a>
+{% endif %}
+
 <a href="{%url edit_party party.id %}">编辑</a>&nbsp;&nbsp;<a href='{% url delete_party party.id %}'>删除</a><br/>
 <a href="{% url invite_list party.id %}?apply=all">邀请人数</a>: {{client.invite.count}}<br/>
 <a href="{% url invite_list party.id %}?apply=apply">报名人数</a>: {{client.apply.count}}<br/>

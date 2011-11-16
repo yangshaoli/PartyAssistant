@@ -35,7 +35,7 @@ class EmailInviteForm(forms.Form):
 class SMSInviteForm(forms.Form):
     client_phone_list = forms.CharField(widget=forms.Textarea())
     content = forms.CharField(widget=forms.Textarea())
-    is_apply_tips = forms.BooleanField()
+    is_apply_tips = forms.BooleanField(required=False)
     
     def clean_client_phone_list(self):
         client_phone_list = self.cleaned_data['client_phone_list']

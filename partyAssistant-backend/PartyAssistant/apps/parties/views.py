@@ -68,7 +68,7 @@ def edit_party(request, party_id):
 @transaction.commit_on_success
 def email_invite(request, party_id):
     party = get_object_or_404(Party, id=party_id)
-    
+    content = ''
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
         if form.is_valid():
@@ -114,13 +114,15 @@ def email_invite(request, party_id):
                 for email in client_email_list:
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + email + '/' + party_id
                     email_message.content = email_message.content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
-                    send_message = Outbox.objects.create(address=email, email=email_message)
+                    email_message.save()
+                    send_message = Outbox(address=email, base_message=email_message)
                     send_message.save()
                     #send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
             else:
                 #send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
-                send_message = Outbox.objects.create(address=email, email=email_message)
-                send_message.save()
+                for email in client_email_list:
+                    send_message = Outbox(address=email, base_message=email_message)
+                    send_message.save()
             party.invite_type = 'email' #将邀请方式修改为email
             party.save()
  
@@ -147,12 +149,12 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
         else:
-            content = content+request.user.username+u'邀请你参加：'
-            if party.start_time == '' and party.address == '':
+            content = content+content+party.creator.username+u'邀请你参加：'
+            if party.start_time == None and party.address == '':
                 content = content+party.description+u',时间、地点，另行通知。'
-            elif party.start_time != '' and party.address == '':
+            elif party.start_time != None and party.address == '':
                 content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+',地点，另行通知。'     
-            elif party.start_time == '' and party.address != '':
+            elif party.start_time == None and party.address != '':
                 content = content+u'在'+party.address+party.description+u',时间待定。'
             else:  
                 content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
@@ -163,13 +165,13 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
     
-    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party,'email_invite_default_content':content})
+    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
 
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
     party = get_object_or_404(Party, id=party_id)
-    
+    content = ''
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
         if form.is_valid():
@@ -213,9 +215,15 @@ def sms_invite(request, party_id):
             # TODO: generate shot link and send sms message
             if form.cleaned_data['is_apply_tips']:
                 for phone in client_phone_list:
-                    pass
+                    enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + phone + '/' + party_id
+                    sms_message.content = sms_message.content + u'点击进入报名页面：' 
+                    sms_message.save()
+                    send_message = Outbox(address=phone, base_message=sms_message)
+                    send_message.save()
             else:
-                pass
+                for phone in client_phone_list:
+                    send_message = Outbox(address=phone, base_message=sms_message)
+                    send_message.save()
             
             party.invite_type = 'phone' #将邀请方式修改为phone
             party.save()
@@ -244,9 +252,15 @@ def sms_invite(request, party_id):
             }
             form = SMSInviteForm(data)
         else:
-            form = SMSInviteForm()
+            content = content+party.creator.username+u'邀请你参加：'
+            data = {
+               'client_email_list': '', 
+               'content': content,
+               'is_apply_tips' : True
+            }
+            form = SMSInviteForm(data)
             
-    return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party})
+    return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
 
 
 def delete_party_notice(request,party_id):

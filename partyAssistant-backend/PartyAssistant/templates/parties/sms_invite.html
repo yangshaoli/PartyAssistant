@@ -1,9 +1,31 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
+<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+ 
+<script type="text/javascript" >
+$(document).ready(function(){
+  $("#id_client_phone_list").keyup(function(){
+      client_phone_list = this.value.split(','); 
+      client_phone_list_length = client_phone_list.length;     
+      count = 0;
+      for( i=0; i<client_phone_list_length;i++){
+          if (client_phone_list[i].replace(/^\s+|\s+$/g,"") != ""){          
+              count = count+1;
+          }
+      }
+      $('#id_send_phone_count').html("发件人人数统计： "+count);
+  });
+});
+
+</script>
+    <p id="id_send_phone_count"><p>
 	<form action="{% url sms_invite party.id %}" method="post">
 		{% csrf_token %}
 		{{ form.as_p }}
 		<input id="id_sms_invite_submit" type="submit" value="submit" />
+	    <input id="id_sms_invite_default_content" type='hidden' value='{{ sms_invite_default_content }}'></input>
+	
 	</form>
+    <a href='#' onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_sms_invite_default_content').value;})()" >恢复默认内容</a>	
 {% endblock %}
