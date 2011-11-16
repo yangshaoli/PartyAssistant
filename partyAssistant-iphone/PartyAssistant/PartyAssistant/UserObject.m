@@ -9,7 +9,7 @@
 #import "UserObject.h"
 
 @implementation UserObject
-@synthesize uID,phoneNum,userName;
+@synthesize uID,phoneNum,userName,nickName;
 
 - (id)init
 {
@@ -18,6 +18,7 @@
 		self.uID = 0;
         self.phoneNum = @"";
         self.userName = @"";
+        self.nickName = @"";
     }
     
     return self;
@@ -27,12 +28,14 @@
     [encoder encodeObject: [NSNumber numberWithInteger:self.uID] forKey:@"uID"];
 	[encoder encodeObject: self.phoneNum forKey:@"phoneNum"];
     [encoder encodeObject: self.userName forKey:@"userName"];
+    [encoder encodeObject: self.nickName forKey:@"nickName"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
     self.uID = [[decoder decodeObjectForKey:@"uID"] integerValue];
 	self.phoneNum = [decoder decodeObjectForKey:@"phoneNum"];
 	self.userName = [decoder decodeObjectForKey:@"userName"];
+    self.nickName = [decoder decodeObjectForKey:@"nickName"];
 	return self;
 }
 
@@ -40,5 +43,6 @@
 	self.uID = 0;
     self.phoneNum = @"";
     self.userName = @"";
+    self.nickName = @"";
 }
 @end

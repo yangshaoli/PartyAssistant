@@ -13,8 +13,9 @@
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
 
-#define NotLegalTag 1
-#define NotPassTag  2
+#define NotLegalTag         1
+#define NotPassTag          2
+#define InvalidateNetwork   3
 
 @interface PartyLoginViewController()
 
@@ -27,6 +28,8 @@
 - (void)gotoContentVC;
 - (void)pushToContentVC;
 - (void)checkIfUserNameSaved;
+- (void)showInvalidateNetworkalert;
+- (void)tryConnectToServer;
 
 @end
 
@@ -138,8 +141,9 @@
     
     _HUD.delegate = self;
     
-    [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
-         
+    [_HUD show:YES];
+   
+    [self tryConnectToServer];
 }
 
 - (void)tryConnectToServer {
@@ -149,7 +153,7 @@
     [_HUD hide:YES];
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
-            [self showNotPassChekAlert];
+            [self showInvalidateNetworkalert];
             break;
         case NetWorkConnectionCheckPass:
             [self gotoContentVC];
@@ -168,7 +172,9 @@
     }
 }
 
-- (void)showAlertWithMessage:(NSString *)message  buttonTitle:(NSString *)buttonTitle tag:(int)tagNum{
+- (void)showAlertWithMessage:(NSString *)message  
+                 buttonTitle:(NSString *)buttonTitle 
+                         tag:(int)tagNum{
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
@@ -190,12 +196,18 @@
 
 }
 
+- (void)showInvalidateNetworkalert {
+    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+                   buttonTitle:@"OK" 
+                           tag:InvalidateNetwork];
+}
+
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"登录失败" buttonTitle:@"OK" tag:NotPassTag];
 }
 
 - (void)registerUser {
@@ -230,7 +242,7 @@
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
-    tab.viewControllers = [NSArray arrayWithObjects: listNav, addPageNav, settingNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
     [self.navigationController pushViewController:tab animated:YES];
     
     [listNav release];
@@ -316,7 +328,7 @@
 }
 
 - (void)SaveInput:(NSString *)newUserName {
-    
+    //wait DataManager method
 }
 
 @end

@@ -10,13 +10,15 @@
 #import "PartyUserRegisterViewController.h"
 
 #define NullTextFieldTag            100
-#define PhoneNumTextFieldTag        101
+#define UserNameTextFieldTag        101
 #define PwdTextFieldTag             102
 #define PwdCheckTextFieldTag        103
-#define EmailTextFieldTag           104
+#define NickNameTextFieldTag        104
 
 #define NotLegalTag                 1
 #define NotPassTag                  2
+#define SuccessfulTag               3
+#define InvalidateNetwork           4
 
 @interface PartyUserRegisterViewController ()
 
@@ -30,19 +32,21 @@
 - (NSInteger)getInputFieldNonTextTag;
 - (void)showNotLegalInput;
 - (BOOL)pwdEqualToPwdCheck;
+- (void)showRegistSuccessfulAlert;
+- (void)showInvalidateNetworkalert;
 
 @end
 
 @implementation PartyUserRegisterViewController
 @synthesize tableView = _tableView;
-@synthesize phoneNumCell = _phoneNumCell;
+@synthesize userNameCell = _userNameCell;
 @synthesize pwdCell = _pwdCell;
 @synthesize pwdCheckCell = _pwdCheckCell;
-@synthesize emailCell = _emailCell;
-@synthesize phoneNumTextField = _phoneNumTextField;
+@synthesize nickNameCell = _nickNameCell;
+@synthesize userNameTextField = _userNameTextField;
 @synthesize pwdTextField = _pwdTextField;
 @synthesize pwdCheckTextField = _pwdCheckTextField;
-@synthesize emailTextField = _emailTextField;
+@synthesize nickNameTextField = _nickNameTextField;
 
 
 - (void)dealloc {
@@ -50,15 +54,15 @@
     
     [_tableView release];
     
-    [_phoneNumCell release];
+    [_userNameCell release];
     [_pwdCell release];
     [_pwdCheckCell release];
-    [_emailCell release];
+    [_nickNameCell release];
     
-    [_phoneNumTextField release];
+    [_userNameTextField release];
     [_pwdTextField release];
     [_pwdCheckTextField release];
-    [_emailTextField release];
+    [_nickNameTextField release];
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -136,14 +140,14 @@
 }
 
 - (void)cleanKeyBoard {
-    if ([_phoneNumTextField isFirstResponder]) {
-        [_phoneNumTextField resignFirstResponder];
+    if ([_userNameTextField isFirstResponder]) {
+        [_userNameTextField resignFirstResponder];
     } else if ([_pwdTextField isFirstResponder]) {
         [_pwdTextField resignFirstResponder];
     } else if ([_pwdCheckTextField isFirstResponder]) {
         [_pwdCheckTextField resignFirstResponder];
     } else {
-        [_emailTextField resignFirstResponder];
+        [_nickNameTextField resignFirstResponder];
     }
 }
 
@@ -152,19 +156,18 @@
     if (textFieldTag == NullTextFieldTag) {
         return YES;
     } else {
-        NSString *textFieldName = nil;
         switch (textFieldTag) {
-            case PhoneNumTextFieldTag:
-                textFieldName = @"";
+            case UserNameTextFieldTag:
+                _userNameTextField.text = @"";
                 break;
             case PwdTextFieldTag:
-                textFieldName = @"";
+                _pwdTextField.text = @"";
                 break;
             case PwdCheckTextFieldTag:
-                textFieldName = @"";
+                _pwdCheckTextField.text = @"";
                 break;
-            case EmailTextFieldTag:
-                textFieldName = @"";
+            case NickNameTextFieldTag:
+                _nickNameTextField.text = @"";
                 break;
         }
         [self showNotLegalInput];
@@ -173,15 +176,16 @@
 }
 
 - (NSInteger)getInputFieldNonTextTag {
-    if (!_phoneNumTextField.text || [_phoneNumTextField.text isEqualToString:@""]) {
-        return PhoneNumTextFieldTag;
+    if (!_userNameTextField.text || [_userNameTextField.text isEqualToString:@""]) {
+        return UserNameTextFieldTag;
     } else if (!_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
         return PwdTextFieldTag;
     } else if (!_pwdCheckTextField.text || [_pwdCheckTextField.text isEqualToString:@""]) {
         return PwdCheckTextFieldTag;
-    } else if (!_emailTextField.text || [_emailTextField.text isEqualToString:@""]) {
-        return EmailTextFieldTag;
-    }
+    } 
+//    else if (!_nickNameTextField.text || [_nickNameTextField.text isEqualToString:@""]) {
+//        return NickNameTextFieldTag;
+//    }
     
     return NullTextFieldTag;
 }
@@ -195,12 +199,22 @@
     [alert release];
 }
 
+- (void)showInvalidateNetworkalert {
+    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+                   buttonTitle:@"OK" 
+                           tag:InvalidateNetwork];
+}
+
+- (void)showRegistSuccessfulAlert {
+    [self showAlertWithMessage:@"注册成功！" buttonTitle:@"OK" tag:SuccessfulTag];
+}
+
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"注册内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"无法完成注册！" buttonTitle:@"OK" tag:NotPassTag];
 }
 
 - (BOOL)pwdEqualToPwdCheck {
@@ -212,8 +226,25 @@
 
 - (void)tryConnectToServer {
     //TODO:register check method!
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObjects:
+                                                [NSArray arrayWithObjects:
+                                                    self.userNameTextField.text, 
+                                                    self.pwdTextField.text,
+                                                    //self.nickNameTextField.text,
+                                                    nil
+                                                ] 
+                                                         
+                                                         forKeys:
+                                                [NSArray arrayWithObjects:
+                                                    @"username",
+                                                    @"password",
+                                                    //@"nickname",
+                                                    nil
+                                                ]
+                              ];
+    
     NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            registerUserWithUsrInfo:nil];
+                                            registerUserWithUsrInfo:userInfo];
     [_HUD hide:YES];
     //may need to creat some other connection status
     switch (networkStatus) {
@@ -221,19 +252,12 @@
             [self showNotPassChekAlert];
             break;
         case NetWorkConnectionCheckPass:
-            
+            [self showRegistSuccessfulAlert];
             break;
         default:
-            
+            [self showNotPassChekAlert];
             break;
     }
-    BOOL result = NO;
-    if (result) {
-        //use different work flow  
-    } else {
-        [self showNotPassChekAlert];
-    }
-    
 }
 
 #pragma mark -
@@ -250,13 +274,13 @@
          cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (indexPath.row == 0) {
-        return _phoneNumCell;
+        return _userNameCell;
     } else if (indexPath.row == 1) {
         return _pwdCell;
     } else if (indexPath.row == 2) {
         return _pwdCheckCell;
     } else if (indexPath.row == 3) {
-        return _emailCell;
+        return _nickNameCell;
     }
     return nil;
 }
@@ -271,4 +295,13 @@
 	_HUD = nil;
 }
 
+#pragma mark _
+#pragma mark Alert Delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == SuccessfulTag) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+       
+    }
+}
 @end
