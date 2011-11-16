@@ -5,5 +5,7 @@
 		{% csrf_token %}
 		{{ form.as_p }}
 		<input id="id_email_invite_submit" type="submit" value="submit" />
+		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
 	</form>
+	<a href='#' onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</a>
 {% endblock %}

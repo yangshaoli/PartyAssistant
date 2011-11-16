@@ -160,7 +160,7 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
     
-    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
+    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party,'email_invite_default_content':content})
 
 @login_required
 @transaction.commit_on_success
