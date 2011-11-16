@@ -13,11 +13,13 @@
     NSInteger uID;
     NSString *phoneNum;
     NSString *userName;
+    NSString *nickName;
 }
 
 @property(nonatomic, assign)NSInteger uID;
 @property(nonatomic, retain)NSString *phoneNum;
 @property(nonatomic, retain)NSString *userName;
+@property(nonatomic, retain)NSString *nickName;
 
 - (void)clearObject;
 

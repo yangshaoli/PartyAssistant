@@ -66,6 +66,8 @@ static DataManager *sharedDataManager = nil;
         //[self saveUsrData:(NSDic *)jsonValue]
         NSString *receivedString = [request responseString];
         NSDictionary *dic = [receivedString JSONValue];
+        dic = [NSMutableDictionary dictionaryWithDictionary:dic];
+        [dic setValue:name forKey:@"username"];
         [self saveUsrData:dic];
         [pool release];
         return NetWorkConnectionCheckPass;
@@ -97,7 +99,7 @@ static DataManager *sharedDataManager = nil;
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_REGIST]];
     [request setPostValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
-    [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"]; 
+    [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"];
     [request startSynchronous];
     NSError *error = [request error];
     //3.get result
@@ -118,7 +120,7 @@ static DataManager *sharedDataManager = nil;
 - (BOOL)checkIfUserNameSaved {
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
-    if ([userData.userName isEqualToString:@""] || !userData.userName) {
+    if ([userData.nickName isEqualToString:@""] || !userData.nickName) {
         return NO;
     }
     return YES;
@@ -128,12 +130,12 @@ static DataManager *sharedDataManager = nil;
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
     [userData clearObject];
-    
+   
     NSDictionary *datasource = [jsonValue objectForKey:@"datasource"];
     
     NSString *name = [datasource objectForKey:@"name"];
     if (name) {
-        userData.userName = name;
+        userData.nickName = name;
     } else {
         
     }
@@ -144,6 +146,8 @@ static DataManager *sharedDataManager = nil;
     } else {
         
     }
+    
+    userData.userName = [jsonValue objectForKey:@"username"];
     
     [userObjectService saveUserObject];
 }

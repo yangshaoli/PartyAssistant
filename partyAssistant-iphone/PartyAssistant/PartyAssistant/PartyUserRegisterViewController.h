@@ -12,29 +12,33 @@
 @interface PartyUserRegisterViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MBProgressHUDDelegate>{
     
     UITableView *_tableView;
+
+//username
+//pwd
+//name
     
-    UITableViewCell *_phoneNumCell;
+    UITableViewCell *_userNameCell;
     UITableViewCell *_pwdCell;
     UITableViewCell *_pwdCheckCell;
-    UITableViewCell *_emailCell;
+    UITableViewCell *_nickNameCell;
     
-    UITextField *_phoneNumTextField;
+    UITextField *_userNameTextField;
     UITextField *_pwdTextField;
     UITextField *_pwdCheckTextField;
-    UITextField *_emailTextField;
+    UITextField *_nickNameTextField;
     
     MBProgressHUD *_HUD;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView  *tableView;
 
-@property (nonatomic, retain) IBOutlet UITableViewCell *phoneNumCell;
+@property (nonatomic, retain) IBOutlet UITableViewCell *userNameCell;
 @property (nonatomic, retain) IBOutlet UITableViewCell *pwdCell;
 @property (nonatomic, retain) IBOutlet UITableViewCell *pwdCheckCell;
-@property (nonatomic, retain) IBOutlet UITableViewCell *emailCell;
+@property (nonatomic, retain) IBOutlet UITableViewCell *nickNameCell;
 
-@property (nonatomic, retain) IBOutlet UITextField *phoneNumTextField;
+@property (nonatomic, retain) IBOutlet UITextField *userNameTextField;
 @property (nonatomic, retain) IBOutlet UITextField *pwdTextField;
 @property (nonatomic, retain) IBOutlet UITextField *pwdCheckTextField;
-@property (nonatomic, retain) IBOutlet UITextField *emailTextField;
+@property (nonatomic, retain) IBOutlet UITextField *nickNameTextField;
 @end
