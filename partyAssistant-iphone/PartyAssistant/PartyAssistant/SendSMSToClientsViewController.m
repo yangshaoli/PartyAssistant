@@ -47,7 +47,7 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reorganizeReceiverField:) name:SELECT_RECEIVER_IN_SEND_SMS object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reorganizeReceiverField:) name:SELECT_RECEIVER_IN_SEND_SMS object:nil];
     
 //    if (!receiversView) {
 //        self.receiversView = [[UIView alloc] initWithFrame:CGRectMake(80, 0, 140, 44)];
@@ -183,6 +183,7 @@
     ContactListViewController *clvc = [[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
     clvc.msgType = @"SMS";
     clvc.selectedContactorsArray = self.receiverArray;
+    clvc.contactListDelegate = self;
     ContactListNavigationController *vc = [[ContactListNavigationController alloc] initWithRootViewController:clvc];
     [self presentModalViewController:vc animated:YES];
     [self.receiverCell setNeedsDisplay];
@@ -266,9 +267,8 @@
      */
 }
 
-- (void)reorganizeReceiverField:(NSNotification *)notification{
-    NSDictionary *userinfo = [notification userInfo];
-    self.receiverArray = [userinfo objectForKey:@"selectedCArray"];
+- (void)reorganizeReceiverField:(NSDictionary *)userInfo{
+    self.receiverArray = [userInfo objectForKey:@"selectedCArray"];
     receiverCell.receiverArray = self.receiverArray;
     [self.receiverCell setupCellData];
     [self saveSMSInfo];

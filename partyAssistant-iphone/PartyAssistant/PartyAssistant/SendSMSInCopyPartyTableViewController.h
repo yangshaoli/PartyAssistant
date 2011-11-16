@@ -28,7 +28,7 @@
 #import "ReceiverTableViewCell.h"
 
 
-@interface SendSMSInCopyPartyTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
+@interface SendSMSInCopyPartyTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate,ContactListViewControllerDelegate>
 {
     BaseInfoObject  *baseinfo;
     SMSObject *smsObject;

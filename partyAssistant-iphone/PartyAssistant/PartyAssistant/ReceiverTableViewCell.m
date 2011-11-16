@@ -55,10 +55,10 @@
 
 - (void)setupCellData{
     //self.countlbl.text = [NSString stringWithFormat:@"共%d人",[self.receiverArray count]];
-    
-    for (int i = 0; i<[[self.receiversScrollView subviews] count]; i++) {
-        if ([[[receiversScrollView subviews] objectAtIndex:i] isMemberOfClass:[ReceiverLabel class]]){
-            [[[receiversScrollView subviews] objectAtIndex:i] removeFromSuperview];
+    NSArray *subVsArray = [self.receiversScrollView subviews];
+    for (int i = 0; i<[subVsArray count]; i++) {
+        if ([[subVsArray objectAtIndex:i] isMemberOfClass:[ReceiverLabel class]]){
+            [[subVsArray objectAtIndex:i] removeFromSuperview];
         }
     }
     if ([self.receiverArray count] == 0) {

@@ -13,6 +13,12 @@
 #import "NotificationSettings.h"
 #import "ClientObject.h"
 
+@protocol ContactListViewControllerDelegate <NSObject>
+
+- (void)reorganizeReceiverField:(NSDictionary *)userInfo;
+
+@end
+
 @interface ContactListViewController : UITableViewController
 {
     NSArray *contactorsArray;
@@ -20,6 +26,7 @@
     NSMutableArray *selctedContactorsArray;
     NSString *msgType;
     NSInteger currentSelectedRowIndex;
+    id<ContactListViewControllerDelegate> contactListDelegate;
 }
 
 @property(nonatomic,retain)NSArray *contactorsArray;
@@ -27,6 +34,7 @@
 @property(nonatomic,assign)CFArrayRef contactorsArrayRef;
 @property(nonatomic,retain)NSString *msgType;
 @property(nonatomic,assign)NSInteger currentSelectedRowIndex;
+@property(nonatomic,retain)id<ContactListViewControllerDelegate> contactListDelegate;
 
 - (void)alertError:(NSString *)errorStr;
 - (void)showOrCancleSelectedMark:(UITableViewCell *)cell mutableMSGValue:(id)msgVal;

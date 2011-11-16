@@ -188,6 +188,7 @@
     ContactListViewController *clvc = [[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
     clvc.msgType = @"Email";
     clvc.selectedContactorsArray = self.receiverArray;
+    clvc.contactListDelegate = self;
     ContactListNavigationController *vc = [[ContactListNavigationController alloc] initWithRootViewController:clvc];
     [self presentModalViewController:vc animated:YES];
     [self.receiverCell setNeedsDisplay];
@@ -255,9 +256,8 @@
      */
 }
 
-- (void)reorganizeReceiverField:(NSNotification *)notification{
-    NSDictionary *userinfo = [notification userInfo];
-    self.receiverArray = [userinfo objectForKey:@"selectedCArray"];
+- (void)reorganizeReceiverField:(NSDictionary *)userInfo{
+    self.receiverArray = [userInfo objectForKey:@"selectedCArray"];
     receiverCell.receiverArray = self.receiverArray;
     [self.receiverCell setupCellData];
     [self saveEmailInfo];

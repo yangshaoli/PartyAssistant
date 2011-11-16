@@ -6,12 +6,12 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#import "AddNewPartyBaseInfoTableViewController.h"
 #import "DataManager.h"
 #import "GlossyButton.h"
+#import "PartyListTableViewController.h"
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
-#import "PartyListTableViewController.h"
-#import "AddNewPartyBaseInfoTableViewController.h"
 
 #define NotLegalTag 1
 #define NotPassTag  2
@@ -24,6 +24,9 @@
 - (void)showNotLegalInput;
 - (void)showNotPassChekAlert;
 - (void)registerUser;
+- (void)gotoContentVC;
+- (void)pushToContentVC;
+- (void)checkIfUserNameSaved;
 
 @end
 
@@ -100,6 +103,11 @@
     [tableFooterView release];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -137,43 +145,19 @@
 - (void)tryConnectToServer {
     //TODO:login check method!
     NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            validateCheckWithUsrName:@""  pwd:@""];
+                                            validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
             [self showNotPassChekAlert];
             break;
         case NetWorkConnectionCheckPass:
-            
+            [self gotoContentVC];
             break;
         default:
-            
+            [self showNotPassChekAlert];
             break;
     }
-    BOOL result = YES;
-    if (result) {
-       //use different work flow
-        
-        //1.modal
-        
-        //2.nav
-        if (self.isModal) {
-            
-        } else {
-            //2
-            PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
-            AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:nil bundle:nil];
-            UITabBarController *tab = [[UITabBarController alloc] init];
-            tab.viewControllers = [NSArray arrayWithObjects: list, addPage, nil];
-            [self.navigationController pushViewController:tab animated:YES];
-            [list release];
-            [addPage release];
-        }
-        
-    } else {
-        [self showNotPassChekAlert];
-    }
-    
 }
 
 - (void)cleanKeyBoard {
@@ -191,6 +175,21 @@
     [alert release];
 }
 
+- (void)gotoContentVC {
+    //use different work flow
+    
+    //1.modal
+    
+    //2.nav
+    if (self.isModal) {
+        
+    } else {
+        //2
+        [self pushToContentVC];
+    }
+
+}
+
 - (void)showNotLegalInput {
     [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotLegalTag];
 }
@@ -204,6 +203,46 @@
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:registerVC animated:YES];
     [registerVC release];
+}
+
+- (void)pushToContentVC {
+    self.navigationController.navigationBarHidden = YES;
+    
+    PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:nil bundle:nil];
+    UIViewController *vc = [[UIViewController alloc] init];
+    vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
+    
+    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
+    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
+    UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:vc];
+    
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"List" image:nil tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"addPage" image:nil tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"setting" image:nil tag:3];
+    
+    listNav.tabBarItem = listBarItem;
+    addPageNav.tabBarItem = addPageBarItem;
+    settingNav.tabBarItem = settingBarItem;
+    
+    [listBarItem release];
+    [addPageBarItem release];
+    [settingBarItem release];
+    
+    UITabBarController *tab = [[UITabBarController alloc] init];
+    tab.viewControllers = [NSArray arrayWithObjects: listNav, addPageNav, settingNav, nil];
+    [self.navigationController pushViewController:tab animated:YES];
+    
+    [listNav release];
+    [addPageNav release];
+    [settingNav release];
+    
+    [list release];
+    [addPage release];
+    [vc release];
+    
+    //add suggest user input name page here?
+    [self checkIfUserNameSaved];
 }
 
 #pragma mark -
@@ -255,4 +294,29 @@
        [_userNameTextField becomeFirstResponder];
    }
 }
+
+#pragma mark _
+#pragma mark PartyUserNameInput Method and Delegate
+
+- (void)checkIfUserNameSaved {
+    //1.datamanager check
+    BOOL isSaved = [[DataManager sharedDataManager] checkIfUserNameSaved];
+    if (isSaved) {
+        return;
+    }
+    //2.show viewController
+    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+    vc.delegate = self;
+    [self presentModalViewController:vc animated:YES];
+    [vc release];
+}
+
+- (void)cancleInput {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)SaveInput:(NSString *)newUserName {
+    
+}
+
 @end

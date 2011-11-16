@@ -29,7 +29,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "ReceiverTableViewCell.h"
 
-@interface SendEmailToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMailComposeViewControllerDelegate,UIAlertViewDelegate>
+@interface SendEmailToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMailComposeViewControllerDelegate,UIAlertViewDelegate,ContactListViewControllerDelegate>
 {
     UIView *receiversView;
     NSMutableArray *receiverArray;

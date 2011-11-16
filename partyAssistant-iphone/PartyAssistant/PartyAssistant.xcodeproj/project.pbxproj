@@ -78,6 +78,8 @@
 		89391BC014593EE200721F90 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89391BBF14593EE200721F90 /* SystemConfiguration.framework */; };
 		89391BC214593F2500721F90 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 89391BC114593F2500721F90 /* libxml2.dylib */; };
 		893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 893C2220146162AE00966B11 /* QuartzCore.framework */; };
+		8944F6FE14735D81001E30C6 /* PartyUserNameInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */; };
+		8944F6FF14735D81001E30C6 /* PartyUserNameInputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */; };
 		8947F01D145800E100017ED1 /* PartyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F01C145800E100017ED1 /* PartyObject.m */; };
 		8947F020145800F400017ED1 /* BaseInfoObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F01F145800F400017ED1 /* BaseInfoObject.m */; };
 		8947F0231458011300017ED1 /* SMSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0221458011300017ED1 /* SMSObject.m */; };
@@ -253,6 +255,9 @@
 		89391BC114593F2500721F90 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		893C221A14611A6200966B11 /* NotificationSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationSettings.h; sourceTree = "<group>"; };
 		893C2220146162AE00966B11 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		8944F6FB14735D81001E30C6 /* PartyUserNameInputViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyUserNameInputViewController.h; sourceTree = "<group>"; };
+		8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyUserNameInputViewController.m; sourceTree = "<group>"; };
+		8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyUserNameInputViewController.xib; sourceTree = "<group>"; };
 		8947F01B145800E100017ED1 /* PartyObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyObject.h; sourceTree = "<group>"; };
 		8947F01C145800E100017ED1 /* PartyObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyObject.m; sourceTree = "<group>"; };
 		8947F01E145800F400017ED1 /* BaseInfoObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoObject.h; sourceTree = "<group>"; };
@@ -300,7 +305,7 @@
 		89AB0487146E14D5008DC8C9 /* ResendSMSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendSMSTableViewController.m; sourceTree = "<group>"; };
 		89AB0488146E14D5008DC8C9 /* ResendSMSTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResendSMSTableViewController.xib; sourceTree = "<group>"; };
 		89AB048B146E14EC008DC8C9 /* ResendSMSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendSMSTableViewController.h; sourceTree = "<group>"; };
-		89B173901473469C0066B58E /* EmailObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; path = EmailObjectService.h; sourceTree = "<group>"; };
+		89B173901473469C0066B58E /* EmailObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmailObjectService.h; sourceTree = "<group>"; };
 		89B173911473469C0066B58E /* EmailObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObjectService.m; sourceTree = "<group>"; };
 		89B17394147346C60066B58E /* EmailObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmailObject.h; sourceTree = "<group>"; };
 		89B17395147346C60066B58E /* EmailObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObject.m; sourceTree = "<group>"; };
@@ -726,6 +731,9 @@
 				899D8C74146B6DE500B48698 /* PartyUserRegisterViewController.h */,
 				899D8C75146B6DE500B48698 /* PartyUserRegisterViewController.m */,
 				899D8C76146B6DE500B48698 /* PartyUserRegisterViewController.xib */,
+				8944F6FB14735D81001E30C6 /* PartyUserNameInputViewController.h */,
+				8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */,
+				8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */,
 			);
 			name = Accounts;
 			sourceTree = "<group>";
@@ -822,6 +830,7 @@
 				899BE0BF146CF4B000591957 /* ClientStatusTableViewController.xib in Resources */,
 				89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */,
 				89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */,
+				8944F6FF14735D81001E30C6 /* PartyUserNameInputViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -925,6 +934,7 @@
 				8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */,
 				89B173921473469C0066B58E /* EmailObjectService.m in Sources */,
 				89B17396147346C60066B58E /* EmailObject.m in Sources */,
+				8944F6FE14735D81001E30C6 /* PartyUserNameInputViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

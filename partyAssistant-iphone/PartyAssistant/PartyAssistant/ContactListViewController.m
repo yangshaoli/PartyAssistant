@@ -9,7 +9,7 @@
 #import "ContactListViewController.h"
 
 @implementation ContactListViewController
-@synthesize contactorsArray,selectedContactorsArray,contactorsArrayRef,msgType,currentSelectedRowIndex;
+@synthesize contactorsArray,selectedContactorsArray,contactorsArrayRef,msgType,currentSelectedRowIndex,contactListDelegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -102,7 +102,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = nil;// [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
@@ -193,7 +193,6 @@
     
     ABRecordRef card = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
     if ([msgType isEqualToString:@"SMS"]) {
-        NSLog(@"here");
         ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
         if(ABMultiValueGetCount(phone) == 0){
             [self alertError:@"对不起，该联系人没有电话信息"];
@@ -218,7 +217,6 @@
             }
         }
     }else{
-        NSLog(@"there");
         ABMultiValueRef email = ABRecordCopyValue(card, kABPersonEmailProperty);
         if(ABMultiValueGetCount(email) == 0){
             [self alertError:@"对不起，该联系人没有电话信息"];
@@ -279,8 +277,9 @@
 
 - (void)doneBtnAction{
     NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:self.selectedContactorsArray,@"selectedCArray", nil];
-    NSNotification *notification = [NSNotification notificationWithName:SELECT_RECEIVER_IN_SEND_SMS object:nil userInfo:userinfo];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    //NSNotification *notification = [NSNotification notificationWithName:SELECT_RECEIVER_IN_SEND_SMS object:nil userInfo:userinfo];
+    //[[NSNotificationCenter defaultCenter] postNotification:notification];
+    [contactListDelegate reorganizeReceiverField:userinfo];
     [self dismissModalViewControllerAnimated:YES];
 }
 

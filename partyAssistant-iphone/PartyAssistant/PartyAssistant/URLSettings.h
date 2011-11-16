@@ -17,3 +17,5 @@
 #define CLIENT_STATUS_OPERATOR [NSString stringWithFormat:@"%@/a/parties/change_client_status/",DOMAIN_NAME]
 #define RESEND_MSG_TO_CLIENT [NSString stringWithFormat:@"%@/a/parties/resendmsg/",DOMAIN_NAME]
 #define CLIENT_APPLY_URL [NSString stringWithFormat:@"%@/clients/public_enroll/",DOMAIN_NAME]
+#define ACCOUNT_LOGIN [NSString stringWithFormat:@"%@/a/accounts/login/",DOMAIN_NAME]
+#define ACCOUNT_REGIST [NSString stringWithFormat:@"%@/a/accounts/regist/",DOMAIN_NAME]
