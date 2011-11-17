@@ -12,6 +12,15 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 
+#获得报名/未相应/不参加的客户数
+def get_client_sum(party_id):
+    party = Party.objects.get(id=party_id)
+    client_sum = {
+        'apply':PartiesClients.objects.filter(party=party).filter(apply_status='apply').count(),
+        'noanswer':PartiesClients.objects.filter(party=party).filter(apply_status='noanswer').count(),
+        'reject':PartiesClients.objects.filter(party=party).filter(apply_status='reject').count(),
+    }
+    return client_sum
 
 def public_enroll(request, party_id):
     if request.method=='POST':
@@ -30,7 +39,8 @@ def public_enroll(request, party_id):
     else:
         party = Party.objects.get(id=party_id)
         ctx = {
-               'party' : party
+               'party' : party,
+               'client_sum':get_client_sum(party_id)
         }    
         return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))
 
@@ -53,7 +63,8 @@ def invite_enroll(request, email, party_id):
         client = Client.objects.get(email=email,creator=party.creator)
         ctx = {
                'client': client,
-               'party' : party
+               'party' : party,
+               'client_sum':get_client_sum(party_id)
         } 
         return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))
 
@@ -75,7 +86,6 @@ def change_apply_status(request):
             party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
     
         return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party,'applystatus':apply_status}) 
- 
 
 
 #受邀人员列表
@@ -87,16 +97,11 @@ def invite_list(request, party_id):
         party_clients_list = PartiesClients.objects.filter(party=party)
     else:        
         party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
-    client_sum = {
-        'apply':PartiesClients.objects.filter(party=party).filter(apply_status='apply').count(),
-        'noanswer':PartiesClients.objects.filter(party=party).filter(apply_status='noanswer').count(),
-        'reject':PartiesClients.objects.filter(party=party).filter(apply_status='reject').count(),
-    }
     ctx = {
         'party_clients_list':party_clients_list,
         'party':party,
         'applystatus':apply_status,
-        'client_sum':client_sum
+        'client_sum':get_client_sum(party_id)
     }
     
     return TemplateResponse(request,'clients/invite_list.html',ctx) 
