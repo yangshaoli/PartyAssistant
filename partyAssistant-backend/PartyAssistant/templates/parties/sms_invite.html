@@ -19,13 +19,33 @@ $(document).ready(function(){
 });
 
 </script>
-    <p id="id_send_phone_count"><p>
-	<form action="{% url sms_invite party.id %}" method="post">
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">发送手机短信邀请</h2>
+	<form action="{% url sms_invite party.id %}" method="post" class="creat_exercise">
 		{% csrf_token %}
-		{{ form.as_p }}
-		<input id="id_sms_invite_submit" type="submit" value="submit" />
-	    <input id="id_sms_invite_default_content" type='hidden' value='{{ sms_invite_default_content }}'></input>
-	
+     <div class="field">
+     <label for="client_email_list">
+     收件人
+     </label>
+     {{ form.client_phone_list }}
+     </div>
+     <div class="field">
+     <label for="id_content">
+     短信内容
+     </label>
+     {{ form.content }}
+     </div>
+     <div class="field">
+     <label for="id_send_email_count">
+     邀请人数
+     </label>
+     <p id="id_send_phone_count">0<p>
+     </div>
+		<input id="id_email_invite_submit" type="submit" value="submit" />
+		<input id="id_sms_invite_default_content" type='hidden' value='{{ sms_invite_default_content }}'></input>
+        <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_sms_invite_default_content').value;})()" >恢复默认内容</button>
 	</form>
-    <a href='#' onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_sms_invite_default_content').value;})()" >恢复默认内容</a>	
+  </div>
+</div>
 {% endblock %}
