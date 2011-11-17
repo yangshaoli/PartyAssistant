@@ -7,6 +7,9 @@
 //
 
 #import "ResendSMSTableViewController.h"
+#define APPLY_TIPS_ALERT_TAG 12
+#define SET_DEFAULT_ALERT_TAG 11
+#define DONE_ALERT_TAG 13
 
 @implementation ResendSMSTableViewController
 
@@ -167,7 +170,9 @@
 }
 
 - (void)setDefaultAction{
-    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"您将丢失该页面所有内容，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+    alertView.tag = SET_DEFAULT_ALERT_TAG;
+    [alertView show];
 }
 
 - (void)addReceiver{
@@ -261,6 +266,17 @@
 
 - (void)doneBtnAction{
     [self saveSMSInfo];
+    if ([self.receiverArray count] == 0) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+        alertV.tag = DONE_ALERT_TAG;
+        [alertV show];
+    }else{
+        [self sendCreateRequest];
+    }
+}
+
+- (void)sendCreateRequest{
+    
     [self showWaiting];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
@@ -337,8 +353,14 @@
 
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch{
     self.smsObject._isApplyTips = curSwitch.on;
+    if (!self.smsObject._isApplyTips) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"关闭报名提示后，在该短信中将不包含报名链接." delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+        alertV.tag = APPLY_TIPS_ALERT_TAG;
+        [alertV show];
+    }
     [self saveSMSInfo];
 }
+
 - (void)sendBySelfSwitchAction:(UISwitch *)curSwitch{
     self.smsObject._isSendBySelf = curSwitch.on;
     [self saveSMSInfo];
@@ -392,5 +414,21 @@
         defaultText = [NSString stringWithFormat:@"%@ 邀您参加：于%@ 在 %@ 举办的%@，敬请光临",userName,paraBaseInfo.starttimeStr,paraBaseInfo.location, paraBaseInfo.description];
     }
     return defaultText;
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == SET_DEFAULT_ALERT_TAG){
+        if (buttonIndex == 1) {
+            [self.smsObject clearObject];
+            self.smsObject.smsContent = [self getDefaultContent:baseinfo];
+            receiverCell.receiverArray = self.receiverArray;
+            [receiverCell setupCellData];
+            [self.tableView reloadData];
+        }
+    }if (alertView.tag == DONE_ALERT_TAG) {
+        if (buttonIndex == 1) {
+            [self sendCreateRequest];
+        }
+    }
 }
 @end

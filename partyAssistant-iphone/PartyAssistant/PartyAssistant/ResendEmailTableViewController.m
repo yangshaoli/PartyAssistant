@@ -1,18 +1,18 @@
 //
-//  SendEmailInCopyPartyTableViewController.m
+//  ResendEmailTableViewController.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-11-7.
+//  Created by 超 李 on 11-11-17.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "SendEmailInCopyPartyTableViewController.h"
+#import "ResendEmailTableViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
 #define DONE_ALERT_TAG 13
 
-@implementation SendEmailInCopyPartyTableViewController
-@synthesize receiverArray,contentTextView,subjectTextField,receiversView,_isShowAllReceivers,countlbl,emailObject,baseinfo,receiverCell;
+@implementation ResendEmailTableViewController
+@synthesize receiverArray,contentTextView,receiversView,subjectTextField,_isShowAllReceivers,countlbl,emailObject,baseinfo,receiverCell;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -36,6 +36,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+ 
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     UIBarButtonItem *doneBtn=[[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.rightBarButtonItem = doneBtn;
     if (!_isShowAllReceivers) {
@@ -104,6 +110,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 5;
 }
@@ -125,18 +132,20 @@
         return self.receiverCell;
     }else{
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        
         
         // Configure the cell...
         if (indexPath.section == 0) {
             
-        }
-        if (indexPath.section == 1) {
-            if (!subjectTextField) {
+        }else if(indexPath.section == 1){
+            if(!subjectTextField){
                 self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
             }
-            subjectTextField.backgroundColor = [UIColor clearColor];
             subjectTextField.text = self.emailObject.emailSubject;
+            subjectTextField.backgroundColor = [UIColor clearColor];
             [cell addSubview:subjectTextField];
             cell.textLabel.text = @"邮件主题";
         }else if(indexPath.section == 2){
@@ -174,7 +183,6 @@
         return cell;
     }
 }
-
 - (void)setDefaultAction{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:@"您将丢失该页面所有内容，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
     alertView.tag = SET_DEFAULT_ALERT_TAG;
@@ -182,6 +190,7 @@
 }
 
 - (void)addReceiver{
+    
     ContactListViewController *clvc = [[ContactListViewController alloc] initWithNibName:@"ContactListViewController" bundle:[NSBundle mainBundle]];
     clvc.msgType = @"Email";
     clvc.selectedContactorsArray = self.receiverArray;
@@ -196,7 +205,6 @@
     }
     return 44.0f;
 }
-
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -248,27 +256,25 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
 }
-
-- (void)reorganizeReceiverField:(NSDictionary *)userInfo{;
+- (void)reorganizeReceiverField:(NSDictionary *)userInfo{
     self.receiverArray = [userInfo objectForKey:@"selectedCArray"];
     receiverCell.receiverArray = self.receiverArray;
     [self.receiverCell setupCellData];
-    
     [self saveEmailInfo];
 }
 
-
 - (void)saveEmailInfo{
-    self.emailObject.emailSubject = [self.subjectTextField text];
     self.emailObject.emailContent = [self.contentTextView text];
+    self.emailObject.emailSubject = [self.subjectTextField text];
     self.emailObject.receiversArray = self.receiverArray;
 }
 
-- (void)createPartySuc{
-    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+- (void)resendSuc{
+    NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.baseinfo,@"baseinfo", nil];
+    NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS object:nil userInfo:userinfo];
     [[NSNotificationCenter defaultCenter] postNotification:notification];
-    [self dismissModalViewControllerAnimated:NO];
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self dismissModalViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)doneBtnAction{
@@ -286,7 +292,7 @@
     [self showWaiting];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    NSURL *url = [NSURL URLWithString:CREATE_PARTY];
+    NSURL *url = [NSURL URLWithString:RESEND_MSG_TO_CLIENT];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[self.emailObject setupReceiversArrayData] forKey:@"receivers"];
     [request setPostValue:self.emailObject.emailContent forKey:@"content"];
@@ -295,10 +301,7 @@
     [request setPostValue:[NSNumber numberWithBool:self.emailObject._isSendBySelf] forKey:@"_issendbyself"];
     [request setPostValue:@"Email" forKey:@"msgType"];
     [request setPostValue:@"iphone" forKey:@"addressType"];
-    [request setPostValue:self.baseinfo.starttimeDate forKey:@"starttime"];
-    [request setPostValue:self.baseinfo.location forKey:@"location"];
-    [request setPostValue:self.baseinfo.description forKey:@"description"];
-    [request setPostValue:self.baseinfo.peopleMaximum forKey:@"peopleMaximum"];
+    [request setPostValue:self.baseinfo.partyId forKey:@"partyID"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     //    NSString *tempPath = NSTemporaryDirectory();
     //    for(NSNumber *i in imageNamesArray){
@@ -323,8 +326,9 @@
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
+            NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
-                NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
+                /* */
                 MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
                 if (self.emailObject._isApplyTips) {
                     NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -342,7 +346,7 @@
                 vc.mailComposeDelegate = self;
                 [self presentModalViewController:vc animated:YES];
             }else{
-                [self createPartySuc];
+                [self resendSuc];
             }
         }else{
             [self showAlertRequestFailed:description];		
@@ -389,7 +393,7 @@
             break;
         }
 		case MFMailComposeResultSent:
-			[self createPartySuc];
+			[self resendSuc];
 			break;
 		case MFMailComposeResultFailed:{
             UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
@@ -406,7 +410,7 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 0) {
-        [self createPartySuc];
+        [self resendSuc];
     }else{
         [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
     }

@@ -70,7 +70,7 @@ def createParty(request):
                                                               creator = user,
                                                               )
             else:
-                client, is_created = Client.objects.get_or_create(phone = regPhoneNum(receiver['cValue']),
+                client, is_created = Client.objects.get_or_create(email = regPhoneNum(receiver['cValue']),
                                                               name = receiver['cName'],
                                                               creator = user,
                                                               )
@@ -88,7 +88,7 @@ def createParty(request):
                 msg = SMSMessage.objects.create(receivers = receiversString, content = content, party = party, apply_tips = _isapplytips, send_by_self = _issendbyself)
             else:
                 if _isapplytips or _isapplytips > 0 :
-                    enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + receiver.cVal + '/' + party.id
+                    enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + receiver['cValue'] + '/' + str(party.id)
                     content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                 EmailMessage.objects.create(
                                             receivers = receiversString,
@@ -98,9 +98,11 @@ def createParty(request):
                                             apply_tips = _isapplytips,
                                             send_by_self = _issendbyself,
                                             )
-                try :     
-                    send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
+                try :
+                    pass     
+                    #send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver['cValue']])
                 except:
+                    print 'exception'
                     data['Email'] = u'邮件发送失败'
         return {'partyId':party.id}
 
@@ -301,7 +303,7 @@ def resendMsg(request):
                 msg = SMSMessage.objects.create(receivers = receiversString, content = content, party = party, apply_tips = _isapplytips, send_by_self = _issendbyself)
             else:
                 if _isapplytips or _isapplytips > 0 :
-                    enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + receiver.cVal + '/' + party.id
+                    enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + receiver['cValue'] + '/' + str(party.id)
                     content = content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                 EmailMessage.objects.create(
                                             receivers = receiversString,
@@ -311,8 +313,9 @@ def resendMsg(request):
                                             apply_tips = _isapplytips,
                                             send_by_self = _issendbyself,
                                             )
-                try :     
-                    send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver.cVal])
+                try :
+                    pass     
+                    #send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver['cValue']])
                 except:
                     data['Email'] = u'邮件发送失败'
         return {'partyId':party.id}

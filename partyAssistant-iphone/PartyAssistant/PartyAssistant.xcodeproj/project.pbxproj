@@ -43,6 +43,8 @@
 		8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8932653C145E88F6006E827D /* AddressBook.framework */; };
 		89326546145E990E006E827D /* ContactListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89326544145E990E006E827D /* ContactListViewController.m */; };
 		89326547145E990E006E827D /* ContactListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89326545145E990E006E827D /* ContactListViewController.xib */; };
+		89334CC21474A7D6003A87DF /* ResendEmailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89334CC01474A7D6003A87DF /* ResendEmailTableViewController.m */; };
+		89334CC31474A7D6003A87DF /* ResendEmailTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89334CC11474A7D6003A87DF /* ResendEmailTableViewController.xib */; };
 		89391B091459342C00721F90 /* NSObject+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 89391B001459342C00721F90 /* NSObject+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		89391B0A1459342C00721F90 /* NSString+SBJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = 89391B021459342C00721F90 /* NSString+SBJSON.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		89391B0B1459342C00721F90 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 89391B041459342C00721F90 /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -185,6 +187,9 @@
 		89326543145E990E006E827D /* ContactListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactListViewController.h; sourceTree = "<group>"; };
 		89326544145E990E006E827D /* ContactListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactListViewController.m; sourceTree = "<group>"; };
 		89326545145E990E006E827D /* ContactListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactListViewController.xib; sourceTree = "<group>"; };
+		89334CBF1474A7D6003A87DF /* ResendEmailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendEmailTableViewController.h; sourceTree = "<group>"; };
+		89334CC01474A7D6003A87DF /* ResendEmailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendEmailTableViewController.m; sourceTree = "<group>"; };
+		89334CC11474A7D6003A87DF /* ResendEmailTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResendEmailTableViewController.xib; sourceTree = "<group>"; };
 		89391AB914592F3900721F90 /* SynthesizeSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SynthesizeSingleton.h; path = Services/SynthesizeSingleton.h; sourceTree = "<group>"; };
 		89391AFE1459342C00721F90 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JSON.h; path = External/JsonFramwork/JSON.h; sourceTree = "<group>"; };
 		89391AFF1459342C00721F90 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+SBJSON.h"; path = "External/JsonFramwork/NSObject+SBJSON.h"; sourceTree = "<group>"; };
@@ -519,6 +524,9 @@
 				89AB048B146E14EC008DC8C9 /* ResendSMSTableViewController.h */,
 				89AB0487146E14D5008DC8C9 /* ResendSMSTableViewController.m */,
 				89AB0488146E14D5008DC8C9 /* ResendSMSTableViewController.xib */,
+				89334CBF1474A7D6003A87DF /* ResendEmailTableViewController.h */,
+				89334CC01474A7D6003A87DF /* ResendEmailTableViewController.m */,
+				89334CC11474A7D6003A87DF /* ResendEmailTableViewController.xib */,
 			);
 			name = PartyList;
 			sourceTree = "<group>";
@@ -835,6 +843,7 @@
 				89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */,
 				8944F6FF14735D81001E30C6 /* PartyUserNameInputViewController.xib in Resources */,
 				8944F7021473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib in Resources */,
+				89334CC31474A7D6003A87DF /* ResendEmailTableViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -939,6 +948,7 @@
 				89B173921473469C0066B58E /* EmailObjectService.m in Sources */,
 				89B17396147346C60066B58E /* EmailObject.m in Sources */,
 				8944F6FE14735D81001E30C6 /* PartyUserNameInputViewController.m in Sources */,
+				89334CC21474A7D6003A87DF /* ResendEmailTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -33,11 +33,13 @@ def accountLogin(request):
     if request.method == 'POST':
         user = authenticate(username = request.POST['username'], password = request.POST['password'])
         if user:
+            print user
             return {
                     'uid':user.id,
                     'name':user.username,
                     }
         else:
+            print 'error'
             raise myException(ERROR_ACCOUNTLOGIN_INVALID_PWD)
 
 @csrf_exempt

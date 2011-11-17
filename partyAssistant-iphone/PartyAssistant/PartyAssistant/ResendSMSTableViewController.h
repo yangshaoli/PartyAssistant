@@ -48,6 +48,7 @@
 @property(nonatomic, retain)UILabel *countlbl;
 @property(nonatomic, retain)ReceiverTableViewCell *receiverCell;
 
+- (void)sendCreateRequest;
 - (void)reorganizeReceiverField:(NSNotification *)notification;
 - (void)setDefaultAction;
 - (void)saveSMSInfo;
