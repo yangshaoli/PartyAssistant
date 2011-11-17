@@ -10,15 +10,6 @@ ADMINS = (
     ('AIMeeting', 'admin@aimeeting.com'),
 )
 
-SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
-DOMAIN_NAME = 'http://127.0.0.1:8000'
-LOGIN_REDIRECT_URL = '/parties/create_party'
-
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
-
-MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
@@ -140,7 +131,7 @@ INSTALLED_APPS = (
     'apps.accounts',
     'apps.clients',
     'apps.parties',
-    'apps.messages',
+    'apps.messages', 
 )
 
 
@@ -150,20 +141,60 @@ INSTALLED_APPS = (
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
+    'version': 1, 
+    'disable_existing_loggers': True, 
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        }, 
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
     'handlers': {
+        'null': {
+            'level': 'DEBUG', 
+            'class': 'django.utils.log.NullHandler',
+        }, 
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG', 
+            'class': 'logging.handlers.RotatingFileHandler', 
+            'formatter': 'simple', 
+            'filename': 'airenao.log', 
+            'maxBytes': 1048576, 
+            'backupCount': 10
+        }, 
         'mail_admins': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
         },
+        'airenao': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        }
     }
 }
 
+SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+LOGIN_REDIRECT_URL = '/parties/list/'
+
+SMS_ISP_USERNAME = 's1002020649'
+SMS_ISP_PASSWORD = '13488891003'
