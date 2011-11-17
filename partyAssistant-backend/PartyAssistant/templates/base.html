@@ -1,7 +1,34 @@
-<html>
-	<head></head>
-	<body>
-		{% block nav %}{% endblock %}
-		{% block content %}{% endblock %}
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="author" content="author" />
+<meta name="description" content="tro" />
+<meta name="keywords" content="one,two,three,..." />
+<meta name="robots" content="all,index,follow" />
+<meta name="language" content="EN" />
+<meta name="copyright" content="Copyright 2008" />
+<meta name="rating" content="general" />
+<link rel = "shortcut icon" href="favicon.ico" />
+<title>DEMO</title>
+<link href="/static/css/main.css" type="text/css" rel="stylesheet" />
+<style type="text/css" media="print">
+@import url( styel/print.css );
+</style>
+<!--[if IE 6]><link href="css/ie6.css" rel="stylesheet" type="text/css" /><![endif]-->
+</head>
+<body>
+<!--START: Wrapper -->
+<div id="wrapper">
+  {% block nav %}{% endblock %}
+ <!--START: content -->
+ {% block content %}{% endblock %}
+ 
+ <!--END: content --> 
+ <!--START: Footer -->
+ <div id="footer"> </div>
+ <!--END: Footer --> 
+</div>
+<!--END: Wrapper -->
+</body>
 </html>
