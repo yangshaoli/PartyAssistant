@@ -65,17 +65,8 @@
         </td>
        </tr>
 {% endfor %}
-<<<<<<< HEAD
-</table>
-{% if party.invite_type == 'email' %}
-<a href="{%url email_invite party.id %}?apply=all">重新邀请</a>
-{% endif %}
-{% if party.invite_type == 'phone' %}
-<a href="{%url sms_invite party.id %}?apply=all">重新邀请</a>
-{% endif %}
-</body>
-</html>
-=======
+ 
+ 
        </tbody>
       </table>
      </div>
@@ -87,6 +78,13 @@
 
 
 <a href='{% url view_party party.id %}'>返回</a>
-
+{% if party.invite_type == 'email' %}
+<a href="{%url email_invite party.id %}?apply=all">重新邀请</a>
+{% endif %}
+{% if party.invite_type == 'phone' %}
+<a href="{%url sms_invite party.id %}?apply=all">重新邀请</a>
+{% endif %}
+</body>
+</html>
 {% endblock %}
->>>>>>> chenyang
+ 
