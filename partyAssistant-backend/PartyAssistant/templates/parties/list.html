@@ -1,12 +1,11 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
-<a href="{% url create_party %}">创建活动</a><br/><br/>
 
  <!--START: content -->
  <div id="content">
   <div class="grid_a">
-   <h2 class="title"><a href="{% url create_party %}">创建活动</a></h2>
+   <h2 class="title"><a href='{% url create_party %}'><img src="/static/images/btn_creat_active.png" width="87" height="26" /></a></h2>
    <div class="activity_tabs">
     <ul class="activity_nav">
      <li class="active"><a href="#">全部活动</a></li>

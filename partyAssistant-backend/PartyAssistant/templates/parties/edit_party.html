@@ -13,24 +13,28 @@
      开始时间
      </label>
      {{ form.start_time }}
+     {{ form.start_time.errors }}
      </div>
      <div class="field">
      <label for="username">
      活动地点
      </label>
      {{ form.address }}
+     {{ form.address.errors }}
      </div>
      <div class="field">
      <label for="username">
      活动描述
      </label>
      {{ form.description }}
+     {{ form.description.errors }}
      </div>
      <div class="field">
      <label for="username">
      人数限制
      </label>
      {{ form.limit_count }}
+     {{ form.limit_count.errors }}
      </div>
      <div class="submit_field">
      <input type='submit' value='submit'></input>
