@@ -1,10 +1,46 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
-<form action='{% url create_party %}' method='post'>
-	{% csrf_token %}
-	{{ form.as_p }}
-	<input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" />
-	<input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" />
-</form>
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">创建活动</h2>
+   <form method="post" ation="{% url create_party %}'" class="creat_exercise">
+    	{% csrf_token %}
+    	{{ form.as_p }}
+    	<input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" />
+    	<input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" />
+    </form>
+    <fieldset>
+     <div class="field">
+     <label for="username">
+     开始时间
+     </label>
+     <input id="username" class="text" type="text" name="username"/>
+     </div>
+     <div class="field">
+     <label for="username">
+     活动地点
+     </label>
+     <input id="username" class="text" type="text" name="username"/>
+     </div>
+     <div class="field">
+     <label for="username">
+     活动描述
+     </label>
+     <textarea name="username" cols="30" rows="4" class="text" id="username"></textarea>
+     </div>
+     <div class="field">
+     <label for="username">
+     人数限制
+     </label>
+     <input name="username" type="text" class="text" id="username" size="3"/>
+     </div>
+     <div class="submit_field">
+      <input type="image" alt="sms" src="/static/images/btn_sms.png"/>
+      <input type="image" alt="sms" src="/static/images/btn_email.png"/>
+     </div>
+    </fieldset>
+   </form>
+  </div>
+ </div>
 {% endblock%}
