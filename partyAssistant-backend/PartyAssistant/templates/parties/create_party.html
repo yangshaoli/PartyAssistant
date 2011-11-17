@@ -1,10 +1,11 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
+ <!--START: content -->
 <div id="content">
   <div class="grid_a">
    <h2 class="title">创建活动</h2>
-   <form method="post" ation="{% url create_party %}'" class="creat_exercise">
+   <form method="post" ation="{% url create_party %}" class="creat_exercise">
     	{% csrf_token %}
     <fieldset>
      <div class="field">
@@ -39,4 +40,5 @@
    </form>
   </div>
  </div>
+ <!--END: content --> 
 {% endblock%}

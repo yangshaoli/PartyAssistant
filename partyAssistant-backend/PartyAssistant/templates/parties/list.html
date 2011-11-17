@@ -3,7 +3,36 @@
 {% block content %}
 <a href="{% url create_party %}">创建活动</a><br/><br/>
 
-{% for party in party_list %}
-	<a href="{% url view_party party.id %}">{{ party.description|ljust:"10" }} {{ party.start_time|date:"m-d H:i" }}</a>&nbsp;<a href="{% url delete_party party.id %}">delete</a>&nbsp;<a href="{% url edit_party party.id %}">edit</a>&nbsp;<a href="{% url copy_party party.id %}">copy</a><br />
-{% endfor %}
+ <!--START: content -->
+ <div id="content">
+  <div class="grid_a">
+   <h2 class="title"><a href="{% url create_party %}">创建活动</a></h2>
+   <div class="activity_tabs">
+    <ul class="activity_nav">
+     <li class="active"><a href="#">全部活动</a></li>
+     <li><a href="#">nav</a></li>
+    </ul>
+    <div class="activity_content">
+     <div class="sub_tab"><strong>全部</strong><span class="indicator"></span></div>
+     {% for party in party_list %}
+     {% if not forloop.first %}
+     <div class="line"></div>
+     {% endif %}
+    <div class="comment comment_odd"> <i class="corners"></i>
+      
+      <p><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
+     
+      <p class="details">{{ party.description|ljust:"10" }}</p>
+      <div class="function_share clearfix">
+       <p class="statistics">未响应：<strong class="important">{{ party.client.noanswer.count }}</strong> 已报名：<strong class="important">{{ party.client.apply.count }}</strong> 不参加：<strong class="important">{{ party.client.reject.count }}</strong></p>
+       <p class="share"><a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a> | <a href="#">转发</a></p>
+      </div>
+    </div>
+    {% endfor %}
+    </div>
+  </div>
+ </div>
+</div>
+<!--END: content -->
+
 {% endblock %}

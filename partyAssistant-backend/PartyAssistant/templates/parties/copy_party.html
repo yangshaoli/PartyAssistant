@@ -1,13 +1,47 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
-<form action='{% url copy_party party.id %}' method='post'>
-	{% csrf_token %}
-	{{ form.as_p }}
-    {% if party.invite_type == 'phone' %}
+<!--START: content -->
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">复制活动</h2>
+   <form method="post" ation="{% url copy_party party.id %}" class="creat_exercise">
+    	{% csrf_token %}
+    <fieldset>
+     <div class="field">
+     <label for="username">
+     开始时间
+     </label>
+     {{ form.start_time }}
+     </div>
+     <div class="field">
+     <label for="username">
+     活动地点
+     </label>
+     {{ form.address }}
+     </div>
+     <div class="field">
+     <label for="username">
+     活动描述
+     </label>
+     {{ form.description }}
+     </div>
+     <div class="field">
+     <label for="username">
+     人数限制
+     </label>
+     {{ form.limit_count }}
+     </div>
+     <div class="submit_field">
+     {% if party.invite_type == 'phone' %}
 	<input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" />
-    {% else %}
+     {% else %}
 	<input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" />
-    {% endif %}
-</form>
+     {% endif %}
+    </div>
+    </fieldset>
+   </form>
+  </div>
+ </div>
+<!--END: content -->
 {% endblock%}

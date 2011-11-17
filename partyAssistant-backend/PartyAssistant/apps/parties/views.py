@@ -324,6 +324,14 @@ def message_invite(request):
 @login_required
 def list_party(request):
     party_list = Party.objects.filter(creator=request.user)
+    for party in party_list:
+        client = {
+        u'invite' : PartiesClients.objects.filter(party=party).exclude(client__invite_type='public'), #Client.objects.exclude(invite_type='public'),
+        u'apply' : PartiesClients.objects.filter(party=party,apply_status='apply'),
+        u'noanswer' : PartiesClients.objects.filter(party=party,apply_status='noanswer'),
+        u'reject' : PartiesClients.objects.filter(party=party,apply_status='reject'),
+        }
+        party.client=client    
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list})
 
 def view_party(request, party_id):
