@@ -153,8 +153,8 @@ def email_invite(request, party_id):
             content = content+content+party.creator.username+u'邀请你参加：'
             if party.start_time == None and party.address == '':
                 content = content+party.description+u',时间、地点，另行通知。'
-            elif party.start_time != None and party.address == '':
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+',地点，另行通知。'     
+            elif party.start_time != None and party.address == u'':
+                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
             elif party.start_time == None and party.address != '':
                 content = content+u'在'+party.address+party.description+u',时间待定。'
             else:  
@@ -255,6 +255,15 @@ def sms_invite(request, party_id):
             form = SMSInviteForm(data)
         else:
             content = content+party.creator.username+u'邀请你参加：'
+            if party.start_time == None and party.address == '':
+                content = content+party.description+u',时间、地点，另行通知。'
+            elif party.start_time != None and party.address == u'':
+                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
+            elif party.start_time == None and party.address != '':
+                content = content+u'在'+party.address+party.description+u',时间待定。'
+            else:  
+                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+            
             data = {
                'client_phone_list': '', 
                'content': content,
