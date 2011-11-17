@@ -127,6 +127,9 @@ def email_invite(request, party_id):
             party.save()
  
             return redirect('list_party')
+        else:
+            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
+
     else:
         client_email_list = []
         content = ''  
@@ -230,6 +233,9 @@ def sms_invite(request, party_id):
             party.save()
             
             return redirect('list_party')
+        else:
+            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
+
     else:
         client_phone_list = []
         content = ''
