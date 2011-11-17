@@ -1,7 +1,7 @@
-<html>
-<head>
-<title>受邀联系人列表
-</title>
+{% extends 'login_base.html' %}
+{% block title %} 受邀联系人列表 {% endblock %}
+
+{% block content %}
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript">
 $(document).ajaxSend(function(event, xhr, settings) {
@@ -110,5 +110,4 @@ $(document).ajaxSend(function(event, xhr, settings) {
 
 </table>
 
-</body>
-</html>
+{% endblock %}

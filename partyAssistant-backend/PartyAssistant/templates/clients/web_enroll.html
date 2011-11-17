@@ -1,38 +1,91 @@
-{% extends 'base.html' %}
+{% extends 'not_login_base.html' %}
 
 {% block title %}报名页面 - AIMeeting{% endblock %}
 
 {% block content %}
 
-{% if client %}
-<!-- 被邀请用户报名页面 -->
-
-{{client.name}} 你好 <br/>
-{{party.creator.username}}邀请您 于{{party.time}}  在 {{party.address}}<br/>
-{{party.description}}<br/>
-{{party.limit_num}}人 <br/>
-
-<form method="POST" url="{% url invite_enroll client.email party.id %}">{% csrf_token %}
-	<input type="hidden" name="action" value=""/>
-	<button onclick="document.getElementsByName('action')[0].value = 'yes';this.form.submit()">参加</button>
-	<button onclick="document.getElementsByName('action')[0].value = 'no';this.form.submit()">不参加</button>
-</form>
-
-{% else %}
-<!-- 公共用户报名页面 -->
-
-{{party.time}} {{party.address}}<br/>
-{{party.description}}<br/>
-{{party.limit_num}}人 <br/>
-<form method="POST" url="{% url public_enroll party.id %}">{% csrf_token %}
+ <div id="content">
+  <div class="grid_a">
+   <h2 class="title">活动报名</h2>
+   <div class="apply_details">
+    <p>{{party.creator.password}} <span class="minor">邀请</span> 您：</p>
+    <p>{{party.start_time}}</p>
+    <p class="paragraph">{{party.address}} <span class="minor">参加活动</span></p>
+    <p class="paragraph">{{party.description}}</p>
+    
+    
+        {% if client %}
+        <!-- 被邀请用户报名页面 -->
+    <form method="POST" url="{% url invite_enroll client.email party.id %}">
+     <input type="image" src="/static/images/btn_join.png" />
+     <input type="image" src="/static/images/btn_join_no.png" />
+       
+         {% else %}
+         <!--公共报名页面 -->
+        <form action="{% url public_enroll party.id %}" method="get" class="join_form">{% csrf_token %}
 	NAME: <input type="text" name="name" id="id_name"/><br/>
 	EMAIL: <input type="text" name="email" id="id_email"/><br/>
-	PHONE: <input type="text" name="phone" id="id_phone"/><br/>
+	PHONE: <input type="text" name="phone" id="id_phone"/><br/><br/>
+         <input type="image" src="/static/images/btn_join.png" />
+         {% endif %}
+    </form>
+    <p class="fw_b" style="margin-bottom:40px;">人满了，下次趁早</p>
+   </div>
 
-	<input type="submit" value="参加" />
-</form>
-
+<div class="accordionview">
+    <div class="accordion_panel">
+     <h2 class="accordion_toggle accordion_toggle_active">来凑热闹的 <strong><i class="icon_new"></i>({{client_sum.apply}}人)</strong> 还在犹豫的<strong> ({{client_sum.noanswer}}人)</strong> 就是不来的 <strong>({{client_sum.reject}}人)</strong> <a href='{% url email_invite party.id %}?apply={{ applystatus }}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a></h2>
+     <div class="accordion_content">
+      <table width="100%" border="0" cellspacing="0" class="table">
+      <thead>
+       <tr>
+        <th width="7%" scope="col">&nbsp;</th>
+        <th width="23%" scope="col">姓名</th>
+        <th width="52%" scope="col">联系方式</th>
+        <th width="18%" scope="col" class="ta_r">&nbsp;</th>
+       </tr>
+       </thead>
+       <tbody>
+       <tr class="new_line">
+        <th><img src="/static/images/icon_new.png" width="30" height="14" alt="new" /></th>
+        <th>sss;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+{% for party_client in party_clients_list %}
+       <tr>
+        <th>&nbsp;</th>
+        <th>{{ party_client.client.name }}</th>
+        <td>
+{% if party.invite_type == 'email' %}
+{{ party_client.client.email }}
 {% endif %}
-<br/>
-<a href="#">下载App</a>
+{% if party.invite_type == 'phone' %}
+{{ party_client.client.phone }}
+{% endif %}
+        </td>
+        <td>
+{% if applystatus == 'all' or applystatus == 'noanswer'  %}  
+ <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a> 
+    &nbsp;&nbsp;&nbsp;
+    <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}">不参加</a>
+{% endif %}
+{% if applystatus == 'apply' %}  
+    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}'>不参加</a>
+{% endif %}
+{% if applystatus == 'reject' %}  
+    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}'>参加</a> 
+{% endif %}
+        </td>
+       </tr>
+{% endfor %}
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+
+ </div>
+</div>
+
 {% endblock %}

@@ -22,7 +22,7 @@ def public_enroll(request, party_id):
         if Client.objects.filter(email=email).count() == 0:
             client = Client.objects.create(name=name, email=email, phone=phone, invite_type='public')
             #TODO 
-            PartiesClients.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'已报名') #在UserProfile中写入号码
+            PartiesClients.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'apply') #在UserProfile中写入号码
             return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
         else:
             return render_to_response('message.html', {'message':u'您已经报名了'}, context_instance=RequestContext(request))
@@ -40,11 +40,11 @@ def invite_enroll(request, email, party_id):
         party = Party.objects.get(pk=party_id)
         status = PartiesClients.objects.get(client=client, party=party)
         if request.POST['action'] == 'yes': #如果点击参加
-            status.apply_status = u'已报名'
+            status.apply_status = u'apply'
             status.save()
             return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
         else:
-            status.apply_status = u'不参加'
+            status.apply_status = u'reject'
             status.save()
             return render_to_response('message.html', {'message':u'您已经拒绝了这次邀请'}, context_instance=RequestContext(request))
 
@@ -87,7 +87,18 @@ def invite_list(request, party_id):
         party_clients_list = PartiesClients.objects.filter(party=party)
     else:        
         party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
+    client_sum = {
+        'apply':PartiesClients.objects.filter(party=party).filter(apply_status='apply').count(),
+        'noanswer':PartiesClients.objects.filter(party=party).filter(apply_status='noanswer').count(),
+        'reject':PartiesClients.objects.filter(party=party).filter(apply_status='reject').count(),
+    }
+    ctx = {
+        'party_clients_list':party_clients_list,
+        'party':party,
+        'applystatus':apply_status,
+        'client_sum':client_sum
+    }
     
-    return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party,'applystatus':apply_status}) 
+    return TemplateResponse(request,'clients/invite_list.html',ctx) 
 
 

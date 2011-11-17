@@ -1,8 +1,7 @@
-<html>
-<head>
- 
-<title>受邀联系人列表
-</title>
+{% extends 'login_base.html' %}
+{% block title %} 受邀联系人列表 {% endblock %}
+
+{% block content %}
 <script>
  
   function refesh(){
@@ -10,28 +9,48 @@
   }
 </script>
 </head>
- 
-<body>{% csrf_token %}
-<a href='{% url view_party party.id %}'>返回</a>
-<table>
-<tr>
-<td>联系人名称</td>
-<td>电话/Email</td>
-<td> &nbsp;</td>
-</tr>
+{% csrf_token %}
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">谁来了</h2>
+   <div class="apply_details">
+    <p>{{party.start_time}}</p>
+    <p>{{party.address}} <span class="minor">参加活动</span></p>
+    <p>{{party.description}}</p>
+   </div>
+   <div class="accordionview">
+    <div class="accordion_panel">
+     <h2 class="accordion_toggle accordion_toggle_active">来凑热闹的 <strong><i class="icon_new"></i>({{client_sum.apply}}人)</strong> 还在犹豫的<strong> ({{client_sum.noanswer}}人)</strong> 就是不来的 <strong>({{client_sum.reject}}人)</strong> <a href='{% url email_invite party.id %}?apply={{ applystatus }}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a></h2>
+     <div class="accordion_content">
+      <table width="100%" border="0" cellspacing="0" class="table">
+      <thead>
+       <tr>
+        <th width="7%" scope="col">&nbsp;</th>
+        <th width="23%" scope="col">姓名</th>
+        <th width="52%" scope="col">联系方式</th>
+        <th width="18%" scope="col" class="ta_r">&nbsp;</th>
+       </tr>
+       </thead>
+       <tbody>
+       <tr class="new_line">
+        <th><img src="/static/images/icon_new.png" width="30" height="14" alt="new" /></th>
+        <th>sss;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
 {% for party_client in party_clients_list %}
-<tr>
- 
-<td>{{ party_client.client.name }} </td>
-<td>
+       <tr>
+        <th>&nbsp;</th>
+        <th>{{ party_client.client.name }}</th>
+        <td>
 {% if party.invite_type == 'email' %}
 {{ party_client.client.email }}
 {% endif %}
 {% if party.invite_type == 'phone' %}
 {{ party_client.client.phone }}
 {% endif %}
-</td>
-   <td>
+        </td>
+        <td>
 {% if applystatus == 'all' or applystatus == 'noanswer'  %}  
  <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a> 
     &nbsp;&nbsp;&nbsp;
@@ -43,11 +62,19 @@
 {% if applystatus == 'reject' %}  
     <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}'>参加</a> 
 {% endif %}
- </td>
-</tr>
+        </td>
+       </tr>
 {% endfor %}
-</table>
-<a href='{% url email_invite party.id %}?apply={{ applystatus }}'>再次发送邀请</a>
-  
-</body>
-</html>
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+ 
+
+
+<a href='{% url view_party party.id %}'>返回</a>
+
+{% endblock %}

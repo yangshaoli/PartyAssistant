@@ -1,10 +1,16 @@
-{% extends "base.html" %}
+{% extends 'login_base.html' %}
 
 {% block title %} 账户信息  {% endblock %}
 
 {% block content %}
-{{user.email}}<br/>
-{{user.username}}<br />
-
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">用户信息</h2>
+    欢迎你, {{user.username}}<br/><br/>
+    Email:{{user.email}}<br/>
+<br />
 <a href="{% url change_password %}">修改密码</a>
+  </div>
+ </div>
+
 {% endblock %}
