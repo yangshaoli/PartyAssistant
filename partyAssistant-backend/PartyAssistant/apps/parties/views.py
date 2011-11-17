@@ -217,7 +217,7 @@ def sms_invite(request, party_id):
             if form.cleaned_data['is_apply_tips']:
                 for phone in client_phone_list:
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + phone + '/' + party_id
-                    sms_message.content = sms_message.content + u'点击进入报名页面：' 
+                    sms_message.content = sms_message.content + u'点击进入报名页面：%s</a>' % (enroll_link) 
                     sms_message.save()
                     send_message = Outbox(address=phone, base_message=sms_message)
                     send_message.save()
