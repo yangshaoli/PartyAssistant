@@ -5,7 +5,7 @@
 <script>
  
   function refesh(){
-   document.execCommand('Refresh') 
+   document.execCommand('Refresh')
   }
 </script>
 </head>
@@ -51,22 +51,20 @@
 {% endif %}
         </td>
         <td>
-{% if applystatus == 'all' or applystatus == 'noanswer'  %}  
- <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a> 
+{% if applystatus == 'all' or applystatus == 'noanswer' %}
+ <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a>
     &nbsp;&nbsp;&nbsp;
     <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}">不参加</a>
 {% endif %}
-{% if applystatus == 'apply' %}  
+{% if applystatus == 'apply' %}
     <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}'>不参加</a>
 {% endif %}
-{% if applystatus == 'reject' %}  
-    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}'>参加</a> 
+{% if applystatus == 'reject' %}
+    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}'>参加</a>
 {% endif %}
         </td>
        </tr>
 {% endfor %}
- 
- 
        </tbody>
       </table>
      </div>
@@ -78,13 +76,6 @@
 
 
 <a href='{% url view_party party.id %}'>返回</a>
-{% if party.invite_type == 'email' %}
-<a href="{%url email_invite party.id %}?apply=all">重新邀请</a>
-{% endif %}
-{% if party.invite_type == 'phone' %}
-<a href="{%url sms_invite party.id %}?apply=all">重新邀请</a>
-{% endif %}
-</body>
-</html>
+
 {% endblock %}
  

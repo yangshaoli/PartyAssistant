@@ -337,8 +337,10 @@ def list_party(request):
         client = {
         u'invite' : PartiesClients.objects.filter(party=party).exclude(client__invite_type='public'), #Client.objects.exclude(invite_type='public'),
         u'apply' : PartiesClients.objects.filter(party=party,apply_status='apply'),
+        u'new_add_apply' : PartiesClients.objects.filter(party=party, apply_status='apply', is_see_over=True),
         u'noanswer' : PartiesClients.objects.filter(party=party,apply_status='noanswer'),
         u'reject' : PartiesClients.objects.filter(party=party,apply_status='reject'),
+        u'new_add_reject' : PartiesClients.objects.filter(party=party,apply_status='reject', is_see_over=True),
         }
         party.client=client    
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list})
