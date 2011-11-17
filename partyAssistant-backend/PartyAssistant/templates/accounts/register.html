@@ -1,9 +1,40 @@
 {% extends 'not_login_base.html' %}
 
 {% block content %}
-	<form action="{% url register %}" method="post">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<input id="id_register_submit" type="submit" value="submit" />
+ <!--START: content -->
+ <div id="content">
+  <div class="grid_a">
+   <h2 class="title">用户注册</h2>
+	<form action="{% url register %}" method="post" class="creat_exercise">
+	    {% csrf_token %}
+        <fieldset>
+         <div class="field">
+         <label for="username">
+         用户名
+         </label>
+         {{form.username}}
+         </div>
+         <div class="field">
+         <label for="email">
+         Email
+         </label>
+         {{form.email}}
+         </div>
+         <div class="field">
+         <label for="password">
+         密码
+         </label>
+         {{form.password}}
+         </div>
+         <div class="field">
+         <label for="password">
+         确认密码
+         </label>
+         {{form.confirm_password}}
+         </div>
+         <div class="submit_field">
+          <input id="id_login_submit" type="submit" value="Register" />
+         </div>
+        </fieldset>	
 	</form>
 {% endblock %}
