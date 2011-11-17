@@ -129,7 +129,8 @@ def email_invite(request, party_id):
             return redirect('list_party')
     else:
         client_email_list = []
-        content = ''    
+        content = ''  
+        form = None  
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
             clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
@@ -165,7 +166,7 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
     
-    return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
+        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
 
 @login_required
 @transaction.commit_on_success
@@ -196,7 +197,7 @@ def sms_invite(request, party_id):
                     client_temp = Client.objects.create(
                         creator=request.user, 
                         name=phone, 
-                        email=phone, 
+                        phone=phone, 
                         invite_type='phone'
                     )
                 
@@ -232,12 +233,13 @@ def sms_invite(request, party_id):
     else:
         client_phone_list = []
         content = ''
-        
+        form = None
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
             clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         else:
             clients = PartiesClients.objects.filter(party=party_id).filter(apply_status=apply_status).exclude(client__invite_type='public')
+        
         
         if clients:
             for client in clients:
@@ -246,7 +248,7 @@ def sms_invite(request, party_id):
 
             content = SMSMessage.objects.get(party=party).content
             data = {
-                'client_email_list': client_phone_list, 
+                'client_phone_list': client_phone_list, 
                 'content': content,
                 'is_apply_tips' : True
             }
@@ -254,13 +256,13 @@ def sms_invite(request, party_id):
         else:
             content = content+party.creator.username+u'邀请你参加：'
             data = {
-               'client_email_list': '', 
+               'client_phone_list': '', 
                'content': content,
                'is_apply_tips' : True
             }
-            form = SMSInviteForm(data)
-            
-    return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
+            form = SMSInviteForm(data)    
+                    
+        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
 
 
 def delete_party_notice(request,party_id):
@@ -285,15 +287,19 @@ def copy_party(request,party_id):#复制party和联系人
         new_party.id = None
         new_party.save()
         old_message = None
-        try:
-            old_message = get_object_or_404(EmailMessage, party=old_party)
-        except:
-            pass
-        else:
-            new_message = copy.deepcopy(old_message)
-            new_message.id = None
-            new_message.party = new_party
-            new_message.save()
+        if old_party.invite_type:
+            try:
+                if old_party.invite_type == 'email':
+                    old_message = get_object_or_404(EmailMessage, party=old_party)
+                if old_party.invite_type == 'phone':    
+                    old_message = get_object_or_404(SMSMessage, party=old_party)
+            except:
+                pass
+            else:
+                new_message = copy.deepcopy(old_message)
+                new_message.id = None
+                new_message.party = new_party
+                new_message.save()
         
         clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         for client in clients:
