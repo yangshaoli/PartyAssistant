@@ -338,7 +338,7 @@ def copy_party(request,party_id):#复制party和联系人
         
         clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         for client in clients:
-            c = PartiesClients.objects.create(client_id=client.id, party=new_party,apply_status='noanswer')
+            c = PartiesClients.objects.create(client_id=client.client.id, party=new_party,apply_status='noanswer')
             c.save()
     
         return TemplateResponse(request, 'parties/copy_party.html',{'form':CreatePartyForm(instance=new_party), 'party':new_party})
