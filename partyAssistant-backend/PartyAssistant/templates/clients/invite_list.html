@@ -20,7 +20,7 @@
    </div>
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active">来凑热闹的 <strong><i class="icon_new"></i>({{client_sum.apply}}人)</strong> 还在犹豫的<strong> ({{client_sum.noanswer}}人)</strong> 就是不来的 <strong>({{client_sum.reject}}人)</strong> <a href='{% url email_invite party.id %}?apply={{ applystatus }}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a></h2>
+     <h2 class="accordion_toggle accordion_toggle_active">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_sum.apply}}人)</strong> 还在犹豫的<strong> ({{client_sum.noanswer}}人)</strong> 就是不来的 <strong>({{client_sum.reject}}人)</strong> <a href='{% url email_invite party.id %}?apply={{ applystatus }}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a></h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>
@@ -40,7 +40,7 @@
        </tr>
 {% for party_client in party_clients_list %}
        <tr>
-        <th>&nbsp;</th>
+        <th>{% if party_client.isnew %}<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />{% endif %}</th>
         <th>{{ party_client.client.name }}</th>
         <td>
 {% if party.invite_type == 'email' %}
