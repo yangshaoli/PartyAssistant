@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_height="fill_parent"
+	android:layout_width="fill_parent">
+	<!-- Top -->
+	
+	<TextView android:layout_width="fill_parent"
+		android:textColor="#FFFFFF" android:layout_height="37sp" android:text="@string/register_label_top"
+		android:background="@drawable/blue_button" android:gravity="center" />
+
+	<!-- Background & Center -->
+	<LinearLayout 
+		android:orientation="vertical" android:layout_height="fill_parent"
+		android:layout_width="fill_parent" android:background="@drawable/blue_button"
+		android:layout_gravity="center_horizontal">
+		<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/logo"
+		android:layout_marginTop="10dp"
+		android:layout_gravity="center_horizontal"
+		/>	
+		<!-- 用户名 -->
+		<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="25dp">
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/login_label_username"
+		    android:textColor="#000000"
+			android:textSize="18sp"
+			 />
+
+		<EditText android:id="@+id/reg_user_name"
+			android:hint="@string/login_username_hint"
+			android:layout_marginLeft="8dp"
+			android:layout_width="200sp" 
+			android:layout_height="wrap_content" 
+			></EditText>
+		</LinearLayout>
+		
+		<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="15dp">
+			<!-- 密码 -->
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/login_label_password"
+			android:textColor="#000000"
+			android:textSize="18sp" 
+			android:paddingBottom="10sp" />
+
+		<EditText android:id="@+id/reg_pass1"
+			android:hint="@string/register_lable_pass_tip"
+			android:password="true"
+			android:layout_marginLeft="8dp"
+			android:layout_width="200sp"
+			android:layout_height="wrap_content"
+			></EditText>
+		</LinearLayout>
+		<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:orientation="horizontal"
+		android:layout_marginTop="15dp">
+			<!-- 密码确认 -->
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="@string/register_label_pass_insure"
+			android:textColor="#000000"
+			android:textSize="18sp" 
+			android:paddingBottom="10sp" />
+
+		<EditText android:id="@+id/reg_pass2" 
+			android:hint="@string/register_lable_pass_tip"
+			android:password="true"
+			android:layout_marginLeft="8dp"
+			android:layout_width="200sp"
+			android:layout_height="wrap_content"
+			></EditText>
+		</LinearLayout>
+		
+			<!-- 提示框 --><!-- android:focusable="false" 就不会出现 软键盘，但要是出现滚动条是不是还要删掉 -->
+		<EditText  
+    		android:id="@+id/text_view"  
+    		android:layout_width="fill_parent"  
+    		android:layout_height="wrap_content"  
+    		android:singleLine="false"  
+    		android:maxLines="6" 
+    		android:focusable="false"
+    		android:background="#ded8f9"
+    		android:textColor="#000000"
+    		android:layout_marginLeft="20dp"
+    		android:layout_marginTop="15dp"
+    		android:layout_marginRight="20dp"
+    		android:enabled="false" 
+    		android:scrollbars="horizontal" 
+    		android:textSize="35px"
+    		android:text="adfajldkf;ajdfjaksdjfljaskdjfl;kja;sldjf ajsl;dfj alsjdf;la fljasdlfjals;dfj;ajs;fkj aflja;lsdjf l;ajsf;lajsdfl;kjasdl;fkj a;lsjfd;lasjdflajsdkfja;lsdjfaksjdf;s ajsdlkfjadsf"
+        />  	
+			<!-- 复选框 -->
+		<CheckBox android:text="是否同意本协议" 
+			android:id="@+id/CheckBox" 
+			android:checked="true"
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal">
+		</CheckBox> 	
+		<!-- Button Center -->
+		<LinearLayout 
+			android:orientation="horizontal" android:layout_height="wrap_content"
+			android:layout_width="fill_parent" android:paddingTop="30sp"
+			android:layout_gravity="center_horizontal" android:gravity="center_horizontal">
+
+			<Button android:layout_width="wrap_content" android:text="@string/save"
+				android:textColor="#FFFFFF" android:paddingRight="10sp"
+				android:layout_marginRight="15dp"
+				android:paddingLeft="10sp" android:layout_height="wrap_content"
+				android:background="@drawable/button_red" android:id="@+id/appect" />
+
+			<Button android:layout_width="wrap_content" 
+				android:layout_marginRight="15dp"
+				android:text="@string/btn_cancle"
+				android:textColor="#FFFFFF" android:paddingRight="10sp"
+				android:paddingLeft="10sp" android:layout_height="wrap_content"
+				android:background="@drawable/button_red" android:id="@+id/exit" />
+		</LinearLayout>
+
+
+	</LinearLayout>
+
+</LinearLayout>
+</ScrollView>
