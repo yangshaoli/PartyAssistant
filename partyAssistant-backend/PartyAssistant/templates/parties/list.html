@@ -19,71 +19,6 @@
        </tr>
        </thead>
        <tbody>
-       <tr>
-        <th>sss</th>
-        <td>ssss@cn-acg.com</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>sss</th>
-        <td>ssss@cn-acg.com</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>sss</th>
-        <td>ssss@cn-acg.com</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
-       <tr>
-        <th>&nbsp;</th>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-       </tr>
        </tbody>
       </table>
  </div>
@@ -110,7 +45,7 @@
       <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
-       <p class="statistics"><a href="#">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="#">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="#">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
+       <p class="statistics"><a href="#" onclick="pupupClients('noanswer', {{party.id}})">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="#"  onclick="pupupClients('apply', {{party.id}})">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="#"  onclick="pupupClients('reject', {{party.id}})">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
        <p class="share"><a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a> | <a href="#">转发</a></p>
       </div>
     </div>
@@ -127,12 +62,27 @@
            $(".transparent").hide();
            $(".popup").hide();
        })
-       
-       $('.statistics a').bind('click', function(){
+    });
+
+function pupupClients(action, party_id){
+    $.ajax({
+        type : 'GET',
+        url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
+        statusCode : {
+        200: function(response){
+            clients = JSON.parse(response).party_clients_list_ajax;
+            //alert(data.party_clients_list_ajax);
+            for (i in clients){
+                row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
+                $('.popup table tbody').before(row);    
+            }
            $(".transparent").show();
            $(".popup").show();
-       })
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
     });
+}
 
 </script>
 
