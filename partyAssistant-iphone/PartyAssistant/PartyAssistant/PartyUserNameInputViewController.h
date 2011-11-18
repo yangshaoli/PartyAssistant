@@ -11,7 +11,9 @@
 @protocol PartyUserNameInputDelegate <NSObject>
 
 - (void)cancleInput;
-- (void)SaveInput:(NSString *)newUserName;
+- (void)saveInputDidBegin;
+- (void)saveInputFinished;
+- (void)saveInputFailed;
 
 @end
 

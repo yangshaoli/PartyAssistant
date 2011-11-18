@@ -6,7 +6,22 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#import "DataManager.h"
 #import "PartyUserNameInputViewController.h"
+
+#define NotLegalTag         1
+#define NotPassTag          2
+
+@interface PartyUserNameInputViewController ()
+
+- (void)cleanKeyBoard;
+- (void)showAlertWithMessage:(NSString *)message  
+                 buttonTitle:(NSString *)buttonTitle 
+                         tag:(int)tagNum;
+- (void)showNotLegalInput;
+- (void)showNotPassChekAlert;
+
+@end
 
 @implementation PartyUserNameInputViewController
 @synthesize tableView = _tableView;
@@ -85,9 +100,43 @@
 
 - (IBAction)SaveInput {
     //check username textField
-    if (nil) {
-        
+    BOOL isEmpty = (!_userNameTextField.text 
+                    || [_userNameTextField.text isEqualToString:@""]);
+    if (isEmpty) {
+        [self showNotLegalInput];
+        return;
     }
-    [delegate SaveInput:_userNameTextField.text];
+    [self cleanKeyBoard];
+    [delegate saveInputDidBegin];
+    NetworkConnectionStatus status = [[DataManager sharedDataManager] 
+                                       setNickName:_userNameTextField.text];
+    if (status == NetWorkConnectionCheckPass) {
+        [delegate saveInputFinished];
+    } else {
+        [self showNotPassChekAlert];
+        [delegate saveInputFailed];
+    }
+}
+
+- (void)cleanKeyBoard {
+    if ([_userNameTextField isFirstResponder]) {
+        [_userNameTextField resignFirstResponder];
+    } 
+}
+
+- (void)showAlertWithMessage:(NSString *)message  
+                 buttonTitle:(NSString *)buttonTitle 
+                         tag:(int)tagNum{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    alert.tag = tagNum;
+    [alert show];
+}
+
+- (void)showNotLegalInput {
+    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
+}
+
+- (void)showNotPassChekAlert {
+    [self showAlertWithMessage:@"操作失败" buttonTitle:@"OK" tag:NotPassTag];
 }
 @end
