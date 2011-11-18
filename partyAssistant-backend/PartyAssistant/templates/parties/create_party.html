@@ -1,6 +1,10 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
+<style>
+    #id_sms_invite_submit { background:url('/static/images/btn_bg.png'); border:0px; color:#fff; padding:5px 19px;}
+    #id_email_invite_submit { background:url('/static/images/btn_bg.png'); border:0px; color:#fff; padding:5px 19px;}
+</style>
  <!--START: content -->
 <div id="content">
   <div class="grid_a">
@@ -37,8 +41,8 @@
      {{ form.limit_count.errors }}
      </div>
      <div class="submit_field">
-      <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="sms_invite" alt="sms" src="/static/images/btn_sms.png"/>
-      <input id="id_email_invite_submit" type="submit" name="email_invite" value="email_invite" alt="sms" src="/static/images/btn_email.png"/>
+      <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信邀请" alt="sms"/>
+      <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件邀请" alt="sms"/>
      </div>
     </fieldset>
    </form>

@@ -1,6 +1,9 @@
 {% extends 'login_base.html' %}
 
 {% block content %}
+<style>
+    #id_email_invite_submit { background:url('/static/images/btn_bg.png'); border:0px; color:#fff; padding:5px 19px;}
+</style>
 <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
  
 <script type="text/javascript" >
@@ -42,7 +45,7 @@ $(document).ready(function(){
      </label>
      <p id="id_send_email_count">0<p>
      </div>
-		<input id="id_email_invite_submit" type="submit" value="submit" />
+		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
 		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
         <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</button>
 	</form>
