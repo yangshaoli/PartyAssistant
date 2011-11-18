@@ -9,6 +9,7 @@ from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
 from apps.parties.models import PartiesClients
+from apps.clients.views import get_client_sum 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render_to_response, redirect, get_object_or_404
@@ -367,3 +368,50 @@ def view_party(request, party_id):
     }
     
     return render_to_response('parties/show.html', ctx ,context_instance=RequestContext(request))
+
+
+def public_enroll(request, party_id):
+    if request.method=='POST':
+        #将用户加入clients,状态为'已报名'
+        name = request.POST['name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        if Client.objects.filter(email=email).count() == 0:
+            client = Client.objects.create(name=name, email=email, phone=phone, invite_type='public')
+            #TODO 
+            PartiesClients.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'apply') #在UserProfile中写入号码
+            return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
+        else:
+            return render_to_response('message.html', {'message':u'您已经报名了'}, context_instance=RequestContext(request))
+        
+    else:
+        party = Party.objects.get(id=party_id)
+        ctx = {
+               'party' : party,
+               'client_sum':get_client_sum(party_id)
+        }    
+        return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))
+
+def invite_enroll(request, email, party_id):
+    if request.method=='POST':
+        client = Client.objects.get(email=email)
+        party = Party.objects.get(pk=party_id)
+        status = PartiesClients.objects.get(client=client, party=party)
+        if request.POST['action'] == 'yes': #如果点击参加
+            status.apply_status = u'apply'
+            status.save()
+            return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
+        else:
+            status.apply_status = u'reject'
+            status.save()
+            return render_to_response('message.html', {'message':u'您已经拒绝了这次邀请'}, context_instance=RequestContext(request))
+
+    else:
+        party = Party.objects.get(id=party_id)
+        client = Client.objects.get(email=email,creator=party.creator)
+        ctx = {
+               'client': client,
+               'party' : party,
+               'client_sum':get_client_sum(party_id)
+        } 
+        return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))

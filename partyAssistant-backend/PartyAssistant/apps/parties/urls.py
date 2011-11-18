@@ -12,4 +12,7 @@ urlpatterns = patterns('apps.parties.views',
       
     url(r'^message_invite/$','message_invite',name='message_invite'),
     url(r'^(?P<party_id>\d+)/$','view_party',name='view_party'),
+    
+    url(r'^public_enroll/(?P<party_id>\d+)/$', 'public_enroll', name = 'public_enroll'),
+    url(r'^invite_enroll/(?P<email>\S+)/(?P<party_id>\d+)/$', 'invite_enroll', name = 'invite_enroll'),
 )
