@@ -15,7 +15,7 @@
        <tr>
         <th width="19%" scope="col">姓名</th>
         <th width="62%" scope="col">联系方式</th>
-        <th width="19%" scope="col" class="ta_r"><img src="/static/images/btn_please.png" width="62" height="23" alt="please" /></th>
+        <th width="19%" scope="col" class="ta_r"><a href="#"><img src="/static/images/btn_please.png" width="62" height="23" alt="please" /></a></th>
        </tr>
        </thead>
        <tbody>
@@ -65,17 +65,20 @@
     });
 
 function pupupClients(action, party_id){
+    $('.popup table tbody').children().remove();
     $.ajax({
         type : 'GET',
         url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
         statusCode : {
         200: function(response){
             clients = JSON.parse(response).party_clients_list_ajax;
-            //alert(data.party_clients_list_ajax);
             for (i in clients){
                 row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
-                $('.popup table tbody').before(row);    
+                $('.popup table tbody').append(row);    
             }
+            
+            //修改[再次邀请]的url
+            $('.ta_r a').attr('href', {{party_list.id}}'/');
            $(".transparent").show();
            $(".popup").show();
         },
