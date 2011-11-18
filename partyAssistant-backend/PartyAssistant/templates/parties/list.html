@@ -1,8 +1,94 @@
 {% extends 'login_base.html' %}
-
+{% block title %} 我的活动 {% endblock %}
 {% block content %}
 
  <!--START: content -->
+<div class="transparent"></div>
+<div class="popup">
+	<div class="hd">
+ 	<h2>title</h2>
+  <a href="#" class="close">close</a>
+ </div>
+ <div class="bd">
+ 	<table width="100%" border="0" cellspacing="0" class="table">
+      <thead>
+       <tr>
+        <th width="19%" scope="col">姓名</th>
+        <th width="62%" scope="col">联系方式</th>
+        <th width="19%" scope="col" class="ta_r"><img src="/static/images/btn_please.png" width="62" height="23" alt="please" /></th>
+       </tr>
+       </thead>
+       <tbody>
+       <tr>
+        <th>sss</th>
+        <td>ssss@cn-acg.com</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>sss</th>
+        <td>ssss@cn-acg.com</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>sss</th>
+        <td>ssss@cn-acg.com</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       <tr>
+        <th>&nbsp;</th>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+       </tr>
+       </tbody>
+      </table>
+ </div>
+</div>
+
  <div id="content">
   <div class="grid_a">
    <h2 class="title"><a href="{% url create_party %}"><img src="/static/images/btn_creat_active.png"/></a></h2>
@@ -23,7 +109,8 @@
      
       <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
       <div class="function_share clearfix">
-       <p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
+       <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
+       <p class="statistics"><a href="#">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="#">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="#">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
        <p class="share"><a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a> | <a href="#">转发</a></p>
       </div>
     </div>
@@ -33,5 +120,20 @@
  </div>
 </div>
 <!--END: content -->
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+       $(".close").bind('click', function(){
+           $(".transparent").hide();
+           $(".popup").hide();
+       })
+       
+       $('.statistics a').bind('click', function(){
+           $(".transparent").show();
+           $(".popup").show();
+       })
+    });
+
+</script>
 
 {% endblock %}
