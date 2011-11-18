@@ -18,7 +18,6 @@ from forms import CreatePartyForm, InviteForm
 from models import Party
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from utils.tools.email_tool import send_emails
-import copy
 import datetime
 import logging
 logger = logging.getLogger('airenao')
@@ -116,14 +115,9 @@ def email_invite(request, party_id):
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + email + '/' + party_id
                     email_message.content = email_message.content + u'点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                     email_message.save()
-                    send_message = Outbox(address=email, base_message=email_message)
-                    send_message.save()
-                    #send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, [email])
-            else:
-                #send_emails(email_message.subject, email_message.content, SYS_EMAIL_ADDRESS, client_email_list)
-                for email in client_email_list:
-                    send_message = Outbox(address=email, base_message=email_message)
-                    send_message.save()
+                    
+            send_message = Outbox(address=client_email_list, base_message=email_message)
+            send_message.save()
             party.invite_type = 'email' #将邀请方式修改为email
             party.save()
  
@@ -223,12 +217,8 @@ def sms_invite(request, party_id):
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + phone + '/' + party_id
                     sms_message.content = sms_message.content + u'点击进入报名页面：%s</a>' % (enroll_link) 
                     sms_message.save()
-                    send_message = Outbox(address=phone, base_message=sms_message)
-                    send_message.save()
-            else:
-                for phone in client_phone_list:
-                    send_message = Outbox(address=phone, base_message=sms_message)
-                    send_message.save()
+            send_message = Outbox(address=client_phone_list, base_message=sms_message)
+            send_message.save()
             
             party.invite_type = 'phone' #将邀请方式修改为phone
             party.save()

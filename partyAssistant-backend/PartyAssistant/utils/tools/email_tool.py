@@ -1,3 +1,4 @@
+#--*-- coding=utf-8
 '''
 Created on 2010-1-19
 
@@ -7,7 +8,9 @@ Created on 2010-1-19
 from django.conf import settings
 from django.core import mail
 import re, urllib
-
+from settings import SYS_EMAIL_ADDRESS
+import logging
+logger = logging.getLogger('airenao')
 email_re = re.compile(
     r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
     r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
@@ -47,3 +50,16 @@ def send_sms(content, to_num):
 
     conn = urllib.urlopen(url, urllib.urlencode(data_dict))
     file_content = conn.read()
+
+
+def send_email(instance):
+    subject = u'[PartyAssistant]您收到一个活动邀请'
+    try:
+        send_emails(subject, instance.base_message.get_subclass_obj().content, SYS_EMAIL_ADDRESS, instance.address)
+    except Exception, ex: 
+        new_e = Exception()
+        new_e.error_msg = str(ex)
+        logger.error('Email send')
+    finally:
+        message = instance
+        message.delete()
