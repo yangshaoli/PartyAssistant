@@ -1,6 +1,61 @@
 {% extends 'login_base.html' %}
 {% block title %} 受邀联系人列表 {% endblock %}
 
+{% block script %}
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+        ajaxGetClients('apply');//进入页面时获得[已报名]列表 
+        
+        $('a[id^="tab_"]').bind('click', function(){
+            var applystatus = this.id.split('_')[1];
+            ajaxGetClients(applystatus);
+        })
+    })
+
+function clientAction(id, applystatus){
+    var answer = '<a href="{% url change_status %}?party_client_id='+id+'&applystatus=apply&next='+applystatus+'"><button>参加</button></a>';
+    var reject = '<a href="{% url change_status %}?party_client_id='+id+'&applystatus=reject&next='+applystatus+'"><button>不参加</button></a>';
+    switch (applystatus) {
+        case 'apply' : 
+            var action = answer + reject;
+            return action; 
+        case 'noanswer' : 
+            var action = answer;
+            return action;
+        case 'reject' :
+            var action = reject;
+            return action;
+    }
+}
+
+function ajaxGetClients(applystatus){
+    $('.accordion_content table tbody').children().remove();
+    
+    $.ajax({
+        type : 'GET',
+        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
+        statusCode : {
+        200: function(response){
+            clients = JSON.parse(response);
+            for (i in clients){
+                var new_status = clients[i].is_new?'<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />':'';
+                var action = clientAction(clients[i].id, applystatus)//判断applystatus，显示相应按钮
+                row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
+                $('.accordion_content table tbody').append(row);    
+            }
+            
+            //修改[再次邀请]的url
+            $('.accordion_toggle img').parent().attr('href', applystatus);
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
+
+</script>
+{% endblock %}
+
 {% block content %}
 <script>
  
@@ -20,7 +75,7 @@
    </div>
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_sum.apply}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{client_sum.noanswer}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{client_sum.reject}}人)</strong></a> <a href='{% url email_invite party.id %}?apply={{ applystatus }}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a></h2>
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{party_clients.reject.client_count}}人)</strong></a> <a href='{% url email_invite party.id %}?apply={{ applystatus }}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a></h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>
@@ -30,17 +85,12 @@
         <th width="52%" scope="col">联系方式</th>
         <th width="18%" scope="col" class="ta_r">&nbsp;</th>
        </tr>
+       <tbody>
 {% for party_client in party_clients_list %}
        <tr>
-        <th>{% if party_client.isnew %}<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />{% endif %}</th>
+        <th>{% if party_client.isnew %}{% endif %}</th>
         <th>{{ party_client.client.name }}</th>
         <td>
-{% if party.invite_type == 'email' %}
-{{ party_client.client.email }}
-{% endif %}
-{% if party.invite_type == 'phone' %}
-{{ party_client.client.phone }}
-{% endif %}
         </td>
         <td>
 {% if applystatus == 'all' or applystatus == 'noanswer' %}
@@ -65,34 +115,5 @@
    </div>
   </div>
  </div>
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
-<script>
-    $(document).ready(function(){
-        $('a[id^="tab_"]').bind('click', function(){
-            var action = this.id.split('_')[1];
-            $.ajax({
-                type : 'GET',
-                url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+action,
-                statusCode : {
-                200: function(response){
-                    clients = JSON.parse(response).party_clients_list_ajax;
-                    for (i in clients){
-                        row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
-                        $('.accordion_content').append(row);    
-                    }
-                    
-                    //修改[再次邀请]的url
-                    $('.ta_r a').attr('href', {{party_list.id}}'/');
-                   $(".transparent").show();
-                   $(".popup").show();
-                },
-                500: function(){ alert('没有获取到用户列表')}
-                }
-            });
-        })
-    })
-
-</script>
-
 {% endblock %}
  

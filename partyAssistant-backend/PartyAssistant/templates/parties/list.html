@@ -1,7 +1,5 @@
 {% extends 'login_base.html' %}
 
-{% load string_filter %}
-
 {% block title %} 我的活动 {% endblock %}
 
 {% block script %}
@@ -23,6 +21,7 @@
 {% endblock %}
 
 {% block content %}
+
  <!--START: content -->
 <div class="transparent"></div>
 <div class="popup">
@@ -62,7 +61,7 @@
       
       <p><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
      
-      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|truncatestring:"64" }}</a></p>
+      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
        <a href="{%url invite_list party.id %}"><p class="statistics">未响应：<strong class="important">{{ party.client.noanswer.count }}</strong> 已报名：<strong class="important">{{ party.client.apply.count }}</strong>不参加：<strong class="important">{{ party.client.reject.count }}</strong></p></a>
@@ -76,3 +75,4 @@
 </div>
 <!--END: content -->
 {% endblock %}
+
