@@ -77,42 +77,29 @@ def invite_list(request, party_id):
             if party_client.is_new:
                 party_clients['reject']['is_new'] = True
     
-    return TemplateResponse(request,'clients/invite_list.html', {'party_clients': party_clients}) 
+    return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
-
+@login_required
 def invite_list_ajax(request, party_id):
     apply_status = request.GET.get('apply', 'all')
-    party = Party.objects.get(id=party_id)
-    party_clients_list = []
-    party_clients_list_ajax = []
-    if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.filter(party=party)
-    else:        
-        party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
+    party = get_object_or_404(Party, id=party_id)
     
-    if party.invite_type == 'email':
-        for party_clinet in party_clients_list:
-            party_client_ajax = {
-                                  'name' : '',
-                                  'address':''
-                                }    
-            party_client_ajax['name'] = party_clinet.client.name
-            party_client_ajax['address'] = party_clinet.client.email
-            party_clients_list_ajax.append(party_client_ajax)
-    elif party.invite_type == 'phone':
-        for party_clinet in party_clients_list:
-            party_client_ajax = {
-                                 'name' : '',
-                                 'address':''
-                                }   
-            party_client_ajax['name'] = party_clinet.client.name
-            party_client_ajax['address'] = party_clinet.client.phone
-            party_clients_list_ajax.append(party_client_ajax)
+    if apply_status == 'all':
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party)
     else:
-        pass  
-              
-    returnjson = {
-                  'party_clients_list_ajax':party_clients_list_ajax                           
-                 }
-    returnjson = simplejson.dumps(returnjson)       
-    return HttpResponse(returnjson) 
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
+    
+    party_clients_data = []
+    for party_client in party_clients_list:
+        party_client_data = {
+            'name' : party_client.client.name, 
+            'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
+            'is_new': party_client.is_new
+        }    
+        party_clients_data.append(party_client_data)
+        
+        if party_client.is_new:
+            party_client.is_new = False
+            party_client.save()
+    
+    return HttpResponse(simplejson.dumps(party_clients_data)) 
