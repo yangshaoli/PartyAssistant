@@ -7,9 +7,11 @@ Created on 2010-1-19
 
 from django.conf import settings
 from django.core import mail
-import re, urllib
-from settings import SYS_EMAIL_ADDRESS
+from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
+import hashlib
 import logging
+import re
+import urllib
 logger = logging.getLogger('airenao')
 email_re = re.compile(
     r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
@@ -52,14 +54,22 @@ def send_sms(content, to_num):
     file_content = conn.read()
 
 
-def send_email(instance):
+def send_email(outbox_message):
     subject = u'[PartyAssistant]您收到一个活动邀请'
     try:
-        send_emails(subject, instance.base_message.get_subclass_obj().content, SYS_EMAIL_ADDRESS, instance.address)
-    except Exception, ex: 
-        new_e = Exception()
-        new_e.error_msg = str(ex)
-        logger.error('Email send')
+        party = outbox_message.base_message.party
+        address_list = outbox_message.address.split(',')
+        if outbox_message.is_apply_tips:
+            party = outbox_message.base_message.party
+            content = outbox_message.base_message.get_subclass_obj().content
+            for address in address_list:
+                enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, address)).hexdigest())
+                content = '%s\n\r\n\r点击进入报名页面：<a href="%s">%s</a>' % (content, enroll_link, enroll_link)
+                send_emails(subject, content, SYS_EMAIL_ADDRESS, [address])
+        else:
+            send_emails(subject, outbox_message.base_message.get_subclass_obj().content, 
+                        SYS_EMAIL_ADDRESS, address_list)
+    except:
+        logger.exception('send email error!')
     finally:
-        message = instance
-        message.delete()
+        outbox_message.delete()

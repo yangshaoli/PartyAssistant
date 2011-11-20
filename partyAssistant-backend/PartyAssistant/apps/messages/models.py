@@ -17,6 +17,7 @@ class BaseMessage(models.Model):
     is_apply_tips = models.BooleanField(default = True)
     is_send_by_self = models.BooleanField(default = True)
     last_modified_time = models.DateTimeField(auto_now=True)
+    
     def get_subclass_type(self):
         if hasattr(self, "emailmessage"):
             return 'Email'
@@ -39,12 +40,12 @@ class SMSMessage(BaseMessage):
 class Outbox(models.Model):
     address = models.TextField()
     base_message = models.ForeignKey(BaseMessage)
-      
+    is_apply_tips = models.BooleanField()
     
 def thread_send_message(sender=None, instance=None, **kwargs):
     if instance.base_message.get_subclass_type() == 'Email':
         thread.start_new_thread(send_email, (instance,))
     else:
-        thread.start_new_thread(sms_modem_send_sms, (instance,))    
+        thread.start_new_thread(sms_modem_send_sms, (instance,))
    
-signals.post_save.connect(thread_send_message, sender = Outbox)    
+signals.post_save.connect(thread_send_message, sender = Outbox)

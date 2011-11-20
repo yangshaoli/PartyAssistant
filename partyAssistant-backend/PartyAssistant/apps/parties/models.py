@@ -7,7 +7,9 @@ Created on 2011-10-27
 from apps.clients.models import Client
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import signals
 import datetime
+import hashlib
 
 APPLY_STATUS = (
     ('apply', 'apply'),
@@ -17,8 +19,7 @@ APPLY_STATUS = (
 
 INVITE_TYPE = (
     ('email', 'email'),
-    ('phone', 'phone'),
-    ('public', 'public'),
+    ('phone', 'phone')
 )
 
 class Party(models.Model):
@@ -42,3 +43,13 @@ class PartiesClients(models.Model):
     party = models.ForeignKey(Party)
     apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default='noanswer')
     is_new = models.BooleanField(default=True)
+    invite_key = models.CharField(max_length=32)
+
+def update_invite_key(sender=None, instance=None, **kwargs):
+    party = instance.party
+    if party.invite_type == 'email':
+        instance.invite_key = hashlib.md5('%d:%s' % (party.id, instance.client.email)).hexdigest()
+    else:
+        instance.invite_key = hashlib.md5('%d:%s' % (party.id, instance.client.phone)).hexdigest()
+    
+signals.pre_save.connect(update_invite_key, sender=PartiesClients)
