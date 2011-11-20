@@ -19,7 +19,7 @@
 	});
 	
 	function calculate_send_email_count() {
-	    client_email_list = $('#id_client_email_list').value.split(',');
+	    client_email_list = $('#id_client_email_list').val().split(',');
 	    client_email_list_length = client_email_list.length;     
 	    count = 0;
 	    for (i = 0; i < client_email_list_length; i ++) {
@@ -52,6 +52,9 @@
      {{ form.content }}
      </div>
      <div class="field">
+     <label for="id_send_email_count">
+     &nbsp;
+     </label>
      <p id="id_send_email_count">发件人人数统计： 0<p>
      </div>
 		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
