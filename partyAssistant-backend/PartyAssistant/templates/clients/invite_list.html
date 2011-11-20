@@ -8,27 +8,45 @@
         ajaxGetClients('apply');//进入页面时获得[已报名]列表 
         
         $('a[id^="tab_"]').bind('click', function(){
-            var action = this.id.split('_')[1];
-            ajaxGetClients(action);
+            var applystatus = this.id.split('_')[1];
+            ajaxGetClients(applystatus);
         })
     })
 
-function ajaxGetClients(action){
+function clientAction(id, applystatus){
+    var answer = '<a href="{% url change_status %}?party_client_id='+id+'&applystatus=apply&next='+applystatus+'"><button>参加</button></a>';
+    var reject = '<a href="{% url change_status %}?party_client_id='+id+'&applystatus=reject&next='+applystatus+'"><button>不参加</button></a>';
+    switch (applystatus) {
+        case 'apply' : 
+            var action = answer + reject;
+            return action; 
+        case 'noanswer' : 
+            var action = answer;
+            return action;
+        case 'reject' :
+            var action = reject;
+            return action;
+    }
+}
+
+function ajaxGetClients(applystatus){
     $('.accordion_content table tbody').children().remove();
     
     $.ajax({
         type : 'GET',
-        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+action,
+        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
             clients = JSON.parse(response);
             for (i in clients){
-                row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
+                var new_status = clients[i].is_new?'<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />':'';
+                var action = clientAction(clients[i].id, applystatus)//判断applystatus，显示相应按钮
+                row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
                 $('.accordion_content table tbody').append(row);    
             }
             
             //修改[再次邀请]的url
-            $('.accordion_toggle img').parent().attr('href', action);
+            $('.accordion_toggle img').parent().attr('href', applystatus);
         },
         500: function(){ alert('没有获取到用户列表')}
         }
@@ -70,7 +88,7 @@ function ajaxGetClients(action){
        <tbody>
 {% for party_client in party_clients_list %}
        <tr>
-        <th>{% if party_client.isnew %}<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />{% endif %}</th>
+        <th>{% if party_client.isnew %}{% endif %}</th>
         <th>{{ party_client.client.name }}</th>
         <td>
         </td>

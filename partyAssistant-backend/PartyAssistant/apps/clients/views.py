@@ -10,7 +10,7 @@ from django.template.response import TemplateResponse
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
-#获得报名/未相应/不参加的客户数
+#获得报名/未响应/不参加的客户数
 @login_required
 def get_client_sum(party_id):
     party = Party.objects.get(id=party_id)
@@ -92,6 +92,7 @@ def invite_list_ajax(request, party_id):
     party_clients_data = []
     for party_client in party_clients_list:
         party_client_data = {
+            'id' : party_client.id,
             'name' : party_client.client.name, 
             'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
             'is_new': party_client.is_new
