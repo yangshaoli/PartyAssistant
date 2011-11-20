@@ -339,30 +339,54 @@ def message_invite(request):
 
 @login_required
 def list_party(request):
-    party_list = Party.objects.filter(creator=request.user).order_by('-id') 
+    party_list = Party.objects.filter(creator=request.user).order_by('-id')[0:10] 
     
     for party in party_list:
-        party_clients = PartiesClients.objects.filter(party=party)
+        party_clients = PartiesClients.objects.select_related('client').filter(party=party)
         client = {
-        u'invite' : party_clients.exclude(client__invite_type='public'), #Client.objects.exclude(invite_type='public'),
-        u'apply' : party_clients.filter(apply_status='apply'),
-        u'new_add_apply' : party_clients.filter(apply_status='apply', is_see_over=True),
-        u'noanswer' : party_clients.filter(apply_status='noanswer'),
-        u'reject' : party_clients.filter(apply_status='reject'),
-        u'new_add_reject' : party_clients.filter(apply_status='reject', is_see_over=True),
+            'invite': [], 
+            'apply': [],
+            'new_add_apply':[],
+            'noanswer':[],
+            'reject':[],
+            'new_add_reject':[]
         }
+        for party_client in party_clients:
+            if party_client.client.invite_type != 'public':
+                client['invite'].append(party_client)
+            if party_client.apply_status == 'apply':
+                client['apply'].append(party_client)
+            if party_client.apply_status == 'new_apply_apply' and party_client.is_new == True:
+                client['new_apply_apply'].append(party_client)
+            if party_client.apply_status == 'noanswer':
+                client['noanswer'].append(party_client)
+            if party_client.apply_status == 'reject':
+                client['reject'].append(party_client)
+            if party_client.apply_status == 'new_add_reject' and party_client.is_new == True:
+                client['new_add_reject'].append(party_client)
+         
         party.client=client    
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list})
 
+@login_required
 def view_party(request, party_id):
     party = Party.objects.get(pk=party_id)
-    party_clients = PartiesClients.objects.filter(party=party)
     client = {
-        u'invite' :  party_clients.exclude(client__invite_type='public'), #Client.objects.exclude(invite_type='public'),
-        u'apply' :  party_clients.filter(apply_status='apply'),
-        u'noanswer' : party_clients.filter(apply_status='noanswer'),
-        u'reject' : party_clients.filter(apply_status='reject'),
+        'invite'  : [],
+        'apply'   : [],
+        'noanswer': [],
+        'reject'  : []
     }
+    party_clients = PartiesClients.objects.select_related('client').filter(party=party)
+    for party_client in party_clients:
+        if party_client.client.invite_type != 'public':
+            client['invite'].append(party_client)
+        if party_client.apply_status == 'apply':
+            client['apply'].append(party_client)
+        if party_client.apply_status == 'noanswer':
+            client['noanswer'].append(party_client)
+        if party_client.apply_status == 'reject':
+            client['reject'].append(party_client)
     ctx = {
         'party' : party,
         'client': client,
