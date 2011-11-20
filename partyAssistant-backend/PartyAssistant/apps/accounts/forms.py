@@ -12,16 +12,17 @@ class LoginForm(AuthenticationForm):
 
 class RegistrationForm(forms.Form):
     username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
-    email = forms.EmailField(required=False, max_length=75)
+    email = forms.EmailField(max_length=75)
     password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
-    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
+    confirm_password = forms.CharField(max_length=16, widget=forms.PasswordInput())
     
     def clean_username(self):
         username = self.cleaned_data['username']
         exists = User.objects.filter(username=username).count() > 0
         if exists:
             raise forms.ValidationError(u'该用户名已存在，请重新输入')
-        
+        if username[0].isdigit():
+            raise forms.ValidationError(u'用户名不能以数字开头')
         return username
     
     def clean_email(self):
@@ -29,7 +30,6 @@ class RegistrationForm(forms.Form):
         exists = User.objects.filter(email=email).count() > 0
         if exists:
             raise forms.ValidationError(u'该邮箱已存在，请重新输入')
-        
         return email
     
     def clean(self):

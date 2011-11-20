@@ -8,26 +8,30 @@
 	<form action="{% url register %}" method="post" class="creat_exercise">
 	    {% csrf_token %}
         <fieldset>
+            <ul class="errorlist">{{form.errors.username}}</ul>
          <div class="field">
          <label for="username">
          用户名
          </label>
          {{form.username}}
          </div>
+             <ul class="errorlist">{{form.errors.email}}</ul>
          <div class="field">
          <label for="email">
          Email
          </label>
          {{form.email}}
          </div>
+             <ul class="errorlist">{{form.errors.password}}</ul>
          <div class="field">
          <label for="password">
          密码
          </label>
          {{form.password}}
          </div>
+             <ul class="errorlist">{{form.errors.confirm_password}}</ul>
          <div class="field">
-         <label for="password">
+         <label for="confirm_password">
          确认密码
          </label>
          {{form.confirm_password}}
