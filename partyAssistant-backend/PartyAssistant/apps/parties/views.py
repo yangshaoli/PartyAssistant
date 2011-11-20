@@ -62,7 +62,7 @@ def edit_party(request, party_id):
                         return redirect('email_invite', party_id=party.id)
                     else:
                         return redirect('sms_invite', party_id=party.id)         
-            return list_party(request)          
+            return redirect('list_party')
 
     else:
         party = get_object_or_404(Party, id=party_id)
