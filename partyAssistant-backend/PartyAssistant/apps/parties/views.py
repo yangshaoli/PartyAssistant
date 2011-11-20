@@ -339,7 +339,7 @@ def message_invite(request):
 
 @login_required
 def list_party(request):
-    party_list = Party.objects.filter(creator=request.user)
+    party_list = Party.objects.filter(creator=request.user).order_by('-id')
     for party in party_list:
         client = {
         u'invite' : PartiesClients.objects.filter(party=party).exclude(client__invite_type='public'), #Client.objects.exclude(invite_type='public'),

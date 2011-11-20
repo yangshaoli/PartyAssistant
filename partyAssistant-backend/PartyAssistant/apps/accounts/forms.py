@@ -26,9 +26,10 @@ class RegistrationForm(forms.Form):
     
     def clean_email(self):
         email = self.cleaned_data['email']
-        exists = User.objects.filter(email=email).count() > 0
-        if exists:
-            raise forms.ValidationError(u'该邮箱已存在，请重新输入')
+        if email != '':
+            exists = User.objects.filter(email=email).count() > 0
+            if exists:
+                raise forms.ValidationError(u'该邮箱已存在，请重新输入')
         
         return email
     
