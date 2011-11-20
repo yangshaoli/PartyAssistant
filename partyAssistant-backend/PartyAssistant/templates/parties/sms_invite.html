@@ -1,24 +1,32 @@
 {% extends 'login_base.html' %}
 
-{% block content %}
+{% block script %}
 <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
  
 <script type="text/javascript" >
-$(document).ready(function(){
-  $("#id_client_phone_list").keyup(function(){
-      client_phone_list = this.value.split(','); 
-      client_phone_list_length = client_phone_list.length;     
-      count = 0;
-      for( i=0; i<client_phone_list_length;i++){
-          if (client_phone_list[i].replace(/^\s+|\s+$/g,"") != ""){          
-              count = count+1;
-          }
-      }
-      $('#id_send_phone_count').html("发件人人数统计： "+count);
-  });
-});
-
+	$(document).ready(function(){
+		calculate_send_phone_count();
+		
+		$("#id_client_phone_list").keyup(function() {
+			calculate_send_phone_count();
+		});
+	});
+	
+	function calculate_send_phone_count() {
+	    client_phone_list = $('#id_client_phone_list').value.split(',');
+	    client_phone_list_length = client_phone_list.length;     
+	    count = 0;
+	    for (i = 0; i < client_phone_list_length; i ++) {
+	        if (client_phone_list[i].replace(/^\s+|\s+$/g, "") != "") {          
+	            count = count+1;
+	        }
+	    }
+	    $('#id_send_phone_count').html("发件人人数统计： "+count);
+	}
 </script>
+{% endblock %}
+
+{% block content %}
 <div id="content">
   <div class="grid_a">
    <h2 class="title">发送手机短信邀请</h2>

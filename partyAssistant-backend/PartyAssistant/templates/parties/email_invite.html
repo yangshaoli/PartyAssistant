@@ -1,27 +1,38 @@
 {% extends 'login_base.html' %}
 
-{% block content %}
-<style>
-    #id_email_invite_submit { background:url('/static/images/btn_bg.png'); border:0px; color:#fff; padding:5px 19px;}
-</style>
+{% block style %}
+	<style>
+	    #id_email_invite_submit { background:url('/static/images/btn_bg.png'); border:0px; color:#fff; padding:5px 19px;}
+	</style>
+{% endblock %}
+
+{% block script %}
 <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
  
 <script type="text/javascript" >
-$(document).ready(function(){
-  $("#id_client_email_list").keyup(function(){
-      client_email_list = this.value.split(','); 
-      client_email_list_length = client_email_list.length;     
-      count = 0;
-      for( i=0; i<client_email_list_length;i++){
-          if (client_email_list[i].replace(/^\s+|\s+$/g,"") != ""){          
-              count = count+1;
-          }
-      }
-      $('#id_send_email_count').html("发件人人数统计： "+count);
-  });
-});
-
+	$(document).ready(function(){
+		calculate_send_email_count();
+		
+		$("#id_client_email_list").keyup(function() {
+			calculate_send_email_count();
+		});
+	});
+	
+	function calculate_send_email_count() {
+	    client_email_list = $('#id_client_email_list').value.split(',');
+	    client_email_list_length = client_email_list.length;     
+	    count = 0;
+	    for (i = 0; i < client_email_list_length; i ++) {
+	        if (client_email_list[i].replace(/^\s+|\s+$/g, "") != "") {          
+	            count = count+1;
+	        }
+	    }
+	    $('#id_send_email_count').html("发件人人数统计： "+count);
+	}
 </script>
+{% endblock %}
+
+{% block content %}
 <div id="content">
   <div class="grid_a">
    <h2 class="title">发送邮件邀请</h2>
@@ -41,10 +52,7 @@ $(document).ready(function(){
      {{ form.content }}
      </div>
      <div class="field">
-     <label for="id_send_email_count">
-     邀请人数
-     </label>
-     <p id="id_send_email_count">0<p>
+     <p id="id_send_email_count">发件人人数统计： 0<p>
      </div>
 		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
 		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
