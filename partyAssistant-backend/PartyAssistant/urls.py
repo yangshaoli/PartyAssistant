@@ -19,5 +19,4 @@ urlpatterns = patterns('',
     url(r'^clients/', include('apps.clients.urls')),
     url(r'^parties/', include('apps.parties.urls')),
     url(r'^a/',include('apis.urls')),
-    url(r'^upload/',include('upload.urls')),
 )
