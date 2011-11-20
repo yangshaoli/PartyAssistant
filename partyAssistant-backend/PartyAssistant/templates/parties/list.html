@@ -83,7 +83,7 @@ function pupupClients(action, party_id){
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
        <p class="statistics"><a href="#" onclick="pupupClients('noanswer', {{party.id}})">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="#"  onclick="pupupClients('apply', {{party.id}})">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="#"  onclick="pupupClients('reject', {{party.id}})">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
-       <p class="share"><a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a>
+       <p class="share"><a href="#">分享</a> | <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a> | <a href="#">转发</a></p>
       </div>
     </div>
     {% endfor %}
@@ -92,4 +92,41 @@ function pupupClients(action, party_id){
  </div>
 </div>
 <!--END: content -->
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+       $(".close").bind('click', function(){
+           $(".transparent").hide();
+           $(".popup").hide();
+       })
+    });
+
+function pupupClients(action, party_id){
+    $('.popup table tbody').children().remove();
+    $.ajax({
+        type : 'GET',
+        url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
+        statusCode : {
+        200: function(response){
+            clients = JSON.parse(response).party_clients_list_ajax;
+            for (i in clients){
+                row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
+                $('.popup table tbody').append(row);    
+            }
+            
+            //修改[再次邀请]的url
+            $('.ta_r a').attr('href', {{party_list.id}}'/');
+           $(".transparent").show();
+           $(".popup").show();
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
+function deleteConfirm(url){
+  if (confirm('删除不可恢复，是否确认删除？')){
+     window.location=url;
+  }
+}
+</script>
 {% endblock %}
