@@ -84,17 +84,21 @@
      <a href='#' onclick="pupupClients('','')">导入联系人</a>
      </div>
      <div class="field">
+     <label for="id_send_email_count">
+     &nbsp;
+     </label>
+     <p id="id_send_email_count">发件人人数统计： 0</p>
+     </div>
+     <div class="field">
      <label for="id_content">
      邮件内容
      </label>
      {{ form.content }}
      </div>
-     <div class="field">
-     <label for="id_send_email_count">
-     &nbsp;
-     </label>
-     <p id="id_send_email_count">发件人人数统计： 0<p>
-     </div>
+    	<div class="field">
+    		<label for="id_is_apply_tips">&nbsp;</label>
+    		<p>{{ form.is_apply_tips }}带报名链接</p>
+    	</div>
 		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
 		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
 	</form>

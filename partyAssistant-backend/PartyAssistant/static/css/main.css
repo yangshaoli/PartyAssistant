@@ -54,6 +54,8 @@ abbr, acronym {
 /* End hide from IE-mac */  
 /*2. common*/
 /**2.1 module1**/
+.errorlist{color:red; font-size:12px;}
+
 .fw_b{
  font-weight:bold;
 }
