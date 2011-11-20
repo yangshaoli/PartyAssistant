@@ -38,7 +38,13 @@
      </div>
      <div class="submit_field">
      <input type='submit' value='保存'></input>
+     {% if party.invite_type %}
      <input type='submit' name='save_send' value='保存并发送'></input>
+     {% endif  %}
+     {% if not party.invite_type %}
+     <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信邀请" alt="sms"/>
+     <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件邀请" alt="sms"/>
+     {% endif %}
      </div>
     </fieldset>
    </form>
