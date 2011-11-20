@@ -3,13 +3,9 @@
 @summary: 报名处理，包括公开报名和邮件邀请报名
 @author:chenyang
 '''
-from apps.clients.models import Client
 from apps.parties.models import Party, PartiesClients
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
