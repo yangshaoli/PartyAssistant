@@ -1,7 +1,45 @@
 {% extends 'login_base.html' %}
-{% block title %} 我的活动 {% endblock %}
-{% block content %}
 
+{% load string_filter %}
+
+{% block title %} 我的活动 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+       $(".close").bind('click', function(){
+           $(".transparent").hide();
+           $(".popup").hide();
+       })
+    });
+
+function pupupClients(action, party_id){
+    $('.popup table tbody').children().remove();
+    $.ajax({
+        type : 'GET',
+        url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
+        statusCode : {
+        200: function(response){
+            clients = JSON.parse(response).party_clients_list_ajax;
+            for (i in clients){
+                row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
+                $('.popup table tbody').append(row);    
+            }
+            
+            //修改[再次邀请]的url
+            $('.ta_r a').attr('href', {{party_list.id}}'/');
+           $(".transparent").show();
+           $(".popup").show();
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
+</script>
+{% endblock %}
+
+{% block content %}
  <!--START: content -->
 <div class="transparent"></div>
 <div class="popup">
@@ -41,7 +79,7 @@
       
       <p><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
      
-      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
+      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|truncatestring:"64" }}</a></p>
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
        <p class="statistics"><a href="#" onclick="pupupClients('noanswer', {{party.id}})">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="#"  onclick="pupupClients('apply', {{party.id}})">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="#"  onclick="pupupClients('reject', {{party.id}})">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
@@ -54,38 +92,4 @@
  </div>
 </div>
 <!--END: content -->
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
-<script>
-    $(document).ready(function(){
-       $(".close").bind('click', function(){
-           $(".transparent").hide();
-           $(".popup").hide();
-       })
-    });
-
-function pupupClients(action, party_id){
-    $('.popup table tbody').children().remove();
-    $.ajax({
-        type : 'GET',
-        url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
-        statusCode : {
-        200: function(response){
-            clients = JSON.parse(response).party_clients_list_ajax;
-            for (i in clients){
-                row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
-                $('.popup table tbody').append(row);    
-            }
-            
-            //修改[再次邀请]的url
-            $('.ta_r a').attr('href', {{party_list.id}}'/');
-           $(".transparent").show();
-           $(".popup").show();
-        },
-        500: function(){ alert('没有获取到用户列表')}
-        }
-    });
-}
-
-</script>
-
 {% endblock %}
