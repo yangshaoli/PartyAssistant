@@ -35,8 +35,10 @@ def create_party(request):
             
             if 'sms_invite' in request.POST:
                 return redirect('sms_invite', party_id=party.id)
-            else:
+            elif 'email_invite' in request.POST:
                 return redirect('email_invite', party_id=party.id)
+            else:
+                return redirect('list_party')
     else:
         form = CreatePartyForm()
     
