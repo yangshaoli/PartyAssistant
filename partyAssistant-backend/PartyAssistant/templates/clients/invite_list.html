@@ -14,17 +14,17 @@
     })
 
 function clientAction(id, applystatus){
-    var answer = '<a href="{% url change_status %}?party_client_id='+id+'&applystatus=apply&next='+applystatus+'"><button>参加</button></a>';
-    var reject = '<a href="{% url change_status %}?party_client_id='+id+'&applystatus=reject&next='+applystatus+'"><button>不参加</button></a>';
+    var answer = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'apply\')"><button>参加</button></a>';
+    var reject = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'reject\')"><button>不参加</button></a>';
     switch (applystatus) {
         case 'apply' : 
-            var action = answer + reject;
+            var action = reject;
             return action; 
         case 'noanswer' : 
-            var action = answer;
+            var action = answer + reject;
             return action;
         case 'reject' :
-            var action = reject;
+            var action = answer;
             return action;
     }
 }
@@ -53,6 +53,19 @@ function ajaxGetClients(applystatus){
     });
 }
 
+function ajaxChangeStatus(id, applystatus){
+    $.ajax({
+        type : 'GET',
+        url : '/clients/change_apply_status/'+id+'/'+applystatus,
+        data : {},
+        statusCode : {
+        200: function(response){
+            location.reload() 
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
 </script>
 {% endblock %}
 
@@ -86,27 +99,7 @@ function ajaxGetClients(applystatus){
         <th width="18%" scope="col" class="ta_r">&nbsp;</th>
        </tr>
        <tbody>
-{% for party_client in party_clients_list %}
-       <tr>
-        <th>{% if party_client.isnew %}{% endif %}</th>
-        <th>{{ party_client.client.name }}</th>
-        <td>
-        </td>
-        <td>
-{% if applystatus == 'all' or applystatus == 'noanswer' %}
- <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}">参加</a>
-    &nbsp;&nbsp;&nbsp;
-    <a href="{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}">不参加</a>
-{% endif %}
-{% if applystatus == 'apply' %}
-    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=reject&next={{ applystatus }}'>不参加</a>
-{% endif %}
-{% if applystatus == 'reject' %}
-    <a href='{% url change_status %}?party_client_id={{ party_client.id }}&applystatus=apply&next={{ applystatus }}'>参加</a>
-{% endif %}
-        </td>
-       </tr>
-{% endfor %}
+
        </tbody>
       </table>
       <a href='{% url list_party %}'><button>返回</button></a>

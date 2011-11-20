@@ -26,20 +26,12 @@ def get_client_sum(party_id):
 @author: liuxue
 '''
 @login_required
-def change_apply_status(request):
-    if request.method == 'GET':
-        apply_status = request.GET['applystatus']
-        client_party = PartiesClients.objects.get(pk=int(request.GET['party_client_id']))      
-        client_party.apply_status = apply_status
-        client_party.save()        
-        party = client_party.party
-        apply_status = request.GET['next']#当前的页面状态 即是 show_status状态
-        if apply_status == 'all':
-            party_clients_list = PartiesClients.objects.filter(party=party)
-        else:        
-            party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
-    
-        return TemplateResponse(request,'clients/invite_list.html',{'party_clients_list':party_clients_list,'party':party,'applystatus':apply_status}) 
+def change_apply_status(request, id, applystatus):
+    client_party = PartiesClients.objects.get(pk=id)      
+    client_party.apply_status = applystatus
+    client_party.save()        
+
+    return HttpResponse('ok') 
 
 
 #受邀人员列表
