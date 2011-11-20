@@ -46,7 +46,7 @@
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
        <p class="statistics"><a href="#" onclick="pupupClients('noanswer', {{party.id}})">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="#"  onclick="pupupClients('apply', {{party.id}})">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="#"  onclick="pupupClients('reject', {{party.id}})">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p>
-       <p class="share"><a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a> | <a href="#">转发</a></p>
+       <p class="share"><a href="#">分享</a> | <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a> | <a href="#">转发</a></p>
       </div>
     </div>
     {% endfor %}
@@ -83,7 +83,11 @@ function pupupClients(action, party_id){
         }
     });
 }
-
+function deleteConfirm(url){
+  if (confirm('删除不可恢复，是否确认删除？')){
+     window.location=url;
+  }
+}
 </script>
 
 {% endblock %}
