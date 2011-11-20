@@ -51,9 +51,8 @@ def delete_party(request,party_id):
 
 @login_required
 def edit_party(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
-    
     if request.method == 'POST':
+        party = get_object_or_404(Party, id=party_id)
         form = CreatePartyForm(request.POST, instance=party)
         if form.is_valid():
             party = form.save()
@@ -66,16 +65,16 @@ def edit_party(request, party_id):
             return list_party(request)          
 
     else:
+        party = get_object_or_404(Party, id=party_id)
         form = CreatePartyForm(instance=party)
     
-    return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
+        return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
 
 @login_required
 @transaction.commit_on_success
 def email_invite(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
-    content = ''
     if request.method == 'POST':
+        content = ''
         party = get_object_or_404(Party, id=party_id)
         form = EmailInviteForm(request.POST)
         if form.is_valid():
@@ -133,21 +132,31 @@ def email_invite(request, party_id):
             return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
 
     else:
+        party = get_object_or_404(Party, id=party_id)
         client_email_list = []
-        content = ''  
+        content = ''
+        #生成默认内容
+        content = content+party.creator.username+u'邀请你参加：'
+        if party.start_time == None and party.address == '':
+            content = content+party.description+u',时间、地点，另行通知。'
+        elif party.start_time != None and party.address == u'':
+            content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
+        elif party.start_time == None and party.address != '':
+            content = content+u'在'+party.address+party.description+u',时间待定。'
+        else:  
+            content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+           
         form = None  
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
             clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         else:
             clients = PartiesClients.objects.filter(party=party_id).filter(apply_status=apply_status).exclude(client__invite_type='public')
-        
+       
         if clients:
             for client in clients:
                 client_email_list.append(client.client.email)
             client_email_list = ','.join(client_email_list)
-
-            content = EmailMessage.objects.get(party=party).content
             data = {
                 'client_email_list': client_email_list, 
                 'content': content,
@@ -155,15 +164,6 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
         else:
-            content = content+content+party.creator.username+u'邀请你参加：'
-            if party.start_time == None and party.address == '':
-                content = content+party.description+u',时间、地点，另行通知。'
-            elif party.start_time != None and party.address == u'':
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
-            elif party.start_time == None and party.address != '':
-                content = content+u'在'+party.address+party.description+u',时间待定。'
-            else:  
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
             data = {
                 'client_email_list': '', 
                 'content': content,
@@ -176,10 +176,9 @@ def email_invite(request, party_id):
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
-    content = ''
     if request.method == 'POST':
         party = get_object_or_404(Party, id=party_id)
+        content = ''
         form = SMSInviteForm(request.POST)
         if form.is_valid():
             sms_message, created = SMSMessage.objects.get_or_create(party=party, 
@@ -236,15 +235,25 @@ def sms_invite(request, party_id):
             return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
 
     else:
-        client_phone_list = []
+        party = get_object_or_404(Party, id=party_id)
         content = ''
+        client_phone_list = []
+        #生成默认内容
+        content = content+party.creator.username+u'邀请你参加：'
+        if party.start_time == None and party.address == '':
+            content = content+party.description+u',时间、地点，另行通知。'
+        elif party.start_time != None and party.address == u'':
+            content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
+        elif party.start_time == None and party.address != '':
+            content = content+u'在'+party.address+party.description+u',时间待定。'
+        else:  
+            content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
         form = None
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
             clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
         else:
             clients = PartiesClients.objects.filter(party=party_id).filter(apply_status=apply_status).exclude(client__invite_type='public')
-        
         
         if clients:
             for client in clients:
@@ -259,15 +268,6 @@ def sms_invite(request, party_id):
             }
             form = SMSInviteForm(data)
         else:
-            content = content+party.creator.username+u'邀请你参加：'
-            if party.start_time == None and party.address == '':
-                content = content+party.description+u',时间、地点，另行通知。'
-            elif party.start_time != None and party.address == u'':
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
-            elif party.start_time == None and party.address != '':
-                content = content+u'在'+party.address+party.description+u',时间待定。'
-            else:  
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
             
             data = {
                'client_phone_list': '', 
