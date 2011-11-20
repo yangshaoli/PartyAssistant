@@ -13,24 +13,28 @@
          用户名
          </label>
          {{form.username}}
+         <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
          <div class="field">
          <label for="email">
          Email
          </label>
          {{form.email}}
+         <font color="red">{{ form.email.errors.0 }}</font>
          </div>
          <div class="field">
          <label for="password">
          密码
          </label>
          {{form.password}}
+         <font color="red">{{ form.password.errors.0 }}</font>
          </div>
          <div class="field">
          <label for="password">
          确认密码
          </label>
          {{form.confirm_password}}
+         <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="submit_field">
           <input id="id_login_submit" type="submit" value="Register" />
