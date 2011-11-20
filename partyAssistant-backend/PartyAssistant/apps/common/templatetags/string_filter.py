@@ -14,6 +14,10 @@ def truncatestring(value, arg):
         length = int(arg)
     except ValueError:
         return value
-    return value[0:length]
+    
+    if len(value) < length:
+        return value
+    else:
+        return value[0:length] + '...'
 truncatestring.is_safe = True
 truncatestring = stringfilter(truncatestring)
