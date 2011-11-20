@@ -3,17 +3,15 @@
 @summary: 报名处理，包括公开报名和邮件邀请报名
 @author:chenyang
 '''
-from apps.clients.models import Client
 from apps.parties.models import Party, PartiesClients
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
+from django.contrib.auth.decorators import login_required
 
 #获得报名/未相应/不参加的客户数
+@login_required
 def get_client_sum(party_id):
     party = Party.objects.get(id=party_id)
     client_sum = {
@@ -27,7 +25,7 @@ def get_client_sum(party_id):
 '''
 @author: liuxue
 '''
-
+@login_required
 def change_apply_status(request):
     if request.method == 'GET':
         apply_status = request.GET['applystatus']
@@ -45,34 +43,41 @@ def change_apply_status(request):
 
 
 #受邀人员列表
+@login_required
 def invite_list(request, party_id):
-    apply_status = request.GET.get('apply', 'all')
-    party = Party.objects.get(id=party_id)
-    party_clients_list=[]
-    if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.filter(party=party)
-    else:        
-        party_clients_list = PartiesClients.objects.filter(party=party).filter(apply_status=apply_status)
+    party = get_object_or_404(Party, id=party_id)
+    party_clients_list = PartiesClients.objects.filter(party=party)
     
-    #为party_clients添加isnew属性
-    is_new = False
-    for party_clinet in party_clients_list:
-        if party_clinet.is_see_over:
-            party_clinet.is_see_over = False
-            party_clinet.save()
-            party_clinet.isnew = True
-            is_new = True
-        else:
-            party_clinet.isnew = False    
-    ctx = {
-        'is_new':is_new,   
-        'party_clients_list':party_clients_list,
-        'party':party,
-        'applystatus':apply_status,
-        'client_sum':get_client_sum(party_id)
+    party_clients = {
+        'apply': {
+            'is_new': False, 
+            'client_count': 0
+        }, 
+        'noanswer': {
+            'is_new': False, 
+            'client_count': 0
+        }, 
+        'reject': {
+            'is_new': False, 
+            'client_count': 0
+        }
     }
     
-    return TemplateResponse(request,'clients/invite_list.html',ctx) 
+    for party_client in party_clients_list:
+        if party_client.apply_status == 'apply':
+            party_clients['apply']['client_count'] = party_clients['apply']['client_count'] + 1
+            if party_client.is_new:
+                party_clients['apply']['is_new'] = True
+        elif party_client.apply_status == 'noanswer':
+            party_clients['noanswer']['client_count'] = party_clients['noanswer']['client_count'] + 1
+            if party_client.is_new:
+                party_clients['noanswer']['is_new'] = True
+        if party_client.apply_status == 'reject':
+            party_clients['reject']['client_count'] = party_clients['reject']['client_count'] + 1
+            if party_client.is_new:
+                party_clients['reject']['is_new'] = True
+    
+    return TemplateResponse(request,'clients/invite_list.html', {'party_clients': party_clients}) 
 
 
 def invite_list_ajax(request, party_id):
