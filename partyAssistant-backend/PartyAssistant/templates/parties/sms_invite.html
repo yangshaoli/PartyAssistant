@@ -39,6 +39,11 @@
      {{ form.client_phone_list.errors }}
      {{ form.client_phone_list }}
      </div>
+     <label for="id_send_email_count">
+     &nbsp;
+     </label>
+     <p id="id_send_phone_count">发件人人数统计： 0<p>
+     </div>
      <div class="field">
      <label for="id_content">
      短信内容
@@ -46,11 +51,6 @@
      {{ form.content }}
      </div>
      <div class="field">
-     <label for="id_send_email_count">
-     &nbsp;
-     </label>
-     <p id="id_send_phone_count">发件人人数统计： 0<p>
-     </div>
 		<input id="id_sms_invite_submit" type="submit" value="submit" />
 		<input id="id_sms_invite_default_content" type='hidden' value='{{ sms_invite_default_content }}'></input>
 	</form>
