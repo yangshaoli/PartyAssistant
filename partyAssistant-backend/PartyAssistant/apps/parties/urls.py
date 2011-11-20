@@ -10,5 +10,5 @@ urlpatterns = patterns('apps.parties.views',
     url(r'^(?P<party_id>\d+)/email_invite/$', 'email_invite',name='email_invite'),
     url(r'^(?P<party_id>\d+)/sms_invite/$', 'sms_invite',name='sms_invite'), 
     
-    url(r'^(?P<party_id>\d+)/enroll/$', 'invite_enroll', name='invite_enroll'), 
+    url(r'^(?P<party_id>\d+)/enroll/$', 'enroll', name='enroll'), 
 )

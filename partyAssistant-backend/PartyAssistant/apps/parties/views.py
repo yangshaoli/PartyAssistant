@@ -61,7 +61,12 @@ def edit_party(request, party_id):
                     if party.invite_type == 'email':
                         return redirect('email_invite', party_id=party.id)
                     else:
-                        return redirect('sms_invite', party_id=party.id)         
+                        return redirect('sms_invite', party_id=party.id)  
+            else:
+                if 'sms_invite' in request.POST:
+                    return redirect('sms_invite', party_id=party.id)
+                else:
+                    return redirect('email_invite', party_id=party.id)            
             return redirect('list_party')
 
     else:

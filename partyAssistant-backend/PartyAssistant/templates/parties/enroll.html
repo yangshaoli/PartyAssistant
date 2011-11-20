@@ -16,7 +16,7 @@
     
         {% if client %}
         <!-- 被邀请用户报名页面 -->
-    <form method="POST" url="{% url invite_enroll client.email party.id %}">
+    <form method="POST" url="{% url enroll party.id %}">
      <input type="image" src="/static/images/btn_join.png" />
      <input type="image" src="/static/images/btn_join_no.png" />
        

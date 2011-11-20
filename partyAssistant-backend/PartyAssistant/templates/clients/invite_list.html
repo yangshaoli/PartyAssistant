@@ -69,8 +69,8 @@ function ajaxGetClients(applystatus){
   <div class="grid_a">
    <h2 class="title">谁来了</h2>
    <div class="apply_details">
-    <p>{{party.start_time|date:"y年m月d日"|default:"日期待定"}}{{ party.start_time|date:"H:i"|default:"时间待定" }}</p>
-    <p>{{party.address|default:"地点待定"}} <span class="minor">参加活动</span></p>
+    <p>{{party.start_time|date:"y年m月d日"|default:""}}{{ party.start_time|date:"H:i"|default:"" }}</p>
+    <p>{{party.address|default:""}} <span class="minor">参加活动</span></p>
     <p>{{party.description}}</p>
    </div>
    <div class="accordionview">
