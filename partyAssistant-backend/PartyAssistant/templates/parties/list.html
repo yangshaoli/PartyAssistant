@@ -1,5 +1,48 @@
 {% extends 'login_base.html' %}
+
 {% block title %} 我的活动 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+       $(".close").bind('click', function(){
+           $(".transparent").hide();
+           $(".popup").hide();
+       })
+    });
+
+function pupupClients(action, party_id){
+    $('.popup table tbody').children().remove();
+    switch(action) {
+        case 'noanswer': $('.popup h2').text('未报名'); break;
+        case 'apply': $('.popup h2').text('已报名'); break;
+        case 'reject': $('.popup h2').text('不参加'); break;
+    }
+    $.ajax({
+        type : 'GET',
+        url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
+        statusCode : {
+        200: function(response){
+            clients = JSON.parse(response).party_clients_list_ajax;
+            for (i in clients){
+                row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
+                $('.popup table tbody').append(row);    
+            }
+            
+            //修改[再次邀请]的url
+            $('.ta_r a').attr('href', {{party_list.id}}'/');
+           $(".transparent").show();
+           $(".popup").show();
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
+
+</script>
+{% endblock %}
+
 {% block content %}
 
  <!--START: content -->
@@ -54,43 +97,6 @@
  </div>
 </div>
 <!--END: content -->
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
-<script>
-    $(document).ready(function(){
-       $(".close").bind('click', function(){
-           $(".transparent").hide();
-           $(".popup").hide();
-       })
-    });
-
-function pupupClients(action, party_id){
-    $('.popup table tbody').children().remove();
-    switch(action) {
-        case 'noanswer': $('.popup h2').text('未报名'); break;
-        case 'apply': $('.popup h2').text('已报名'); break;
-        case 'reject': $('.popup h2').text('不参加'); break;
-    }
-    $.ajax({
-        type : 'GET',
-        url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
-        statusCode : {
-        200: function(response){
-            clients = JSON.parse(response).party_clients_list_ajax;
-            for (i in clients){
-                row = "<tr><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>&nbsp;</td></tr>"
-                $('.popup table tbody').append(row);    
-            }
-            
-            //修改[再次邀请]的url
-            $('.ta_r a').attr('href', {{party_list.id}}'/');
-           $(".transparent").show();
-           $(".popup").show();
-        },
-        500: function(){ alert('没有获取到用户列表')}
-        }
-    });
-}
-
-</script>
 
 {% endblock %}
+
