@@ -6,7 +6,7 @@
 <div class="transparent"></div>
 <div class="popup">
 	<div class="hd">
- 	<h2>title</h2>
+ 	<h2></h2>
   <a href="#" class="close">close</a>
  </div>
  <div class="bd">
@@ -66,6 +66,11 @@
 
 function pupupClients(action, party_id){
     $('.popup table tbody').children().remove();
+    switch(action) {
+        case 'noanswer': $('.popup h2').text('未报名'); break;
+        case 'apply': $('.popup h2').text('已报名'); break;
+        case 'reject': $('.popup h2').text('不参加'); break;
+    }
     $.ajax({
         type : 'GET',
         url: '/clients/invite_list_ajax/'+party_id+'/?apply='+action,
