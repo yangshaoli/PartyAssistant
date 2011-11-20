@@ -26,7 +26,7 @@ class EmailInviteForm(forms.Form):
                 break
         
         if not validate_flag:
-            raise forms.ValidationError(u'email list error.')
+            raise forms.ValidationError(u'邮件地址格式错误')
         
         self.cleaned_data['client_email_list'] = ','.join(email_list)
         
@@ -50,7 +50,7 @@ class SMSInviteForm(forms.Form):
                 break
         
         if not validate_flag:
-            raise forms.ValidationError(u'phone list error.')
+            raise forms.ValidationError(u'电话号码格式错误')
         
         self.cleaned_data['client_phone_list'] = ','.join(phone_list)
         
