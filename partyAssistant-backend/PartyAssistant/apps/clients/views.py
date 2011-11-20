@@ -102,4 +102,4 @@ def invite_list_ajax(request, party_id):
             party_client.is_new = False
             party_client.save()
     
-    return HttpResponse(simplejson.dumps(party_clients_data)) 
+    return HttpResponse(simplejson.dumps(party_clients_data))
