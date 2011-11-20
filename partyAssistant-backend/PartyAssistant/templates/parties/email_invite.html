@@ -50,6 +50,7 @@ $(document).ready(function(){
 		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
 	</form>
 	   <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</button>
+       <input type='button' onclick="(function(){window.location='{% url edit_party party.id %}';})()" value='返回'></input>
   </div>
 </div>
 {% endblock %}
