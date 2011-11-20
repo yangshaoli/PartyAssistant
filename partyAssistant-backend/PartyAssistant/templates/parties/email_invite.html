@@ -30,46 +30,10 @@
 	    $('#id_send_email_count').html("发件人人数统计： "+count);
 	}
 
-   $(document).ready(function(){
-       $(".close").bind('click', function(){
-           $(".transparent").hide();
-           $(".popup").hide();
-       })
-    });
-
-   function pupupClients(action, party_id){
-    
-    
-           $(".popup").show();
-     
-}
 </script>
 {% endblock %}
 
 {% block content %}
-<div class="popup">
-	<div class="hd">
- 	<h2>title</h2>
-  <a href="#" class="close">close</a>
- </div>
- <div class="bd">
-     <form action='{% url upload_client_info party.id %}' method='post' encType="multipart/form-data" >
- 	<table width="100%" border="0" cellspacing="0" class="table">
-      <thead>
-       <tr>
-        <th width="19%" scope="col">需要导入的文件</th>
-        <th width="62%" scope="col"><input name="client_info_file" type='file'></input></th>
-        <th width="19%" scope="col" class="ta_r"></th>
-       </tr>
-       </thead>
-       <tbody>
-       </tbody>
-      </table>
-      <input type='submit' value='上传' ></input>
-    </form>  
- </div>
-</div>
-
 <div id="content">
   <div class="grid_a">
    <h2 class="title">发送邮件邀请</h2>
@@ -81,7 +45,6 @@
      </label>
      {{ form.client_email_list.errors }}
      {{ form.client_email_list }}
-     <a href='#' onclick="pupupClients('','')">导入联系人</a>
      </div>
      <div class="field">
      <label for="id_send_email_count">
