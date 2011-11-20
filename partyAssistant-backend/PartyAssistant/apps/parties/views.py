@@ -294,6 +294,7 @@ def delete_party_notice(request,party_id):
             print content   
     return delete_party(request,party_id) 
 
+@login_required
 def copy_party(request,party_id):#复制party和联系人
     old_party = Party.objects.get(pk=party_id)    
     new_party = Party(creator=old_party.creator,
