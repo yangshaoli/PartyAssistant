@@ -31,6 +31,7 @@ $(document).ready(function(){
      <label for="client_email_list">
      收件人
      </label>
+     {{ form.client_email_list.errors }}
      {{ form.client_email_list }}
      </div>
      <div class="field">
@@ -47,8 +48,8 @@ $(document).ready(function(){
      </div>
 		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
 		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
-        <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</button>
 	</form>
+	   <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</button>
   </div>
 </div>
 {% endblock %}
