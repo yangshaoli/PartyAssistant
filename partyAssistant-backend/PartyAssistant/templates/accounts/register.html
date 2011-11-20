@@ -14,6 +14,7 @@
          用户名
          </label>
          {{form.username}}
+         <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
              <ul class="errorlist">{{form.errors.email}}</ul>
          <div class="field">
@@ -21,6 +22,7 @@
          Email
          </label>
          {{form.email}}
+         <font color="red">{{ form.email.errors.0 }}</font>
          </div>
              <ul class="errorlist">{{form.errors.password}}</ul>
          <div class="field">
@@ -28,6 +30,7 @@
          密码
          </label>
          {{form.password}}
+         <font color="red">{{ form.password.errors.0 }}</font>
          </div>
              <ul class="errorlist">{{form.errors.confirm_password}}</ul>
          <div class="field">
@@ -35,6 +38,7 @@
          确认密码
          </label>
          {{form.confirm_password}}
+         <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="submit_field">
           <input id="id_login_submit" type="submit" value="Register" />

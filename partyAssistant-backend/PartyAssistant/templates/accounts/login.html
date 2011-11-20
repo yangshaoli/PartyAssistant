@@ -12,13 +12,13 @@
      <label for="username">
      用户名
      </label>
-     {{form.username}}
+     {{form.username}}<font color="red">{{ form.username.errors.0 }}</font>
      </div>
      <div class="field">
      <label for="password">
      密码
      </label>
-     {{form.password}}
+     {{form.password}}<font color="red">{{ form.password.errors.0 }}</font>
      </div>
      <div class="field">
          <a href="{%url get_password %}">找回密码</a>
