@@ -64,7 +64,7 @@ def send_email(outbox_message):
             content = outbox_message.base_message.get_subclass_obj().content
             for address in address_list:
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, address)).hexdigest())
-                content = '%s\n\r\n\r点击进入报名页面：<a href="%s">%s</a>' % (content, enroll_link, enroll_link)
+                content = content + '\n\r\n\r点击进入报名页面：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                 send_emails(subject, content, SYS_EMAIL_ADDRESS, [address])
         else:
             send_emails(subject, outbox_message.base_message.get_subclass_obj().content, 
