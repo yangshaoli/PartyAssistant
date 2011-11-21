@@ -126,7 +126,7 @@ def email_invite(request, party_id):
                         client=client_temp
                     )
                     
-            send_message = Outbox(address=client_email_list, base_message=email_message, is_apply_tips=form.cleaned_data['is_apply_tips'])
+            send_message = Outbox(address=form.cleaned_data['client_email_list'], base_message=email_message, is_apply_tips=form.cleaned_data['is_apply_tips'])
             send_message.save()
  
             return redirect('list_party')
@@ -231,7 +231,7 @@ def sms_invite(request, party_id):
                     enroll_link = DOMAIN_NAME + '/clients/invite_enroll/' + phone + '/' + party_id
                     sms_message.content = sms_message.content + u'点击进入报名页面：%s</a>' % (enroll_link) 
                     sms_message.save()
-            send_message = Outbox(address=client_phone_list, base_message=sms_message)
+            send_message = Outbox(address=form.cleaned_data['client_phone_list'], base_message=sms_message)
             send_message.save()
             
             return redirect('list_party')
