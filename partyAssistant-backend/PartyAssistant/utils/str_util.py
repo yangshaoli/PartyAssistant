@@ -5,10 +5,10 @@ Created on 2011-11-21
 '''
 
 def next_key(key):
-    new_key = key
+    new_key = list(key)
     
     choice = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    length = len(key)
+    length = len(new_key)
     for i in range(length, 0, -1):
         c = new_key[i - 1]
         index = choice.index(c)
@@ -20,4 +20,4 @@ def next_key(key):
             new_key[i - 1] = choice[index]
             break
 
-    return new_key
+    return ''.join(new_key)
