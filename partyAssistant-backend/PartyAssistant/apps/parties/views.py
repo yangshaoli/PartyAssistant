@@ -387,7 +387,7 @@ def _public_enroll(request, party_id):
             'party': party,
             'client_count': _get_client_count(party)
         }
-        
+        print data['client_count']
         return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):
