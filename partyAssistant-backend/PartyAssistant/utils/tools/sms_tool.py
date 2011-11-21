@@ -37,8 +37,8 @@ def sms_modem_send_sms(outbox_message):
                 last_key = 'airenao'
             
             party = message.party
-            content = message.content
             for phone in phone_list:
+                content = message.content
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
                 last_key = next_key(last_key)
                 short_link = DOMAIN_NAME + '/' + last_key
