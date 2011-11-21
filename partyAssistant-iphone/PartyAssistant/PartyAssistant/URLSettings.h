@@ -9,6 +9,7 @@
 #define DOMAIN_NAME @"http://192.168.3.151:8000"
 
 #define CREATE_PARTY [NSString stringWithFormat:@"%@/a/parties/createparty/",DOMAIN_NAME]
+#define DELETE_PARTY [NSString stringWithFormat:@"%@/a/parties/deleteparty/",DOMAIN_NAME]
 #define EDIT_PARTY [NSString stringWithFormat:@"%@/a/parties/editparty/",DOMAIN_NAME]
 #define GET_PARTY_LIST [NSString stringWithFormat:@"%@/a/parties/partylist/",DOMAIN_NAME]
 #define GET_MSG_IN_COPY_PARTY [NSString stringWithFormat:@"%@/a/parties/get_party_msg/",DOMAIN_NAME]

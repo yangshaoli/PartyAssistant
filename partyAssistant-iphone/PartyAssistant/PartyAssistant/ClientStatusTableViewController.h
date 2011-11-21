@@ -15,7 +15,10 @@
 #import "HTTPRequestErrorMSG.h"
 #import "BaseInfoObject.h"
 #import "ClientObject.h"
+#import "EmailObject.h"
+#import "SMSObject.h"
 #import "ResendSMSTableViewController.h"
+#import "ResendEmailTableViewController.h"
 
 @interface ClientStatusTableViewController : UITableViewController{
     NSArray *clientsArray;

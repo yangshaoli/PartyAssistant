@@ -317,7 +317,7 @@
             NSMutableArray *receiverObjectsArray = [[NSMutableArray alloc] initWithCapacity:[receiverArray count]];
             for (int i=0; i<[receiverArray count]; i++) {
                 ClientObject *client = [[ClientObject alloc] init];
-                client.cID = [[[receiverArray objectAtIndex:i] objectForKey:@"cID"] intValue];
+                client.backendID = [[[receiverArray objectAtIndex:i] objectForKey:@"backendID"] intValue];
                 client.cName = [[receiverArray objectAtIndex:i] objectForKey:@"cName"];
                 client.cVal = [[receiverArray objectAtIndex:i] objectForKey:@"cValue"];
                 [receiverObjectsArray addObject:client];
@@ -333,8 +333,6 @@
                 sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
                 vc.smsObject = sobj;
                 vc.baseinfo = self.baseinfo;
-                NSLog(@"content:%@",vc.smsObject.smsContent);
-        //            [vc setupReceiversView];
                 [self.navigationController pushViewController:vc animated:YES];
             }
             

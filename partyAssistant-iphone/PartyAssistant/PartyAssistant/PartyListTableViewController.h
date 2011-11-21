@@ -16,17 +16,21 @@
 #import "CopyPartyTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
 
-@interface PartyListTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>{
+@interface PartyListTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate, UIAlertViewDelegate>{
     NSMutableArray *partyList;
     BOOL _isNeedRefresh;
     BOOL _isRefreshing;
     NSInteger pageIndex;
+    NSInteger _currentDeletePartyID;
+    NSInteger _currentDeletePartyCellIndex;
 }
 
 @property(nonatomic, retain)NSMutableArray *partyList;
 @property(nonatomic, assign)BOOL _isNeedRefresh;
 @property(nonatomic, assign)BOOL _isRefreshing;
 @property(nonatomic, assign)NSInteger pageIndex;
+@property(nonatomic, assign)NSInteger _currentDeletePartyID;
+@property(nonatomic, assign)NSInteger _currentDeletePartyCellIndex;
 
 - (void)refreshBtnAction;
 - (void)copyPartyAtID:(NSInteger)pIndex;

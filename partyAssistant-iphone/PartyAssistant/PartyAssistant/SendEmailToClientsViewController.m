@@ -421,7 +421,14 @@
 
 - (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo{
     NSString *defaultText = @"";
+    UserObjectService *s = [UserObjectService sharedUserObjectService];
+    UserObject *u = [s getUserObject];
     NSString *userName = @"";
+    if ([u.nickName isEqualToString:@""]) {
+        userName = u.userName;
+    }else{
+        userName = u.nickName;
+    }
     if ([paraBaseInfo.location isEqualToString:@""] && [paraBaseInfo.starttimeStr isEqualToString:@""]) {
         defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@，时间/地点待定，另行通知",userName,paraBaseInfo.description];
     }else if([paraBaseInfo.location isEqualToString:@""]){

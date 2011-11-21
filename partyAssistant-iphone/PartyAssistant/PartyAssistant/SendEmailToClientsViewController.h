@@ -28,6 +28,8 @@
 #import "PartyListTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
 #import "ReceiverTableViewCell.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
 
 @interface SendEmailToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMailComposeViewControllerDelegate,UIAlertViewDelegate,ContactListViewControllerDelegate>
 {

@@ -140,7 +140,7 @@
     
     NSDictionary *client = [self.clientsArray objectAtIndex:indexPath.row];
     cell.textLabel.text = [client objectForKey:@"cName"];
-    cell.tag = [[client objectForKey:@"cID"] integerValue];
+    cell.tag = [[client objectForKey:@"backendID"] integerValue];
     UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(10, 40, 300, 20)];
     lbl.text = [client objectForKey:@"cValue"];
     lbl.backgroundColor = [UIColor clearColor];
@@ -187,8 +187,8 @@
 - (void)changeClientStatus:(UIButton *)btn
 {
     [self performSelectorOnMainThread:@selector(sendChangeClientRequest:) withObject:btn waitUntilDone:NO];
-    NSLog(@"aaa");
 }
+
 - (void)sendChangeClientRequest:(UIButton *)btn
 {
     int row = btn.tag;
@@ -352,7 +352,7 @@
             NSMutableArray *receiverObjectsArray = [[NSMutableArray alloc] initWithCapacity:[clientsArray count]];
             for (int i=0; i<[clientsArray count]; i++) {
                 ClientObject *client = [[ClientObject alloc] init];
-                client.cID = [[[clientsArray objectAtIndex:i] objectForKey:@"cID"] intValue];
+                client.backendID = [[[clientsArray objectAtIndex:i] objectForKey:@"backendID"] intValue];
                 client.cName = [[clientsArray objectAtIndex:i] objectForKey:@"cName"];
                 client.cVal = [[clientsArray objectAtIndex:i] objectForKey:@"cValue"];
                 [receiverObjectsArray addObject:client];
@@ -362,13 +362,24 @@
                 vc.receiverArray = receiverObjectsArray;
                 SMSObject *sobj = [[SMSObject alloc] init];
                 sobj.receiversArray = receiverObjectsArray;
-                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
                 sobj.smsContent = [dataSource objectForKey:@"content"];
                 sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
                 sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
                 vc.smsObject = sobj;
                 vc.baseinfo = self.baseinfo;
-                NSLog(@"content:%@",vc.smsObject.smsContent);
+                //            [vc setupReceiversView];
+                [self.navigationController pushViewController:vc animated:YES];
+            }else{
+                ResendEmailTableViewController *vc = [[ResendEmailTableViewController alloc] initWithNibName:@"ResendEmailTableViewController" bundle:[NSBundle mainBundle]];
+                vc.receiverArray = receiverObjectsArray;
+                EmailObject *eobj = [[EmailObject alloc] init];
+                eobj.receiversArray = receiverObjectsArray;
+                eobj.emailContent = [dataSource objectForKey:@"content"];
+                eobj.emailSubject = [dataSource objectForKey:@"subject"];
+                eobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
+                eobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
+                vc.emailObject = eobj;
+                vc.baseinfo = self.baseinfo;
                 //            [vc setupReceiversView];
                 [self.navigationController pushViewController:vc animated:YES];
             }

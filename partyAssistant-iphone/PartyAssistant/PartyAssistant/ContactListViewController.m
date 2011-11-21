@@ -49,6 +49,14 @@
     //if (!selctedContactorsArray) {
         //self.selectedContactorsArray = [[NSMutableArray alloc] initWithCapacity:0];
     //}
+    for (int i=0; i<[self.selectedContactorsArray count]; i++) {
+        ClientObject *clientObj = [self.selectedContactorsArray objectAtIndex:i];
+        if ([self.msgType isEqualToString:@"SMS"]) {
+            [clientObj searchClientIDByPhone];
+        }else{
+            [clientObj searchClientIDByEmail];
+        }
+    }
 }
 
 - (void)viewDidUnload

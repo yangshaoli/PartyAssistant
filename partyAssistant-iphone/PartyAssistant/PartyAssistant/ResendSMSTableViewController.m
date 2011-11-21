@@ -188,6 +188,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 1) {
         return 180;
+    }else if(indexPath.section == 0){
+        return 44.0*3;
     }
     return 44.0f;
 }
@@ -403,7 +405,14 @@
 
 - (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo{
     NSString *defaultText = @"";
+    UserObjectService *s = [UserObjectService sharedUserObjectService];
+    UserObject *u = [s getUserObject];
     NSString *userName = @"";
+    if ([u.nickName isEqualToString:@""]) {
+        userName = u.userName;
+    }else{
+        userName = u.nickName;
+    }
     if ([paraBaseInfo.location isEqualToString:@""] && [paraBaseInfo.starttimeStr isEqualToString:@""]) {
         defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@，时间/地点待定，另行通知",userName,paraBaseInfo.description];
     }else if([paraBaseInfo.location isEqualToString:@""]){

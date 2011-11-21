@@ -7,16 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AddressBook/AddressBook.h>
 
 @interface ClientObject : NSObject
 {
     NSInteger cID;
+    NSInteger backendID;
     NSString *cName;
     NSString *cVal;
 }
 
 @property(nonatomic, assign)NSInteger cID;
+@property(nonatomic, assign)NSInteger backendID;
 @property(nonatomic, retain)NSString *cName;
 @property(nonatomic, retain)NSString *cVal;
+
+- (void)searchClientIDByPhone;
+- (void)searchClientIDByEmail;
+- (void)clearObject;
 
 @end

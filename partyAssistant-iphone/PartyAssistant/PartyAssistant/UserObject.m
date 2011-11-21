@@ -15,7 +15,7 @@
 {
     self = [super init];
     if (self) {
-		self.uID = 0;
+		self.uID = -1;
         self.phoneNum = @"";
         self.userName = @"";
         self.nickName = @"";
@@ -40,7 +40,7 @@
 }
 
 - (void)clearObject{
-	self.uID = 0;
+	self.uID = -1;
     self.phoneNum = @"";
     self.userName = @"";
     self.nickName = @"";

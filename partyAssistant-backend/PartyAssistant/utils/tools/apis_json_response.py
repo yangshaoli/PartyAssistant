@@ -6,7 +6,6 @@ from utils.tools.my_exception import myException
 
 def apis_json_response_decorator(func):
     def new_func(*args, **kargs):
-        print 2
         try:
             datasource = func(*args, **kargs)
             print datasource
