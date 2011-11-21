@@ -9,16 +9,15 @@ def next_key(key):
     
     choice = ['abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']
     length = len(key)
-    finish = False
-    for i in range(length, 0, -1) and not finish:
+    for i in range(length, 0, -1):
         c = new_key[i - 1]
         index = choice.index(c)
         index = index + 1
         if index == length:
             index = 0
+            new_key[i - 1] = choice[index]
         else:
-            finish = True
-        
-        new_key[i - 1] = choice[index]
+            new_key[i - 1] = choice[index]
+            break
 
     return new_key
