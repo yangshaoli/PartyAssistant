@@ -43,8 +43,8 @@ class Outbox(models.Model):
     
 def thread_send_message(sender=None, instance=None, **kwargs):
     if instance.base_message.get_subclass_type() == 'Email':
-        thread.start_new_thread(send_email, (instance.id,))
+        thread.start_new_thread(send_email, (instance,))
     else:
-        thread.start_new_thread(sms_modem_send_sms, (instance.id,))
+        thread.start_new_thread(sms_modem_send_sms, (instance,))
    
 signals.post_save.connect(thread_send_message, sender = Outbox)

@@ -25,9 +25,7 @@ def _post_api_request_sendSMS(params):
 
     return res 
  
-def sms_modem_send_sms(outbox_message_id):
-    from apps.messages.models import Outbox
-    outbox_message = Outbox.objects.get(pk=outbox_message_id)
+def sms_modem_send_sms(outbox_message):
     try:
         message = outbox_message.base_message.get_subclass_obj()
         phone_list = outbox_message.address.split(',')

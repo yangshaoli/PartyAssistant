@@ -88,49 +88,51 @@ def email_invite(request, party_id):
         party = get_object_or_404(Party, id=party_id)
         form = EmailInviteForm(request.POST)
         if form.is_valid():
-            party.invite_type = 'email' #将邀请方式修改为email
-            party.save()
-            
-            email_message, created = EmailMessage.objects.get_or_create(party=party, 
-                defaults={'subject': u'[爱热闹]您收到一个活动邀请', 'content': form.cleaned_data['content']})
-            if not created:
-                email_message.subject = u'[爱热闹]您收到一个活动邀请'
-                email_message.content = form.cleaned_data['content']
-                email_message.save()
-            
-            client_email_list = form.cleaned_data['client_email_list'].split(',')
-            parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
-            clients = Client.objects.filter(creator=request.user)
-            
-            for email in client_email_list:
-                client_temp = None
-                for client in clients:
-                    if client.email == email:
-                        client_temp = client
-                        break
+            with transaction.commit_on_success():
+                party.invite_type = 'email' #将邀请方式修改为email
+                party.save()
                 
-                if not client_temp:
-                    client_temp = Client.objects.create(
-                        creator=request.user, 
-                        name=email, 
-                        email=email, 
-                        invite_type='email'
-                    )
+                email_message, created = EmailMessage.objects.get_or_create(party=party, 
+                    defaults={'subject': u'[爱热闹]您收到一个活动邀请', 'content': form.cleaned_data['content']})
+                if not created:
+                    email_message.subject = u'[爱热闹]您收到一个活动邀请'
+                    email_message.content = form.cleaned_data['content']
+                    email_message.save()
                 
-                party_client_temp = None
-                for party_client in parties_clients:
-                    if party_client.client == client_temp:
-                        party_client_temp = party_client
-                        break
+                client_email_list = form.cleaned_data['client_email_list'].split(',')
+                parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
+                clients = Client.objects.filter(creator=request.user)
                 
-                if not party_client_temp:
-                    party_client = PartiesClients.objects.create(
-                        party=party, 
-                        client=client_temp
-                    )
+                for email in client_email_list:
+                    client_temp = None
+                    for client in clients:
+                        if client.email == email:
+                            client_temp = client
+                            break
                     
-            send_message = Outbox(address=form.cleaned_data['client_email_list'], base_message=email_message)
-            send_message.save()
+                    if not client_temp:
+                        client_temp = Client.objects.create(
+                            creator=request.user, 
+                            name=email, 
+                            email=email, 
+                            invite_type='email'
+                        )
+                    
+                    party_client_temp = None
+                    for party_client in parties_clients:
+                        if party_client.client == client_temp:
+                            party_client_temp = party_client
+                            break
+                    
+                    if not party_client_temp:
+                        party_client = PartiesClients.objects.create(
+                            party=party, 
+                            client=client_temp
+                        )
+            
+            with transaction.commit_on_success():
+                send_message = Outbox(address=form.cleaned_data['client_email_list'], base_message=email_message)
+                send_message.save()
  
             return redirect('list_party')
         else:
@@ -188,48 +190,50 @@ def sms_invite(request, party_id):
         content = ''
         form = SMSInviteForm(request.POST)
         if form.is_valid():
-            party.invite_type = 'phone' #将邀请方式修改为phone
-            party.save()
-            
-            sms_message, created = SMSMessage.objects.get_or_create(party=party, 
-                defaults={'content': form.cleaned_data['content']})
-            if not created:
-                sms_message.content = form.cleaned_data['content']
-                sms_message.save()
-            
-            client_phone_list = form.cleaned_data['client_phone_list'].split(',')
-            parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
-            clients = Client.objects.filter(creator=request.user)
-            
-            for phone in client_phone_list:
-                client_temp = None
-                for client in clients:
-                    if client.phone == phone.strip():
-                        client_temp = client
-                        break
+            with transaction.commit_on_success():
+                party.invite_type = 'phone' #将邀请方式修改为phone
+                party.save()
                 
-                if not client_temp:
-                    client_temp = Client.objects.create(
-                        creator=request.user, 
-                        name=phone, 
-                        phone=phone, 
-                        invite_type='phone'
-                    )
+                sms_message, created = SMSMessage.objects.get_or_create(party=party, 
+                    defaults={'content': form.cleaned_data['content']})
+                if not created:
+                    sms_message.content = form.cleaned_data['content']
+                    sms_message.save()
                 
-                party_client_temp = None
-                for party_client in parties_clients:
-                    if party_client.client == client_temp:
-                        party_client_temp = party_client
-                        break
+                client_phone_list = form.cleaned_data['client_phone_list'].split(',')
+                parties_clients = PartiesClients.objects.select_related('client').filter(party=party)
+                clients = Client.objects.filter(creator=request.user)
                 
-                if not party_client_temp:
-                    party_client = PartiesClients.objects.create(
-                        party=party, 
-                        client=client_temp
-                    )
+                for phone in client_phone_list:
+                    client_temp = None
+                    for client in clients:
+                        if client.phone == phone.strip():
+                            client_temp = client
+                            break
+                    
+                    if not client_temp:
+                        client_temp = Client.objects.create(
+                            creator=request.user, 
+                            name=phone, 
+                            phone=phone, 
+                            invite_type='phone'
+                        )
+                    
+                    party_client_temp = None
+                    for party_client in parties_clients:
+                        if party_client.client == client_temp:
+                            party_client_temp = party_client
+                            break
+                    
+                    if not party_client_temp:
+                        party_client = PartiesClients.objects.create(
+                            party=party, 
+                            client=client_temp
+                        )
             
-            send_message = Outbox(address=form.cleaned_data['client_phone_list'], base_message=sms_message)
-            send_message.save()
+            with transaction.commit_on_success():
+                send_message = Outbox(address=form.cleaned_data['client_phone_list'], base_message=sms_message)
+                send_message.save()
             
             return redirect('list_party')
         else:

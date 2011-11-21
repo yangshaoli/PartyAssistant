@@ -26,10 +26,7 @@ def send_emails(subject, content, from_address, to_list):
     email1.send()
     connection.close()
 
-def send_email(outbox_message_id):
-    from apps.messages.models import Outbox # cycle import
-    outbox_message = Outbox.objects.get(pk=outbox_message_id)
-    
+def send_email(outbox_message):
     subject = u'[爱热闹]您收到一个活动邀请'
     try:
         message = outbox_message.base_message.get_subclass_obj()
