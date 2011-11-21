@@ -354,7 +354,8 @@ def list_party(request):
             'new_add_apply':[],
             'noanswer':[],
             'reject':[],
-            'new_add_reject':[]
+            'new_add_reject':[],
+            'count':{}
         }
         for party_client in party_clients:
             if party_client.client.invite_type != 'public':
@@ -369,8 +370,9 @@ def list_party(request):
                 client['reject'].append(party_client)
             if party_client.apply_status == 'new_add_reject' and party_client.is_new == True:
                 client['new_add_reject'].append(party_client)
-         
-        party.client=client    
+        party.client=client  
+        party.client['count'] = _get_client_count(party)
+        print party.client['count']
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list})
 
 def _public_enroll(request, party_id):
@@ -394,7 +396,7 @@ def _public_enroll(request, party_id):
             'party': party,
             'client_count': _get_client_count(party)
         }
-        
+        print data['client_count']
         return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):

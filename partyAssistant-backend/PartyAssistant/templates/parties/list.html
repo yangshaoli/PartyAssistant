@@ -5,12 +5,6 @@
 {% block script %}
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script>
-    $(document).ready(function(){
-       $(".close").bind('click', function(){
-           $(".transparent").hide();
-           $(".popup").hide();
-       })
-    });
 
 	function deleteConfirm(url){
 	  if (confirm('删除不可恢复，是否确认删除？')){
@@ -64,8 +58,8 @@
       <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
-       <a href="{%url invite_list party.id %}"><p class="statistics">未响应：<strong class="important">{{ party.client.noanswer.count }}</strong> 已报名：<strong class="important">{{ party.client.apply.count }}</strong>不参加：<strong class="important">{{ party.client.reject.count }}</strong></p></a>
-       <p class="share"><a href="#">分享</a> | <a href="{% url delete_party party.id %}">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a>
+       <a href="{%url invite_list party.id %}"><p class="statistics">未响应：<strong class="important">{{ party.client.count.noanswer }}</strong> 已报名：<strong class="important">{{ party.client.count.apply }}</strong>不参加：<strong class="important">{{ party.client.count.reject }}</strong></p></a>
+       <p class="share"><a href="#">分享</a> | <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url copy_party party.id %}">复制</a> | <a href="{% url edit_party party.id %}">编辑</a>
       </div>
     </div>
     {% endfor %}
@@ -74,5 +68,6 @@
  </div>
 </div>
 <!--END: content -->
+
 {% endblock %}
 
