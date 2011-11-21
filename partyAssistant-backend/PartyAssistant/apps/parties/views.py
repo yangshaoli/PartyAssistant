@@ -131,6 +131,8 @@ def email_invite(request, party_id):
  
             return redirect('list_party')
         else:
+            if 'email_invite_default_content' in request.POST:
+                content = request.POST['email_invite_default_content']
             return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
 
     else:
@@ -234,6 +236,8 @@ def sms_invite(request, party_id):
             
             return redirect('list_party')
         else:
+            if 'sms_invite_default_content' in request.POST:
+                content = request.POST['sms_invite_default_content']
             return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
 
     else:
