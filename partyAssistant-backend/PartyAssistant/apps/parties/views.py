@@ -303,45 +303,7 @@ def delete_party_notice(request,party_id):
             print content   
     return delete_party(request,party_id) 
 
-@login_required
-def copy_party(request,party_id):#复制party和联系人
-    old_party = Party.objects.get(pk=party_id)    
-    new_party = Party(creator=old_party.creator,
-                      start_time=old_party.start_time,
-                      address=old_party.address,
-                      description=old_party.description,
-                      limit_count=old_party.limit_count,
-                      invite_type=old_party.invite_type
-                      )
-    new_party.save()
-    old_message = None
-    if old_party.invite_type:
-        try:
-            if old_party.invite_type == 'email':
-                old_message = get_object_or_404(EmailMessage, party=old_party)
-                new_message = EmailMessage(subject=old_message.subject,
-                                           content=old_message.content,
-                                           party=new_party                                               
-                                           )
-            if old_party.invite_type == 'phone':    
-                old_message = get_object_or_404(SMSMessage, party=old_party)
-                new_message = SMSMessage(content=old_message.content,
-                                         party=new_party                                               
-                                         )
-        except Exception, ex: 
-            new_e = Exception()
-            new_e.error_msg = str(ex)
-            logger.error('Email send')
-        else:
-            new_message.save()
-    
-    clients = PartiesClients.objects.filter(party=party_id).exclude(client__invite_type='public')
-    for client in clients:
-        c = PartiesClients.objects.create(client_id=client.client.id, party=new_party,apply_status='noanswer')
-        c.save()
 
-    return redirect('edit_party', party_id=new_party.id)
-   
 @login_required
 def list_party(request):
     party_list = Party.objects.filter(creator=request.user).order_by('-id')[0:10] 
