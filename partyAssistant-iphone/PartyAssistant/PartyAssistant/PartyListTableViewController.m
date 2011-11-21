@@ -345,6 +345,7 @@
             NSIndexPath *index = [NSIndexPath indexPathForRow:self._currentDeletePartyCellIndex inSection:0];
             NSLog(@"index:%@",index);
             NSArray *indexPathArray = [NSArray arrayWithObject:index];
+            [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
             [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];
         }else{
             [self showAlertRequestFailed:description];		

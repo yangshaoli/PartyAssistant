@@ -67,10 +67,10 @@ static DataManager *sharedDataManager = nil;
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
         if ([request responseStatusCode] == 200) {
-            NSString *description = [request valueForKey:@"description"];
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
             if ([description isEqualToString:@"ok"]) {
-                NSString *receivedString = [request responseString];
-                NSDictionary *dic = [receivedString JSONValue];
                 dic = [NSMutableDictionary dictionaryWithDictionary:dic];
                 [dic setValue:name forKey:@"username"];
                 [self saveUsrData:dic];
@@ -119,10 +119,10 @@ static DataManager *sharedDataManager = nil;
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
         if ([request responseStatusCode] == 200) {
-            NSString *description = [request valueForKey:@"description"];
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
             if ([description isEqualToString:@"ok"]) {
-                NSString *receivedString = [request responseString];
-                NSDictionary *dic = [receivedString JSONValue];
                 [self saveUsrData:dic];
                 [pool release];
                 return NetWorkConnectionCheckPass;
@@ -216,10 +216,10 @@ static DataManager *sharedDataManager = nil;
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
         if ([request responseStatusCode] == 200) {
-            NSString *description = [request valueForKey:@"description"];
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
             if ([description isEqualToString:@"ok"]) {
-                NSString *receivedString = [request responseString];
-                NSDictionary *dic = [receivedString JSONValue];
                 [self saveUsrData:dic];
                 [pool release];
                 return NetWorkConnectionCheckPass;
