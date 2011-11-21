@@ -17,9 +17,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     
     url(r'^$', 'views.home', name='home'),
-    url(r'^(?P<short_link>[a-zA-Z]+)', 'apps.common.views.short_link', name='short_link'), 
     url(r'^accounts/', include('apps.accounts.urls')),
     url(r'^clients/', include('apps.clients.urls')),
     url(r'^parties/', include('apps.parties.urls')),
     url(r'^a/',include('apis.urls')),
+    url(r'^(?P<short_link>[a-zA-Z]+)', 'apps.common.views.short_link', name='short_link'), 
 )
