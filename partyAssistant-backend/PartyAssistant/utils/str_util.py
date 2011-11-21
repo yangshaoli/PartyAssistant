@@ -7,7 +7,7 @@ Created on 2011-11-21
 def next_key(key):
     new_key = key
     
-    choice = ['abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ']
+    choice = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     length = len(key)
     for i in range(length, 0, -1):
         c = new_key[i - 1]
