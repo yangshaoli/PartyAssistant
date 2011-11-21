@@ -35,8 +35,10 @@ def create_party(request):
             
             if 'sms_invite' in request.POST:
                 return redirect('sms_invite', party_id=party.id)
-            else:
+            elif 'email_invite' in request.POST:
                 return redirect('email_invite', party_id=party.id)
+            else:
+                return redirect('list_party')
     else:
         form = CreatePartyForm()
     
@@ -65,10 +67,13 @@ def edit_party(request, party_id):
             else:
                 if 'sms_invite' in request.POST:
                     return redirect('sms_invite', party_id=party.id)
+                elif 'email_invite' in request.POST:
+                    return redirect('email_invite', party_id=party.id)
                 else:
-                    return redirect('email_invite', party_id=party.id)            
-            return redirect('list_party')
-
+                    return redirect('list_party')
+        else :
+            return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
+                    
     else:
         party = get_object_or_404(Party, id=party_id)
         form = CreatePartyForm(instance=party)
@@ -129,6 +134,8 @@ def email_invite(request, party_id):
  
             return redirect('list_party')
         else:
+            if 'email_invite_default_content' in request.POST:
+                content = request.POST['email_invite_default_content']
             return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
 
     else:
@@ -226,6 +233,8 @@ def sms_invite(request, party_id):
             
             return redirect('list_party')
         else:
+            if 'sms_invite_default_content' in request.POST:
+                content = request.POST['sms_invite_default_content']
             return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
 
     else:
@@ -339,7 +348,8 @@ def list_party(request):
             'new_add_apply':[],
             'noanswer':[],
             'reject':[],
-            'new_add_reject':[]
+            'new_add_reject':[],
+            'count':{}
         }
         for party_client in party_clients:
             if party_client.client.invite_type != 'public':
@@ -354,8 +364,9 @@ def list_party(request):
                 client['reject'].append(party_client)
             if party_client.apply_status == 'new_add_reject' and party_client.is_new == True:
                 client['new_add_reject'].append(party_client)
-         
-        party.client=client    
+        party.client=client  
+        party.client['count'] = _get_client_count(party)
+        print party.client['count']
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list})
 
 def _public_enroll(request, party_id):
@@ -379,7 +390,7 @@ def _public_enroll(request, party_id):
             'party': party,
             'client_count': _get_client_count(party)
         }
-        
+        print data['client_count']
         return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):
