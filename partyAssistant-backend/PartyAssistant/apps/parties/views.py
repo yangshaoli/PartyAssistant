@@ -92,9 +92,9 @@ def email_invite(request, party_id):
             party.save()
             
             email_message, created = EmailMessage.objects.get_or_create(party=party, 
-                defaults={'subject': u'[PartyAssistant]您收到一个活动邀请', 'content': form.cleaned_data['content']})
+                defaults={'subject': u'[爱热闹]您收到一个活动邀请', 'content': form.cleaned_data['content']})
             if not created:
-                email_message.subject = u'[PartyAssistant]您收到一个活动邀请'
+                email_message.subject = u'[爱热闹]您收到一个活动邀请'
                 email_message.content = form.cleaned_data['content']
                 email_message.save()
             
