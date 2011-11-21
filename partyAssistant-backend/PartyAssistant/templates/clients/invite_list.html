@@ -8,6 +8,9 @@
         ajaxGetClients('apply');//进入页面时获得[已报名]列表 
         
         $('a[id^="tab_"]').bind('click', function(){
+            $("#"+this.id).siblings().attr('style','');
+            $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);');//改变样式
+         
             var applystatus = this.id.split('_')[1];
             ajaxGetClients(applystatus);
         })
