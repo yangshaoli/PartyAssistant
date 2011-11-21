@@ -6,8 +6,8 @@ admin.autodiscover()
 
 urlpatterns = patterns('',   
     # Examples:
-    url(r'^$', 'PartyAssistant.views.home', name='home'),
-    url(r'^m/$', 'PartyAssistant.views.home', name='home'), 
+    # url(r'^$', 'PartyAssistant.views.home', name='home'),
+    # url(r'^m/$', 'PartyAssistant.views.home', name='home'), 
     # url(r'^PartyAssistant/', include('PartyAssistant.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -15,6 +15,9 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    
+    url(r'^$', 'views.home', name='home'),
+    url(r'^(?P<short_link>[a-zA-Z]+)', 'apps.common.views.short_link', name='short_link'), 
     url(r'^accounts/', include('apps.accounts.urls')),
     url(r'^clients/', include('apps.clients.urls')),
     url(r'^parties/', include('apps.parties.urls')),
