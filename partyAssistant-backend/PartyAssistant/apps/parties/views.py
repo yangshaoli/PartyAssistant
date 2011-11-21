@@ -67,10 +67,13 @@ def edit_party(request, party_id):
             else:
                 if 'sms_invite' in request.POST:
                     return redirect('sms_invite', party_id=party.id)
+                elif 'email_invite' in request.POST:
+                    return redirect('email_invite', party_id=party.id)
                 else:
-                    return redirect('email_invite', party_id=party.id)            
-            return redirect('list_party')
-
+                    return redirect('list_party')
+        else :
+            return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
+                    
     else:
         party = get_object_or_404(Party, id=party_id)
         form = CreatePartyForm(instance=party)
