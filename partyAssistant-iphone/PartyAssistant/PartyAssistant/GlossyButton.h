@@ -9,9 +9,9 @@
     CGFloat _brightness;
 }
 
-@property  CGFloat hue;
-@property  CGFloat saturation;
-@property  CGFloat brightness;
+@property (nonatomic)CGFloat hue;
+@property (nonatomic)CGFloat saturation;
+@property (nonatomic)CGFloat brightness;
 
 @end
 

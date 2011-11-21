@@ -327,8 +327,25 @@
     [self.navigationController dismissModalViewControllerAnimated:YES];
 }
 
-- (void)SaveInput:(NSString *)newUserName {
+- (void)saveInputDidBegin {
     //wait DataManager method
+    _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.navigationController.view addSubview:_HUD];
+	
+    _HUD.labelText = @"Loading";
+    
+    _HUD.delegate = self;
+    
+    [_HUD show:YES];
 }
 
+- (void)saveInputFinished {
+    [_HUD hide:YES];
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)saveInputFailed {
+    [_HUD hide:YES];
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
 @end

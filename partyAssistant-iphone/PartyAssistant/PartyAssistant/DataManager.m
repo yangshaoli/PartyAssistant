@@ -19,6 +19,7 @@
 - (void)saveUsrData:(NSDictionary *)jsonValue;
 - (void)saveUsrUID:(NSString *)UID;
 - (void)saveUsrName:(NSString *)name;
+- (NSInteger)getCurrentUserID;
 
 @end
 
@@ -45,7 +46,8 @@ static DataManager *sharedDataManager = nil;
     return self;
 }
 
-- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd {
+- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name
+                                                pwd:(NSString *)pwd {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
@@ -64,13 +66,22 @@ static DataManager *sharedDataManager = nil;
     if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
-        NSString *receivedString = [request responseString];
-        NSDictionary *dic = [receivedString JSONValue];
-        dic = [NSMutableDictionary dictionaryWithDictionary:dic];
-        [dic setValue:name forKey:@"username"];
-        [self saveUsrData:dic];
+        if ([request responseStatusCode] == 200) {
+            NSString *description = [request valueForKey:@"description"];
+            if ([description isEqualToString:@"ok"]) {
+                NSString *receivedString = [request responseString];
+                NSDictionary *dic = [receivedString JSONValue];
+                dic = [NSMutableDictionary dictionaryWithDictionary:dic];
+                [dic setValue:name forKey:@"username"];
+                [self saveUsrData:dic];
+                [pool release];
+                return NetWorkConnectionCheckPass;
+            } else {
+
+            }
+        } 
         [pool release];
-        return NetWorkConnectionCheckPass;
+        return NetWorkConnectionCheckDeny;
     } else {
         //show error info
         [pool release];
@@ -97,7 +108,8 @@ static DataManager *sharedDataManager = nil;
         return NetworkConnectionInvalidate;
     }
     //2.post usr info
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_REGIST]];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                    [NSURL URLWithString:ACCOUNT_REGIST]];
     [request setPostValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
     [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"];
     [request startSynchronous];
@@ -106,11 +118,20 @@ static DataManager *sharedDataManager = nil;
     if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
-        NSString *receivedString = [request responseString];
-        NSDictionary *dic = [receivedString JSONValue];
-        [self saveUsrData:dic];
+        if ([request responseStatusCode] == 200) {
+            NSString *description = [request valueForKey:@"description"];
+            if ([description isEqualToString:@"ok"]) {
+                NSString *receivedString = [request responseString];
+                NSDictionary *dic = [receivedString JSONValue];
+                [self saveUsrData:dic];
+                [pool release];
+                return NetWorkConnectionCheckPass;
+            } else {
+                
+            }
+        } 
         [pool release];
-        return NetWorkConnectionCheckPass;
+        return NetWorkConnectionCheckDeny;
     } else {
         [pool release];
         return NetWorkConnectionCheckDeny;
@@ -158,5 +179,59 @@ static DataManager *sharedDataManager = nil;
 
 - (void)saveUsrUID:(NSString *)UID {
     
+}
+
+- (NSInteger)getCurrentUserID {
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    return userData.uID;
+}
+
+- (NetworkConnectionStatus)setNickName:(NSString *)nickName {
+    NSInteger currentUserID = [self getCurrentUserID];
+    return [self setNickNameForUserWithUID:currentUserID withNewNickName:nickName];
+}
+
+- (NetworkConnectionStatus)setNickNameForUserWithUID:(NSInteger)uid 
+                                     withNewNickName:(NSString *)nickName{
+    NSAssert(uid > 0, @"非法的输入uid值：%d", uid);
+    NSAssert(nickName, @"nickname不能为空！");
+    
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSString *userID = [NSString stringWithFormat:@"%d",uid];
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
+        return NetworkConnectionInvalidate;
+    }
+    //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                   [NSURL URLWithString:ACCOUNT_SET_NICKNAME]];
+    [request setPostValue:userID forKey:@"uid"];
+    [request setPostValue:nickName forKey:@"nickName"];
+    [request startSynchronous];
+    NSError *error = [request error];
+    //3.get result
+    if (!error) {
+        // add method to save user data, like uid and sth else.
+        //[self saveUsrData:(NSDic *)jsonValue]
+        if ([request responseStatusCode] == 200) {
+            NSString *description = [request valueForKey:@"description"];
+            if ([description isEqualToString:@"ok"]) {
+                NSString *receivedString = [request responseString];
+                NSDictionary *dic = [receivedString JSONValue];
+                [self saveUsrData:dic];
+                [pool release];
+                return NetWorkConnectionCheckPass;
+            } else {
+                
+            }
+        } 
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    } else {
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    }
 }
 @end
