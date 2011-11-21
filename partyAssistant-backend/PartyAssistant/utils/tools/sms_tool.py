@@ -6,6 +6,7 @@ Created on 2011-11-17
 '''
  
 from apps.common.models import ShortLink
+from apps.messages.models import Outbox
 from django.utils import simplejson
 from settings import DOMAIN_NAME
 from utils.str_util import next_key
@@ -25,7 +26,8 @@ def _post_api_request_sendSMS(params):
 
     return res 
  
-def sms_modem_send_sms(outbox_message):
+def sms_modem_send_sms(outbox_message_id):
+    outbox_message = Outbox.objects.get(pk=outbox_message_id)
     try:
         message = outbox_message.base_message.get_subclass_obj()
         phone_list = outbox_message.address.split(',')

@@ -9,6 +9,7 @@ from django.core import mail
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 import hashlib
 import logging
+from apps.messages.models import Outbox
 logger = logging.getLogger('airenao')
 
 def send_emails(subject, content, from_address, to_list):
@@ -25,7 +26,9 @@ def send_emails(subject, content, from_address, to_list):
     email1.send()
     connection.close()
 
-def send_email(outbox_message):
+def send_email(outbox_message_id):
+    outbox_message = Outbox.objects.get(pk=outbox_message_id)
+    
     subject = u'[爱热闹]您收到一个活动邀请'
     try:
         message = outbox_message.base_message.get_subclass_obj()
