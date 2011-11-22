@@ -42,15 +42,15 @@ def invite_list(request, party_id):
     
     party_clients = {
         'apply': {
-            'is_check': False, 
+            'is_check': True, 
             'client_count': 0
         }, 
         'noanswer': {
-            'is_check': False, 
+            'is_check': True, 
             'client_count': 0
         }, 
         'reject': {
-            'is_check': False, 
+            'is_check': True, 
             'client_count': 0
         }
     }
@@ -58,16 +58,16 @@ def invite_list(request, party_id):
     for party_client in party_clients_list:
         if party_client.apply_status == 'apply':
             party_clients['apply']['client_count'] = party_clients['apply']['client_count'] + 1
-            if party_client.is_check:
-                party_clients['apply']['is_check'] = True
+            if not party_client.is_check:
+                party_clients['apply']['is_check'] = False
         elif party_client.apply_status == 'noanswer':
             party_clients['noanswer']['client_count'] = party_clients['noanswer']['client_count'] + 1
-            if party_client.is_check:
-                party_clients['noanswer']['is_check'] = True
+            if not party_client.is_check:
+                party_clients['noanswer']['is_check'] = False
         if party_client.apply_status == 'reject':
             party_clients['reject']['client_count'] = party_clients['reject']['client_count'] + 1
-            if party_client.is_check:
-                party_clients['reject']['is_check'] = True
+            if not party_client.is_check:
+                party_clients['reject']['is_check'] = False
     
     return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
