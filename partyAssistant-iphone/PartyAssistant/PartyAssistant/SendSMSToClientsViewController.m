@@ -139,7 +139,7 @@
             
         }else if(indexPath.section == 1){
             if (!contentTextView) {
-                self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
+                self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,180)];
             }
             contentTextView.text = self.smsObject.smsContent;
             contentTextView.backgroundColor = [UIColor clearColor];

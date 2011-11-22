@@ -7,8 +7,6 @@
 //
 
 #import "PartyDetailTableViewController.h"
-#define DELETE_PARTY_ALERT_VIEW_TAG 11
-#define NAVIGATION_TITILE @"活动详情"
 
 @implementation PartyDetailTableViewController
 @synthesize baseinfo, peopleCountArray;
@@ -46,7 +44,7 @@
     self.editButtonItem.action = @selector(editBtnAction);
     self.editButtonItem.title = @"编辑";
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    self.navigationItem.title = NAVIGATION_TITILE;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(editPartySuccessAction:) name:EDIT_PARTY_SUCCESS object:nil];
     if (!peopleCountArray) {
         self.peopleCountArray = [[NSArray alloc] initWithObjects:@"...",@"...",@"...",@"...", nil];
@@ -200,13 +198,6 @@
             [cell addSubview:lb_1];
         }
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    }else if(indexPath.section == 2){
-        UIButton *delBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        [delBtn setFrame:CGRectMake(10, 0, 300, 44)];
-        [delBtn setTitle:@"删除该活动" forState:UIControlStateNormal];
-        [delBtn addTarget:self action:@selector(deleteParty) forControlEvents:UIControlEventTouchUpInside];
-        [cell addSubview:delBtn];
-        cell.backgroundColor = [UIColor clearColor];
     }
     return cell;
 }
@@ -328,65 +319,6 @@
     self.baseinfo = [userinfo objectForKey:@"baseinfo"];
     [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
     [self.tableView reloadData];
-}
-
-- (void)deletePartyAtID
-{
-    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:nil message:@"删除后不能再恢复，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-    alertV.tag = DELETE_PARTY_ALERT_VIEW_TAG;
-    [alertV show];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
-    if(alertView.tag == DELETE_PARTY_ALERT_VIEW_TAG){
-        if (buttonIndex == 1) {
-            [self showWaiting];
-            UserObjectService *us = [UserObjectService sharedUserObjectService];
-            UserObject *user = [us getUserObject];
-            NSURL *url = [NSURL URLWithString:DELETE_PARTY];
-            ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-            [request setPostValue:self.baseinfo.partyId forKey:@"pID"];
-            [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
-            
-            request.timeOutSeconds = 30;
-            [request setDelegate:self];
-            [request setDidFinishSelector:@selector(deleteRequestFinished:)];
-            [request setDidFailSelector:@selector(deleteRequestFailed:)];
-            [request setShouldAttemptPersistentConnection:NO];
-            [request startAsynchronous];
-        }
-    }
-}
-
-- (void)deleteRequestFinished:(ASIHTTPRequest *)request{
-	//[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
-    NSString *response = [request responseString];
-	SBJsonParser *parser = [[SBJsonParser alloc] init];
-	NSDictionary *result = [parser objectWithString:response];
-	NSString *description = [result objectForKey:@"description"];
-	[self dismissWaiting];
-    if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
-            [self.navigationController popViewControllerAnimated:YES];
-            NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
-            [[NSNotificationCenter defaultCenter] postNotification:notification];
-        }else{
-            [self showAlertRequestFailed:description];		
-        }
-    }else if([request responseStatusCode] == 404){
-        [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
-        [self showAlertRequestFailed:REQUEST_ERROR_500];
-    }
-	
-}
-
-
-- (void)deleteRequestFailed:(ASIHTTPRequest *)request
-{
-	NSError *error = [request error];
-	[self dismissWaiting];
-	[self showAlertRequestFailed: error.localizedDescription];
 }
 
 @end

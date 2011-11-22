@@ -12,7 +12,6 @@
 #import "PartyListTableViewController.h"
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
-#import "SettingsListTableViewController.h"
 
 #define NotLegalTag         1
 #define NotPassTag          2
@@ -223,15 +222,16 @@
     
     PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
     AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
-    SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
+    UIViewController *vc = [[UIViewController alloc] init];
+    vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 480)];
     
     UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
     UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
-    UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
+    UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:vc];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:nil tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:nil tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:nil tag:3];
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"List" image:nil tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"addPage" image:nil tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"setting" image:nil tag:3];
     
     listNav.tabBarItem = listBarItem;
     addPageNav.tabBarItem = addPageBarItem;
@@ -251,7 +251,7 @@
     
     [list release];
     [addPage release];
-    [settings release];
+    [vc release];
     
     //add suggest user input name page here?
     [self checkIfUserNameSaved];

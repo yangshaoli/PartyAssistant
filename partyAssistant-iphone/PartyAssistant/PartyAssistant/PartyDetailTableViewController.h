@@ -15,8 +15,6 @@
 #import "ClientStatusTableViewController.h"
 #import "UITableViewControllerExtra.h"
 #import "EditPartyTableViewController.h"
-#import "UserObject.h"
-#import "UserObjectService.h"
 
 
 @interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{

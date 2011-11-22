@@ -7,9 +7,7 @@
 //
 
 #import "PartyListTableViewController.h"
-
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
-#define NAVIGATION_CONTROLLER_TITLE @"趴列表"
 
 
 @implementation PartyListTableViewController
@@ -55,8 +53,6 @@
     if (self._isNeedRefresh) {
         [self refreshBtnAction];
     }
-    self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBtnAction) name:CREATE_PARTY_SUCCESS object:nil];
 }
 
 - (void)viewDidUnload
@@ -338,6 +334,7 @@
 
 - (void)deleteRequestFinished:(ASIHTTPRequest *)request{
 	//[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
+    NSLog(@"here");
     NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
