@@ -368,8 +368,10 @@ def _public_enroll(request, party_id):
             'party': party,
             'client_count': _get_client_count(party)
         }
-        
-        return TemplateResponse(request, 'parties/enroll.html', data)
+        if request.META['PATH_INFO'][0:3] == '/m/':
+            return TemplateResponse(request, 'm/enroll.html', data)
+        else:
+            return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):
     party = get_object_or_404(Party, id=party_id)
@@ -393,8 +395,11 @@ def _invite_enroll(request, party_id, invite_key):
             'client_count': _get_client_count(party)
         }
         
-        return TemplateResponse(request, 'parties/enroll.html', data)
-
+        if request.META['PATH_INFO'][0:3] == '/m/':
+            return TemplateResponse(request, 'm/enroll.html', data)
+        else:
+            return TemplateResponse(request, 'parties/enroll.html', data)
+        
 def enroll(request, party_id):
     invite_key = request.GET.get('key', '')
     if invite_key:
