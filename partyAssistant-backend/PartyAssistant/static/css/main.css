@@ -55,7 +55,8 @@ abbr, acronym {
 /*2. common*/
 /**2.1 module1**/
 .errorlist{color:red; font-size:12px;}
-
+    input[type="submit"], button{ background:url('/static/images/btn_bg.png') center; border:0px; color:#fff; padding:5px 20px;}
+    
 .fw_b{
  font-weight:bold;
 }

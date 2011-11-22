@@ -24,7 +24,8 @@ INVITE_TYPE = (
 
 class Party(models.Model):
     creator = models.ForeignKey(User)
-    start_time = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    start_time = models.TimeField(blank=True, null=True)
     address = models.CharField(max_length=256, blank=True)
     description = models.TextField()
     limit_count = models.IntegerField(max_length=3, default=0)
