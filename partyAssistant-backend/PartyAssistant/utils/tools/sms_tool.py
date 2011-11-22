@@ -42,8 +42,8 @@ def sms_modem_send_sms(outbox_message):
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
                 last_key = next_key(last_key)
                 short_link = DOMAIN_NAME + '/' + last_key
-                content = content + u'\r\n快来报名：%s' % short_link
-                ShortLink.objects.create(short_link=short_link, long_link=enroll_link)
+                content = content + u' 快来报名：%s' % short_link
+                ShortLink.objects.create(short_link=last_key, long_link=enroll_link)
                 data = simplejson.dumps({'phone':phone, 'content':content})
                 try:
                     res = _post_api_request_sendSMS(data)
