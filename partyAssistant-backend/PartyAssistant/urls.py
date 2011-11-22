@@ -7,7 +7,8 @@ admin.autodiscover()
 urlpatterns = patterns('',   
     # Examples:
     url(r'^$', 'PartyAssistant.views.home', name='home'),
-    url(r'^m/$', 'PartyAssistant.views.home', name='home'), 
+    url(r'^m/$', 'PartyAssistant.views.home', name='home'),
+    url(r'^m/parties/(?P<party_id>\d+)/enroll/$', 'apps.parties.views.enroll'), 
     # url(r'^PartyAssistant/', include('PartyAssistant.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
