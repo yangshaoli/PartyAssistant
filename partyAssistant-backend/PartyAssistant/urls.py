@@ -23,5 +23,5 @@ urlpatterns = patterns('',
     url(r'^(?P<short_link>[a-zA-Z]+)$', 'apps.common.views.short_link', name='short_link'), 
         
     url(r'^a/',include('apis.urls')),
-    url(r'^m/', include('m.urls')), 
+    url(r'^m/', include('apps.m.urls')), 
 )
