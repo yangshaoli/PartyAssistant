@@ -180,9 +180,12 @@ function getCursortPosition (obj) {
     		<label for="id_is_apply_tips">&nbsp;</label>
     		<p>{{ form.is_apply_tips }}带报名链接</p>
     	</div>
-		<input id="id_email_invite_submit" type="submit" value="发送" />
+    	<div class="field">
+    		<label>&nbsp;</label>
+    		<input id="id_email_invite_submit" type="submit" value="发送" />
+    		<input id="id_back_to_list" type="button" value="返回列表" onclick="location.href={% url list_party %}" />
+    	</div>
 	</form>
-       <button onclick="(function(){window.location='{% url edit_party party.id %}';})()">返回</button>
   </div>
 </div>
 {% endblock %}
