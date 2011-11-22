@@ -162,9 +162,7 @@ function getCursortPosition (obj) {
      收件人
      </label>
      {{ form.client_email_list.errors }}
-     <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" onkeyup="showDropDownList()" style="margin-left: 0px; margin-right: 0px; width: 404px; ">
-     	{{ form.client_email_list.data }}
-     </textarea>
+     <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" onkeyup="showDropDownList()" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
      </div>
      <div class="field">
      <label for="id_send_email_count">
