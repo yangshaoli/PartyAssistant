@@ -1,188 +1,274 @@
 {% extends 'login_base.html' %}
-
 {% block style %}
+<link href="/static/libs/jquery-ui-1/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
 <style>
-#ac_dropdownlist {
-	border: 1px solid black;
-	background-color: white;
-position: absolute; z-index: 99;  margin: 22px 0px 0px 2px; text-align: left; 
-
-}
-#ac_dropdownlist ul {
-	width: 100%;
-	list-style-position: outside;
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-#ac_dropdownlist ul li {
-	margin: 0px;
-	padding: 5px 5px;
-	cursor: default;
-	display: block;
-	/* 
-	if width will be 100% horizontal scrollbar will apear 
-	when scroll mode will be used
-	*/
-	/*width: 100%;*/
-	font: menu;
-	font-size: 12px;
-	/* 
-	it is very important, if line-height not setted or setted 
-	in relative units scroll will be broken in firefox
-	*/
-	line-height: 16px;
-	overflow: hidden;
-}
+    #ac_dropdownlist {
+        border: 1px solid black;
+        background-color: white;
+        position: absolute;
+        z-index: 99;
+        margin: 22px 0px 0px 2px;
+        text-align: left;
+    }
+    
+    #ac_dropdownlist ul {
+        width: 100%;
+        list-style-position: outside;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    #ac_dropdownlist ul li {
+        margin: 0px;
+        padding: 5px 5px;
+        cursor: default;
+        display: block;
+        /*
+         if width will be 100% horizontal scrollbar will apear
+         when scroll mode will be used
+         */
+        /*width: 100%;*/
+        font: menu;
+        font-size: 12px;
+        /*
+         it is very important, if line-height not setted or setted
+         in relative units scroll will be broken in firefox
+         */
+        line-height: 16px;
+        overflow: hidden;
+    }
+</style>
+<style>
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+        /* add padding to account for vertical scrollbar */
+        padding-right: 20px;
+    }
+    
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+     */ * html .ui-autocomplete {
+        height: 100px;
+    }
 </style>
 {% endblock %}
 {% block script %}
-<script src="/static/js/jquery-1.6.4.min.js"></script>
-<script type="text/javascript" >
-$(document).ready(function(){
-	calculate_send_email_count();
+<script src="/static/js/jquery-1.6.4.min.js">
+</script>
+<script src="/static/libs/jquery-ui-1/js/jquery-ui-1.8.16.custom.min.js">
+</script>
+<script type="text/javascript">
+    //    $(document).ready(function(){
+    //        calculate_send_email_count();
+    //        
+    //        $("#id_client_email_list").keyup(function(){
+    //            calculate_send_email_count();
+    //        });
+    //        /*
+    //         // 下拉列表鼠标移上时高亮
+    //         $("#ac_dropdownlist li").live('mouseover', function(){ $(this).attr('style', 'background:#39f; color:#fff;') }).live('mouseout', function(){ $(this).attr('style', '') });
+    //         
+    //         // 点击下拉列表中的某一项，将号码添加到[收件人]
+    //         $("#ac_dropdownlist li").live('click', function(){
+    //         
+    //         var inputValue = $('#id_client_email_list').val();
+    //         var cursortPos = getCursortPosition(document.getElementById('id_client_email_list'));
+    //         var commaPos = inputValue.lastIndexOf(',', cursortPos);
+    //         var v = inputValue.substring(commaPos +1 , cursortPos );
+    //         
+    //         var r = $(this).text();
+    //         inputValue = inputValue.substr(0, commaPos + 1 ) + r + ',' + inputValue.substr(cursortPos, inputValue.length )
+    //         $('#id_client_email_list').val(inputValue);
+    //         $('#ac_dropdownlist').hide();
+    //         });
+    //         */
+    //        /***
+    //         * 绑定回车、上下键事件
+    //         */
+    //    });
+    //    
+    //    var autocompleteData = new Array();
+    //    
+    //    function calculate_send_email_count(){
+    //        client_email_list = $('#id_client_email_list').val().split(',');
+    //        client_email_list_length = client_email_list.length;
+    //        count = 0;
+    //        for (i = 0; i < client_email_list_length; i++) {
+    //            if (client_email_list[i].replace(/^\s+|\s+$/g, "") != "") {
+    //                count = count + 1;
+    //            }
+    //        }
+    //        $('#id_send_email_count').html("发件人人数统计： " + count);
+    //    }
     
-	$("#id_client_email_list").keyup(function() {
-		calculate_send_email_count();
-	});
-    
-    // 下拉列表鼠标移上时高亮
-    $("#ac_dropdownlist li").live('mouseover', function(){ $(this).attr('style', 'background:#39f; color:#fff;') }).live('mouseout', function(){ $(this).attr('style', '') });
-    
-    // 点击下拉列表中的某一项，将号码添加到[收件人]
-    $("#ac_dropdownlist li").live('click', function(){
-        
-        var inputValue = $('#id_client_email_list').val();
-        var cursortPos = getCursortPosition(document.getElementById('id_client_email_list'));
-        var commaPos = inputValue.lastIndexOf(',', cursortPos);
-        var v = inputValue.substring(commaPos +1 , cursortPos );
-        
-        var r = $(this).text();
-        inputValue = inputValue.substr(0, commaPos + 1 ) + r + ',' + inputValue.substr(cursortPos, inputValue.length )
-        $('#id_client_email_list').val(inputValue);
-        $('#ac_dropdownlist').hide();
-    }); 
-
-});
-    
-	var autocompleteData = new Array();
-    
-	function calculate_send_email_count() {
-	    client_email_list = $('#id_client_email_list').val().split(',');
-	    client_email_list_length = client_email_list.length;     
-	    count = 0;
-	    for (i = 0; i < client_email_list_length; i ++) {
-	        if (client_email_list[i].replace(/^\s+|\s+$/g, "") != "") {          
-	            count = count+1;
-	        }
-	    }
-	    $('#id_send_email_count').html("发件人人数统计： "+count);
-	}
-    
-function ajax_get_client_list(){
-    var inputValue = $('#id_client_email_list').val();
-    var cursortPos = getCursortPosition(document.getElementById('id_client_email_list'));
-    var commaPos = inputValue.lastIndexOf(',', cursortPos);
-    var v = inputValue.substring(commaPos +1 , cursortPos );
-    
-    $.ajax({
-        type : 'GET',
-        url: '/clients/ajax_get_client_list/email',
-        statusCode : {
-        200: function(response){
-            clients = JSON.parse(response);
-            for (i in clients){
-                //autocompleteData[i] = clients[i]['address'];
-                var re = new RegExp(v);
-                if (re.test(clients[i]['address'])){
-                    $("#ac_dropdownlist ul").append('<li>'+clients[i]['address']+'</li>');
-                }
-            }
-           
-        },
-        500: function(){ alert('没有获取到用户列表')}
+    //function ajax_get_client_list(){
+    //    var inputValue = $('#id_client_email_list').val();
+    //    var cursortPos = getCursortPosition(document.getElementById('id_client_email_list'));
+    //    var commaPos = inputValue.lastIndexOf(',', cursortPos);
+    //    var v = inputValue.substring(commaPos +1 , cursortPos );
+    //    
+    //    $.ajax({
+    //        type : 'GET',
+    //        url: '/clients/ajax_get_client_list/email',
+    //        statusCode : {
+    //        200: function(response){
+    //            clients = JSON.parse(response);
+    //            for (i in clients){
+    //                //autocompleteData[i] = clients[i]['address'];
+    //                var re = new RegExp(v);
+    //                if (re.test(clients[i]['address'])){
+    //                    $("#ac_dropdownlist ul").append('<li>'+clients[i]['address']+'</li>');
+    //                }
+    //            }
+    //           
+    //        },
+    //        500: function(){ 
+    //		  //alert('没有获取到用户列表')
+    //        }
+    //        }
+    //    });
+    //}
+    //
+    ///**
+    //* 显示下拉列表
+    //* 
+    //**/
+    //function showDropDownList(){
+    ////下拉框位置
+    //    var dom = $("#id_client_email_list");
+    //    var pos = dom.position();
+    //    var h = dom.height();
+    //    var t = pos.top + h - 20;
+    //    
+    //    //下拉框内容
+    //    $("#ac_dropdownlist ul").children().remove();
+    //    ajax_get_client_list();
+    //    $("#ac_dropdownlist").attr('style', 'left:' + pos.left + 'px;top:' + t + 'px;width:' + $("#id_client_email_list").width() + 'px;');
+    //    $("#ac_dropdownlist").show();
+    //}
+    //
+    //
+    //
+    ///**
+    //* 获得当前光标在文本框中的位置
+    //**/
+    //function getCursortPosition (obj) {
+    //	var CaretPos = 0;	
+    //	// IE Support
+    //	if (document.selection) {
+    //	obj.focus ();
+    //		var Sel = document.selection.createRange ();
+    //		Sel.moveStart ('character', - obj.value.length);
+    //		CaretPos = Sel.text.length;
+    //	}
+    //	// Firefox support
+    //	else if (obj.selectionStart || obj.selectionStart == '0')
+    //		CaretPos = obj.selectionStart;
+    //	return (CaretPos);
+    //}
+	var availableTags = eval({{client_data}});
+	alert(availableTags)
+    $(function(){
+        //var availableTags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
+        function split(val){
+            return val.split(/,\s*/);
         }
+        function extractLast(term){
+            return split(term).pop();
+        }
+        
+        $("#tags") // don't navigate away from the field on tab when selecting an item
+    .bind("keydown", function(event){
+            if (event.keyCode === $.ui.keyCode.TAB &&
+            $(this).data("autocomplete").menu.active) {
+                event.preventDefault();
+            }
+        }).autocomplete({
+            minLength: 0,
+            autoFocus: true,
+            source: function(request, response){
+                // delegate back to autocomplete, but extract the last term
+                response($.ui.autocomplete.filter(availableTags, extractLast(request.term)));
+            },
+            search: function(){
+                // custom minLength
+                var term = extractLast(this.value);
+                if (term.length < 2) {
+                    return false;
+                }
+            },
+            focus: function(){
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function(event, ui){
+                var terms = split(this.value);
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push(ui.item.value);
+                // add placeholder to get the comma-and-space at the end
+                terms.push("");
+                this.value = terms.join(", ");
+                return false;
+            }
+        });
     });
-}
-
-/**
-* 显示下拉列表
-* 
-**/
-function showDropDownList(){
-//下拉框位置
-    var dom = $("#id_client_email_list");
-    var pos = dom.position();
-    var h = dom.height();
-    var t = pos.top + h - 20;
-    
-    //下拉框内容
-    $("#ac_dropdownlist ul").children().remove();
-    ajax_get_client_list();
-    $("#ac_dropdownlist").attr('style', 'left:' + pos.left + 'px;top:' + t + 'px;width:' + $("#id_client_email_list").width() + 'px;');
-    $("#ac_dropdownlist").show();
-}
-
-
-
-/**
-* 获得当前光标在文本框中的位置
-**/
-function getCursortPosition (obj) {
-	var CaretPos = 0;	
-	// IE Support
-	if (document.selection) {
-	obj.focus ();
-		var Sel = document.selection.createRange ();
-		Sel.moveStart ('character', - obj.value.length);
-		CaretPos = Sel.text.length;
-	}
-	// Firefox support
-	else if (obj.selectionStart || obj.selectionStart == '0')
-		CaretPos = obj.selectionStart;
-	return (CaretPos);
-}
-
 </script>
 {% endblock %}
-
 {% block content %}
 <div id="content">
-<div id="ac_dropdownlist">
-    <ul>
-    </ul>
-</div>
-  <div class="grid_a">
-   <h2 class="title">发送邮件邀请</h2>
-	<form action="{% url email_invite party.id %}" method="post" class="creat_exercise">
-		{% csrf_token %}
-     <div class="field">
-     <label for="client_email_list">
-     收件人
-     </label>
-     {{ form.client_email_list.errors }}
-     <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" onkeyup="showDropDownList()" style="margin-left: 0px; margin-right: 0px; width: 404px; "></textarea>
-     </div>
-     <div class="field">
-     <label for="id_send_email_count">
-     &nbsp;
-     </label>
-     <p id="id_send_email_count">收件人人数统计： 0</p>
-     </div>
-     <div class="field">
-     <label for="id_content">
-     邮件内容
-     </label>
-     {{ form.content }}
-     </div>
-    	<div class="field">
-    		<label for="id_is_apply_tips">&nbsp;</label>
-    		<p>{{ form.is_apply_tips }}带报名链接</p>
-    	</div>
-		<input id="id_email_invite_submit" type="submit" value="发送" />
-	</form>
-       <button onclick="(function(){window.location='{% url edit_party party.id %}';})()">返回</button>
-  </div>
+    <div id="ac_dropdownlist">
+        <ul>
+        </ul>
+    </div>
+    <div class="grid_a">
+        <h2 class="title">发送邮件邀请</h2>
+        <form action="{% url email_invite party.id %}" method="post" class="creat_exercise">
+            {% csrf_token %}
+            <div class="field">
+                <label for="client_email_list">
+                    收件人
+                </label>
+                <textarea id="tags" size="50">
+                </textarea>
+                <!--
+                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" onkeyup="showDropDownList()" style="margin-left: 0px; margin-right: 0px; width: 404px; ">
+                </textarea>
+                -->
+                {{ form.client_email_list.errors }}
+            </div>
+            <div class="field">
+                <label for="id_send_email_count">
+                    &nbsp;
+                </label>
+                <p id="id_send_email_count">
+                    收件人人数统计： 0
+                </p>
+            </div>
+            <div class="field">
+                <label for="id_content">
+                    邮件内容
+                </label>
+                {{ form.content }}
+            </div>
+            <div class="field">
+                <label for="id_is_apply_tips">
+                    &nbsp;
+                </label>
+                <p>
+                    {{ form.is_apply_tips }}带报名链接
+                </p>
+            </div>
+            <input id="id_email_invite_submit" type="submit" value="发送" />
+        </form>
+        <button onclick="(function(){window.location='{% url edit_party party.id %}';})()">
+            返回
+        </button>
+    </div>
 </div>
 {% endblock %}
