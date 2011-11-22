@@ -9,7 +9,7 @@
         
         $('a[id^="tab_"]').bind('click', function(){
             $("#"+this.id).siblings().attr('style','');
-            $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);');//改变样式
+            $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');//改变样式
          
             var applystatus = this.id.split('_')[1];
             ajaxGetClients(applystatus);
@@ -98,8 +98,8 @@ function ajaxChangeStatus(id, applystatus){
        <tr>
         <th width="7%" scope="col">&nbsp;</th>
         <th width="23%" scope="col">姓名</th>
-        <th width="52%" scope="col">联系方式</th>
-        <th width="18%" scope="col" class="ta_r">&nbsp;</th>
+        <th width="42%" scope="col">联系方式</th>
+        <th width="28%" scope="col" class="ta_r">&nbsp;</th>
        </tr>
        <tbody>
 
