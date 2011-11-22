@@ -5,7 +5,13 @@
 </style>
 <script type="text/javascript">
 	function formonsubmit(){
-     alert('');
+    date_time = id_start_date_time.value.split(' ');
+    date = date_time[0]
+    time = date_time[1]
+    id_start_date.value = date
+    id_start_time.value = time
+    alert('');
+    return false;
 	}
 </script>
  <!--START: content -->
@@ -17,8 +23,9 @@
     <fieldset>
      <div class="field">
      <label for="id_start_date">
-     开始日期
+     何时
      </label>
+     <input name='start_date_time' id='id_start_date_time'  placeholder='选填，格式如2008-08-08 08:08'></input>
      <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08'></input>
      {{ form.start_date.errors }}
      </div>
