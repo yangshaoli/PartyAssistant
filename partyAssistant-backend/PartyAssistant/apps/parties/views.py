@@ -301,8 +301,6 @@ def delete_party_notice(request,party_id):
             send_emails(title,content,SYS_EMAIL_ADDRESS,[client.email])
         if client.invite_type == 'phone':
             content=u'尊敬的 '+client.name+' :'+' 于'+party.time.strftime('%Y-%m-%d %H:%M')+' 在'+party.address+'的活动取消'
-            print '发送短信 '  
-            print content   
     return delete_party(request,party_id) 
 
 
@@ -370,7 +368,7 @@ def _public_enroll(request, party_id):
             'party': party,
             'client_count': _get_client_count(party)
         }
-        print data['client_count']
+        
         return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):
