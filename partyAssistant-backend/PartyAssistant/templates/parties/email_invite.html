@@ -222,53 +222,43 @@
 {% endblock %}
 {% block content %}
 <div id="content">
-    <div id="ac_dropdownlist">
-        <ul>
-        </ul>
-    </div>
-    <div class="grid_a">
-        <h2 class="title">发送邮件邀请</h2>
-        <form action="{% url email_invite party.id %}" method="post" class="creat_exercise">
-            {% csrf_token %}
-            <div class="field">
-                <label for="client_email_list">
-                    收件人
-                </label>
-                <textarea id="tags" size="50">
-                </textarea>
-                <!--
-                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" onkeyup="showDropDownList()" style="margin-left: 0px; margin-right: 0px; width: 404px; ">
-                </textarea>
-                -->
-                {{ form.client_email_list.errors }}
-            </div>
-            <div class="field">
-                <label for="id_send_email_count">
-                    &nbsp;
-                </label>
-                <p id="id_send_email_count">
-                    收件人人数统计： 0
-                </p>
-            </div>
-            <div class="field">
-                <label for="id_content">
-                    邮件内容
-                </label>
-                {{ form.content }}
-            </div>
-            <div class="field">
-                <label for="id_is_apply_tips">
-                    &nbsp;
-                </label>
-                <p>
-                    {{ form.is_apply_tips }}带报名链接
-                </p>
-            </div>
-            <input id="id_email_invite_submit" type="submit" value="发送" />
-        </form>
-        <button onclick="(function(){window.location='{% url edit_party party.id %}';})()">
-            返回
-        </button>
-    </div>
+<div id="ac_dropdownlist">
+    <ul>
+    </ul>
+</div>
+  <div class="grid_a">
+   <h2 class="title">发送邮件邀请</h2>
+	<form action="{% url email_invite party.id %}" method="post" class="creat_exercise">
+		{% csrf_token %}
+     <div class="field">
+     <label for="client_email_list">
+     收件人
+     </label>
+     {{ form.client_email_list.errors }}
+     <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" onkeyup="showDropDownList()" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
+     </div>
+     <div class="field">
+     <label for="id_send_email_count">
+     &nbsp;
+     </label>
+     <p id="id_send_email_count">收件人人数统计： 0</p>
+     </div>
+     <div class="field">
+     <label for="id_content">
+     邮件内容
+     </label>
+     {{ form.content }}
+     </div>
+    	<div class="field">
+    		<label for="id_is_apply_tips">&nbsp;</label>
+    		<p>{{ form.is_apply_tips }}带报名链接</p>
+    	</div>
+    	<div class="field">
+    		<label>&nbsp;</label>
+    		<input id="id_email_invite_submit" type="submit" value="发送" />
+    		<button id="id_back_to_list" onclick="location.href={% url list_party %}; return false;">返回列表</button>
+    	</div>
+	</form>
+  </div>
 </div>
 {% endblock %}

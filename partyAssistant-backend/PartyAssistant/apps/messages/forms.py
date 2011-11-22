@@ -18,18 +18,18 @@ class EmailInviteForm(forms.Form):
         email_list = client_email_list.split(',')
         valid_email_list = []
         
-        validate_flag = True
+        invalid_email = ''
         for email in email_list:
             email = email.strip()
-            try:
-                validate_email(email)
-                valid_email_list.append(email)
-            except:
-                validate_flag = False
-                break
+            if email != '':
+                try:
+                    validate_email(email)
+                    valid_email_list.append(email)
+                except:
+                    invalid_email = email
         
-        if not validate_flag:
-            raise forms.ValidationError(u'邮件地址格式错误')
+        if invalid_email:
+            raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
         
         self.cleaned_data['client_email_list'] = ','.join(valid_email_list)
         
@@ -46,17 +46,17 @@ class SMSInviteForm(forms.Form):
         valid_phone_list = []
         
         phone_re = r'1\d{10}'
-        validate_flag = True
+        invalid_phone = ''
         for phone in phone_list:
             phone = phone.strip()
-            if not re.search(phone_re, phone):
-                validate_flag = False
-                break
-            else:
-                valid_phone_list.append(phone)
+            if phone != '':
+                if not re.search(phone_re, phone):
+                    invalid_phone = phone
+                else:
+                    valid_phone_list.append(phone)
         
-        if not validate_flag:
-            raise forms.ValidationError(u'电话号码格式错误')
+        if invalid_phone:
+            raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
         
         self.cleaned_data['client_phone_list'] = ','.join(valid_phone_list)
         
