@@ -8,7 +8,6 @@
 	<form action="{% url register %}" method="post" class="creat_exercise">
 	    {% csrf_token %}
         <fieldset>
-            <ul class="errorlist">{{form.errors.username}}</ul>
          <div class="field">
          <label for="username">
          用户名
@@ -16,15 +15,6 @@
          {{form.username}}
          <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
-             <ul class="errorlist">{{form.errors.email}}</ul>
-         <div class="field">
-         <label for="email">
-         Email
-         </label>
-         {{form.email}}
-         <font color="red">{{ form.email.errors.0 }}</font>
-         </div>
-             <ul class="errorlist">{{form.errors.password}}</ul>
          <div class="field">
          <label for="password">
          密码
@@ -32,7 +22,6 @@
          {{form.password}}
          <font color="red">{{ form.password.errors.0 }}</font>
          </div>
-             <ul class="errorlist">{{form.errors.confirm_password}}</ul>
          <div class="field">
          <label for="confirm_password">
          确认密码
@@ -41,7 +30,7 @@
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="submit_field">
-          <input id="id_login_submit" type="submit" value="Register" />
+          <input id="id_login_submit" type="submit" value="注册" />
          </div>
         </fieldset>	
 	</form>

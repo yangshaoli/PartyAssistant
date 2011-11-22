@@ -24,8 +24,7 @@ def register(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data["password"]
-            email = form.cleaned_data['email']
-            User.objects.create_user(username, email, password)
+            User.objects.create_user(username=username,email='',  password=password)
             
             # django bug, must authenticate before login
             user = authenticate(username=username, password=password)

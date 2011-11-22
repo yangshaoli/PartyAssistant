@@ -24,7 +24,8 @@ INVITE_TYPE = (
 
 class Party(models.Model):
     creator = models.ForeignKey(User)
-    start_time = models.DateTimeField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    start_time = models.TimeField(blank=True, null=True)
     address = models.CharField(max_length=256, blank=True)
     description = models.TextField()
     limit_count = models.IntegerField(max_length=3, default=0)
@@ -42,7 +43,7 @@ class PartiesClients(models.Model):
     client = models.ForeignKey(Client)
     party = models.ForeignKey(Party)
     apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default='noanswer')
-    is_new = models.BooleanField(default=True)
+    is_check = models.BooleanField(default=True)
     invite_key = models.CharField(max_length=32)
 
 def update_invite_key(sender=None, instance=None, **kwargs):

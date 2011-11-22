@@ -40,7 +40,6 @@ class SMSMessage(BaseMessage):
 class Outbox(models.Model):
     address = models.TextField()
     base_message = models.ForeignKey(BaseMessage)
-    is_apply_tips = models.BooleanField()
     
 def thread_send_message(sender=None, instance=None, **kwargs):
     if instance.base_message.get_subclass_type() == 'Email':

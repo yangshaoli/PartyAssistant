@@ -180,10 +180,8 @@ function getCursortPosition (obj) {
     		<label for="id_is_apply_tips">&nbsp;</label>
     		<p>{{ form.is_apply_tips }}带报名链接</p>
     	</div>
-		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
-		<input id="id_email_invite_default_content" type='hidden' value='{{ email_invite_default_content }}'></input>
+		<input id="id_email_invite_submit" type="submit" value="发送" />
 	</form>
-	   <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</button>
        <button onclick="(function(){window.location='{% url edit_party party.id %}';})()">返回</button>
   </div>
 </div>
