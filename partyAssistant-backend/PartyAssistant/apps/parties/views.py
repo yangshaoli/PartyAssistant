@@ -21,6 +21,8 @@ from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
 from utils.tools.email_tool import send_emails
 import datetime
 import logging
+from django.utils import simplejson
+
 logger = logging.getLogger('airenao')
 
 
@@ -83,7 +85,7 @@ def edit_party(request, party_id):
 @login_required
 @transaction.commit_on_success
 def email_invite(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
+    party = get_object_or_404(Party, id = party_id)
     
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
@@ -154,39 +156,42 @@ def email_invite(request, party_id):
                 client_email_list.append(client.client.email)
             client_email_list = ','.join(client_email_list)
             
-            content = EmailMessage.objects.get(party=party).content
+            content = EmailMessage.objects.get(party = party).content
             
             data = {
                 'client_email_list': client_email_list,
                 'content': content,
                 'is_apply_tips' : True
             }
-            form = EmailInviteForm(initial=data)
+            form = EmailInviteForm(initial = data)
         else:
             #生成默认内容
-            content = party.creator.username+u'邀请你参加：'
+            content = party.creator.username + u'邀请你参加：'
             if party.start_time == None and party.address == '':
-                content = content+party.description+u',时间、地点，另行通知。'
+                content = content + party.description + u',时间、地点，另行通知。'
             elif party.start_time != None and party.address == u'':
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
+                content = content + datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
             elif party.start_time == None and party.address != '':
-                content = content+u'在'+party.address+party.description+u',时间待定。'
+                content = content + u'在' + party.address + party.description + u',时间待定。'
             else:  
-                content = content+datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + u' ,在' + party.address + u'的活动' + party.description         
             
             data = {
                 'client_email_list': '',
                 'content': content,
                 'is_apply_tips' : True
             }
-            form = EmailInviteForm(initial=data)
-    
-        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':client_email_list})
+            form = EmailInviteForm(initial = data)
+        client_data = []
+        for client in Client.objects.filter(creator = request.user):
+            if client.email:
+                client_data.append(client.email)
+        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data)})
 
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
+    party = get_object_or_404(Party, id = party_id)
     
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
@@ -257,33 +262,36 @@ def sms_invite(request, party_id):
                 client_phone_list.append(client.client.phone)
             client_phone_list = ','.join(client_phone_list)
 
-            content = SMSMessage.objects.get(party=party).content
+            content = SMSMessage.objects.get(party = party).content
             data = {
                 'client_phone_list': client_phone_list,
                 'content': content,
                 'is_apply_tips' : True
             }
-            form = SMSInviteForm(initial=data)
+            form = SMSInviteForm(initial = data)
         else:
             #生成默认内容
-            content = party.creator.username+u'邀请你参加：'
+            content = party.creator.username + u'邀请你参加：'
             if party.start_time == None and party.address == '':
-                content = content+party.description+u',时间、地点，另行通知。'
+                content = content + party.description + u',时间、地点，另行通知。'
             elif party.start_time != None and party.address == u'':
-                content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+party.description+u',地点另行通知。'     
+                content = content + datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
             elif party.start_time == None and party.address != '':
-                content = content+u'在'+party.address+party.description+u',时间待定。'
+                content = content + u'在' + party.address + party.description + u',时间待定。'
             else:  
-                content = content+datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + u' ,在' + party.address + u'的活动' + party.description         
 
             data = {
                'client_phone_list': '',
                'content': content,
                'is_apply_tips' : True
             }
-            form = SMSInviteForm(initial=data)    
-                    
-        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party})
+            form = SMSInviteForm(initial = data)    
+        client_data = []
+        for client in Client.objects.filter(creator = request.user):
+            if client.phone:
+                client_data.append(client.phone)
+        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data)})
 
 
 def delete_party_notice(request, party_id):
