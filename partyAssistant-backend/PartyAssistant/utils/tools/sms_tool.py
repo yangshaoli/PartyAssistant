@@ -32,7 +32,7 @@ def sms_modem_send_sms(outbox_message):
         if message.is_apply_tips:
             link_count = ShortLink.objects.all().count()
             if link_count > 0:
-                last_key = ShortLink.objects.all()[-1]
+                last_key = ShortLink.objects.all().order_by('-id')[0].short_link
             else:
                 last_key = 'airenao'
             
