@@ -136,9 +136,7 @@ def email_invite(request, party_id):
  
             return redirect('list_party')
         else:
-            if 'email_invite_default_content' in request.POST:
-                content = request.POST['email_invite_default_content']
-            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
+            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
 
     else:
         party = get_object_or_404(Party, id=party_id)
@@ -180,7 +178,7 @@ def email_invite(request, party_id):
             }
             form = EmailInviteForm(data)
     
-        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'email_invite_default_content':content})
+        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
 
 @login_required
 @transaction.commit_on_success
@@ -239,7 +237,7 @@ def sms_invite(request, party_id):
         else:
             if 'sms_invite_default_content' in request.POST:
                 content = request.POST['sms_invite_default_content']
-            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
+            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party})
 
     else:
         party = get_object_or_404(Party, id=party_id)
@@ -283,7 +281,7 @@ def sms_invite(request, party_id):
             }
             form = SMSInviteForm(data)    
                     
-        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'sms_invite_default_content':content})
+        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party})
 
 
 def delete_party_notice(request,party_id):
