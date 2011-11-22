@@ -90,6 +90,7 @@ def email_invite(request, party_id):
         if form.is_valid():
             with transaction.commit_on_success():
                 party.invite_type = 'email' #将邀请方式修改为email
+                party.is_apply_tips = form.cleaned_data['is_apply_tips']
                 party.save()
                 
                 email_message, created = EmailMessage.objects.get_or_create(party=party, 
@@ -192,6 +193,7 @@ def sms_invite(request, party_id):
         if form.is_valid():
             with transaction.commit_on_success():
                 party.invite_type = 'phone' #将邀请方式修改为phone
+                party.is_apply_tips = form.cleaned_data['is_apply_tips']
                 party.save()
                 
                 sms_message, created = SMSMessage.objects.get_or_create(party=party, 
