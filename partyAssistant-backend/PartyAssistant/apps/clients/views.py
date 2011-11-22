@@ -4,6 +4,7 @@
 @author:chenyang
 '''
 from apps.parties.models import Party, PartiesClients
+from apps.clients.models import Client
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
@@ -30,7 +31,6 @@ def change_apply_status(request, id, applystatus):
     client_party = PartiesClients.objects.get(pk=id)      
     client_party.apply_status = applystatus
     client_party.save()        
-
     return HttpResponse('ok') 
 
 
@@ -96,3 +96,14 @@ def invite_list_ajax(request, party_id):
             party_client.save()
     
     return HttpResponse(simplejson.dumps(party_clients_data))
+
+def ajax_get_client_list(request, invite_type):
+    clients = Client.objects.filter(creator=request.user)
+    clients_data = []
+    for client in clients:
+        client_data = {
+            'name' : client.name, 
+            'address': invite_type == 'email' and client.email or client.phone
+        }
+        clients_data.append(client_data)
+    return HttpResponse(simplejson.dumps(clients_data))
