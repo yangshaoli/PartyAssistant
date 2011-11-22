@@ -149,7 +149,7 @@
             cell.textLabel.text = @"邮件主题";
         }else if(indexPath.section == 2){
             if (!contentTextView) {
-                self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,180)];
+                self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.emailObject.emailContent;
             contentTextView.backgroundColor = [UIColor clearColor];
