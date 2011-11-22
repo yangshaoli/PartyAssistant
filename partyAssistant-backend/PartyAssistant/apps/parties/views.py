@@ -320,13 +320,13 @@ def list_party(request):
                 client['invite'].append(party_client)
             if party_client.apply_status == 'apply':
                 client['apply'].append(party_client)
-            if party_client.apply_status == 'new_apply_apply' and party_client.is_new == True:
-                client['new_apply_apply'].append(party_client)
+            if party_client.apply_status == 'apply' and party_client.is_check == True:
+                client['new_add_apply'].append(party_client)
             if party_client.apply_status == 'noanswer':
                 client['noanswer'].append(party_client)
             if party_client.apply_status == 'reject':
                 client['reject'].append(party_client)
-            if party_client.apply_status == 'new_add_reject' and party_client.is_new == True:
+            if party_client.apply_status == 'reject' and party_client.is_check == True:
                 client['new_add_reject'].append(party_client)
         party.client=client  
         party.client['count'] = _get_client_count(party)
