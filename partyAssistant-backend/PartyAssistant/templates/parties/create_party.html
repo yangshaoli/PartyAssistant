@@ -3,25 +3,30 @@
 {% block content %}
 <style>
 </style>
+<script type="text/javascript">
+	function formonsubmit(){
+     alert('');
+	}
+</script>
  <!--START: content -->
 <div id="content">
   <div class="grid_a">
    <h2 class="title">创建活动</h2>
-   <form method="post" ation="{% url create_party %}" class="creat_exercise">
+   <form method="post" ation="{% url create_party %}" class="creat_exercise" onsubmit="formonsubmit();">
     	{% csrf_token %}
     <fieldset>
      <div class="field">
      <label for="id_start_date">
      开始日期
      </label>
-     <input name='start_date' id='id_start_date' placeholder='选填，格式如2008-08-08'></input>
+     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08'></input>
      {{ form.start_date.errors }}
      </div>
      <div class="field">
      <label for="id_start_time">
      开始时间
      </label>
-     <input name='start_time' id='id_start_time' placeholder='选填，格式如08:08'></input>
+     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08'></input>
      {{ form.start_time.errors }}
      </div>
      <div class="field">
