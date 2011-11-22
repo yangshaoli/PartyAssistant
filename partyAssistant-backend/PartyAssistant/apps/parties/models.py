@@ -43,7 +43,7 @@ class PartiesClients(models.Model):
     client = models.ForeignKey(Client)
     party = models.ForeignKey(Party)
     apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default='noanswer')
-    is_new = models.BooleanField(default=True)
+    is_check = models.BooleanField(default=True)
     invite_key = models.CharField(max_length=32)
 
 def update_invite_key(sender=None, instance=None, **kwargs):

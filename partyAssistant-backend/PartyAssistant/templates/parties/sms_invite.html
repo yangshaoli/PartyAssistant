@@ -51,10 +51,8 @@
      {{ form.content }}
      </div>
      <div class="field">
-		<input id="id_sms_invite_submit" type="submit" value="submit" />
-		<input id="id_sms_invite_default_content" name="sms_invite_default_content" type='hidden' value='{{ sms_invite_default_content }}'></input>
+		<input id="id_sms_invite_submit" type="submit" value="发送" />
 	</form>
-	<input type='button' onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_sms_invite_default_content').value;})()" value='恢复默认内容'></input>
     <input type='button' onclick="(function(){window.location='{% url edit_party party.id %}';})()" value='返回'></input>
   </div>
 </div>

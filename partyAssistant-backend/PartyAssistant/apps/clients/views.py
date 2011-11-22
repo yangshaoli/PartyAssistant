@@ -42,15 +42,15 @@ def invite_list(request, party_id):
     
     party_clients = {
         'apply': {
-            'is_new': False, 
+            'is_check': True, 
             'client_count': 0
         }, 
         'noanswer': {
-            'is_new': False, 
+            'is_check': True, 
             'client_count': 0
         }, 
         'reject': {
-            'is_new': False, 
+            'is_check': True, 
             'client_count': 0
         }
     }
@@ -58,16 +58,16 @@ def invite_list(request, party_id):
     for party_client in party_clients_list:
         if party_client.apply_status == 'apply':
             party_clients['apply']['client_count'] = party_clients['apply']['client_count'] + 1
-            if party_client.is_new:
-                party_clients['apply']['is_new'] = True
+            if not party_client.is_check:
+                party_clients['apply']['is_check'] = False
         elif party_client.apply_status == 'noanswer':
             party_clients['noanswer']['client_count'] = party_clients['noanswer']['client_count'] + 1
-            if party_client.is_new:
-                party_clients['noanswer']['is_new'] = True
+            if not party_client.is_check:
+                party_clients['noanswer']['is_check'] = False
         if party_client.apply_status == 'reject':
             party_clients['reject']['client_count'] = party_clients['reject']['client_count'] + 1
-            if party_client.is_new:
-                party_clients['reject']['is_new'] = True
+            if not party_client.is_check:
+                party_clients['reject']['is_check'] = False
     
     return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
@@ -87,12 +87,12 @@ def invite_list_ajax(request, party_id):
             'id' : party_client.id,
             'name' : party_client.client.name, 
             'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
-            'is_new': party_client.is_new
+            'is_check': party_client.is_check
         }    
         party_clients_data.append(party_client_data)
         
-        if party_client.is_new:
-            party_client.is_new = False
+        if not party_client.is_check:
+            party_client.is_check = True
             party_client.save()
     
     return HttpResponse(simplejson.dumps(party_clients_data))
