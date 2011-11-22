@@ -74,14 +74,27 @@ function ajaxChangeStatus(id, applystatus){
        
          {% else %}
          <!--公共报名页面 -->
-        <form action="{% url enroll party.id %}" method="get" class="join_form">{% csrf_token %}
-	NAME: <input type="text" name="name" id="id_name"/><br/>
-	EMAIL: <input type="text" name="email" id="id_email"/><br/>
-	PHONE: <input type="text" name="phone" id="id_phone"/><br/><br/>
+        <form action="{% url enroll party.id %}" method="get" class="creat_exercise">{% csrf_token %}
+            <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+            <div class="field">
+             <label for="client_email_list">Email</label>
+                 <input type="text" name="email" id="id_email"/>
+             </div>
+             <div class="field">
+             <label for="client_email_list">手机号码</label>
+                 <input type="text" name="phone" id="id_phone"/>
+             </div>
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}
     </form>
-    <p class="fw_b" style="margin-bottom:40px;">人满了，下次趁早</p>
+    {% if party.limit_count != 0 %}
+        {% if party.limit_count <= client_count.apply %}
+        <p class="fw_b" style="margin-bottom:40px;">人满了，下次趁早</p>
+        {% endif %}
+    {% endif %}
    </div>
 
    <div class="accordionview">
