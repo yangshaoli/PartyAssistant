@@ -8,6 +8,8 @@
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 
+#define NAVIGATION_CONTROLLER_TITLE @"创建新趴"
+
 @implementation AddNewPartyBaseInfoTableViewController
 @synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
@@ -33,7 +35,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
