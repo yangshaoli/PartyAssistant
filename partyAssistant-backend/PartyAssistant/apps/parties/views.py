@@ -360,6 +360,7 @@ def _public_enroll(request, party_id):
 def _invite_enroll(request, party_id, invite_key):
     party = get_object_or_404(Party, id=party_id)
     party_client = get_object_or_404(PartiesClients, invite_key=invite_key)
+    party_client.is_check = False
     client = party_client.client
     
     if request.method=='POST':
