@@ -58,9 +58,7 @@
     		<p>{{ form.is_apply_tips }}带报名链接</p>
     	</div>
 		<input id="id_email_invite_submit" type="submit" value="发送邮件邀请" />
-		<input id="id_email_invite_default_content" name="email_invite_default_content"  type='hidden' value='{{ email_invite_default_content }}'></input>
 	</form>
-	   <button onclick="(function(){document.getElementById('id_content').value=document.getElementById('id_email_invite_default_content').value;})()" >恢复默认内容</button>
        <button onclick="(function(){window.location='{% url edit_party party.id %}';})()">返回</button>
   </div>
 </div>
