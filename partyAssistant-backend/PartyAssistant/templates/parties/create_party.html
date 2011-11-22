@@ -1,4 +1,49 @@
 {% extends 'login_base.html' %}
+{% block title %}创建活动 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script>
+$(document).ready(function(){
+   $("#id_start_date").blur(function(){
+      var currentDate = new Date() 
+      var startDate = ''
+      var y = currentDate.getFullYear();
+      var m = currentDate.getMonth() + 1;
+      var d = currentDate.getDate(); 
+      var v = $("#id_start_date").val();
+      var re = new RegExp(/\d/g);
+      var result = v.match(re);
+      switch (result.length){
+          case 1 : startDate = y+'-'+m+'-0'+result[0];break;
+          case 2 : startDate = y+'-'+m+'-'+result[0]+result[1]; break;
+          case 3 : startDate = y+'-0'+result[0]+'-'+result[1]+result[2]; break;
+          case 4 : startDate = y+'-'+result[0]+result[1]+'-'+result[2]+result[3]; break;
+          case 6 : startDate = '20'+result[0]+result[1]+'-'+result[2]+result[3]+'-'+result[4]+result[5];break;
+          case 8 : startDate = result[0]+result[1]+result[2]+result[3]+'-'+result[4]+result[5]+'-'+result[6]+result[7];break;
+          default : startDate = y+'-'+m+'-'+d;break;
+      }
+      $("#id_start_date").val(startDate);
+   });
+   
+   $("#id_start_time").blur(function(){
+      var currentTime = new Date() 
+      var startTime = ''
+      var h = currentTime.getHours();
+      var m = currentTime.getMinutes();
+      var v = $("#id_start_time").val();
+      var re = new RegExp(/\d/g);
+      var result = v.match(re);
+      switch (result.length){
+          case 2 : startDate = result[0]+result[1]+':00'; break;
+          case 4 : startDate = result[0]+result[1]+':'+result[2]+result[3]; break;
+          default : startDate = h+':'+m;break;
+      }
+      $("#id_start_time").val(startDate);
+   });
+});
+</script>
+{% endblock %}
 
 {% block content %}
 <style>
