@@ -130,10 +130,13 @@ def email_invite(request, party_id):
                             client=client_temp
                         )
             
+            send_email_message = u'邮件发送失败'
             with transaction.commit_on_success():
                 send_message = Outbox(address=form.cleaned_data['client_email_list'], base_message=email_message)
                 send_message.save()
- 
+                send_email_message = u'邮件发送成功'
+             
+            request.session['send_email_message'] = send_email_message    
             return redirect('list_party')
         else:
             return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
@@ -228,10 +231,13 @@ def sms_invite(request, party_id):
                             party=party, 
                             client=client_temp
                         )
-            
+            send_sms_message = u'短信发送失败'
             with transaction.commit_on_success():
                 send_message = Outbox(address=form.cleaned_data['client_phone_list'], base_message=sms_message)
                 send_message.save()
+                send_sms_message = u'短信发送成功'
+             
+            request.session['send_sms_message'] = send_sms_message
             
             return redirect('list_party')
         else:
@@ -331,7 +337,17 @@ def list_party(request):
         party.client=client  
         party.client['count'] = _get_client_count(party)
         print party.client['count']
-    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list})
+        
+    send_email_message = ''    
+    if 'send_email_message' in request.session:
+        send_email_message = request.session['send_email_message']
+        del request.session['send_email_message']        
+    send_sms_message = ''    
+    if 'send_sms_message' in request.session:
+        send_sms_message = request.session['send_sms_message']  
+        del request.session['send_sms_message']
+        
+    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list,'send_email_message':send_email_message, 'send_sms_message':send_sms_message})
 
 def _public_enroll(request, party_id):
     party = get_object_or_404(Party, id=party_id)
