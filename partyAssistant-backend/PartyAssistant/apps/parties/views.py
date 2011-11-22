@@ -90,14 +90,14 @@ def email_invite(request, party_id):
         if form.is_valid():
             with transaction.commit_on_success():
                 party.invite_type = 'email' #将邀请方式修改为email
-                party.is_apply_tips = form.cleaned_data['is_apply_tips']
                 party.save()
                 
                 email_message, created = EmailMessage.objects.get_or_create(party=party, 
-                    defaults={'subject': u'[爱热闹]您收到一个活动邀请', 'content': form.cleaned_data['content']})
+                    defaults={'subject': u'[爱热闹]您收到一个活动邀请', 'content': form.cleaned_data['content'], 'is_apply_tips': form.cleaned_data['is_apply_tips']})
                 if not created:
                     email_message.subject = u'[爱热闹]您收到一个活动邀请'
                     email_message.content = form.cleaned_data['content']
+                    email_message.is_apply_tips = form.cleaned_data['is_apply_tips']
                     email_message.save()
                 
                 client_email_list = form.cleaned_data['client_email_list'].split(',')
@@ -193,13 +193,13 @@ def sms_invite(request, party_id):
         if form.is_valid():
             with transaction.commit_on_success():
                 party.invite_type = 'phone' #将邀请方式修改为phone
-                party.is_apply_tips = form.cleaned_data['is_apply_tips']
                 party.save()
                 
                 sms_message, created = SMSMessage.objects.get_or_create(party=party, 
-                    defaults={'content': form.cleaned_data['content']})
+                    defaults={'content': form.cleaned_data['content'], 'is_apply_tips': form.cleaned_data['is_apply_tips']})
                 if not created:
                     sms_message.content = form.cleaned_data['content']
+                    sms_message.is_apply_tips = form.cleaned_data['is_apply_tips']
                     sms_message.save()
                 
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
