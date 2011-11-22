@@ -1,48 +1,105 @@
 {% extends 'login_base.html' %}
+{% block title %}创建活动 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script>
+$(document).ready(function(){
+   $("#id_start_date").blur(function(){
+      var currentDate = new Date() 
+      var startDate = ''
+      var y = currentDate.getFullYear();
+      var m = currentDate.getMonth() + 1;
+      var d = currentDate.getDate(); 
+      var v = $("#id_start_date").val();
+      var re = new RegExp(/\d/g);
+      var result = v.match(re);
+      switch (result.length){
+          case 1 : startDate = y+'-'+m+'-0'+result[0];break;
+          case 2 : startDate = y+'-'+m+'-'+result[0]+result[1]; break;
+          case 3 : startDate = y+'-0'+result[0]+'-'+result[1]+result[2]; break;
+          case 4 : startDate = y+'-'+result[0]+result[1]+'-'+result[2]+result[3]; break;
+          case 6 : startDate = '20'+result[0]+result[1]+'-'+result[2]+result[3]+'-'+result[4]+result[5];break;
+          case 8 : startDate = result[0]+result[1]+result[2]+result[3]+'-'+result[4]+result[5]+'-'+result[6]+result[7];break;
+          default : startDate = y+'-'+m+'-'+d;break;
+      }
+      $("#id_start_date").val(startDate);
+   });
+   
+   $("#id_start_time").blur(function(){
+      var currentTime = new Date() 
+      var startTime = ''
+      var h = currentTime.getHours();
+      var m = currentTime.getMinutes();
+      var v = $("#id_start_time").val();
+      var re = new RegExp(/\d/g);
+      var result = v.match(re);
+      switch (result.length){
+          case 2 : startDate = result[0]+result[1]+':00'; break;
+          case 4 : startDate = result[0]+result[1]+':'+result[2]+result[3]; break;
+          default : startDate = h+':'+m;break;
+      }
+      $("#id_start_time").val(startDate);
+   });
+});
+</script>
+{% endblock %}
 
 {% block content %}
 <style>
 </style>
+<script type="text/javascript">
+	function formonsubmit(){
+    date_time = id_start_date_time.value.split(' ');
+    date = date_time[0]
+    time = date_time[1]
+    id_start_date.value = date
+    id_start_time.value = time
+    alert('');
+    return false;
+	}
+</script>
  <!--START: content -->
 <div id="content">
   <div class="grid_a">
    <h2 class="title">创建活动</h2>
-   <form method="post" ation="{% url create_party %}" class="creat_exercise">
+   <form method="post" ation="{% url create_party %}" class="creat_exercise" onsubmit="formonsubmit();">
     	{% csrf_token %}
     <fieldset>
      <div class="field">
      <label for="id_start_date">
-     开始日期
+     何时
      </label>
-     {{ form.start_date }}
+     <input name='start_date_time' id='id_start_date_time'  placeholder='选填，格式如2008-08-08 08:08'></input>
+     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08'></input>
      {{ form.start_date.errors }}
      </div>
      <div class="field">
      <label for="id_start_time">
      开始时间
      </label>
-     {{ form.start_time }}
+     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08'></input>
      {{ form.start_time.errors }}
      </div>
      <div class="field">
      <label for="id_address">
-     活动地点
+     去哪
      </label>
-     {{ form.address }}
+     <input name='address' id='id_address' placeholder='选填项'></input>
      {{ form.address.errors }}
      </div>
      <div class="field">
      <label for="id_description">
-     活动描述
+     玩啥
      </label>
      {{ form.description.errors }}
-     {{ form.description }}
+     <input name='description' id='id_description' placeholder='必填项'></input>
      </div>
      <div class="field">
      <label for="id_limit_count">
-     人数限制
+     最多几个人
      </label>
-     {{ form.limit_count }}
+     <input name='limit_count' id='id_limit_count' placeholder='无限制'></input>
      {{ form.limit_count.errors }}
      </div>
      <div class="submit_field">

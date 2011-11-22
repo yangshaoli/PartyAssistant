@@ -28,7 +28,7 @@ class Party(models.Model):
     start_time = models.TimeField(blank=True, null=True)
     address = models.CharField(max_length=256, blank=True)
     description = models.TextField()
-    limit_count = models.IntegerField(max_length=3, default=0)
+    limit_count = models.IntegerField(max_length=3, default=0,blank=True)
     
     clients = models.ManyToManyField(Client, through='PartiesClients')
     

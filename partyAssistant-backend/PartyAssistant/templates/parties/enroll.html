@@ -3,7 +3,7 @@
 {% block title %}报名页面 - 爱热闹{% endblock %}
 
 {% block script %}
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script>
     $(document).ready(function(){
         ajaxGetClients('apply');//进入页面时获得[已报名]列表 
@@ -75,19 +75,32 @@ function ajaxChangeStatus(id, applystatus){
        
          {% else %}
          <!--公共报名页面 -->
-        <form action="{% url enroll party.id %}" method="get" class="join_form">{% csrf_token %}
-	NAME: <input type="text" name="name" id="id_name"/><br/>
-	EMAIL: <input type="text" name="email" id="id_email"/><br/>
-	PHONE: <input type="text" name="phone" id="id_phone"/><br/><br/>
+        <form action="{% url enroll party.id %}" method="get" class="creat_exercise">{% csrf_token %}
+            <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+            <div class="field">
+             <label for="client_email_list">Email</label>
+                 <input type="text" name="email" id="id_email"/>
+             </div>
+             <div class="field">
+             <label for="client_email_list">手机号码</label>
+                 <input type="text" name="phone" id="id_phone"/>
+             </div>
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}
     </form>
-    <p class="fw_b" style="margin-bottom:40px;">人满了，下次趁早</p>
+    {% if party.limit_count != 0 %}
+        {% if party.limit_count <= client_count.apply %}
+        <p class="fw_b" style="margin-bottom:40px;">人满了，下次趁早</p>
+        {% endif %}
+    {% endif %}
    </div>
 
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>
