@@ -154,12 +154,12 @@ def email_invite(request, party_id):
                 client_email_list.append(client.client.email)
             client_email_list = ','.join(client_email_list)
             
-            content = EmailMessage.objects.get(party=party).content
+            email_message = EmailMessage.objects.get(party=party)
             
             data = {
                 'client_email_list': client_email_list, 
-                'content': content,
-                'is_apply_tips' : True
+                'content': email_message.content,
+                'is_apply_tips' : email_message.is_apply_tips
             }
             form = EmailInviteForm(initial=data)
         else:
@@ -257,12 +257,12 @@ def sms_invite(request, party_id):
                 client_phone_list.append(client.client.phone)
             client_phone_list = ','.join(client_phone_list)
 
-            content = SMSMessage.objects.get(party=party).content
+            sms_message = SMSMessage.objects.get(party=party)
             
             data = {
                 'client_phone_list': client_phone_list, 
-                'content': content,
-                'is_apply_tips' : True
+                'content': sms_message.content,
+                'is_apply_tips' : sms_message.is_apply_tips
             }
             form = SMSInviteForm(initial=data)
         else:
