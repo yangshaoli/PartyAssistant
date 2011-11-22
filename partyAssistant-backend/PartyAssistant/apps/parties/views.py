@@ -153,7 +153,7 @@ def email_invite(request, party_id):
         elif party.start_time == None and party.address != '':
             content = content+u'在'+party.address+party.description+u',时间待定。'
         else:  
-            content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+            content = content+datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
            
         form = None  
         apply_status = request.GET.get('apply', 'all')
@@ -254,7 +254,7 @@ def sms_invite(request, party_id):
         elif party.start_time == None and party.address != '':
             content = content+u'在'+party.address+party.description+u',时间待定。'
         else:  
-            content = content+datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
+            content = content+datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M')+ u' ,在'+party.address+u'的活动'+party.description         
         form = None
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
