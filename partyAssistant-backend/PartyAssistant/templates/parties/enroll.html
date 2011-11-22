@@ -88,8 +88,9 @@ function ajaxChangeStatus(id, applystatus){
         {% if client %}
         <!-- 被邀请用户报名页面 -->
     <form method="POST" url="{% url enroll party.id %}">
-     <input type="image" src="/static/images/btn_join.png" name="action" value="yes" />
-     <input type="image" src="/static/images/btn_join_no.png" name="action" value="no" />
+     <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
+     <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
+     <input id="id_action" type="hidden" name="action" value="" />
        
          {% else %}
          <!--公共报名页面 -->
