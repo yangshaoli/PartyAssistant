@@ -39,10 +39,11 @@
      {{ form.client_phone_list.errors }}
      {{ form.client_phone_list }}
      </div>
-     <label for="id_send_email_count">
+     <div class="field">
+     <label for="id_send_phone_count">
      &nbsp;
      </label>
-     <p id="id_send_phone_count">发件人人数统计： 0<p>
+     <p id="id_send_phone_count">收件人人数统计： 0</p>
      </div>
      <div class="field">
      <label for="id_content">
@@ -50,10 +51,16 @@
      </label>
      {{ form.content }}
      </div>
+    	<div class="field">
+    		<label for="id_is_apply_tips">&nbsp;</label>
+    		<p>{{ form.is_apply_tips }}带报名链接</p>
+    	</div>
      <div class="field">
+     	<label>&nbsp;</label>
 		<input id="id_sms_invite_submit" type="submit" value="发送" />
+		<button id="id_back_to_list" onclick="location.href={% url list_party %}; return false;">返回列表</button>
+	 </div>
 	</form>
-    <input type='button' onclick="(function(){window.location='{% url edit_party party.id %}';})()" value='返回'></input>
   </div>
 </div>
 {% endblock %}
