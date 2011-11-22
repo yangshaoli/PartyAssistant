@@ -183,7 +183,7 @@ function getCursortPosition (obj) {
     	<div class="field">
     		<label>&nbsp;</label>
     		<input id="id_email_invite_submit" type="submit" value="发送" />
-    		<input id="id_back_to_list" type="button" value="返回列表" onclick="location.href={% url list_party %}" />
+    		<input id="id_back_to_list" type="button" value="返回列表" onclick="location.href={% url list_party %}; return false;" />
     	</div>
 	</form>
   </div>
