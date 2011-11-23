@@ -117,7 +117,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = nil;// [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     
     // Configure the cell...
@@ -127,7 +127,13 @@
             UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
             starttimeLabel.textAlignment = UITextAlignmentRight;
             starttimeLabel.backgroundColor = [UIColor clearColor];
-            starttimeLabel.text = baseInfoObject.starttimeStr;
+            if ([baseInfoObject.starttimeStr isEqualToString:@""]){
+                starttimeLabel.text = @"(可选填)";
+                starttimeLabel.textColor = [UIColor lightGrayColor];
+            }else{
+                starttimeLabel.text = baseInfoObject.starttimeStr;
+                starttimeLabel.textColor = [UIColor blackColor];
+            }
 //            starttimeLabel.text = @"2011-11-11 11:00";
             [cell addSubview:starttimeLabel];
         }else if(indexPath.row == 1){
@@ -137,24 +143,35 @@
             }
             locationTextField.textAlignment = UITextAlignmentRight;
             locationTextField.delegate = self;
+            locationTextField.placeholder = @"(可选填)";
             locationTextField.text = baseInfoObject.location;
             [cell addSubview:locationTextField];
         }else if(indexPath.row == 2){
             cell.textLabel.text = @"人数上限:";
-            UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(260, 0, 30, 44)];
-            peopleStrLable.backgroundColor = [UIColor clearColor];
-            peopleStrLable.textAlignment = UITextAlignmentRight;
-            peopleStrLable.text = @"人";
-            [cell addSubview:peopleStrLable];
-            UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
-            peoplemaximumLabel.backgroundColor = [UIColor clearColor];
-            peoplemaximumLabel.textAlignment = UITextAlignmentRight;
-            peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
-            //peoplemaximumLabel.text = @"1";
-            if (![peoplemaximumLabel.text isEqualToString:@"0"]) {
+            if ([[baseInfoObject.peopleMaximum stringValue] isEqualToString:@"0"]) {
+                UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(190, 0, 100, 44)];
+                peopleStrLable.text = @"无限制";
+                peopleStrLable.backgroundColor = [UIColor clearColor];
+                peopleStrLable.textAlignment = UITextAlignmentRight;
+                peopleStrLable.textColor = [UIColor lightGrayColor];
+                [cell addSubview:peopleStrLable];
+            }else{
+                UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(260, 0, 30, 44)];
+                peopleStrLable.backgroundColor = [UIColor clearColor];
+                peopleStrLable.textAlignment = UITextAlignmentRight;
+                peopleStrLable.text = @"人";
+                [cell addSubview:peopleStrLable];
+                UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
+                peoplemaximumLabel.backgroundColor = [UIColor clearColor];
+                peoplemaximumLabel.textAlignment = UITextAlignmentRight;
+                peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
                 peoplemaximumLabel.textColor = [UIColor redColor];
+                [cell addSubview:peoplemaximumLabel];
             }
-            [cell addSubview:peoplemaximumLabel];
+           
+            //peoplemaximumLabel.text = @"1";
+            
+            
         }else if(indexPath.row == 3){
             cell.textLabel.text = @"描述:";
             if(!descriptionTextView){
