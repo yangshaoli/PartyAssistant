@@ -17,30 +17,30 @@
      </div>
      <div class="field">
      <label for="id_start_time">
-     开始时间
+     何时
      </label>
-     {{ form.start_time }}
+     <input name='start_date_time' id='id_start_date_time'  placeholder='选填，格式如2008-08-08 08:08'></input>
      {{ form.start_time.errors }}
      </div>
      <div class="field">
      <label for="id_address">
-     活动地点
+     去哪
      </label>
-     {{ form.address }}
+     <input name='address' id='id_address' placeholder='选填项'></input>
      {{ form.address.errors }}
      </div>
      <div class="field">
      <label for="id_description">
-     活动描述
+     玩啥
      </label>
      {{ form.description.errors }}
-     {{ form.description }}
+     <textarea name='description' id='id_description' placeholder='必填项'></textarea>
      </div>
      <div class="field">
      <label for="id_limit_count">
-     人数限制
+     最多几个人
      </label>
-     {{ form.limit_count }}
+     <input name='limit_count' id='id_limit_count' placeholder='无限制'></input>
      {{ form.limit_count.errors }}
      </div>
      <div class="submit_field">
