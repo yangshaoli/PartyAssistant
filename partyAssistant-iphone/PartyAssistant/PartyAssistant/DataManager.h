@@ -20,5 +20,9 @@ typedef enum {
 + (DataManager *)sharedDataManager;
 - (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
 - (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
+- (NetworkConnectionStatus)setNickName:(NSString *)nickName;
+- (NetworkConnectionStatus)setNickNameForUserWithUID:(NSInteger)uid 
+                                     withNewNickName:(NSString *)nickName;
+- (BOOL)checkIfUserNameSaved;
 
 @end

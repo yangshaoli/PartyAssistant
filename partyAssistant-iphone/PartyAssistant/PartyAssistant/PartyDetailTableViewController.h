@@ -8,16 +8,23 @@
 
 #import <UIKit/UIKit.h>
 #import "BaseInfoObject.h"
+#import "NotificationSettings.h"
 #import "URLSettings.h"
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
+#import "ClientStatusTableViewController.h"
 #import "UITableViewControllerExtra.h"
+#import "EditPartyTableViewController.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
 
 
 @interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{
     BaseInfoObject *baseinfo;
+    NSArray *peopleCountArray;
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseinfo;
+@property(nonatomic, retain)NSArray *peopleCountArray;
 
 @end
