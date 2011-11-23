@@ -47,13 +47,15 @@ def createParty(request):
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
         except Exception:
             starttime = None
         if len(location) > 256:
             raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         #创建活动
-        party = Party.objects.create(start_time = starttime,
+        party = Party.objects.create(start_date = startdate,
+                                     start_time = starttime,
                                      address = location,
                                      description = description,
                                      creator = user,
