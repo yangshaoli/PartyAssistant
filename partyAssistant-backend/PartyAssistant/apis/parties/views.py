@@ -4,28 +4,28 @@ Created on 2011-11-7
 
 @author: liuxue
 '''
-import datetime
-
-from django.http import HttpResponse
-from django.utils import simplejson
-from utils.tools.email_tool import send_emails
-from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
+from ERROR_MSG_SETTINGS import *
+from apps.clients.models import Client
+from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
+from apps.parties.models import Party, PartiesClients
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
+from django.http import HttpResponse
+from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
- 
-from apps.parties.models import Party, PartiesClients
-from apps.clients.models import Client
+from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
+from utils.tools.apis_json_response import apis_json_response_decorator
+from utils.tools.email_tool import send_emails
+from utils.tools.my_exception import myException
 from utils.tools.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.tools.paginator_tool import process_paginator
-from utils.tools.my_exception import myException
-from utils.tools.apis_json_response import apis_json_response_decorator
-from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
+from utils.tools.reg_phone_num import regPhoneNum
+import datetime
 import re
 
-from ERROR_MSG_SETTINGS import *
+ 
 
-from utils.tools.reg_phone_num import regPhoneNum
+
 
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
@@ -48,6 +48,9 @@ def createParty(request):
         user = User.objects.get(pk = uID)
         try:
             startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+        except Exception:
+            startdate = None
+        try:
             starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
         except Exception:
             starttime = None
@@ -78,7 +81,6 @@ def createParty(request):
             PartiesClients.objects.create(
                                           party = party,
                                           client = client,
-                                          apply_status = u'未报名'
                                           ) 
             addressArray.append(receiver['cValue'])
         addressString = simplejson.dumps(addressArray)
@@ -116,9 +118,12 @@ def editParty(request):
         peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
-        
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+        except:
+            startdate = None               
+        try:
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
         except Exception:
             starttime = None
         if len(location) > 256:
@@ -129,6 +134,7 @@ def editParty(request):
             party = Party.objects.get(pk = partyID, creator = user)
         except Exception:
             raise myException(u'您要编辑的会议已被删除')
+        party.start_date = startdate
         party.start_time = starttime
         party.descrption = description
         party.address = location
@@ -160,6 +166,7 @@ def PartyList(request, uid, page = 1):
     for party in partylist:
         partyObject = {}
         try:
+            party.start_time = datetime.combine(party.start_date, party.start_time)
             partyObject['starttime'] = party.start_time.strftime(GMT_FORMAT)
         except Exception, e:
             partyObject['starttime'] = None
@@ -231,9 +238,9 @@ def GetPartyClientMainCount(request, pid):
         raise myException(u'您要复制的会议已被删除')
     clientparty_list = PartiesClients.objects.filter(party = party)
     all_client_count = clientparty_list.count()
-    applied_client_count = clientparty_list.filter(apply_status = u'已报名').count()
-    donothing_client_count = clientparty_list.filter(apply_status = u'未报名').count()
-    refused_client_count = clientparty_list.filter(apply_status = u'不参加').count()
+    applied_client_count = clientparty_list.filter(apply_status = u'apply').count()
+    donothing_client_count = clientparty_list.filter(apply_status = u'noanswer').count()
+    refused_client_count = clientparty_list.filter(apply_status = u'reject').count()
     return {
             'allClientcount':all_client_count,
             'appliedClientcount':applied_client_count,
@@ -251,11 +258,11 @@ def GetPartyClientSeperatedList(request, pid, type):
     if type == "all":
         clientparty_list = PartiesClients.objects.filter(party = party).order_by('apply_status')
     elif type == 'applied':
-        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"已报名")
+        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"apply")
     elif type == 'refused':
-        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"不参加")
+        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"reject")
     elif type == 'donothing':
-        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"未报名")
+        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"noanswer")
     clientList = []
     for clientparty in clientparty_list:
         if not clientparty.client.phone:
@@ -286,9 +293,9 @@ def ChangeClientStatus(request):
     clientparty = PartiesClients.objects.get(pk = request.POST['cpID'])
     action = request.POST['cpAction']
     if action == 'apply':
-        clientparty.apply_status = u'已报名'
+        clientparty.apply_status = u'apply'
     else:
-        clientparty.apply_status = u'不参加'
+        clientparty.apply_status = u'reject'
     clientparty.save()
     return 'ok'
 
@@ -327,7 +334,7 @@ def resendMsg(request):
             PartiesClients.objects.get_or_create(
                                               party = party,
                                               client = client,
-                                              apply_status = u'未报名'
+                                              apply_status = u'noanswer'
                                               ) 
 #            receiversDic = {
 #                            'addressType':addressType,

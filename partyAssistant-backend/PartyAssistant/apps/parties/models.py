@@ -37,7 +37,9 @@ class Party(models.Model):
     invite_type = models.CharField(max_length=8, blank=True, null=True, choices=INVITE_TYPE)
     
     def __unicode__(self):
-        return '%s %s' % (self.description[:10], datetime.datetime.strftime(self.start_time, '%m-%d %H:%M'))
+        return '%s %s %s' % (self.description[:10], 
+                             datetime.date.strftime(self.start_date, '%m-%d') if self.start_date != None else u'日期待定',
+                             datetime.time.strftime(self.start_time, '%H:%M') if self.start_time != None else u'时间待定')
 
 class PartiesClients(models.Model):
     client = models.ForeignKey(Client)
