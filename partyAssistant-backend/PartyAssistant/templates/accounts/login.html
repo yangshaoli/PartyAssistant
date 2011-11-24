@@ -12,16 +12,23 @@
      <label for="username">
      用户名
      </label>
-     {{form.username}}
+     <input id='id_username' name='username' placeholder='必填项，至少输入六个字符'></input>
+     <font color="red">{{ form.username.errors.0 }}</font>
      </div>
      <div class="field">
      <label for="password">
      密码
      </label>
-     {{form.password}}
+     {{form.password}}<font color="red">{{ form.password.errors.0 }}</font>
+     </div>
+     <div class="field">
+     	<label>
+     		&nbsp;
+     	</label>
+     	<font color="red">{{ form.non_field_errors.0 }}</font>
      </div>
      <div class="submit_field">
-      <input id="id_login_submit" type="submit" value="Login" />
+      <input id="id_login_submit" type="submit" value="登录" />
      </div>
     </fieldset>	
 </form>

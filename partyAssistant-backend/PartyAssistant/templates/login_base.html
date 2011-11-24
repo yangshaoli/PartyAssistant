@@ -1,5 +1,19 @@
 {% extends 'base.html' %}
 
 {% block nav %}
-	<a href="{% url list_party %}">list</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{% url logout %}">logout</a><br />
-{% endblock %}
+ <!--START: Header -->
+ <div id="header">
+  <h1><a href="#">logo</a></h1>
+  <!--START: Menu -->
+  <ul class="menu">
+   <li><a href="/">首页</a></li>
+   <li class="active"><a href="{% url list_party %}">我的活动</a></li>
+  </ul>
+  <!--END: Menu -->
+  <ul class="user_login">
+   <li><a href="{%url profile %}">{{user.username}}</a></li>
+   <li><a href="{%url logout %}">登出</a></li>
+  </ul>
+ </div>
+ <!--END: Header -->
+{% endblock%}

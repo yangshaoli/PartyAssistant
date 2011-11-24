@@ -1,9 +1,37 @@
 {% extends 'not_login_base.html' %}
 
 {% block content %}
-	<form action="{% url register %}" method="post">
-		{% csrf_token %}
-		{{ form.as_p }}
-		<input id="id_register_submit" type="submit" value="submit" />
+ <!--START: content -->
+ <div id="content">
+  <div class="grid_a">
+   <h2 class="title">用户注册</h2>
+	<form action="{% url register %}" method="post" class="creat_exercise">
+	    {% csrf_token %}
+        <fieldset>
+         <div class="field">
+         <label for="username">
+         用户名
+         </label>
+         <input id='id_username' name='username' placeholder='必填项，以字母开始，至少输入六个字符'></input>
+         <font color="red">{{ form.username.errors.0 }}</font> 
+         </div>
+         <div class="field">
+         <label for="password">
+         密码
+         </label>
+         {{form.password}}
+         <font color="red">{{ form.password.errors.0 }}</font>
+         </div>
+         <div class="field">
+         <label for="confirm_password">
+         确认密码
+         </label>
+         {{form.confirm_password}}
+         <font color="red">{{ form.confirm_password.errors.0 }}</font>
+         </div>
+         <div class="submit_field">
+          <input id="id_login_submit" type="submit" value="注册" />
+         </div>
+        </fieldset>	
 	</form>
 {% endblock %}

@@ -1,3 +1,4 @@
+#--*-- coding=utf-8
 '''
 Created on 2011-11-13
 
@@ -15,20 +16,22 @@ class EmailInviteForm(forms.Form):
     def clean_client_email_list(self):
         client_email_list = self.cleaned_data['client_email_list']
         email_list = client_email_list.split(',')
+        valid_email_list = []
         
-        validate_flag = True
+        invalid_email = ''
         for email in email_list:
             email = email.strip()
-            try:
-                validate_email(email)
-            except:
-                validate_flag = False
-                break
+            if email != '':
+                try:
+                    validate_email(email)
+                    valid_email_list.append(email)
+                except:
+                    invalid_email = email
         
-        if not validate_flag:
-            raise forms.ValidationError(u'email list error.')
+        if invalid_email:
+            raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
         
-        self.cleaned_data['client_email_list'] = ','.join(email_list)
+        self.cleaned_data['client_email_list'] = ','.join(valid_email_list)
         
         return self.cleaned_data['client_email_list']
 
@@ -40,18 +43,21 @@ class SMSInviteForm(forms.Form):
     def clean_client_phone_list(self):
         client_phone_list = self.cleaned_data['client_phone_list']
         phone_list = client_phone_list.split(',')
+        valid_phone_list = []
         
         phone_re = r'1\d{10}'
-        validate_flag = True
+        invalid_phone = ''
         for phone in phone_list:
             phone = phone.strip()
-            if not re.search(phone_re, phone):
-                validate_flag = False
-                break
+            if phone != '':
+                if not re.search(phone_re, phone):
+                    invalid_phone = phone
+                else:
+                    valid_phone_list.append(phone)
         
-        if not validate_flag:
-            raise forms.ValidationError(u'phone list error.')
+        if invalid_phone:
+            raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
         
-        self.cleaned_data['client_phone_list'] = ','.join(phone_list)
+        self.cleaned_data['client_phone_list'] = ','.join(valid_phone_list)
         
         return self.cleaned_data['client_phone_list']

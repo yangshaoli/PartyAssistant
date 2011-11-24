@@ -1,109 +1,125 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" /> 
-<title>报名页面 - AIMeeting</title>
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.css" />
-<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
-<meta name="viewport" content="user-scalable=no, width=device-width" />
-</head>
+{% extends 'not_login_base.html' %}
 
-<body>
+{% block title %}报名页面 - 爱热闹{% endblock %}
 
-<div data-role="page" id="home"  data-theme="b"> 
-	<div data-role="header" data-theme="b"><h1>本周三海淀体育场踢球</h1></div> 
-	<div data-role="content">
-		<h2>[燕帅奇]邀请您：</h2>
-		<p>2011年11月2日 在 海淀体育场 参加活动</p>		
-		<h2>活动介绍</h2>
-        <p>明天准备踢球的, 包括报名和未报名的, 请准备好装备. <br/>天气: 34~24 晴 微风.</p>
-	<div class="ui-block-a"><button type="submit"  data-icon="check" data-theme="b">参加</button></div>
-	<div class="ui-block-b"><button type="submit" data-icon="delete" data-theme="c">不参加</button></div>	
-	</div><!-- /content -->
-	<div data-role="footer" data-theme="b"><h1>已报名</h1></div>
-	<ul data-role="listview" data-theme="b">
-	   <li><a href="acura.html">Chen Yang</a></li>
-	   <li><a href="audi.html">Cui Kuangye</a></li>
-	   <li><a href="bmw.html">Huang Kun</a></li>
-    </ul>
-</div> 
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script>
+    $(document).ready(function(){
+        ajaxGetClients('apply');//进入页面时获得[已报名]列表 
+        
+        $('a[id^="tab_"]').bind('click', function(){
+            $("#"+this.id).siblings().attr('style','');
+            $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');//改变样式
+            
+            var applystatus = this.id.split('_')[1];
+            ajaxGetClients(applystatus);
+        })
+    })
 
+function ajaxGetClients(applystatus){
+    $('.accordion_content table tbody').children().remove();
+    
+    $.ajax({
+        type : 'GET',
+        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
+        statusCode : {
+        200: function(response){
+            clients = JSON.parse(response);
+            for (i in clients){
+                row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td></td></tr>"
+                $('.accordion_content table tbody').append(row);    
+            }
+            
+            //修改[再次邀请]的url
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
 
-<div data-role="page" id="yes"  data-theme="c">
-	<div data-role="header">
-        <a href="#home" data-icon="arrow-l">返回</a>
-		<h1>报名成功！</h1>
-	</div><!-- /header -->
-
-	<div data-role="content">	
-		<p>您已经成功报名，请记得按时参加。</p>		
-		<p><a href="#enroll">已报名列表</a></p>	
-	</div><!-- /content -->
-</div>
-
-
-<div data-role="page" id="no"  data-theme="a">
-	<div data-role="header">
-        <a href="#home" data-icon="arrow-l">返回</a>
-		<h1>不参加本次活动</h1>
-	</div><!-- /header -->
-
-	<div data-role="content">	
-		<p>您已经选择不参加本次活动，感谢您的关注。</p>		
-		<p><a href="#enroll">已报名列表</a></p>	
-	</div><!-- /content -->
-</div>
-
-<div data-role="page" id="enroll" data-theme="c">
-	<div data-role="header" data-theme="b">
-        <a href="#home" data-icon="arrow-l">返回</a>
-		<h1>已报名列表</h1>
-	</div>
-        <ul data-role="listview">
-				<li data-role="list-divider">A</li>
-				<li><a href="index.html">Adam Kinkaid</a></li>
-				<li><a href="index.html">Alex Wickerham</a></li>
-				<li><a href="index.html">Avery Johnson</a></li>
-				<li data-role="list-divider">B</li>
-				<li><a href="index.html">Bob Cabot</a></li>
-				<li data-role="list-divider">C</li>
-				<li><a href="index.html">Caleb Booth</a></li>
-				<li><a href="index.html">Christopher Adams</a></li>
-				<li><a href="index.html">Culver James</a></li>
-				<li data-role="list-divider">D</li>
-				<li><a href="index.html">David Walsh</a></li>
-				<li><a href="index.html">Drake Alfred</a></li>
-				<li data-role="list-divider">E</li>
-				<li><a href="index.html">Elizabeth Bacon</a></li>
-				<li><a href="index.html">Emery Parker</a></li>
-				<li><a href="index.html">Enid Voldon</a></li>
-				<li data-role="list-divider">F</li>
-				<li><a href="index.html">Francis Wall</a></li>
-				<li data-role="list-divider">G</li>
-				<li><a href="index.html">Graham Smith</a></li>
-				<li><a href="index.html">Greta Peete</a></li>
-				<li data-role="list-divider">H</li>
-				<li><a href="index.html">Harvey Walls</a></li>
-				<li data-role="list-divider">M</li>
-				<li><a href="index.html">Mike Farnsworth</a></li>
-				<li><a href="index.html">Murray Vanderbuilt</a></li>
-				<li data-role="list-divider">N</li>
-				<li><a href="index.html">Nathan Williams</a></li>
-				<li data-role="list-divider">P</li>
-				<li><a href="index.html">Paul Baker</a></li>
-				<li><a href="index.html">Pete Mason</a></li>
-				<li data-role="list-divider">R</li>
-				<li><a href="index.html">Rod Tarker</a></li>
-				<li data-role="list-divider">S</li>
-				<li><a href="index.html">Sawyer Wakefield</a></li>
-			</ul>
-</div>
-
-<script type="text/javascript" >
-$(document).bind("mobileinit", function(){
-  $.mobile.foo = bar;
-});
+function ajaxChangeStatus(id, applystatus){
+    $.ajax({
+        type : 'GET',
+        url : '/clients/change_apply_status/'+id+'/'+applystatus,
+        data : {},
+        statusCode : {
+        200: function(response){
+            location.reload() 
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
 </script>
-</body>
-</html>
+{% endblock %}
+
+{% block content %}
+
+ <div id="content">
+  <div class="grid_a">
+   <h2 class="title">活动报名</h2>
+   <div class="apply_details">
+    <p>{{party.creator.username}} <span class="minor">邀请</span> 您：</p>
+    <p>{{party.start_time}}</p>
+    <p class="paragraph">{{party.address}} <span class="minor">参加活动</span></p>
+    <p class="paragraph">{{party.description}}</p>
+    
+    
+        {% if client %}
+        <!-- 被邀请用户报名页面 -->
+    <form method="POST" url="{% url enroll party.id %}">
+     <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
+     <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
+     <input id="id_action" type="hidden" name="action" value="" />
+       
+         {% else %}
+         <!--公共报名页面 -->
+        <form action="{% url enroll party.id %}" method="get" class="creat_exercise">{% csrf_token %}
+            <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+            <div class="field">
+             <label for="client_email_list">Email</label>
+                 <input type="text" name="email" id="id_email"/>
+             </div>
+             <div class="field">
+             <label for="client_email_list">手机号码</label>
+                 <input type="text" name="phone" id="id_phone"/>
+             </div>
+         <input type="image" src="/static/images/btn_join.png" />
+         {% endif %}
+    </form>
+    {% if party.limit_count != 0 %}
+        {% if party.limit_count <= client_count.apply %}
+        <p class="fw_b" style="margin-bottom:40px;">人满了，下次趁早</p>
+        {% endif %}
+    {% endif %}
+   </div>
+
+   <div class="accordionview">
+    <div class="accordion_panel">
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
+     <div class="accordion_content">
+      <table width="100%" border="0" cellspacing="0" class="table">
+      <thead>
+       <tr>
+        <th width="7%" scope="col">&nbsp;</th>
+        <th width="23%" scope="col">姓名</th>
+        <th width="52%" scope="col">联系方式</th>
+        <th width="18%" scope="col" class="ta_r">&nbsp;</th>
+       </tr>
+       <tbody>
+
+       </tbody>
+      </table>
+      <a href='{% url list_party %}'><button>返回</button></a>
+     </div>
+    </div>
+   </div>
+   
+ </div>
+</div>
+
+{% endblock %}
