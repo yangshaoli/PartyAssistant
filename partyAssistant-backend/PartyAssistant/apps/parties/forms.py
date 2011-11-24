@@ -23,6 +23,9 @@ class CreatePartyForm(forms.ModelForm):
         
         return self.cleaned_data['limit_count']
 
+<<<<<<< HEAD
+>>>>>>> liwenjian
+=======
 >>>>>>> liwenjian
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget=forms.TextInput(), required=True)
