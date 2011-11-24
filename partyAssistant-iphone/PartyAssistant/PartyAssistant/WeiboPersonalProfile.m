@@ -16,8 +16,12 @@
     self = [super init];
     if (self) {
         // Initialization code here.
-        self.username = @"";
-        self.password = @"";
+//        self.username = @"";
+//        self.password = @"";
+//        self._isLogin = NO;
+        
+        self.username = @"lichao0708@gmail.com";
+        self.password = @"woshizhu";
         self._isLogin = NO;
     }
     

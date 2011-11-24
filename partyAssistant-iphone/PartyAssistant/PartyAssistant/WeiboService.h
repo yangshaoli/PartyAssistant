@@ -13,7 +13,7 @@
 #define WEIBOPERSONALPROFILEFILE @"WeiboPersonalProfileFile"
 #define WEIBOPERSONALPROFILEKEY @"UserObjectKey"
 
-@interface WeiboService : NSObject
+@interface WeiboService : NSObject<WBSessionDelegate,WBSendViewDelegate,WBRequestDelegate>
 {
     WeiboPersonalProfile *weiboPersonalProfile;
 }
@@ -24,5 +24,6 @@
 - (WeiboPersonalProfile *)getWeiboPersonalProfile;
 - (void)saveWeiboPersonalProfile;
 - (void)clearWeiboPersonalProfile;
+- (void)WeiboLogin;
 
 @end

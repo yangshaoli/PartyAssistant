@@ -13,6 +13,13 @@
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(EmailObjectService)
 
+- (id)init
+{
+    self = [super init];
+    self.emailObject = [self getEmailObject];
+    return self;
+}
+
 -(EmailObject *)getEmailObject{
     if (emailObject) {
         return emailObject;
