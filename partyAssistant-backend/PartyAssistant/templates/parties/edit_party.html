@@ -67,16 +67,16 @@ $(document).ready(function(){
      <label for="id_start_date">
      何时
      </label>
-     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08' class='input-txt3 mys'></input>
+     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08' class='input-txt3 mys' value="{{ party.start_date|default:''|date:'Y-m-d' }}" ></input>
      {{ form.start_date.errors }}
-     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08' class='input-txt3 mys TimePker' autocomplete='off'></input>
+     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08' class='input-txt3 mys TimePker' autocomplete='off' value="{{ party.start_time|default:''|time:'H:i' }}"></input>
      {{ form.start_time.errors }}
      </div>
      <div class="field">
      <label for="id_address">
      去哪
      </label>
-     <input name='address' id='id_address' placeholder='选填项' style="width: 223px;"></input>
+     <input name='address' id='id_address' placeholder='选填项' style="width: 223px;" value="{{party.address|default:''}}"></input>
      {{ form.address.errors }}
      </div>
      <div class="field">
@@ -84,13 +84,13 @@ $(document).ready(function(){
      玩啥<span style="color:red">*</span>
      </label>
      {{ form.description.errors }}
-     <textarea name='description' id='id_description' placeholder='必填项' style="width: 223px; height: 120px;"></textarea>
+     <textarea name='description' id='id_description' placeholder='必填项' style="width: 223px; height: 120px;" >{{party.description|default:''}}</textarea>
      </div>
      <div class="field">
      <label for="id_limit_count">
      最多几个人
      </label>
-     <input name='limit_count' id='id_limit_count' placeholder='无限制'></input>
+     <input name='limit_count' id='id_limit_count' placeholder='无限制' value="{{party.limit_count|default:''}}"></input>
      {{ form.limit_count.errors }}
      </div>
      <div class="submit_field">
