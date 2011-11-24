@@ -34,7 +34,7 @@ function clientAction(id, applystatus){
 
 function ajaxGetClients(applystatus){
     $('.accordion_content table tbody').children().remove();
-    
+    var link = $('img[alt="please"]').parent().attr('href').split('?')[0];
     $.ajax({
         type : 'GET',
         url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
@@ -47,6 +47,9 @@ function ajaxGetClients(applystatus){
                 row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
                 $('.accordion_content table tbody').append(row);    
             }
+            //修改重新邀请的链接
+            
+            $('img[alt="please"]').parent().attr('href',link+'?apply='+applystatus);
         },
         500: function(){ alert('没有获取到用户列表')}
         }
@@ -89,9 +92,9 @@ function ajaxChangeStatus(id, applystatus){
    <div class="accordionview">
     <div class="accordion_panel">
      <h2 class="accordion_toggle accordion_toggle_active">
-     	<a id="tab_apply" href="#" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
-     	<a id="tab_noanswer" href="#">还在犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
-     	<a id="tab_reject" href="#">就是不来的 <strong>({{party_clients.reject.client_count}}人)</strong></a>
+     	<a id="tab_apply" href="#" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
+     	<a id="tab_noanswer" href="#">犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
+     	<a id="tab_reject" href="#">不来的 <strong>({{party_clients.reject.client_count}}人)</strong></a>
      	<a href='{% if party.invite_type == "email" %}{% url email_invite party.id %}{% else %}{% url sms_invite party.id %}{% endif %}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a>
      </h2>
      <div class="accordion_content">

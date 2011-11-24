@@ -107,7 +107,7 @@ function ajaxChangeStatus(id, applystatus){
 
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>
