@@ -9,15 +9,13 @@ from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
 from apps.parties.models import PartiesClients
-from apps.clients.views import get_client_sum 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
-from forms import CreatePartyForm, InviteForm
+from forms import CreatePartyForm
 from models import Party
-from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
+from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
 import datetime
 import logging

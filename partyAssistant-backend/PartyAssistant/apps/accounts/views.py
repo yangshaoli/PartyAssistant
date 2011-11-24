@@ -10,7 +10,6 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
-import hashlib
 import random
 from django.contrib.auth import login, authenticate
 
