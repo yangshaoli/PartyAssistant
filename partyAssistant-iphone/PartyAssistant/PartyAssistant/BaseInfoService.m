@@ -54,7 +54,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(BaseInfoService)
     
     [encoder encodeObject:self.baseinfoObject forKey:BASEINFOOBJECTKEY];
     [encoder finishEncoding];
-    
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     
     NSString* documentsDirectory = [paths objectAtIndex:0];

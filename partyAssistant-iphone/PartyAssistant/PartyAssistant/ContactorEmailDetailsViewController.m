@@ -9,7 +9,7 @@
 #import "ContactorEmailDetailsViewController.h"
 
 @implementation ContactorEmailDetailsViewController
-@synthesize contactorID;
+@synthesize contactorID,email,card;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -79,13 +79,21 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 0;
+    ABAddressBookRef addressBook = ABAddressBookCreate();
+    if(!card){
+        self.card = ABAddressBookGetPersonWithRecordID(addressBook, self.contactorID);
+    }
+    if (!email) {
+        self.email = ABRecordCopyValue(card, kABPersonEmailProperty);
+    }
+    int num = ABMultiValueGetCount(self.email);
+    return num;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -98,8 +106,54 @@
     }
     
     // Configure the cell...
-    
+    NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.email, indexPath.row));
+    NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.email, indexPath.row);
+    UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+    typeLb.text = typeStr;
+    typeLb.textAlignment = UITextAlignmentRight;
+    typeLb.textColor = [UIColor blueColor];
+    typeLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:typeLb];
+    UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
+    valLb.text = valStr;
+    valLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:valLb];
     return cell;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    UIView *headV = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 85.0f)];
+    
+    NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
+    
+    UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
+    [imgV setImage:[UIImage imageWithData:imgData]];
+    imgV.backgroundColor = [UIColor whiteColor];
+    [headV addSubview:imgV];
+    
+    UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
+    NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
+    if (personFName == nil) {
+        personFName = @"";
+    }
+    NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonLastNameProperty);
+    if (personLName == nil) {
+        personLName = @"";
+    }
+    NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonMiddleNameProperty);
+    if (personMName == nil) {
+        personMName = @"";
+    }
+    lblV.text = [NSString stringWithFormat:@"%@ %@ %@",personFName,personMName,personLName];
+    lblV.backgroundColor = [UIColor clearColor];
+    [headV addSubview:lblV];
+    return headV;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 85.0f;
 }
 
 /*
@@ -152,6 +206,12 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    
+    NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.email, indexPath.row);
+    NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:valStr,@"val",[NSNumber numberWithInteger:contactorID],@"id", nil];
+    NSNotification *notification = [NSNotification notificationWithName:SELECT_CONTACT_MANNER object:self.navigationController.topViewController userInfo:userinfo];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

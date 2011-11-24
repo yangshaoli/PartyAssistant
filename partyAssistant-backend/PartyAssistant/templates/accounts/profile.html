@@ -1,19 +1,16 @@
-{% extends "base.html" %}
+{% extends 'login_base.html' %}
 
 {% block title %} 账户信息  {% endblock %}
 
 {% block content %}
-{{user.email}}<br/>
-{{user.username}} <input type="button" value="修改密码" onclick="document.getElementById('change_password').style.display = 'block'" />
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">用户信息</h2>
+    欢迎你, {{user.username}}<br/><br/>
+    Email:{{user.email}}<br/>
+<br />
+<a href="{% url change_password %}">修改密码</a>
+  </div>
+ </div>
 
-<form id="change_password" action="{%url profile %}" method="POST" style="display:none">{% csrf_token %}
-{{ form.as_p}}
-<input type="submit" value="确定" />
-</form>
-{% endblock %}
-
-{% block js %}
-<script>	
-
-</script>
 {% endblock %}

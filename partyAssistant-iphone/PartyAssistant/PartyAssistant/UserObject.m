@@ -9,14 +9,16 @@
 #import "UserObject.h"
 
 @implementation UserObject
-@synthesize uID,phoneNum;
+@synthesize uID,phoneNum,userName,nickName;
 
 - (id)init
 {
     self = [super init];
     if (self) {
-		self.uID = 1;
+		self.uID = -1;
         self.phoneNum = @"";
+        self.userName = @"";
+        self.nickName = @"";
     }
     
     return self;
@@ -25,18 +27,22 @@
 - (void) encodeWithCoder: (NSCoder *) encoder {
     [encoder encodeObject: [NSNumber numberWithInteger:self.uID] forKey:@"uID"];
 	[encoder encodeObject: self.phoneNum forKey:@"phoneNum"];
+    [encoder encodeObject: self.userName forKey:@"userName"];
+    [encoder encodeObject: self.nickName forKey:@"nickName"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
     self.uID = [[decoder decodeObjectForKey:@"uID"] integerValue];
 	self.phoneNum = [decoder decodeObjectForKey:@"phoneNum"];
-	
+	self.userName = [decoder decodeObjectForKey:@"userName"];
+    self.nickName = [decoder decodeObjectForKey:@"nickName"];
 	return self;
 }
 
 - (void)clearObject{
-	self.uID = 1;
+	self.uID = -1;
     self.phoneNum = @"";
+    self.userName = @"";
+    self.nickName = @"";
 }
-
 @end

@@ -1,0 +1,13 @@
+/* 
+   Localizable.strings
+   WeiboSDK
+
+   Created by apple on 10-12-20.
+   Copyright 2010 Sina. All rights reserved.
+ */
+ 
+"发送" = "send";
+
+"新浪微博" = "Sina Weibo";
+
+"取消" = "cancel";

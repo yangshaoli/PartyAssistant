@@ -227,12 +227,13 @@
             if (!self.datePicker) {
                 self.datePicker = [[UIDatePicker alloc] init];
             }
-            if (!self.baseinfo.starttimeDate) {
-                self.baseinfo.starttimeDate = [NSDate date];
+            if (self.baseinfo.starttimeDate == nil) {
+                [datePicker setDate: [NSDate date]];
+            }else{
+                [datePicker setDate:self.baseinfo.starttimeDate];
             }
-            [datePicker setDate:self.baseinfo.starttimeDate];
             [actionSheet addSubview:datePicker];
-            [actionSheet showInView:self.view];
+            [actionSheet showInView:self.tabBarController.view];
         }else if(indexPath.row == 2){
             NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
@@ -249,7 +250,7 @@
             peoplemaxiumPicker.delegate = self;
             peoplemaxiumPicker.showsSelectionIndicator = YES;
             [actionSheet addSubview:peoplemaxiumPicker];
-            [actionSheet showInView:self.view];
+            [actionSheet showInView:self.tabBarController.view];
         }
     }
 }
@@ -291,9 +292,10 @@
 
 - (void)nextBtnAction{
     [self showWaiting];
-    NSURL *url = [NSURL URLWithString:GET_MSG_IN_COPY_PARTY];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSString stringWithFormat:@"%@pid=%@",url,self.baseinfo.partyId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/",GET_MSG_IN_COPY_PARTY,self.baseinfo.partyId]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
+    [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
 }
@@ -303,45 +305,54 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-	NSNumber* code = [[result objectForKey:@"status"] objectForKey:@"code"];
-	NSString *description = [[result objectForKey:@"status"] objectForKey:@"description"];
+	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
     //	[self dismissWaiting];
-	if ([code intValue]==200 && [description isEqualToString:@"ok"]) {
-		NSDictionary *dataSource = [result objectForKey:@"datasource"];
-        NSString *msgType = [dataSource objectForKey:@"msgType"];
-        NSArray *receiverArray = [dataSource objectForKey:@"receiverArray"];
-        NSMutableArray *receiverObjectsArray = [[NSMutableArray alloc] initWithCapacity:[receiverArray count]];
-        for (int i=0; i<[receiverArray count]; i++) {
-            ClientObject *client = [[ClientObject alloc] init];
-            client.cID = [[receiverArray objectAtIndex:i] cID];
-            client.cName = [[receiverArray objectAtIndex:i] cName];
-            client.cVal = [[receiverArray objectAtIndex:i] cVal];
-            [receiverObjectsArray addObject:client];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            NSString *msgType = [dataSource objectForKey:@"msgType"];
+            NSArray *receiverArray = [dataSource objectForKey:@"receiverArray"];
+            NSMutableArray *receiverObjectsArray = [[NSMutableArray alloc] initWithCapacity:[receiverArray count]];
+            for (int i=0; i<[receiverArray count]; i++) {
+                ClientObject *client = [[ClientObject alloc] init];
+                client.backendID = [[[receiverArray objectAtIndex:i] objectForKey:@"backendID"] intValue];
+                client.cName = [[receiverArray objectAtIndex:i] objectForKey:@"cName"];
+                client.cVal = [[receiverArray objectAtIndex:i] objectForKey:@"cValue"];
+                [receiverObjectsArray addObject:client];
+            }
+            if ([msgType isEqualToString:@"SMS"]) {
+                SendSMSInCopyPartyTableViewController *vc = [[SendSMSInCopyPartyTableViewController alloc] initWithNibName:@"SendSMSInCopyPartyTableViewController" bundle:[NSBundle mainBundle]];
+                vc.receiverArray = receiverObjectsArray;
+                SMSObject *sobj = [[SMSObject alloc] init];
+                sobj.receiversArray = receiverObjectsArray;
+                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
+                sobj.smsContent = [dataSource objectForKey:@"content"];
+                sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
+                sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
+                vc.smsObject = sobj;
+                vc.baseinfo = self.baseinfo;
+                [self.navigationController pushViewController:vc animated:YES];
+            }
+            
+            
+            [self.tableView reloadData];
+            //        [self setBottomRefreshViewYandDeltaHeight];
+        }else{
+            [self showAlertRequestFailed:description];		
         }
-        if ([msgType isEqualToString:@"SMS"]) {
-            SendSMSInCopyPartyTableViewController *vc = [[SendSMSInCopyPartyTableViewController alloc] initWithNibName:@"SendSMSInCopyPartyTableViewController" bundle:[NSBundle mainBundle]];
-            vc.smsObject.receiversArray = receiverObjectsArray;
-            vc.baseinfo = self.baseinfo;
-            vc.smsObject.smsContent = [dataSource objectForKey:@"content"];
-            vc.smsObject._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
-            vc.smsObject._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
-            [self.navigationController pushViewController:vc animated:YES];
-        }
-        
-        
-        [self.tableView reloadData];
-        //        [self setBottomRefreshViewYandDeltaHeight];
-	}else{
-		[self showAlertRequestFailed:description];		
-	}
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
 	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 @end

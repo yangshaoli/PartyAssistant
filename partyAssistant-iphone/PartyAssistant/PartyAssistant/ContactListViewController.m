@@ -9,7 +9,7 @@
 #import "ContactListViewController.h"
 
 @implementation ContactListViewController
-@synthesize contactorsArray,selectedContactorsArray,contactorsArrayRef,msgType,currentSelectedRowIndex;
+@synthesize contactorsArray,selectedContactorsArray,contactorsArrayRef,msgType,currentSelectedRowIndex,contactListDelegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -49,6 +49,14 @@
     //if (!selctedContactorsArray) {
         //self.selectedContactorsArray = [[NSMutableArray alloc] initWithCapacity:0];
     //}
+    for (int i=0; i<[self.selectedContactorsArray count]; i++) {
+        ClientObject *clientObj = [self.selectedContactorsArray objectAtIndex:i];
+        if ([self.msgType isEqualToString:@"SMS"]) {
+            [clientObj searchClientIDByPhone];
+        }else{
+            [clientObj searchClientIDByEmail];
+        }
+    }
 }
 
 - (void)viewDidUnload
@@ -102,7 +110,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = nil;// [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
@@ -255,11 +263,20 @@
         ABAddressBookRef addressBook = ABAddressBookCreate();
         
         ABRecordRef card = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
-        ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
-        if (msgVal == nil) {
-            [self addInfoToArray:cell.tag uname:cell.textLabel.text value:(__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, 0)];
+        if ([msgType isEqualToString:@"SMS"]) {
+            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+            if (msgVal == nil) {
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:(__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, 0)];
+            }else{
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:msgVal];
+            }
         }else{
-            [self addInfoToArray:cell.tag uname:cell.textLabel.text value:msgVal];
+            ABMultiValueRef email = ABRecordCopyValue(card, kABPersonEmailProperty);
+            if (msgVal == nil) {
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:(__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(email, 0)];
+            }else{
+                [self addInfoToArray:cell.tag uname:cell.textLabel.text value:msgVal];
+            }
         }
     }
     //[cell.imageView setFrame:CGRectMake(250, 7, 30, 30)];
@@ -268,8 +285,9 @@
 
 - (void)doneBtnAction{
     NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:self.selectedContactorsArray,@"selectedCArray", nil];
-    NSNotification *notification = [NSNotification notificationWithName:SELECT_RECEIVER_IN_SEND_SMS object:nil userInfo:userinfo];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    //NSNotification *notification = [NSNotification notificationWithName:SELECT_RECEIVER_IN_SEND_SMS object:nil userInfo:userinfo];
+    //[[NSNotificationCenter defaultCenter] postNotification:notification];
+    [contactListDelegate reorganizeReceiverField:userinfo];
     [self dismissModalViewControllerAnimated:YES];
 }
 

@@ -1,13 +1,2 @@
-//
-//  HTTPRequestErrorMSG.h
-//  PartyAssistant
-//
-//  Created by 超 李 on 11-11-9.
-//  Copyright 2011年 __MyCompanyName__. All rights reserved.
-//
-
-#import <Foundation/Foundation.h>
-
-@protocol HTTPRequestErrorMSG <NSObject>
-
-@end
+#define REQUEST_ERROR_404 @"对不起，您打开的资源不存在。"
+#define REQUEST_ERROR_500 @"对不起，系统出现错误，请联系管理员。"

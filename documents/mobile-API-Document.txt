@@ -1,5 +1,5 @@
 1. createParty
-	url:""
+	url:"/a/parties/createparty/"
 	method:POST
 	input:{
 		"receivers":Array of Client Object,
@@ -15,15 +15,13 @@
 		}
 	output:Success- {
 			"status":'ok',
-			"code":200,
 			"description":"ok",
 			"data":{}
 			}
 		Error - {
-			"status":'fail',
-			"code":404/200/500 etc,
+			"status":'error',
 			"description":Error Msg,
-			"data":{something needed}
+			"data":{}
 			}
 	ClientObject:{
 			"cName":String,
@@ -31,15 +29,13 @@
 			"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")
 			}
 2. PartyList
-	url:""
+	url:"/a/parties/partylist/(userid)/(page_num)/"
 	method:GET
 	input:{
-		"uid":Integer(user id)
-                "page":Integer
+		
 		}
 	output:{
 		"status":"ok",
-		"code":200,
 		"description":"ok",
 		"dataSource":{
 				"page":Integer,
@@ -56,14 +52,13 @@
 			}
 
 3. GetPartyMsg
-	url:""
+	url:"/a/parties/get_party_msg/(party id)/"
 	method:GET
 	input:{
-		"pid":Integer(party id)
+		
 		}
 	output:{
 		"status":"ok",
-		"code":200,
 		"description":"ok",
 		"dataSource":{
 				"msgType":"SMS"/"Email",
@@ -77,4 +72,50 @@
 	这个API的逻辑是给你一个Party ID，返回我在这个Party中发送的一封短信或邮件内容及其收件人
 	ClientObjects同上
 
-4. EditParty:
+4. GetClientsCount:
+	url:"/a/parties/get_party_client_main_count/(party id)/"
+	method:GET
+	input:{
+		
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"allClientcount": Integer,
+				"appliedClientcount": Integer,
+				'refusedClientcount': Integer,
+				'donothingClientcount':Integer,
+				}
+		}
+
+5. AccountRegist:
+	url:"/a/accounts/regist/",
+	method:POST,
+	input:{
+		"username":String(not null),
+		"password":String(not null),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"uid":Integer
+				}
+		}
+
+6. AccountLogin:
+	url:"/a/accounts/login/",
+	method:"POST",
+	input:{
+		"username":String(not null),
+		"password":String(not null),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"uid":Integer,
+				"name":String,
+				}
+		}
