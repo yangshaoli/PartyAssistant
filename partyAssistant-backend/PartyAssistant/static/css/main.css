@@ -390,3 +390,17 @@ body {
  overflow:auto;
 }
 /** 3.5 Etc **/
+.time_class{
+    background:white;
+    position:absolute;
+    border:1px solid black;
+    display:none;
+    height:100px;
+    overflow:auto;
+    padding-right:30px;
+    z-index:2;
+    overflow-x: hidden;
+}
+.time_class div{
+	height:19px;
+}
