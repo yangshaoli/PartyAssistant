@@ -1,23 +1,37 @@
-{% extends "base.html" %}
-{% load i18n %}
-{% block title %} {%trans "Login"%}  {% endblock %}
+{% extends "not_login_base.html" %}
 
 {% block content %}
-
-<form action="{% url login %}" method="post">	
-{% csrf_token %}
-<div class="tips"></div>
-	{{ form.as_p }}
-	<input type="hidden" name="next" value="{{ next }}" />
-	<input id="button" type="submit" value="Login" />
+ <!--START: content -->
+ <div id="content">
+  <div class="grid_a">
+   <h2 class="title">用户登录</h2>
+<form action="{% url login %}" method="post" class="creat_exercise">
+    {% csrf_token %}
+  <fieldset>
+     <div class="field">
+     <label for="username">
+     用户名
+     </label>
+     <input id='id_username' name='username' placeholder='必填项，至少输入六个字符'></input>
+     <font color="red">{{ form.username.errors.0 }}</font>
+     </div>
+     <div class="field">
+     <label for="password">
+     密码
+     </label>
+     {{form.password}}<font color="red">{{ form.password.errors.0 }}</font>
+     </div>
+     <div class="field">
+     	<label>
+     		&nbsp;
+     	</label>
+     	<font color="red">{{ form.non_field_errors.0 }}</font>
+     </div>
+     <div class="submit_field">
+      <input id="id_login_submit" type="submit" value="登录" />
+     </div>
+    </fieldset>	
 </form>
-</div>
-<ul style="margin:20px 0px 0px 10px">
-	<li><a href="{%url get_password %}">找回密码</a></li>
-</ul>
-{% endblock %}
-
-{% block js %}
-<script>
-</script>
+  </div>
+ </div>
 {% endblock %}

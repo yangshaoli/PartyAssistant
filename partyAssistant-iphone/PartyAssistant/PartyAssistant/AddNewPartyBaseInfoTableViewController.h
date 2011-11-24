@@ -26,5 +26,6 @@
 @property(nonatomic, retain)UITextView *descriptionTextView;
 
 - (void)goToSMS;
+- (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo;
 
 @end

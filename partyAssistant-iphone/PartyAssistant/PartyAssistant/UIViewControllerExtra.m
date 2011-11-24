@@ -12,23 +12,23 @@
 @implementation UIViewController(UIViewControllerExtra)
 
 - (void)showAlertRequestSuccess{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:@"OK" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:@"操作已成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
 }
 
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
 }
 
 - (void)showAlertWithTitle:(NSString *)theTitle Message:(NSString *)theMessage{
-    UIAlertView *av=[[UIAlertView alloc] initWithTitle:theTitle message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    UIAlertView *av=[[UIAlertView alloc] initWithTitle:theTitle message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
     [av show];
 }
 

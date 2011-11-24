@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+ <!--START: Header -->
+ <div id="header">
+  <h1><a href="#">logo</a></h1>
+  <!--START: Menu -->
+  <ul class="menu">
+   <li><a href="/">首页</a></li>
+   <li class="active"><a href="#">我的活动</a></li>
+  </ul>
+  <!--END: Menu -->
+  <ul class="user_login">
+   <li><a href="{%url login %}">登录</a></li>
+   <li><a href="{%url register %}">注册</a></li>
+  </ul>
+ </div>
+ <!--END: Header -->
+{% endblock%}

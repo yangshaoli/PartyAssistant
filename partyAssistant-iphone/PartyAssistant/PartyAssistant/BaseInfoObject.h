@@ -31,4 +31,5 @@
 
 - (void)clearObject;
 - (void)formatDateToString;
+- (void)formatStringToDate;
 @end

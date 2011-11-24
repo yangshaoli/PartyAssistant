@@ -8,6 +8,8 @@
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 
+#define NAVIGATION_CONTROLLER_TITLE @"创建新趴"
+
 @implementation AddNewPartyBaseInfoTableViewController
 @synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
@@ -33,20 +35,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    BaseInfoService *baseinfoService = [BaseInfoService sharedBaseInfoService];
-    self.baseInfoObject = [baseinfoService getBaseInfo];
-    if ([baseInfoObject.starttimeStr isEqualToString:@""]) {
-        baseInfoObject.starttimeDate = [NSDate date];
-        [baseInfoObject formatDateToString];
-        [baseinfoService saveBaseInfo];
-    }
 }
 
 - (void)viewDidUnload
@@ -59,11 +53,15 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
+    self.baseInfoObject = [s getBaseInfo];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -119,7 +117,7 @@
 {
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = nil;// [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     
     // Configure the cell...
@@ -129,7 +127,13 @@
             UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
             starttimeLabel.textAlignment = UITextAlignmentRight;
             starttimeLabel.backgroundColor = [UIColor clearColor];
-            starttimeLabel.text = baseInfoObject.starttimeStr;
+            if ([baseInfoObject.starttimeStr isEqualToString:@""]){
+                starttimeLabel.text = @"(可选填)";
+                starttimeLabel.textColor = [UIColor lightGrayColor];
+            }else{
+                starttimeLabel.text = baseInfoObject.starttimeStr;
+                starttimeLabel.textColor = [UIColor blackColor];
+            }
 //            starttimeLabel.text = @"2011-11-11 11:00";
             [cell addSubview:starttimeLabel];
         }else if(indexPath.row == 1){
@@ -139,30 +143,41 @@
             }
             locationTextField.textAlignment = UITextAlignmentRight;
             locationTextField.delegate = self;
+            locationTextField.placeholder = @"(可选填)";
             locationTextField.text = baseInfoObject.location;
             [cell addSubview:locationTextField];
         }else if(indexPath.row == 2){
             cell.textLabel.text = @"人数上限:";
-            UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(260, 0, 30, 44)];
-            peopleStrLable.backgroundColor = [UIColor clearColor];
-            peopleStrLable.textAlignment = UITextAlignmentRight;
-            peopleStrLable.text = @"人";
-            [cell addSubview:peopleStrLable];
-            UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
-            peoplemaximumLabel.backgroundColor = [UIColor clearColor];
-            peoplemaximumLabel.textAlignment = UITextAlignmentRight;
-            peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
-            //peoplemaximumLabel.text = @"1";
-            if (![peoplemaximumLabel.text isEqualToString:@"0"]) {
+            if ([[baseInfoObject.peopleMaximum stringValue] isEqualToString:@"0"]) {
+                UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(190, 0, 100, 44)];
+                peopleStrLable.text = @"无限制";
+                peopleStrLable.backgroundColor = [UIColor clearColor];
+                peopleStrLable.textAlignment = UITextAlignmentRight;
+                peopleStrLable.textColor = [UIColor lightGrayColor];
+                [cell addSubview:peopleStrLable];
+            }else{
+                UILabel *peopleStrLable = [[UILabel alloc] initWithFrame:CGRectMake(260, 0, 30, 44)];
+                peopleStrLable.backgroundColor = [UIColor clearColor];
+                peopleStrLable.textAlignment = UITextAlignmentRight;
+                peopleStrLable.text = @"人";
+                [cell addSubview:peopleStrLable];
+                UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
+                peoplemaximumLabel.backgroundColor = [UIColor clearColor];
+                peoplemaximumLabel.textAlignment = UITextAlignmentRight;
+                peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
                 peoplemaximumLabel.textColor = [UIColor redColor];
+                [cell addSubview:peoplemaximumLabel];
             }
-            [cell addSubview:peoplemaximumLabel];
+           
+            //peoplemaximumLabel.text = @"1";
+            
+            
         }else if(indexPath.row == 3){
             cell.textLabel.text = @"描述:";
             if(!descriptionTextView){
                 self.descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 200, 100)];
             }
-            descriptionTextView.text = baseInfoObject.description;
+            descriptionTextView.text = self.baseInfoObject.description;
             descriptionTextView.backgroundColor = [UIColor clearColor];
             //descriptionTextView.text = baseInfoObject.description;
             [cell addSubview:descriptionTextView];
@@ -238,7 +253,9 @@
 - (void)saveInfo{
     self.baseInfoObject.description = self.descriptionTextView.text;
     self.baseInfoObject.location = self.locationTextField.text;
+    [self.baseInfoObject formatDateToString];
     BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
+    s.baseinfoObject = self.baseInfoObject;
     [s saveBaseInfo];
 }
 
@@ -263,11 +280,12 @@
                 self.datePicker = [[UIDatePicker alloc] init];
             }
             if (!self.baseInfoObject.starttimeDate) {
-                self.baseInfoObject.starttimeDate = [NSDate date];
+                [datePicker setDate:[NSDate date]];
+            }else{
+                [datePicker setDate:self.baseInfoObject.starttimeDate];
             }
-            [datePicker setDate:self.baseInfoObject.starttimeDate];
             [actionSheet addSubview:datePicker];
-            [actionSheet showInView:self.view];
+            [actionSheet showInView:self.tabBarController.view];
         }else if(indexPath.row == 2){
             NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
@@ -284,7 +302,7 @@
             peoplemaxiumPicker.delegate = self;
             peoplemaxiumPicker.showsSelectionIndicator = YES;
             [actionSheet addSubview:peoplemaxiumPicker];
-            [actionSheet showInView:self.view];
+            [actionSheet showInView:self.tabBarController.view];
         }
     }
 }
@@ -293,19 +311,15 @@
 {
     if (actionSheet.tag == 0) {
         self.baseInfoObject.starttimeDate = [datePicker date];
-        NSLog(@"date:%@",[datePicker date]);
         [self.baseInfoObject formatDateToString];
-        [self.tableView reloadData];
     }else{
-        NSLog(@"aa");
         NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
         NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
         NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
         self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
-        NSLog(@"%@",self.baseInfoObject.peopleMaximum);
-        [self.tableView reloadData];
     }
-    
+    [self saveInfo];
+    [self.tableView reloadData];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -333,6 +347,14 @@
 {
     [self saveInfo];
     SendSMSToClientsViewController *vc = [[SendSMSToClientsViewController alloc] initWithNibName:@"SendSMSToClientsViewController" bundle:[NSBundle mainBundle]];
+    SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+    SMSObject *obj = [s getSMSObject];
+    if ([obj.smsContent isEqualToString:@""]) {
+        obj.smsContent = [self getDefaultContent:self.baseInfoObject];
+        [s saveSMSObject];
+    }
+    
+    
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -341,5 +363,20 @@
     [self saveInfo];
     SendEmailToClientsViewController *vc = [[SendEmailToClientsViewController alloc] initWithNibName:@"SendEmailToClientsViewController" bundle:[NSBundle mainBundle]];
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo{
+    NSString *defaultText = @"";
+    NSString *userName = @"";
+    if ([paraBaseInfo.location isEqualToString:@""] && [paraBaseInfo.starttimeStr isEqualToString:@""]) {
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@，时间/地点待定，另行通知",userName,paraBaseInfo.description];
+    }else if([paraBaseInfo.location isEqualToString:@""]){
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@ 活动，时间为：%@，地点待定，敬请光临",userName,paraBaseInfo.description,paraBaseInfo.starttimeStr];
+    }else if([paraBaseInfo.starttimeStr isEqualToString:@""]){
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：%@ 活动，地点为：%@，时间待定，敬请光临",userName,paraBaseInfo.description,paraBaseInfo.location];
+    }else{
+        defaultText = [NSString stringWithFormat:@"%@ 邀您参加：于%@ 在 %@ 举办的%@，敬请光临",userName,paraBaseInfo.starttimeStr,paraBaseInfo.location, paraBaseInfo.description];
+    }
+    return defaultText;
 }
 @end

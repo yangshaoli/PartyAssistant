@@ -10,23 +10,14 @@ ADMINS = (
     ('AIMeeting', 'admin@aimeeting.com'),
 )
 
-SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
-DOMAIN_NAME = 'http://127.0.0.1:8000'
-LOGIN_REDIRECT_URL = '/parties/create_party'
-
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
-
-MANAGERS = ADMINS
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'dev.db'),                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'NAME': os.path.join(PROJECT_ROOT, 'dev.db'), # Or path to database file if using sqlite3.
+        'USER': '', # Not used with sqlite3.
+        'PASSWORD': '', # Not used with sqlite3.
+        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -82,7 +73,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT,'static'),
+    os.path.join(PROJECT_ROOT, 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -104,13 +95,13 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'middlewares.detect_mobile_browser_middleware.DetectMobileBrowserMiddleware', 
+    'middlewares.detect_mobile_browser_middleware.DetectMobileBrowserMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 #    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'middlewares.variant_template_middleware.VariantTemplateMiddleware', 
+    'middlewares.variant_template_middleware.VariantTemplateMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -122,7 +113,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT, 'templates'), 
+    os.path.join(PROJECT_ROOT, 'templates'),
 )
 
 INSTALLED_APPS = (
@@ -140,6 +131,8 @@ INSTALLED_APPS = (
     'apps.accounts',
     'apps.clients',
     'apps.parties',
+    'apps.messages', 
+    'apps.common', 
 )
 
 
@@ -149,20 +142,60 @@ INSTALLED_APPS = (
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
+    'version': 1, 
+    'disable_existing_loggers': True, 
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        }, 
+        'simple': {
+            'format': '%(levelname)s %(asctime)s %(message)s'
+        },
+    },
     'handlers': {
+        'null': {
+            'level': 'DEBUG', 
+            'class': 'django.utils.log.NullHandler',
+        }, 
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'DEBUG', 
+            'class': 'logging.handlers.RotatingFileHandler', 
+            'formatter': 'simple', 
+            'filename': 'airenao.log', 
+            'maxBytes': 1048576, 
+            'backupCount': 10
+        }, 
         'mail_admins': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
         }
     },
     'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
-            'propagate': True,
+            'propagate': False,
         },
+        'airenao': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        }
     }
 }
 
+SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+DOMAIN_NAME = 'http://127.0.0.1:8000'
+LOGIN_REDIRECT_URL = '/parties/list/'
+
+SMS_ISP_USERNAME = 's1002020649'
+SMS_ISP_PASSWORD = '13488891003'

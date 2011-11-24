@@ -1,0 +1,104 @@
+﻿/*
+	version:   1.0
+	author:    Name
+	date:      08/08/08
+	
+	******************************
+	***** Inhaltsverzeichnis *****
+	******************************
+	---------------------------------------------------------------
+	1. Reset
+	2. basic elements
+	为基本元素定义样式: body, h1-h6, ul, ol, a, p, etc.
+	---------------------------------------------------------------
+	3. Generic Classes
+	定义一些单独的样式，比如，浮动、去掉元素的底部边距等。
+ 是的，可能他们不够语义化，但是，它们对有效的编码是很有效的。
+	---------------------------------------------------------------
+	4. Container
+		4.1 layout(Basic Layout)
+		定义基本模板: 头部、底部、等，用来定义网站的基本结构
+		4.2 header
+		4.3 contact
+		4.4 footer
+	---------------------------------------------------------------
+	5. Homepage 
+	---------------------------------------------------------------
+	6. Menu
+	---------------------------------------------------------------
+	7. Login 
+	---------------------------------------------------------------
+	8. Form 
+	---------------------------------------------------------------
+	9. Etc
+	继续定义其它样式
+*/
+/* 1. Reset(YUI) */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote, th, td {
+	padding: 0;
+	margin: 0;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+fieldset, img {
+	border: 0;
+}
+address, caption, cite, code, dfn, em, strong, th, var {
+	font-weight: normal;
+	font-style: normal;
+}
+ol, ul {
+	list-style: none;
+}
+caption, th {
+	text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-weight: normal;
+	font-size: 100%;
+}
+q:before, q:after {
+	content:”;
+}
+abbr, acronym {
+	border:0;
+}
+/* 2. basic elements */
+body {
+	font-family: Arial, "Trebuchet MS", Helvetica, sans-serif;
+}
+h1, h2, h3, h4, h5, h6 {
+}
+p {
+}
+a:link {
+}
+a:visited {
+}
+a:hover, a:active {
+}
+/* 3. Generic Classes */
+
+/* 4. Container */
+/** 4.1 layout **/
+#wrapper{}
+#header{}
+#content{}
+#footer{}
+/** 4.2 header **/
+
+/** 4.3 contact **/
+
+/** 4.4 footer **/
+
+/* 5. Homepage */
+
+/* 6. Menu */
+
+/* 7. Login */
+
+/* 8. Form  */
+
+/* 9. Etc */

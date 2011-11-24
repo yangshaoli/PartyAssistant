@@ -12,6 +12,13 @@
 
 @synthesize window = _window;
 
+- (void)applicationDidFinishLaunching:(UIApplication *)application {
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
+    [_window addSubview:nav.view];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
     /*

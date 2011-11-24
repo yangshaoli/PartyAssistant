@@ -8,23 +8,26 @@
 
 #import "ReceiverLabel.h"
 
+#define MAX_LABLEL_WIDTH 140
+
 @implementation ReceiverLabel
-@synthesize maxWidth,maxHeight;
 
 
-- (id)initWithReceiverObject:(ClientObject *)receiver index:(NSInteger)lbIndex
+- (id)initWithReceiverObject:(ClientObject *)receiver lbFrame:(CGRect)lbFrame
 {
-    self.maxWidth = 140.0f;
-    self.maxHeight = 36.0f;
-    self = [self initWithFrame:CGRectMake(0,4+44*lbIndex,self.maxWidth,self.maxHeight)];
+    self = [self initWithFrame:lbFrame];
     //if ([receiver.cName ]) {
         
     //}
     self.text = receiver.cName;
+    self.font = [UIFont systemFontOfSize:10.0f];
     self.backgroundColor = [UIColor colorWithRed:0.4549 green:0.7176 blue:0.9373 alpha:1];
-    self.layer.cornerRadius = 20;
+    self.layer.cornerRadius = 10;
     self.lineBreakMode = UILineBreakModeWordWrap | UILineBreakModeTailTruncation;  
     self.numberOfLines = 1;
+    self.textAlignment = UITextAlignmentLeft;
+    //[self sizeToFit];
+//    self.adjustsFontSizeToFitWidth = YES;
     return self;
 }
 
@@ -36,10 +39,20 @@
 - (void)drawTextInRect:(CGRect)rect
 {
     // Drawing code
-    rect.origin.x += 20;
+    rect.origin.x += 10;
     [super drawTextInRect:rect];
 }
 
-
+- (void)setText:(NSString *)text {
+    CGSize size = [text sizeWithFont:self.font];
+    CGRect oldFrame = self.frame;
+    if (size.width > MAX_LABLEL_WIDTH) {
+        size.width = MAX_LABLEL_WIDTH;
+    }
+    oldFrame.size.width = size.width;
+    self.frame = oldFrame;
+    self.textAlignment = UITextAlignmentLeft;
+    [super setText:text];
+}
 
 @end

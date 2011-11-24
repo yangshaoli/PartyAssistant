@@ -1,47 +1,114 @@
-{% extends 'base.html' %}
-{% block title %}创建活动{% endblock %}
+{% extends 'login_base.html' %}
+{% block title %}创建活动 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script>
+$(document).ready(function(){
+   $("#id_start_date").blur(function(){
+      var currentDate = new Date() 
+      var startDate = ''
+      var y = currentDate.getFullYear();
+      var m = currentDate.getMonth() + 1;
+      var d = currentDate.getDate(); 
+      var v = $("#id_start_date").val();
+      var re = new RegExp(/\d/g);
+      var result = v.match(re);
+      switch (result.length){
+          case 1 : startDate = y+'-'+m+'-0'+result[0];break;
+          case 2 : startDate = y+'-'+m+'-'+result[0]+result[1]; break;
+          case 3 : startDate = y+'-0'+result[0]+'-'+result[1]+result[2]; break;
+          case 4 : startDate = y+'-'+result[0]+result[1]+'-'+result[2]+result[3]; break;
+          case 6 : startDate = '20'+result[0]+result[1]+'-'+result[2]+result[3]+'-'+result[4]+result[5];break;
+          case 8 : startDate = result[0]+result[1]+result[2]+result[3]+'-'+result[4]+result[5]+'-'+result[6]+result[7];break;
+          default : startDate = y+'-'+m+'-'+d;break;
+      }
+      $("#id_start_date").val(startDate);
+   });
+   
+   $("#id_start_time").blur(function(){
+      var currentTime = new Date() 
+      var startTime = ''
+      var h = currentTime.getHours();
+      var m = currentTime.getMinutes();
+      var v = $("#id_start_time").val();
+      var re = new RegExp(/\d/g);
+      var result = v.match(re);
+      switch (result.length){
+          case 2 : startDate = result[0]+result[1]+':00'; break;
+          case 4 : startDate = result[0]+result[1]+':'+result[2]+result[3]; break;
+          default : startDate = h+':'+m;break;
+      }
+      $("#id_start_time").val(startDate);
+   });
+});
+</script>
+{% endblock %}
 
 {% block content %}
-
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
- <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/time.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/ui.core.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.form.js"></script>
-    <link type="text/css" href="{{STATIC_URL}}css/main.css" rel="stylesheet" />
-    <link type="text/css" href="{{STATIC_URL}}css/datepicker.css" rel="stylesheet" />
-    <link type="text/css" href="{{STATIC_URL}}css/datepicker2.css" rel="stylesheet" />
-    <script type="text/javascript">
-        $("document").ready(function(){
-            $("#id_date").datepicker();
-             
-        });
-    </script>
-
-
-
-<form action='{% url create_party %}' method='post'>
-{% csrf_token %}
-<table>
-<tr><td>时间</td><td><input type="text" class="input-txt3 mys" id="id_date" name="date"></input>
-                            	<input type="text" class='input-txt3 mys TimePker' id='id_time' autocomplete='off' name="time"></input><span class="required-tip">如：2010-01-01 23:09</span>
-                            	<div style="display: none; "></div>
-	                            {% if form.date.errors %}
-	                            	{{ form.date.errors }}
-	                            {% else %}
-	                            	{{ form.time.errors }}
-	                            {% endif %}</td>
-</tr>
-
-<tr><td>地址</td><td><input type='textfield' name='address'  class= 'textarea-remark2'></input>{{ form.address.errors}}</td>
-</tr>
-<tr><td>描述</td><td><input type='textfield' name='description' class='textarea-remark2'></input>{{ form.description.errors}}</td>
-</tr>
-<tr><td>限制人数</td><td>{{ form.limit_num}}{{ form.limit_num.errors}}</td>
-</tr>
-</table>
-<input name='invite_type' type='hidden' value=''/>
-<input type='button' value='用手机短信发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'msg';this.form.submit()" />
-<input type='button' value='用电子邮件发送邀请' onclick="document.getElementsByName('invite_type')[0].value = 'email';this.form.submit()"/>
-</form>
+<style>
+</style>
+<script type="text/javascript">
+	function formonsubmit(){
+    date_time = id_start_date_time.value.split(' ');
+    date = date_time[0]
+    time = date_time[1]
+    id_start_date.value = date
+    id_start_time.value = time
+    alert('');
+    return false;
+	}
+</script>
+ <!--START: content -->
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">创建活动</h2>
+   <form method="post" ation="{% url create_party %}" class="creat_exercise" onsubmit="formonsubmit();">
+    	{% csrf_token %}
+    <fieldset>
+     <div class="field">
+     <label for="id_start_date">
+     何时
+     </label>
+     <input name='start_date_time' id='id_start_date_time'  placeholder='选填，格式如2008-08-08 08:08'></input>
+     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08'></input>
+     {{ form.start_date.errors }}
+     </div>
+     <div class="field">
+     <label for="id_start_time">
+     开始时间
+     </label>
+     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08'></input>
+     {{ form.start_time.errors }}
+     </div>
+     <div class="field">
+     <label for="id_address">
+     去哪
+     </label>
+     <input name='address' id='id_address' placeholder='选填项'></input>
+     {{ form.address.errors }}
+     </div>
+     <div class="field">
+     <label for="id_description">
+     玩啥
+     </label>
+     {{ form.description.errors }}
+     <input name='description' id='id_description' placeholder='必填项'></input>
+     </div>
+     <div class="field">
+     <label for="id_limit_count">
+     最多几个人
+     </label>
+     <input name='limit_count' id='id_limit_count' placeholder='无限制'></input>
+     {{ form.limit_count.errors }}
+     </div>
+     <div class="submit_field">
+      <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信邀请" alt="sms"/>
+      <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件邀请" alt="sms"/>
+     </div>
+    </fieldset>
+   </form>
+  </div>
+ </div>
+ <!--END: content --> 
 {% endblock%}
