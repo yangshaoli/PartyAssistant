@@ -42,19 +42,17 @@
   <div class="grid_a">
    <h2 class="title"><a href="{% url create_party %}"><img src="/static/images/btn_creat_active.png"/></a></h2>
    <div class="activity_tabs">
-    <ul class="activity_nav">
+    <!--ul class="activity_nav">
      <li class="active"><a href="#">全部活动</a></li>
     </ul>
     <div class="activity_content">
-     <div class="sub_tab"><strong>全部</strong><span class="indicator"></span></div>
+     <div class="sub_tab"><strong>全部</strong><span class="indicator"></span!--></div>
      {% for party in party_list %}
      {% if not forloop.first %}
      <div class="line"></div>
      {% endif %}
+     <p style="text-align:right;"><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
     <div class="comment comment_odd"> <i class="corners"></i>
-      
-      <p><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
-     
       <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->

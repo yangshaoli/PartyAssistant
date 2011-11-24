@@ -299,7 +299,7 @@ body {
 }
 .comment .corners{
  position:absolute;
- left:30px;
+ left:630px;
  top:-5px;
  width:10px;
  height:5px;
@@ -312,7 +312,7 @@ body {
 .comment .details{
  padding:10px;
 }
-.comment .important{
+.important{
  color:#d12000;
 }
 .function_share .statistics{
