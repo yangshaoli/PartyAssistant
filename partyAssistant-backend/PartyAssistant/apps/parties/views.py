@@ -133,13 +133,13 @@ def email_invite(request, party_id):
                             client = client_temp
                         )
             
-            send_email_status = u'邮件发送失败'
+            send_status = u'邮件发送失败'
             with transaction.commit_on_success():
                 send_message = Outbox(address = form.cleaned_data['client_email_list'], base_message = email_message)
                 send_message.save()
-                send_email_status = u'邮件发送成功'
+                send_status = u'邮件发送成功'
              
-            request.session['send_email_status'] = send_email_status    
+            request.session['send_status'] = send_status    
             return redirect('list_party')
         else:
             return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
@@ -238,13 +238,13 @@ def sms_invite(request, party_id):
                             client = client_temp
                         )
 
-            send_sms_status = u'短信发送失败'
+            send_status = u'短信发送失败'
             with transaction.commit_on_success():
                 send_message = Outbox(address = form.cleaned_data['client_phone_list'], base_message = sms_message)
                 send_message.save()
-                send_sms_status = u'短信发送成功'
+                send_status = u'短信发送成功'
              
-            request.session['send_sms_status'] = send_sms_status
+            request.session['send_status'] = send_status
             
             return redirect('list_party')
         else:
@@ -341,16 +341,12 @@ def list_party(request):
         party.client['count'] = _get_client_count(party)
         print party.client['count']
         
-    send_email_status = ''    
-    if 'send_email_status' in request.session:
-        send_email_status = request.session['send_email_status']
-        del request.session['send_email_status']        
-    send_sms_status = ''    
-    if 'send_sms_status' in request.session:
-        send_sms_status = request.session['send_sms_status']  
-        del request.session['send_sms_status']
-        
-    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_email_status':send_email_status, 'send_sms_status':send_sms_status})
+    send_status = ''    
+    if 'send_status' in request.session:
+        send_status = request.session['send_status']
+        del request.session['send_status']        
+
+    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status})
 
 def _public_enroll(request, party_id):
     party = get_object_or_404(Party, id = party_id)
