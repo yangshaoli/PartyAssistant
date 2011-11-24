@@ -79,6 +79,20 @@
             }
         });
     });
+    
+    $(document).ready(function(){
+  	 	$('#id_is_apply_tips').change(function(){
+    		if(!this.checked){
+    		   if (window.confirm("关闭报名提示后，在发送给邀请人的短信中将不包含报名链接，确定吗?")){
+    		   	  this.checked=false;
+    		   }else{
+    		      this.checked=true;
+    		   }
+    		}
+    		return;
+    	});
+	});
+    
 </script>
 {% endblock %}
 
