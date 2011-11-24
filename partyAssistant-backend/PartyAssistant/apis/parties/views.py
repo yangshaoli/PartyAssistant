@@ -22,6 +22,7 @@ from utils.tools.paginator_tool import process_paginator
 from utils.tools.reg_phone_num import regPhoneNum
 import datetime
 import re
+import time
 from datetime import *
  
 
@@ -47,11 +48,11 @@ def createParty(request):
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d').date()
         except Exception:
             startdate = None
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
