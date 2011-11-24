@@ -177,7 +177,7 @@
             if(!descriptionTextView){
                 self.descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 200, 100)];
             }
-            descriptionTextView.text = baseInfoObject.description;
+            descriptionTextView.text = self.baseInfoObject.description;
             descriptionTextView.backgroundColor = [UIColor clearColor];
             //descriptionTextView.text = baseInfoObject.description;
             [cell addSubview:descriptionTextView];

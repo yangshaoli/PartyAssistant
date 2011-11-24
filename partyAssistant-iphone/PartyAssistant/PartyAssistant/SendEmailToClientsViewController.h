@@ -30,6 +30,7 @@
 #import "ReceiverTableViewCell.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "SMSObjectService.h"
 
 @interface SendEmailToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMailComposeViewControllerDelegate,UIAlertViewDelegate,ContactListViewControllerDelegate>
 {

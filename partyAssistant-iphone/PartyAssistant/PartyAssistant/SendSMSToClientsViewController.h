@@ -27,6 +27,7 @@
 #import "UserObjectService.h"
 #import "PartyListTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
+#import "EmailObjectService.h"
 #import "ReceiverTableViewCell.h"
 
 @interface SendSMSToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate,UIAlertViewDelegate,ContactListViewControllerDelegate>

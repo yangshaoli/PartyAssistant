@@ -330,7 +330,7 @@
     [self.tableView reloadData];
 }
 
-- (void)deletePartyAtID
+- (void)deleteParty
 {
     UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:nil message:@"删除后不能再恢复，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
     alertV.tag = DELETE_PARTY_ALERT_VIEW_TAG;
