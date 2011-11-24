@@ -142,7 +142,11 @@ def email_invite(request, party_id):
             request.session['send_status'] = send_status    
             return redirect('list_party')
         else:
-            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party})
+            client_data = []
+            for client in Client.objects.filter(creator = request.user):
+                if client.email:
+                    client_data.append(client.email)
+            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data)})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
@@ -248,7 +252,11 @@ def sms_invite(request, party_id):
             
             return redirect('list_party')
         else:
-            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party})
+            client_data = []
+            for client in Client.objects.filter(creator = request.user):
+                if client.phone:
+                    client_data.append(client.phone)
+            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party,'client_data':simplejson.dumps(client_data)})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':

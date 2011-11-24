@@ -46,7 +46,9 @@
         function extractLast(term){
             return split(term).pop();
         }
-        
+        $('#id_client_email_list').bind("keyup", function(event){
+			calculate_send_email_count();
+		});
         $("#id_client_email_list") // don't navigate away from the field on tab when selecting an item
     .bind("keydown", function(event){
             if (event.keyCode === $.ui.keyCode.TAB &&

@@ -23,6 +23,7 @@
 <script src="/static/libs/jquery-ui-1/js/jquery-ui-1.8.16.custom.min.js">
 </script>
 <script type="text/javascript" >
+	
 	function calculate_send_phone_count() {
 	    client_phone_list = $('#id_client_phone_list').val().split(',');
 	    client_phone_list_length = client_phone_list.length;     
@@ -44,7 +45,9 @@
         function extractLast(term){
             return split(term).pop();
         }
-        
+        $('#id_client_phone_list').bind("keyup", function(event){
+		calculate_send_phone_count();
+		});
         $("#id_client_phone_list") // don't navigate away from the field on tab when selecting an item
     .bind("keydown", function(event){
             if (event.keyCode === $.ui.keyCode.TAB &&
