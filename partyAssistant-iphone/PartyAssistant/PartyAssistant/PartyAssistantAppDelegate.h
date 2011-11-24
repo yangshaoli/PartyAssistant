@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "PartyLoginViewController.h"
-#import "PartyListTabelViewController.h"
+#import "PartyListTableViewController.h"
 #import "AddNewPartyBaseInfoTableViewController.h"
 
 @interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate>

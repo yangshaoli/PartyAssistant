@@ -1,0 +1,17 @@
+/* 
+   SendViewLocalize.strings
+   SinaWeiBoSDK
+
+   Created by Nick Yu on 6/17/11.
+   Copyright 2011 __MyCompanyName__. All rights reserved.
+ */
+
+"发送" = "发送";
+
+"关闭" = "关闭";
+
+"新浪微博" = "新浪微博";
+
+"确定" = "确定";
+
+"请输入微博内容" = "请输入微博内容";

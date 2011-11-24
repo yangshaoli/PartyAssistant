@@ -23,11 +23,12 @@
 #import "BaseInfoObject.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
-#import "PartyListTabelViewController.h"
+#import "PartyListTableViewController.h"
 #import "HTTPRequestErrorMSG.h"
+#import "ReceiverTableViewCell.h"
 
 
-@interface SendSMSInCopyPartyTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate>
+@interface SendSMSInCopyPartyTableViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate,ContactListViewControllerDelegate>
 {
     BaseInfoObject  *baseinfo;
     SMSObject *smsObject;
@@ -36,6 +37,7 @@
     UITextView *contentTextView;
     BOOL _isShowAllReceivers;
     UILabel *countlbl;
+    ReceiverTableViewCell *receiverCell;
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseinfo;
@@ -45,13 +47,15 @@
 @property(nonatomic, retain)UITextView *contentTextView;
 @property(nonatomic, assign)BOOL _isShowAllReceivers;
 @property(nonatomic, retain)UILabel *countlbl;
+@property(nonatomic, retain)ReceiverTableViewCell *receiverCell;
 
+- (void)sendCreateRequest;
 - (void)reorganizeReceiverField:(NSNotification *)notification;
-- (void)setupReceiversView;
 - (void)setDefaultAction;
 - (void)saveSMSInfo;
 - (void)doneBtnAction;
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch;
 - (void)sendBySelfSwitchAction:(UISwitch *)curSwitch;
+- (NSString *)getDefaultContent:(BaseInfoObject *)baseinfo;
 
 @end
