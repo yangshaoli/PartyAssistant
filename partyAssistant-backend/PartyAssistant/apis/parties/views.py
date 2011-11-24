@@ -158,7 +158,7 @@ def PartyList(request, uid, page = 1):
     for party in partylist:
         partyObject = {}
         try:
-            party.start_time = datetime.combine(party.start_date, party.start_time)
+            party.start_time = datetime.datetime.combine(party.start_date, party.start_time)
             partyObject['starttime'] = party.start_time.strftime(GMT_FORMAT)
         except Exception, e:
             partyObject['starttime'] = None
