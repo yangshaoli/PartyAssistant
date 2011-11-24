@@ -6,10 +6,14 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "PartyListTabelViewController.h"
+#import "PartyListTableViewController.h"
 
-@implementation PartyListTabelViewController
-@synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex;
+#define DELETE_PARTY_ALERT_VIEW_TAG 11
+#define NAVIGATION_CONTROLLER_TITLE @"趴列表"
+
+
+@implementation PartyListTableViewController
+@synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex,_currentDeletePartyID,_currentDeletePartyCellIndex;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -51,6 +55,8 @@
     if (self._isNeedRefresh) {
         [self refreshBtnAction];
     }
+    self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBtnAction) name:CREATE_PARTY_SUCCESS object:nil];
 }
 
 - (void)viewDidUnload
@@ -244,17 +250,21 @@
             [self.tableView reloadData];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
+            self.navigationItem.rightBarButtonItem.customView = nil;
             [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
+        self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     }else{
+        self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    self.navigationItem.rightBarButtonItem.customView = nil;
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
@@ -265,6 +275,7 @@
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"复制",@"删除",@"分享", nil];
 //    UITableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
     sheet.tag = indexPath.row;
+    NSLog(@"row:%d",indexPath.row);
     [sheet showInView:self.tabBarController.view];
 }
 
@@ -290,11 +301,71 @@
 
 - (void)deletePartyAtID:(NSInteger)pIndex
 {
-
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:nil message:@"删除后不能再恢复，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+    alertV.tag = DELETE_PARTY_ALERT_VIEW_TAG;
+    BaseInfoObject *b = [self.partyList objectAtIndex:pIndex];
+    self._currentDeletePartyID = [b.partyId integerValue];
+    self._currentDeletePartyCellIndex = pIndex;
+    NSLog(@"pIndex:%d",pIndex);
+    [alertV show];
 }
 
 - (void)sharePartyAtID:(NSInteger)pIndex
 {
 
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == DELETE_PARTY_ALERT_VIEW_TAG){
+        if (buttonIndex == 1) {
+            [self showWaiting];
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSURL *url = [NSURL URLWithString:DELETE_PARTY];
+            ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+            [request setPostValue:[NSNumber numberWithInteger:_currentDeletePartyID] forKey:@"pID"];
+            [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+
+            request.timeOutSeconds = 30;
+            [request setDelegate:self];
+            [request setDidFinishSelector:@selector(deleteRequestFinished:)];
+            [request setDidFailSelector:@selector(deleteRequestFailed:)];
+            [request setShouldAttemptPersistentConnection:NO];
+            [request startAsynchronous];
+        }
+    }
+}
+
+- (void)deleteRequestFinished:(ASIHTTPRequest *)request{
+	//[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
+    NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSIndexPath *index = [NSIndexPath indexPathForRow:self._currentDeletePartyCellIndex inSection:0];
+            NSLog(@"index:%@",index);
+            NSArray *indexPathArray = [NSArray arrayWithObject:index];
+            [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
+            [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+	
+}
+
+
+- (void)deleteRequestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 @end

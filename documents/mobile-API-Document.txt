@@ -81,10 +81,41 @@
 	output:{
 		"status":"ok",
 		"description":"ok",
-		"dataSource":{
+		"datasource":{
 				"allClientcount": Integer,
 				"appliedClientcount": Integer,
 				'refusedClientcount': Integer,
 				'donothingClientcount':Integer,
+				}
+		}
+
+5. AccountRegist:
+	url:"/a/accounts/regist/",
+	method:POST,
+	input:{
+		"username":String(not null),
+		"password":String(not null),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"uid":Integer
+				}
+		}
+
+6. AccountLogin:
+	url:"/a/accounts/login/",
+	method:"POST",
+	input:{
+		"username":String(not null),
+		"password":String(not null),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"uid":Integer,
+				"name":String,
 				}
 		}
