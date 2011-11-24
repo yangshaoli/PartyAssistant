@@ -60,7 +60,7 @@ function ajaxChangeStatus(id, applystatus){
   <div class="grid_a">
    <h2 class="title">活动报名</h2>
    <div class="apply_details">
-    <p>{{party.creator.username}} <span class="minor">邀请</span> 您：</p>
+    <p>{{party.creator.username}} <span class="minor">邀请</span>  {% if client %}{{client.name}}{%else%}您{%endif%}：</p>
     <p>{{party.start_time}}</p>
     <p class="paragraph">{{party.address}} <span class="minor">参加活动</span></p>
     <p class="paragraph">{{party.description}}</p>
@@ -68,7 +68,14 @@ function ajaxChangeStatus(id, applystatus){
     
         {% if client %}
         <!-- 被邀请用户报名页面 -->
-    <form method="POST" url="{% url enroll party.id %}">
+    <form method="POST" url="{% url enroll party.id %}" class="creat_exercise">
+        {% if client.name == client.email %}
+        <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+        <div class="field">
+        {% endif %}
      <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
      <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
      <input id="id_action" type="hidden" name="action" value="" />
