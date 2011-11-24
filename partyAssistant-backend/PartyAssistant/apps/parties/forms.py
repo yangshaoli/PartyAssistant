@@ -16,17 +16,10 @@ class CreatePartyForm(forms.ModelForm):
         if 'limit_count' in self.cleaned_data:
             if self.cleaned_data['limit_count'] == None:
                 self.cleaned_data['limit_count'] = 0
-<<<<<<< HEAD
-            return self.cleaned_data['limit_count']
-=======
                 return self.cleaned_data['limit_count']
         
         return self.cleaned_data['limit_count']
 
-<<<<<<< HEAD
->>>>>>> liwenjian
-=======
->>>>>>> liwenjian
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget=forms.TextInput(), required=True)
     content = forms.CharField(widget=forms.TextInput(), required=True)   
