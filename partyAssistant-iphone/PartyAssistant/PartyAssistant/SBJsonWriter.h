@@ -31,32 +31,11 @@
 #import "SBJsonBase.h"
 
 /**
- @brief The JSON writer class.
+ @brief Options for the writer class.
  
- Objective-C types are mapped to JSON types in the following way:
- 
- @li NSNull -> Null
- @li NSString -> String
- @li NSArray -> Array
- @li NSDictionary -> Object
- @li NSNumber (-initWithBool:) -> Boolean
- @li NSNumber -> Number
- 
- In JSON the keys of an object must be strings. NSDictionary keys need
- not be, but attempting to convert an NSDictionary with non-string keys
- into JSON will throw an exception.
- 
- NSNumber instances created with the +initWithBool: method are
- converted into the JSON boolean "true" and "false" values, and vice
- versa. Any other NSNumber instances are converted to a JSON number the
- way you would expect.
- 
+ This exists so the SBJSON facade can implement the options in the writer without having to re-declare them.
  */
-@interface SBJsonWriter : SBJsonBase {
-
-@private
-    BOOL sortKeys, humanReadable;
-}
+@protocol SBJsonWriter
 
 /**
  @brief Whether we are generating human-readable (multiline) JSON.
@@ -87,19 +66,42 @@
  */
 - (NSString*)stringWithObject:(id)value;
 
+@end
+
+
 /**
- @brief Return JSON representation (or fragment) for the given object.
+ @brief The JSON writer class.
  
- Returns a string containing JSON representation of the passed in value, or nil on error.
- If nil is returned and @p error is not NULL, @p *error can be interrogated to find the cause of the error.
+ Objective-C types are mapped to JSON types in the following way:
  
- @param value any instance that can be represented as a JSON fragment
- @param error pointer to object to be populated with NSError on failure
+ @li NSNull -> Null
+ @li NSString -> String
+ @li NSArray -> Array
+ @li NSDictionary -> Object
+ @li NSNumber (-initWithBool:) -> Boolean
+ @li NSNumber -> Number
  
- */- (NSString*)stringWithObject:(id)value
-                           error:(NSError**)error;
+ In JSON the keys of an object must be strings. NSDictionary keys need
+ not be, but attempting to convert an NSDictionary with non-string keys
+ into JSON will throw an exception.
+ 
+ NSNumber instances created with the +initWithBool: method are
+ converted into the JSON boolean "true" and "false" values, and vice
+ versa. Any other NSNumber instances are converted to a JSON number the
+ way you would expect.
+ 
+ */
+@interface SBJsonWriter : SBJsonBase <SBJsonWriter> {
 
+@private
+    BOOL sortKeys, humanReadable;
+}
 
+@end
+
+// don't use - exists for backwards compatibility. Will be removed in 2.3.
+@interface SBJsonWriter (Private)
+- (NSString*)stringWithFragment:(id)value;
 @end
 
 /**
@@ -111,7 +113,7 @@
  object might implement it like this:
  
  @code
- - (id)proxyForJson {
+ - (id)jsonProxyObject {
     return [NSDictionary dictionaryWithObjectsAndKeys:
         name, @"name",
         phone, @"phone",

@@ -5,8 +5,6 @@ Created on 2011-11-7
 @author: liuxue
 '''
 
-from django.http import HttpResponse
-from django.utils import simplejson
 from django.contrib.auth import authenticate
 
 from django.contrib.auth.models import User
@@ -14,13 +12,11 @@ from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
  
 
-from utils.tools.my_exception import myException
-from utils.tools.apis_json_response import apis_json_response_decorator
+from utils.structs.my_exception import myException
+from utils.tools.apis_json_response_tool import apis_json_response_decorator
 import re
 
 from ERROR_MSG_SETTINGS import *
-
-from utils.tools.reg_phone_num import regPhoneNum
 
 re_username = re.compile(r'^[a-zA-Z]+\w+$')
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')

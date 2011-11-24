@@ -42,9 +42,6 @@
 
 @implementation SBJsonWriter
 
-@synthesize sortKeys;
-@synthesize humanReadable;
-
 static NSMutableCharacterSet *kEscapeChars;
 
 + (void)initialize {
@@ -52,14 +49,30 @@ static NSMutableCharacterSet *kEscapeChars;
 	[kEscapeChars addCharactersInString: @"\"\\"];
 }
 
-- (NSString*)stringWithObject:(id)value {
+
+@synthesize sortKeys;
+@synthesize humanReadable;
+
+/**
+ @deprecated This exists in order to provide fragment support in older APIs in one more version.
+ It should be removed in the next major version.
+ */
+- (NSString*)stringWithFragment:(id)value {
     [self clearErrorTrace];
+    depth = 0;
+    NSMutableString *json = [NSMutableString stringWithCapacity:128];
+    
+    if ([self appendValue:value into:json])
+        return json;
+    
+    return nil;
+}
+
+
+- (NSString*)stringWithObject:(id)value {
     
     if ([value isKindOfClass:[NSDictionary class]] || [value isKindOfClass:[NSArray class]]) {
-        depth = 0;
-        NSMutableString *json = [NSMutableString stringWithCapacity:128];
-        if ([self appendValue:value into:json])
-            return json;
+        return [self stringWithFragment:value];
     }
     
     if ([value respondsToSelector:@selector(proxyForJson)]) {
@@ -68,19 +81,12 @@ static NSMutableCharacterSet *kEscapeChars;
             return tmp;
     }
         
+
+    [self clearErrorTrace];
     [self addErrorWithCode:EFRAGMENT description:@"Not valid type for JSON"];
     return nil;
 }
 
-- (NSString*)stringWithObject:(id)value error:(NSError**)error {
-    NSString *tmp = [self stringWithObject:value];
-    if (tmp)
-        return tmp;
-    
-    if (error)
-        *error = [self.errorTrace lastObject];
-    return nil;
-}
 
 - (NSString*)indent {
     return [@"\n" stringByPaddingToLength:1 + 2 * depth withString:@" " startingAtIndex:0];
@@ -100,19 +106,11 @@ static NSMutableCharacterSet *kEscapeChars;
             return NO;
         
     } else if ([fragment isKindOfClass:[NSNumber class]]) {
-        if ('c' == *[fragment objCType]) {
+        if ('c' == *[fragment objCType])
             [json appendString:[fragment boolValue] ? @"true" : @"false"];
-        } else if ([fragment isEqualToNumber:(NSNumber*)kCFNumberNaN]) {
-            [self addErrorWithCode:EUNSUPPORTED description:@"NaN is not a valid number in JSON"];
-            return NO;
-
-        } else if (isinf([fragment doubleValue])) {
-            [self addErrorWithCode:EUNSUPPORTED description:@"Infinity is not a valid number in JSON"];
-            return NO;
-
-        } else {
+        else
             [json appendString:[fragment stringValue]];
-        }
+        
     } else if ([fragment isKindOfClass:[NSNull class]]) {
         [json appendString:@"null"];
     } else if ([fragment respondsToSelector:@selector(proxyForJson)]) {

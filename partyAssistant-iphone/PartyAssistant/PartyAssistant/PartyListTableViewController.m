@@ -56,7 +56,7 @@
         [self refreshBtnAction];
     }
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshBtnAction) name:CREATE_PARTY_SUCCESS object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AfterCreatedDone) name:CREATE_PARTY_SUCCESS object:nil];
 }
 
 - (void)viewDidUnload
@@ -367,5 +367,10 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)AfterCreatedDone{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self refreshBtnAction];
 }
 @end

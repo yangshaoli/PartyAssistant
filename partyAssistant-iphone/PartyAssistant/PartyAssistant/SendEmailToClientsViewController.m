@@ -273,10 +273,6 @@
 }
 
 - (void)createPartySuc{
-    EmailObjectService *s = [EmailObjectService sharedEmailObjectService];
-    [s clearEmailObject];
-    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-    [bs clearBaseInfo];
     self.tabBarController.selectedIndex = 1;
     NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
     [[NSNotificationCenter defaultCenter] postNotification:notification];
@@ -348,6 +344,12 @@
                 [vc setToRecipients:aArray];
                 vc.mailComposeDelegate = self;
                 [self presentModalViewController:vc animated:YES];
+                EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
+                [se clearEmailObject];
+                SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
+                [ss clearSMSObject];
+                BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+                [bs clearBaseInfo];
             }else{
                 [self createPartySuc];
             }
