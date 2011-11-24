@@ -7,6 +7,8 @@
 //
 
 #import "WeiboService.h"
+#define WEIBOAPPKEY @"999433557"
+#define WEIBOAPPSECRET @"8ebb477102459b3387da43686b21c963"
 
 @implementation WeiboService
 
@@ -17,10 +19,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
 - (id)init
 {
     self = [super init];
-    if (self) {
-        // Initialization code here.
-    }
-    
+    self.weiboPersonalProfile = [self getWeiboPersonalProfile];
     return self;
 }
 
@@ -34,40 +33,71 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
     
     NSString* documentsDirectory = [paths objectAtIndex:0];
     
-    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:USEROBJECTFILE];
+    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:WEIBOPERSONALPROFILEFILE];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fullPathToFile];
     if (fileExists) {
         NSData *theData = [NSData dataWithContentsOfFile:fullPathToFile];
         NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:theData];
-        self.userObject = [decoder decodeObjectForKey:USEROBJECTKEY];
+        self.weiboPersonalProfile = [decoder decodeObjectForKey:WEIBOPERSONALPROFILEKEY];
     } else {
-        self.userObject = [[UserObject alloc] init];
+        self.weiboPersonalProfile = [[WeiboPersonalProfile alloc] init];
     }
     
-    return self.userObject;
+    return self.weiboPersonalProfile;
 }
-- (void)saveUserObject
+
+- (void)saveWeiboPersonalProfile
 {
-    if (!self.userObject) {
+    if (!self.weiboPersonalProfile) {
         return;
     }
     
     NSMutableData *theData = [NSMutableData data];
     NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
     
-    [encoder encodeObject:self.userObject forKey:USEROBJECTKEY];
+    [encoder encodeObject:self.weiboPersonalProfile forKey:WEIBOPERSONALPROFILEKEY];
     [encoder finishEncoding];
     
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     
     NSString* documentsDirectory = [paths objectAtIndex:0];
     
-    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:USEROBJECTFILE];
+    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:WEIBOPERSONALPROFILEFILE];
     [theData writeToFile:fullPathToFile atomically:YES];
 }
-- (void)clearUserObject
+
+- (void)clearWeiboPersonalProfile
 {
-    [self.userObject clearObject];
+    [self.weiboPersonalProfile clearObject];
+}
+
+- (void)WeiboLogin
+{
+    WeiBo *weibo = [[WeiBo alloc] initWithAppKey:WEIBOAPPKEY withAppSecret:WEIBOAPPSECRET];
+    weibo.delegate = self;
+	[weibo startAuthorize];
+}
+
+- (void)weiboDidLogin
+{
+	UIAlertView* alertView = [[UIAlertView alloc]initWithTitle:nil 
+													   message:@"用户验证已成功！" 
+													  delegate:nil 
+											 cancelButtonTitle:@"确定" 
+											 otherButtonTitles:nil];
+	[alertView show];
+    self.weiboPersonalProfile._isLogin = YES;
+    [self saveWeiboPersonalProfile];
+}
+
+- (void)weiboLoginFailed:(BOOL)userCancelled withError:(NSError*)error
+{
+	UIAlertView* alertView = [[UIAlertView alloc]initWithTitle:@"用户验证失败！"  
+													   message:userCancelled?@"用户取消操作":[error description]  
+													  delegate:nil
+											 cancelButtonTitle:@"确定" 
+											 otherButtonTitles:nil];
+	[alertView show];
 }
 
 @end

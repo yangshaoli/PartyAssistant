@@ -166,6 +166,8 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    WeiboService *s = [WeiboService sharedWeiboService];
+    [s WeiboLogin];
 }
 
 @end

@@ -18,4 +18,7 @@
 @property(nonatomic, retain)NSString *username;
 @property(nonatomic, retain)NSString *password;
 @property(nonatomic, assign)BOOL _isLogin;
+
+- (void)clearObject;
+
 @end
