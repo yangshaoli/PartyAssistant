@@ -139,9 +139,7 @@
                     &nbsp;
                 </label>
                 <input id="id_email_invite_submit" type="submit" value="发送" />
-                <button id="id_back_to_list" onclick="location.href={% url list_party %}; return false;">
-                    返回列表
-                </button>
+                <button id="id_back_to_list" onclick="(function(){window.location.href='{% url list_party %}';})() ;return false;"> 返回活动列表</button>
             </div>
         </form>
     </div>
