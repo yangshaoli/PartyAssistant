@@ -2,6 +2,12 @@
 
 {% block title %}报名页面 - 爱热闹{% endblock %}
 
+{% block style %}
+<style>
+input[type="image"] { border:0px;height:45px;}
+</style>
+{% endblock %}
+
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script>
@@ -60,7 +66,7 @@ function ajaxChangeStatus(id, applystatus){
   <div class="grid_a">
    <h2 class="title">活动报名</h2>
    <div class="apply_details">
-    <p>{{party.creator.username}} <span class="minor">邀请</span> 您：</p>
+    <p>{{party.creator.username}} <span class="minor">邀请</span>  {% if client %}{{client.name}}{%else%}您{%endif%}：</p>
     <p>{{party.start_time}}</p>
     <p class="paragraph">{{party.address}} <span class="minor">参加活动</span></p>
     <p class="paragraph">{{party.description}}</p>
@@ -68,7 +74,24 @@ function ajaxChangeStatus(id, applystatus){
     
         {% if client %}
         <!-- 被邀请用户报名页面 -->
-    <form method="POST" url="{% url enroll party.id %}">
+    <form method="POST" url="{% url enroll party.id %}" class="creat_exercise">
+        {% if client.name == client.email %}
+        <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="hidden" name="address" value="{{client.email}}"/>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+        <div class="field">
+        {% endif %}
+        {% if client.name == client.phone %}
+        <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="hidden" name="address" value="{{client.phone}}"/>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+        <div class="field">
+        {% endif %}
+        
      <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
      <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
      <input id="id_action" type="hidden" name="action" value="" />
@@ -100,7 +123,7 @@ function ajaxChangeStatus(id, applystatus){
 
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">来凑热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">还在犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">就是不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>
@@ -114,7 +137,6 @@ function ajaxChangeStatus(id, applystatus){
 
        </tbody>
       </table>
-      <a href='{% url list_party %}'><button>返回</button></a>
      </div>
     </div>
    </div>

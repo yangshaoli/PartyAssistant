@@ -11,6 +11,7 @@
 body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquoteth, td {
  margin:0;
  padding:0;
+ color:#666666;
 }
 a { color: #333; text-decoration: none; }
 a:hover { color: red; text-decoration: none; cursor: pointer; }
@@ -55,8 +56,7 @@ abbr, acronym {
 /*2. common*/
 /**2.1 module1**/
 .errorlist{color:red; font-size:12px;}
-    input[type="submit"], button{ background:url('/static/images/btn_bg.png') center; border:0px; color:#fff; padding:5px 20px;}
-    
+
 .fw_b{
  font-weight:bold;
 }
@@ -163,11 +163,11 @@ body {
 .creat_exercise .field{
  clear:both;
  padding-bottom:1.4em;
- font-size:12px;
+ font-size:14px;
 }
 .creat_exercise .field label{
  float:left;
- padding-top:3px;
+ padding-top:8px;
  width:76px;
 }
 .creat_exercise input.text,.creat_exercise textarea.text{
@@ -182,7 +182,17 @@ body {
 }
 .creat_exercise  input{
  margin-right:10px;
+ height:28px;
+ border:1px #ff5555 solid;
+ border-radius:3px;
 }
+.creat_exercise textarea{
+  border:1px #ff5555 solid;
+}
+input[type="submit"], button{ border:0px; color:#fff; padding:6px 20px; font-size:14px;}
+input[type="submit"], button{ background:url('/static/images/btn_bg.png') center;}
+input[type="submit"]:hover, button:hover { background:url('/static/images/btn_hover_bg.png') center;}
+
 /*** 3.3.2 subpage2 ***/
 .apply_details{
  line-height:1.6em;
@@ -290,29 +300,38 @@ body {
 }
 .comment{
  background-color:#fff7c2;
- margin:10px 0 10px 10px;
+ margin:10px 0 30px 10px;
  padding:10px;
  position:relative;
 }
 .comment_odd{
  background-color:#f3ffcf;
+-khtml-border-radius: 11px;
+-khtml-box-shadow: rgba(200,200,200,1) 0 4px 18px;
+-moz-border-radius: 11px;
+-moz-box-shadow: rgba(200,200,200,1) 0 4px 18px;
+-webkit-border-radius: 11px;
+-webkit-box-shadow: rgba(200,200,200,1) 0 4px 18px;
+border: 1px solid #E5E5E5;
+border-radius: 5px;
+box-shadow: rgba(200,200,20);
 }
 .comment .corners{
  position:absolute;
- left:30px;
- top:-5px;
- width:10px;
- height:5px;
+ left:630px;
+ top:-12px;
+ width:30px;
+ height:15px;
  overflow:hidden;
- background:red url(../images/icon_corner2.png) left top no-repeat;
+ background:url(../images/icon_corner2.png) left top no-repeat;
 }
 .comment_odd .corners{
- background:red url(../images/icon_corner1.png) left top no-repeat;
+ background:url(../images/icon_corner1.png) left top no-repeat;
 }
 .comment .details{
  padding:10px;
 }
-.comment .important{
+.important{
  color:#d12000;
 }
 .function_share .statistics{
@@ -329,7 +348,7 @@ body {
  border-top:1px dotted #999999;
  height:0;
  overflow:hidden;
- margin:10px 0;
+ margin:20px 8px;
 }
 /** 3.4 popup **/
 .transparent, .popup {display:none;}

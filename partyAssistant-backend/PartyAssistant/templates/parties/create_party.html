@@ -1,6 +1,12 @@
 {% extends 'login_base.html' %}
 {% block title %}创建活动 {% endblock %}
 
+{% block style %}
+<style>
+#id_description { padding:3px;}
+</style>
+{% endblock %}
+
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript" src="/static/js/time.js"></script>
@@ -69,16 +75,16 @@ $(document).ready(function(){
      <label for="id_start_date">
      何时
      </label>
-     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08' class='input-txt3 mys'></input>
+     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08' class='input-txt3 mys' style="width:150px;"></input>
      {{ form.start_date.errors }}
-     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08' class='input-txt3 mys TimePker' autocomplete='off'></input>
+     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08' class='input-txt3 mys TimePker' autocomplete='off' style="width:150px;"></input>
      {{ form.start_time.errors }}
      </div>
      <div class="field">
      <label for="id_address">
      去哪
      </label>
-     <input name='address' id='id_address' placeholder='可选填，主要作用是进行地图定位' style="width: 223px;"></input>
+     <input name='address' id='id_address' placeholder='可选填，主要作用是进行地图定位' style="width: 315px;"></input>
      {{ form.address.errors }}
      </div>
      <div class="field">
@@ -86,7 +92,7 @@ $(document).ready(function(){
      玩啥<span style="color:red">*</span>
      </label>
      {{ form.description.errors }}
-     <textarea name='description' id='id_description' placeholder='必填项' style="width: 223px; height: 120px;"></textarea>
+     <textarea name='description' id='id_description' placeholder='必填项' cols="70" rows="13"></textarea>
      </div>
      <div class="field">
      <label for="id_limit_count">

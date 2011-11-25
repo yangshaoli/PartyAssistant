@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.0" toolsVersion="1900" systemVersion="11C74" targetRuntime="iOS.CocoaTouch" nextObjectID="197" propertyAccessControl="none" initialViewController="4">
+    <dependencies>
+        <deployment defaultVersion="1280" identifier="iOS"/>
+        <development defaultVersion="4200" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="894"/>
+    </dependencies>
+    <scenes>
+        <scene sceneID="15">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="14" sceneMemberID="firstResponder"/>
+                <tabBarController id="4" sceneMemberID="viewController">
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="5">
+                        <rect key="frame" x="0.0" y="431" width="320" height="49"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="37" kind="relationship" relationship="viewControllers" id="80"/>
+                        <segue destination="50" kind="relationship" relationship="viewControllers" id="81"/>
+                        <segue destination="60" kind="relationship" relationship="viewControllers" id="82"/>
+                    </connections>
+                </tabBarController>
+            </objects>
+            <point key="canvasLocation" x="-34" y="609"/>
+        </scene>
+        <scene sceneID="43">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="42" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController storyboardIdentifier="" autoresizesArchivedViewToFullSize="NO" id="36" customClass="AddNewPartyBaseInfoTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="singleLineEtched" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="85">
+                        <rect key="frame" x="0.0" y="64" width="320" height="367"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <connections>
+                            <outlet property="dataSource" destination="36" id="89"/>
+                            <outlet property="delegate" destination="36" id="88"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="新趴基本信息" id="39"/>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="946" y="-101"/>
+        </scene>
+        <scene sceneID="45">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="44" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationController id="37" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="开新趴" id="46"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="38">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="36" kind="relationship" relationship="rootViewController" id="74"/>
+                    </connections>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="563" y="-101"/>
+        </scene>
+        <scene sceneID="58">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="57" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationController id="50" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="趴列表" id="70"/>
+                    <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="51">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="113" kind="relationship" relationship="rootViewController" id="120"/>
+                    </connections>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="574" y="609"/>
+        </scene>
+        <scene sceneID="66">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="65" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="59" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="63">
+                        <rect key="frame" x="0.0" y="64" width="320" height="367"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="62"/>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="1108" y="1260"/>
+        </scene>
+        <scene sceneID="68">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="67" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationController id="60" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="设置" id="72"/>
+                    <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="61">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="59" kind="relationship" relationship="rootViewController" id="64"/>
+                    </connections>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="574" y="1260"/>
+        </scene>
+        <scene sceneID="119">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="118" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tableViewController title="趴列表" id="113" customClass="PartyListTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="114">
+                        <rect key="frame" x="0.0" y="64" width="320" height="367"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <connections>
+                            <outlet property="dataSource" destination="113" id="117"/>
+                            <outlet property="delegate" destination="113" id="116"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="趴列表" id="121"/>
+                </tableViewController>
+            </objects>
+            <point key="canvasLocation" x="972" y="609"/>
+        </scene>
+        <scene sceneID="173">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="172" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="166" customClass="PartyLoginViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="181">
+                        <rect key="frame" x="0.0" y="64" width="320" height="416"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="182">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="416"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="166" id="195"/>
+                                    <outlet property="delegate" destination="166" id="196"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="169"/>
+                    <connections>
+                        <outlet property="tableView" destination="182" id="194"/>
+                        <outlet property="view" destination="181" id="187"/>
+                    </connections>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="-788" y="617"/>
+        </scene>
+        <scene sceneID="175">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="174" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <navigationController id="167" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="168">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="166" kind="relationship" relationship="rootViewController" id="171"/>
+                    </connections>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="-1260" y="601"/>
+        </scene>
+    </scenes>
+    <classes>
+        <class className="AddNewPartyBaseInfoTableViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/AddNewPartyBaseInfoTableViewController.h"/>
+            <relationships/>
+        </class>
+        <class className="PartyListTableViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/PartyListTableViewController.h"/>
+            <relationships/>
+        </class>
+        <class className="PartyLoginViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/PartyLoginViewController.h"/>
+            <relationships>
+                <relationship kind="outlet" name="pwdTableCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="pwdTextField" candidateClass="UITextField"/>
+                <relationship kind="outlet" name="tableView" candidateClass="UITableView"/>
+                <relationship kind="outlet" name="userNameTableCell" candidateClass="UITableViewCell"/>
+                <relationship kind="outlet" name="userNameTextField" candidateClass="UITextField"/>
+            </relationships>
+        </class>
+    </classes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination"/>
+    </simulatedMetricsContainer>
+</document>
