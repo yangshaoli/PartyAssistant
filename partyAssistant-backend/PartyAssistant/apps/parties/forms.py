@@ -16,6 +16,10 @@ class CreatePartyForm(forms.ModelForm):
         if 'limit_count' in self.cleaned_data:
             if self.cleaned_data['limit_count'] == None:
                 self.cleaned_data['limit_count'] = 0
+            else:
+                limit_count = self.cleaned_data['limit_count']
+                if limit_count < 0 or limit_count > 999:
+                    raise forms.ValidationError(u'人数应在0~999之间')
             return self.cleaned_data['limit_count']
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget=forms.TextInput(), required=True)
