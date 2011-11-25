@@ -1,5 +1,5 @@
 {% extends 'login_base.html' %}
-
+{% load string_filter %}
 {% block title %} 我的活动 {% endblock %}
 
 {% block script %}
@@ -53,7 +53,7 @@
      {% endif %}
      <p style="text-align:right;margin:10px 0px 20px 0px;"><strong class="important">{{ party.start_date|date:"m月d日"}}</strong> {{ party.start_time|time:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
     <div class="comment comment_odd"> <i class="corners"></i>
-      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
+      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|truncatestring:"60" }}</a></p>
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
        <p class="statistics"><a href="{%url invite_list party.id %}?apply=noanswer">犹豫的：<strong class="important">{{ party.client.count.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=apply">爱热闹的：<strong class="important">{{ party.client.count.apply }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不来的：<strong class="important">{{ party.client.count.reject }}</strong></p></a>
