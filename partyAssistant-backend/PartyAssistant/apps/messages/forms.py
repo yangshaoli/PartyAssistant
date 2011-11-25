@@ -10,7 +10,7 @@ import re
 
 class EmailInviteForm(forms.Form):
     client_email_list = forms.CharField(widget=forms.Textarea())
-    content = forms.CharField(widget=forms.Textarea())
+    content = forms.CharField(widget=forms.Textarea(attrs={'rows':'15','cows':'70'}))
     is_apply_tips = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     
     def clean_client_email_list(self):
@@ -37,7 +37,7 @@ class EmailInviteForm(forms.Form):
 
 class SMSInviteForm(forms.Form):
     client_phone_list = forms.CharField(widget=forms.Textarea())
-    content = forms.CharField(widget=forms.Textarea())
+    content = forms.CharField(widget=forms.Textarea(attrs={'rows':'15','cows':'70'}))
     is_apply_tips = forms.BooleanField(required=False)
     
     def clean_client_phone_list(self):
