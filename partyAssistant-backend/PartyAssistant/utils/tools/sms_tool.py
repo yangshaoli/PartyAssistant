@@ -8,7 +8,7 @@ Created on 2011-11-17
 from apps.common.models import ShortLink
 from django.utils import simplejson
 from settings import DOMAIN_NAME
-from utils.str_util import next_key
+from utils.tools.str_tool import next_key
 import hashlib
 import logging
 import urllib2

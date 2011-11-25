@@ -9,19 +9,18 @@ from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
 from apps.parties.models import PartiesClients
-from apps.clients.views import get_client_sum 
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.template import RequestContext
+from django.http import HttpResponse
+from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
-from forms import CreatePartyForm, InviteForm
+from django.utils import simplejson
+from forms import CreatePartyForm
 from models import Party
-from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
+from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
 import datetime
 import logging
-from django.utils import simplejson
 
 logger = logging.getLogger('airenao')
 
@@ -519,3 +518,72 @@ def _get_client_count(party):
             client_count['reject'] = client_count['reject'] + 1
     
     return client_count
+
+@login_required
+def change_apply_status(request, party_client_id, applystatus):
+    client_party = PartiesClients.objects.get(pk=party_client_id)      
+    client_party.apply_status = applystatus
+    client_party.save()        
+    return HttpResponse('ok') 
+
+@login_required
+def invite_list(request, party_id):
+    party = get_object_or_404(Party, id=party_id)
+    party_clients_list = PartiesClients.objects.filter(party=party)
+    
+    party_clients = {
+        'apply': {
+            'is_check': True, 
+            'client_count': 0
+        }, 
+        'noanswer': {
+            'is_check': True, 
+            'client_count': 0
+        }, 
+        'reject': {
+            'is_check': True, 
+            'client_count': 0
+        }
+    }
+    
+    for party_client in party_clients_list:
+        if party_client.apply_status == 'apply':
+            party_clients['apply']['client_count'] = party_clients['apply']['client_count'] + 1
+            if not party_client.is_check:
+                party_clients['apply']['is_check'] = False
+        elif party_client.apply_status == 'noanswer':
+            party_clients['noanswer']['client_count'] = party_clients['noanswer']['client_count'] + 1
+            if not party_client.is_check:
+                party_clients['noanswer']['is_check'] = False
+        if party_client.apply_status == 'reject':
+            party_clients['reject']['client_count'] = party_clients['reject']['client_count'] + 1
+            if not party_client.is_check:
+                party_clients['reject']['is_check'] = False
+    
+    return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
+
+@login_required
+def invite_list_ajax(request, party_id):
+    apply_status = request.GET.get('apply', 'all')
+    party = get_object_or_404(Party, id=party_id)
+    
+    if apply_status == 'all':
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party)
+    else:
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
+    
+    party_clients_data = []
+    for party_client in party_clients_list:
+        party_client_data = {
+            'id' : party_client.id,
+            'name' : party_client.client.name, 
+            'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
+            'is_check': party_client.is_check
+        }    
+        party_clients_data.append(party_client_data)
+        
+        if not party_client.is_check:
+            party_client.is_check = True
+            party_client.save()
+    
+    return HttpResponse(simplejson.dumps(party_clients_data))

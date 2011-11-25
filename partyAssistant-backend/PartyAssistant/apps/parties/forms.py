@@ -2,7 +2,6 @@
 
 from apps.parties.models import Party
 from django import forms
-from django.core.validators import validate_email
 from django.forms.widgets import TextInput
 
 class CreatePartyForm(forms.ModelForm):
@@ -12,6 +11,7 @@ class CreatePartyForm(forms.ModelForm):
         widgets = {
             'limit_count': TextInput(attrs={'maxlength':'3'}),
         }
+
     def clean_limit_count(self):
         if 'limit_count' in self.cleaned_data:
             if self.cleaned_data['limit_count'] == None:
