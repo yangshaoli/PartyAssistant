@@ -210,15 +210,7 @@ def GetPartyMsg(request, pid):
     else:
         subject = subObj.subject
         content = subObj.content
-    print {
-            'msgType':messageType,
-            'receiverArray':receivers,
-            'receiverType':'iphone',
-            'content':content,
-            'subject':subject,
-            '_isApplyTips':message.is_apply_tips,
-            '_isSendBySelf':message.is_send_by_self
-            }
+
     return {
             'msgType':messageType,
             'receiverArray':receivers,

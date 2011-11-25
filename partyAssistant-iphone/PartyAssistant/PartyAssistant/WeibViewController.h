@@ -7,7 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "WeiBo.h"
+#import "WeiboSettings.h"
+#import "WeiboRetweetView.h"
+#import "WeiboLoginWebView.h"
+#import "WeiboService.h"
 
-@interface WeiboLoginViewController : UIViewController
+@interface WeibViewController : UIViewController
+{
+    WeiBo *weibo;
+    id childView;
+}
 
+@property(nonatomic,retain)WeiBo *weibo;
+@property(nonatomic,retain)id childView;
+
+- (void)cancelBtnAction;
+- (void)sendBtnAction;
 @end

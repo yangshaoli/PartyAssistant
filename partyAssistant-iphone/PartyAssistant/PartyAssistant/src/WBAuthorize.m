@@ -24,7 +24,7 @@ static NSString* oauthUserAuthorizeURL		= @"http://api.t.sina.com.cn/oauth/autho
 static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/access_token";
 
 
-@interface WBAuthorize (Private)
+@interface WBAuthorize (Private)<UIWebViewDelegate>
 + (NSString*)stringFromDictionaryForOAuthRequestHeadField:(NSDictionary *)info;
 + (NSString*)stringFromDictionary:(NSDictionary*)info;
 + (NSString*)getSignatureBaseStringWithHttpMethod:(NSString*)httpMethod withURL:(NSString*)URL withHeadInfo:(NSDictionary*)headInfo;
@@ -175,7 +175,6 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 - (void)gettingRequestTokenSuccessWithData:(NSData*)data
 {
 	NSString* string = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"str:%@",string);
 	if( [string rangeOfString:@"error"].location == NSNotFound )
 	{
 		NSDictionary* info = [WBAuthorize infoFromOAuthRequestReturnString:string];
@@ -188,7 +187,6 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 			}
 			_requestToken = [[info objectForKey:@"oauth_token"]retain];
 			[self openUserAuthorizePage];
-			
 			if( _requestSecret )
 			{
 				[_requestSecret release];
@@ -206,10 +204,32 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 	NSString* urlString = [WBRequest serializeURL:oauthUserAuthorizeURL 
 										   params:[NSDictionary dictionaryWithObjectsAndKeys:_requestToken,@"oauth_token",[NSString stringWithFormat:@"%@://%@",[_weibo urlSchemeString],WeiBoAuthorizeCallBack],@"oauth_callback",nil] 
 									   httpMethod:@"GET"];
-	
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+    NSNotification *notification = [NSNotification notificationWithName:@"testNotification" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:urlString,@"url", nil]];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+	/** 
+     验证应用之后，我们不在Safari中打开授权Page，而是直接在WebView中打开！
+     */
+//    UIWebView *webV = [[UIWebView alloc] initWithFrame:CGRectMake(50, 20, 220, 400)];
+//    webV.delegate = self;
+//    
+//    [webV loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];
+//	UIWindow* window = [UIApplication sharedApplication].keyWindow;
+//	if (!window) {
+//		window = [[UIApplication sharedApplication].windows objectAtIndex:0];
+//	}
+//    UIViewController *vc = [[UIViewController alloc] init];
+//    UINavigationBar *bar = [[UINavigationBar alloc] init];
+//    [vc.view addSubview:bar];
+//    [window.rootViewController presentModalViewController:vc animated:YES];
+////    [window ];
+//    [window release];
+//    [bar release];
+//    [vc release];
 }
-
+//- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+//{
+//    return YES;
+//}
 
 - (void)getAccessTokenWithVerifier:(NSString*)verifier
 {	

@@ -166,8 +166,10 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
-    WeiboService *s = [WeiboService sharedWeiboService];
-    [s WeiboLogin];
+//    WeiboService *s = [WeiboService sharedWeiboService];
+//    [s WeiboLogin];
+    WeibViewController *vc = [[WeibViewController alloc] initWithNibName:@"WeibViewController" bundle:nil];
+    [self presentModalViewController:vc animated:YES];
 }
 
 @end

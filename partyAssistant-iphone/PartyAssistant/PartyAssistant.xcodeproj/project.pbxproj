@@ -141,6 +141,11 @@
 		89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89AB0488146E14D5008DC8C9 /* ResendSMSTableViewController.xib */; };
 		89B173921473469C0066B58E /* EmailObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B173911473469C0066B58E /* EmailObjectService.m */; };
 		89B17396147346C60066B58E /* EmailObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B17395147346C60066B58E /* EmailObject.m */; };
+		89BEFA4E147F3F0400B3408F /* WeibViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA4C147F3F0400B3408F /* WeibViewController.m */; };
+		89BEFA4F147F3F0400B3408F /* WeibViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89BEFA4D147F3F0400B3408F /* WeibViewController.xib */; };
+		89BEFA52147F791500B3408F /* WeiboLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA51147F791400B3408F /* WeiboLoginView.m */; };
+		89BEFA55147F794800B3408F /* WeiboRetweetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA54147F794800B3408F /* WeiboRetweetView.m */; };
+		89E5F440147F24F6008FC556 /* WeiBoLoginWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */; };
 		89E7D926146280900059ADF4 /* SMSObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D925146280900059ADF4 /* SMSObjectService.m */; };
 		89E7D93014628C400059ADF4 /* UIViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92D14628C400059ADF4 /* UIViewControllerExtra.m */; };
 		89E7D93114628C400059ADF4 /* UITableViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92F14628C400059ADF4 /* UITableViewControllerExtra.m */; };
@@ -379,6 +384,16 @@
 		89B173911473469C0066B58E /* EmailObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObjectService.m; sourceTree = "<group>"; };
 		89B17394147346C60066B58E /* EmailObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmailObject.h; sourceTree = "<group>"; };
 		89B17395147346C60066B58E /* EmailObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObject.m; sourceTree = "<group>"; };
+		89BEFA4B147F3F0400B3408F /* WeibViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeibViewController.h; sourceTree = "<group>"; };
+		89BEFA4C147F3F0400B3408F /* WeibViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeibViewController.m; sourceTree = "<group>"; };
+		89BEFA4D147F3F0400B3408F /* WeibViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WeibViewController.xib; sourceTree = "<group>"; };
+		89BEFA50147F791400B3408F /* WeiboLoginView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboLoginView.h; sourceTree = "<group>"; };
+		89BEFA51147F791400B3408F /* WeiboLoginView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboLoginView.m; sourceTree = "<group>"; };
+		89BEFA53147F794800B3408F /* WeiboRetweetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboRetweetView.h; sourceTree = "<group>"; };
+		89BEFA54147F794800B3408F /* WeiboRetweetView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboRetweetView.m; sourceTree = "<group>"; };
+		89BEFA5A147F7D7E00B3408F /* WeiboSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboSettings.h; sourceTree = "<group>"; };
+		89E5F43E147F24F6008FC556 /* WeiBoLoginWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiBoLoginWebView.h; sourceTree = "<group>"; };
+		89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiBoLoginWebView.m; sourceTree = "<group>"; };
 		89E7D924146280900059ADF4 /* SMSObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSObjectService.h; sourceTree = "<group>"; };
 		89E7D925146280900059ADF4 /* SMSObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSObjectService.m; sourceTree = "<group>"; };
 		89E7D92C14628C400059ADF4 /* UIViewControllerExtra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerExtra.h; sourceTree = "<group>"; };
@@ -490,6 +505,7 @@
 				891A4D9214579B3C00A2CF47 /* MainStoryboard.storyboard */,
 				891A4D8714579B3C00A2CF47 /* Supporting Files */,
 				893C221A14611A6200966B11 /* NotificationSettings.h */,
+				89BEFA5A147F7D7E00B3408F /* WeiboSettings.h */,
 				89E7D935146373480059ADF4 /* URLSettings.h */,
 				898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */,
 			);
@@ -657,6 +673,15 @@
 				89326536145E8233006E827D /* ReceiverLabel.m */,
 				8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */,
 				8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */,
+				89BEFA53147F794800B3408F /* WeiboRetweetView.h */,
+				89BEFA54147F794800B3408F /* WeiboRetweetView.m */,
+				89BEFA50147F791400B3408F /* WeiboLoginView.h */,
+				89BEFA51147F791400B3408F /* WeiboLoginView.m */,
+				89E5F43E147F24F6008FC556 /* WeiBoLoginWebView.h */,
+				89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */,
+				89BEFA4B147F3F0400B3408F /* WeibViewController.h */,
+				89BEFA4C147F3F0400B3408F /* WeibViewController.m */,
+				89BEFA4D147F3F0400B3408F /* WeibViewController.xib */,
 			);
 			name = CustomClass;
 			sourceTree = "<group>";
@@ -993,6 +1018,7 @@
 				89395905147DEB56003A883C /* close@2x.png in Resources */,
 				89395906147DEB56003A883C /* delete.png in Resources */,
 				89395907147DEB56003A883C /* delete@2x.png in Resources */,
+				89BEFA4F147F3F0400B3408F /* WeibViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1109,6 +1135,10 @@
 				893FE0E3147E24CE0081BFD1 /* SBJsonBase.m in Sources */,
 				893FE0E4147E24CF0081BFD1 /* SBJsonParser.m in Sources */,
 				893FE0E5147E24CF0081BFD1 /* SBJsonWriter.m in Sources */,
+				89E5F440147F24F6008FC556 /* WeiBoLoginWebView.m in Sources */,
+				89BEFA4E147F3F0400B3408F /* WeibViewController.m in Sources */,
+				89BEFA52147F791500B3408F /* WeiboLoginView.m in Sources */,
+				89BEFA55147F794800B3408F /* WeiboRetweetView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "WBAuthorize.h"
 
-@interface WeiBoLoginWebView : UIWebView
+@interface WeiBoLoginWebView : UIWebView<UIWebViewDelegate>
 
 @end
