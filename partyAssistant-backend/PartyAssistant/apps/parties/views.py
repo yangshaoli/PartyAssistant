@@ -190,16 +190,20 @@ def email_invite(request, party_id):
             form = EmailInviteForm(initial = data)
         else:
             #生成默认内容
-            content = party.creator.username + u'邀请你参加：'
-            if party.start_time == None and party.address == '':
-                content = content + party.description + u',时间、地点，另行通知。'
-            elif party.start_time != None and party.address == u'':
-                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
-            elif party.start_time == None and party.address != '':
-                content = content + u'在' + party.address + party.description + u',时间待定。'
-            else:  
-                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + u' ,在' + party.address + u'的活动' + party.description         
-            
+            content = party.creator.username + u'邀请你参加：'+party.description+u'活动'
+            address_content = ','+u'地点:'+(party.address if party.address != "" else u'待定') 
+            if party.start_date == None and party.start_time == None:
+                if party.address == "":
+                    content += ','+u'具体安排待定'
+                else:
+                    content += ','+address_content
+            if party.start_date != None and party.start_time == None:
+                content += address_content+','+u'日期:'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+u',时间暂定'
+            if party.start_date == None and party.start_time != None:
+                content += address_content+','+ u'日期暂定'+','+u'时间:'+datetime.time.strftime(party.start_time, '%H:%M')
+            if party.start_date != None and party.start_time != None:
+                content += address_content+','+u'具体时间：'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+' '+datetime.time.strftime(party.start_time, '%H:%M')        
+            content += u'。'
             data = {
                 'client_email_list': '',
                 'content': content,
@@ -339,16 +343,20 @@ def sms_invite(request, party_id):
             form = SMSInviteForm(initial = data)
         else:
             #生成默认内容
-            content = party.creator.username + u'邀请你参加：'
-            if party.start_time == None and party.address == '':
-                content = content + party.description + u',时间、地点，另行通知。'
-            elif party.start_time != None and party.address == u'':
-                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
-            elif party.start_time == None and party.address != '':
-                content = content + u'在' + party.address + party.description + u',时间待定。'
-            else:  
-                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + u' ,在' + party.address + u'的活动' + party.description         
-
+            content = party.creator.username + u'邀请你参加：'+party.description+u'活动'
+            address_content = ','+u'地点:'+(party.address if party.address != "" else u'待定') 
+            if party.start_date == None and party.start_time == None:
+                if party.address == "":
+                    content += ','+u'具体安排待定'
+                else:
+                    content += ','+address_content
+            if party.start_date != None and party.start_time == None:
+                content += address_content+','+u'日期:'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+u',时间暂定'
+            if party.start_date == None and party.start_time != None:
+                content += address_content+','+ u'日期暂定'+','+u'时间:'+datetime.time.strftime(party.start_time, '%H:%M')
+            if party.start_date != None and party.start_time != None:
+                content += address_content+','+u'具体时间：'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+' '+datetime.time.strftime(party.start_time, '%H:%M')        
+            content += u'。'
             data = {
                'client_phone_list': '',
                'content': content,
