@@ -51,7 +51,7 @@
      {% if not forloop.first %}
      <div class="line"></div>
      {% endif %}
-     <p style="text-align:right;margin:10px 0px 20px 0px;"><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
+     <p style="text-align:right;margin:10px 0px 20px 0px;"><strong class="important">{{ party.start_date|date:"m月d日"}}</strong> {{ party.start_time|time:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
     <div class="comment comment_odd"> <i class="corners"></i>
       <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
       <div class="function_share clearfix">
