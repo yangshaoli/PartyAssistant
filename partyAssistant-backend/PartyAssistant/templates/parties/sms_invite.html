@@ -108,6 +108,56 @@
      </label>
 	 <textarea id="id_client_phone_list" rows="4" cols="40" name="client_phone_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_sms_list.value }}</textarea>
      {{ form.client_phone_list.errors }}
+     {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
+        <script>
+          var reject = '{{ quickadd_client.reject_client }}';
+          var apply = '{{ quickadd_client.apply_client }}';
+          var noanswer = '{{ quickadd_client.noanswer_client }}';
+          function quickadd(o){
+          	var temp = ''
+          	if(o=='all'){
+              	if(reject!=''){
+                  temp += reject+','; 
+             	 }
+             	if(apply!=''){
+                  temp += apply+','; 
+             	 }
+             	if(noanswer!=''){
+                 temp += noanswer+','; 
+             	} 
+	        }
+	        if(o=='apply'){
+             	if(apply!=''){
+                  temp += apply+','; 
+             	 }
+	        }
+	        if(o=='reject'){
+             	if(reject!=''){
+                  temp += reject+','; 
+             	 }
+	        }
+	        if(o=='noanswer'){
+             	if(noanswer!=''){
+                  temp += noanswer+','; 
+             	 }
+	        }   
+	        if(temp!=''){  	
+             	var content = $('#id_client_phone_list').val();
+             	if(content.replace(/^\s+|,|\s+$/g, "")!=""){
+             	  if(content.charAt(content.length-1)==","){
+             	  	$('#id_client_phone_list').val(content+temp);
+             	  }else{
+             	    $('#id_client_phone_list').val(content+","+temp);
+             	  }
+             	}else{
+             	    $('#id_client_phone_list').val(temp)
+             	}
+            } 	
+          }
+        
+        </script>
+        <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">已报名</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">未报名</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">犹豫的</a>
+        {% endif %}
      </div>
      <div class="field">
      <label for="id_send_phone_count">

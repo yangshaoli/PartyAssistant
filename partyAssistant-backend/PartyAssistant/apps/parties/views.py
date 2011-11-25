@@ -146,7 +146,27 @@ def email_invite(request, party_id):
             for client in Client.objects.filter(creator = request.user):
                 if client.email:
                     client_data.append(client.email)
-            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data)})
+            noanswer_client = []
+            apply_client = []
+            reject_client = []
+            parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
+            for  party_client in parties_clients :
+                if party_client.apply_status == 'noanswer':
+                    noanswer_client.append(party_client.client.email)
+                if party_client.apply_status == 'apply':
+                    apply_client.append(party_client.client.email)
+                if party_client.apply_status == 'reject':
+                    reject_client.append(party_client.client.email)
+            
+            noanswer_client = ','.join(noanswer_client)
+            apply_client = ','.join(apply_client)
+            reject_client = ','.join(reject_client)
+            quickadd_client = {'noanswer_client':noanswer_client,
+                               'apply_client':apply_client,
+                               'reject_client':reject_client
+                               }
+                      
+            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
@@ -174,7 +194,7 @@ def email_invite(request, party_id):
             if party.start_time == None and party.address == '':
                 content = content + party.description + u',时间、地点，另行通知。'
             elif party.start_time != None and party.address == u'':
-                content = content + datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
+                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
             elif party.start_time == None and party.address != '':
                 content = content + u'在' + party.address + party.description + u',时间待定。'
             else:  
@@ -190,7 +210,27 @@ def email_invite(request, party_id):
         for client in Client.objects.filter(creator = request.user):
             if client.email:
                 client_data.append(client.email)
-        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data)})
+            noanswer_client = []
+            apply_client = []
+            reject_client = []
+            parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
+            for  party_client in parties_clients :
+                if party_client.apply_status == 'noanswer':
+                    noanswer_client.append(party_client.client.email)
+                if party_client.apply_status == 'apply':
+                    apply_client.append(party_client.client.email)
+                if party_client.apply_status == 'reject':
+                    reject_client.append(party_client.client.email)
+            
+            noanswer_client = ','.join(noanswer_client)
+            apply_client = ','.join(apply_client)
+            reject_client = ','.join(reject_client)
+            quickadd_client = {'noanswer_client':noanswer_client,
+                               'apply_client':apply_client,
+                               'reject_client':reject_client
+                               }
+                            
+        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
 
 @login_required
 @transaction.commit_on_success
@@ -256,7 +296,26 @@ def sms_invite(request, party_id):
             for client in Client.objects.filter(creator = request.user):
                 if client.phone:
                     client_data.append(client.phone)
-            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party,'client_data':simplejson.dumps(client_data)})
+            noanswer_client = []
+            apply_client = []
+            reject_client = []
+            parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
+            for  party_client in parties_clients :
+                if party_client.apply_status == 'noanswer':
+                    noanswer_client.append(party_client.client.phone)
+                if party_client.apply_status == 'apply':
+                    apply_client.append(party_client.client.phone)
+                if party_client.apply_status == 'reject':
+                    reject_client.append(party_client.client.phone)
+            
+            noanswer_client = ','.join(noanswer_client)
+            apply_client = ','.join(apply_client)
+            reject_client = ','.join(reject_client)
+            quickadd_client = {'noanswer_client':noanswer_client,
+                               'apply_client':apply_client,
+                               'reject_client':reject_client
+                               }                    
+            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party,'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
@@ -284,7 +343,7 @@ def sms_invite(request, party_id):
             if party.start_time == None and party.address == '':
                 content = content + party.description + u',时间、地点，另行通知。'
             elif party.start_time != None and party.address == u'':
-                content = content + datetime.datetime.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
+                content = content + datetime.time.strftime(party.start_time, '%Y-%m-%d %H:%M') + party.description + u',地点另行通知。'     
             elif party.start_time == None and party.address != '':
                 content = content + u'在' + party.address + party.description + u',时间待定。'
             else:  
@@ -300,7 +359,26 @@ def sms_invite(request, party_id):
         for client in Client.objects.filter(creator = request.user):
             if client.phone:
                 client_data.append(client.phone)
-        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data)})
+        noanswer_client = []
+        apply_client = []
+        reject_client = []
+        parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
+        for  party_client in parties_clients :
+            if party_client.apply_status == 'noanswer':
+                noanswer_client.append(party_client.client.phone)
+            if party_client.apply_status == 'apply':
+                apply_client.append(party_client.client.phone)
+            if party_client.apply_status == 'reject':
+                reject_client.append(party_client.client.phone)
+        
+        noanswer_client = ','.join(noanswer_client)
+        apply_client = ','.join(apply_client)
+        reject_client = ','.join(reject_client)
+        quickadd_client = {'noanswer_client':noanswer_client,
+                           'apply_client':apply_client,
+                           'reject_client':reject_client
+                           }        
+        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
 
 
 def delete_party_notice(request, party_id):
