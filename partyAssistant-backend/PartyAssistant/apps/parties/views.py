@@ -467,8 +467,8 @@ def _invite_enroll(request, party_id, invite_key):
     
     if request.method == 'POST':
         #保存client的姓名
-        if request.POST['name']:
-            client.name = request.POST['name']
+        if request.POST.get('name',request.POST['address'] ):
+            client.name = request.POST.get('name',request.POST['address'])
             client.save()
         if request.POST['action'] == 'yes': #如果点击参加
             party_client.apply_status = u'apply'

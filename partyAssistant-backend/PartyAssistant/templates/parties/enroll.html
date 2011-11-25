@@ -2,6 +2,12 @@
 
 {% block title %}报名页面 - 爱热闹{% endblock %}
 
+{% block style %}
+<style>
+input[type="image"] { border:0px;height:45px;}
+</style>
+{% endblock %}
+
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script>
@@ -72,10 +78,20 @@ function ajaxChangeStatus(id, applystatus){
         {% if client.name == client.email %}
         <div class="field">
              <label for="client_email_list">姓名</label>
+                 <input type="hidden" name="address" value="{{client.email}}"/>
                  <input type="text" name="name" id="id_name"/>
              </div>
         <div class="field">
         {% endif %}
+        {% if client.name == client.phone %}
+        <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="hidden" name="address" value="{{client.phone}}"/>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+        <div class="field">
+        {% endif %}
+        
      <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
      <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
      <input id="id_action" type="hidden" name="action" value="" />
