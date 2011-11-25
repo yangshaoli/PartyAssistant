@@ -50,21 +50,21 @@
          <label for="username">
          用户名
          </label>
-         <input id='id_username' name='username' placeholder='必填项，输入范围6-14字符'></input>
+         <input id='id_username' name='username' type='text' placeholder='必填项，输入范围6-14字符'></input>
          <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
          <div class="field">
          <label for="password">
          密码
          </label>
-         <input name='password' placeholder="必填项" id="id_password">
+         <input name='password' placeholder="必填项" type='password' id="id_password">
          <font color="red">{{ form.password.errors.0 }}</font>
          </div>
          <div class="field">
          <label for="confirm_password">
          确认密码
          </label>
-         <input name='confirm_password' placeholder="必填项" id="id_confirm_password">
+         <input name='confirm_password' placeholder="必填项" type='password' id="id_confirm_password">
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="submit_field">
