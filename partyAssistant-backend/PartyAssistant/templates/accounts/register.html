@@ -1,38 +1,74 @@
 {% extends 'not_login_base.html' %}
 
-{% block style %}
-<style>
-.grid_a input[type=password], #id_username {width:200px;}
-</style> 
+{% block title %}用户注册 {% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript">
+	 function on_submit(thisform){
+	    var username = $('#id_username').val();
+	    if(username==""){
+	        alert("用户名不能为空");
+	        return false;
+	    }
+	    var u_len = username.legth;
+	    if (u_len>14 || u_len<6){
+	     alert("用户名必须在6~14位之间");
+	        return false;
+	    }
+	    var password = $('#id_password').val();
+	    var p_len    = password.length;
+	    if(username==""){
+	        alert("密码不能为空");
+	        return false;
+	    }
+	    if (p_len>16 || p_len<6){
+	     alert("密码必须在6~16位之间");
+	        return false;
+	    }
+	    var confirm_password = $('#id_confirm_password').val();
+	    if(confirm_password==""){
+	     alert("确认密码不能为空");
+	        return false;
+	    }
+	    if(confirm_password != password){
+	     alert("确认密码与原密码不一致");
+	        return false;
+	    }
+	    return true;
+	 }
+</script>
+
 {% endblock %}
 
 {% block content %}
+ 
  <!--START: content -->
  <div id="content">
   <div class="grid_a">
    <h2 class="title">用户注册</h2>
-	<form action="{% url register %}" method="post" class="creat_exercise">
+	<form action="{% url register %}" method="post" class="creat_exercise" onsubmit="return on_submit(this);">
 	    {% csrf_token %}
         <fieldset>
          <div class="field">
          <label for="username">
          用户名
          </label>
-         <input id='id_username' name='username' placeholder='必填，以字母开始，至少6个字符'></input>
+         <input id='id_username' name='username' placeholder='必填项，输入范围6-14字符'></input>
          <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
          <div class="field">
          <label for="password">
          密码
          </label>
-         {{form.password}}
+         <input name='password' placeholder="必填项" id="id_password">
          <font color="red">{{ form.password.errors.0 }}</font>
          </div>
          <div class="field">
          <label for="confirm_password">
          确认密码
          </label>
-         {{form.confirm_password}}
+         <input name='confirm_password' placeholder="必填项" id="id_confirm_password">
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="submit_field">

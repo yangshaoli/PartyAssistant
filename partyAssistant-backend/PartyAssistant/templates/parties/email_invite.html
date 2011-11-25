@@ -80,6 +80,19 @@
             }
         });
     });
+    $(document).ready(function(){
+ 	$('#id_is_apply_tips').change(function(){
+		if(!this.checked){
+		   if (window.confirm("关闭报名提示后，在发送给邀请人的短信中将不包含报名链接，确定吗?")){
+		   	  this.checked=false;
+		   }else{
+		      this.checked=true;
+		   }
+		}
+		return;
+	});
+});
+
 </script>
 {% endblock %}
 {% block content %}
@@ -97,7 +110,57 @@
                     收件人
                 </label>
                 {{ form.client_email_list.errors }}
-                <textarea id="id_client_email_list" rows="4" cols="70" name="client_email_list">{{ form.client_email_list.value }}</textarea>
+                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
+                {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
+                <script>
+                  var reject = '{{ quickadd_client.reject_client }}';
+                  var apply = '{{ quickadd_client.apply_client }}';
+                  var noanswer = '{{ quickadd_client.noanswer_client }}';
+                  function quickadd(o){
+                  	var temp = ''
+                  	if(o=='all'){
+		              	if(reject!=''){
+		                  temp += reject+','; 
+		             	 }
+		             	if(apply!=''){
+		                  temp += apply+','; 
+		             	 }
+		             	if(noanswer!=''){
+		                 temp += noanswer+','; 
+		             	} 
+			        }
+			        if(o=='apply'){
+		             	if(apply!=''){
+		                  temp += apply+','; 
+		             	 }
+			        }
+			        if(o=='reject'){
+		             	if(reject!=''){
+		                  temp += reject+','; 
+		             	 }
+			        }
+			        if(o=='noanswer'){
+		             	if(noanswer!=''){
+		                  temp += noanswer+','; 
+		             	 }
+			        }   
+			        if(temp!=''){  	
+	                 	var content = $('#id_client_email_list').val();
+	                 	if(content.replace(/^\s+|,|\s+$/g, "")!=""){
+	                 	  if(content.charAt(content.length-1)==","){
+	                 	  	$('#id_client_email_list').val(content+temp);
+	                 	  }else{
+	                 	    $('#id_client_email_list').val(content+","+temp);
+	                 	  }
+	                 	}else{
+	                 	    $('#id_client_email_list').val(temp)
+	                 	}
+	                } 	
+                  }
+                
+                </script>
+                <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">已报名</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">未报名</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">犹豫的</a>
+                {% endif %}
             </div>
             <div class="field">
                 <label for="id_send_email_count">
@@ -126,9 +189,7 @@
                     &nbsp;
                 </label>
                 <input id="id_email_invite_submit" type="submit" value="发送" />
-                <button id="id_back_to_list" onclick="location.href={% url list_party %}; return false;">
-                    返回列表
-                </button>
+                <button id="id_back_to_list" onclick="(function(){window.location.href='{% url list_party %}';})() ;return false;"> 返回活动列表</button>
             </div>
         </form>
     </div>
