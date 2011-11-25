@@ -14,6 +14,13 @@
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(BaseInfoService)
 
+- (id)init
+{
+    self = [super init];
+    self.baseinfoObject = [self getBaseInfo];
+    return self;
+}
+
 -(BaseInfoObject *)getBaseInfo{
     if (baseinfoObject) {
         return baseinfoObject;

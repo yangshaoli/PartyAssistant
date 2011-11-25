@@ -2,16 +2,18 @@
 	url:"/a/parties/createparty/"
 	method:POST
 	input:{
-		"receivers":Array of Client Object,
+		"receivers":Array of Client Dict,
 		"content":String of SMS/Email Content,
 		"subject":String of Email Subject;sms will be blank,
 		"_isapplytips":BOOL/Integer(Transfer to BOOL),
+		"_issendbyself":BOOL/Integer(Transfer to BOOL),
 		"msgType":String of "SMS" or "Email",
 		"starttime":Datetime Type,
 		"location":String,
 		"description":String,
 		"peopleMaximum":Int,
 		"uID":Int,
+		"addressType":"iphone" or "android"
 		}
 	output:Success- {
 			"status":'ok',
@@ -23,7 +25,7 @@
 			"description":Error Msg,
 			"data":{}
 			}
-	ClientObject:{
+	ClientDict:{
 			"cName":String,
 			"cVal":Email/Phone Num
 			"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")
@@ -39,11 +41,11 @@
 		"description":"ok",
 		"dataSource":{
 				"page":Integer,
-				"partyList":PartyObjectArray,
+				"partyList":PartyDictArray,
 				}
 		}
 
-	PartyObject:{
+	PartyDict:{
 			"starttime":Datetime,
 			"description":String,
 			"peopleMaximum":Integer,
@@ -62,7 +64,8 @@
 		"description":"ok",
 		"dataSource":{
 				"msgType":"SMS"/"Email",
-				"receiverArray":clientsObjectsArray,
+				"receiverArray":clientsDictArray,
+				'receiverType':'iphone' or 'android'
 				'content':String,
 				'subject':String,
 				'_isApplyTips':BOOL,
@@ -81,10 +84,71 @@
 	output:{
 		"status":"ok",
 		"description":"ok",
-		"dataSource":{
+		"datasource":{
 				"allClientcount": Integer,
 				"appliedClientcount": Integer,
 				'refusedClientcount': Integer,
 				'donothingClientcount':Integer,
 				}
+		}
+
+5. AccountRegist:
+	url:"/a/accounts/regist/",
+	method:POST,
+	input:{
+		"username":String(not null),
+		"password":String(not null),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"uid":Integer
+				}
+		}
+
+6. AccountLogin:
+	url:"/a/accounts/login/",
+	method:"POST",
+	input:{
+		"username":String(not null),
+		"password":String(not null),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				"uid":Integer,
+				"name":String,
+				}
+		}
+
+7. EditParty:
+	url:"/a/partie/editparty/",
+	method:"POST",
+	input:{
+		"partyID":Integer,
+		"location":String,
+		"starttime":Datetime,
+		"peopleMaximum":integer,
+		"description":description,
+		"uID":Integer
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+8 DelParty:
+	url:"/a/partie/deleteparty/",
+	method:"POST",
+	input:{
+		"pID":Integer(party ID),
+		"uID":Integer(user ID),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
 		}

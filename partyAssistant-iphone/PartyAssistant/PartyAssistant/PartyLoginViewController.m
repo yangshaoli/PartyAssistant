@@ -6,13 +6,17 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#import "AddNewPartyBaseInfoTableViewController.h"
 #import "DataManager.h"
 #import "GlossyButton.h"
+#import "PartyListTableViewController.h"
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
+#import "SettingsListTableViewController.h"
 
-#define NotLegalTag 1
-#define NotPassTag  2
+#define NotLegalTag         1
+#define NotPassTag          2
+#define InvalidateNetwork   3
 
 @interface PartyLoginViewController()
 
@@ -22,6 +26,11 @@
 - (void)showNotLegalInput;
 - (void)showNotPassChekAlert;
 - (void)registerUser;
+- (void)gotoContentVC;
+- (void)pushToContentVC;
+- (void)checkIfUserNameSaved;
+- (void)showInvalidateNetworkalert;
+- (void)tryConnectToServer;
 
 @end
 
@@ -35,19 +44,19 @@
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
 
-//- (void)dealloc {
-//    [super dealloc];
-//    
-//    [_tableView release];
-//    
-//    [_loginButton release];
-//    
-//    [_userNameTableCell release];
-//    [_pwdTableCell release];
-//    
-//    [_userNameTextField release];
-//    [_pwdTextField release];
-//}
+- (void)dealloc {
+    [super dealloc];
+    
+    [_tableView release];
+    
+    [_loginButton release];
+    
+    [_userNameTableCell release];
+    [_pwdTableCell release];
+    
+    [_userNameTextField release];
+    [_pwdTextField release];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -93,9 +102,14 @@
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
-    //[registerButton release];
+    [registerButton release];
     
-    //[tableFooterView release];
+    [tableFooterView release];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
 }
 
 - (void)viewDidUnload
@@ -128,37 +142,27 @@
     
     _HUD.delegate = self;
     
-    [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
-         
+    [_HUD show:YES];
+   
+    [self tryConnectToServer];
 }
 
 - (void)tryConnectToServer {
     //TODO:login check method!
     NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            validateCheckWithUsrName:@""  pwd:@""];
+                                            validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
-            [self showNotPassChekAlert];
+            [self showInvalidateNetworkalert];
             break;
         case NetWorkConnectionCheckPass:
-            
+            [self gotoContentVC];
             break;
         default:
-            
+            [self showNotPassChekAlert];
             break;
     }
-    BOOL result = NO;
-    if (result) {
-       //use different work flow
-        
-        //1.modal
-        
-        //2.nav 
-    } else {
-        [self showNotPassChekAlert];
-    }
-    
 }
 
 - (void)cleanKeyBoard {
@@ -169,26 +173,88 @@
     }
 }
 
-- (void)showAlertWithMessage:(NSString *)message  buttonTitle:(NSString *)buttonTitle tag:(int)tagNum{
+- (void)showAlertWithMessage:(NSString *)message  
+                 buttonTitle:(NSString *)buttonTitle 
+                         tag:(int)tagNum{
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
-    //[alert release];
+    [alert release];
+}
+
+- (void)gotoContentVC {
+    //use different work flow
+    
+    //1.modal
+    
+    //2.nav
+    if (self.isModal) {
+        
+    } else {
+        //2
+        [self pushToContentVC];
+    }
+
+}
+
+- (void)showInvalidateNetworkalert {
+    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+                   buttonTitle:@"OK" 
+                           tag:InvalidateNetwork];
 }
 
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"something" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"登录失败" buttonTitle:@"OK" tag:NotPassTag];
 }
 
 - (void)registerUser {
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:registerVC animated:YES];
-    //[registerVC release];
+    [registerVC release];
+}
+
+- (void)pushToContentVC {
+    self.navigationController.navigationBarHidden = YES;
+    
+    PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
+    SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
+    
+    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
+    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
+    UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
+    
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:nil tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:nil tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:nil tag:3];
+    
+    listNav.tabBarItem = listBarItem;
+    addPageNav.tabBarItem = addPageBarItem;
+    settingNav.tabBarItem = settingBarItem;
+    
+    [listBarItem release];
+    [addPageBarItem release];
+    [settingBarItem release];
+    
+    UITabBarController *tab = [[UITabBarController alloc] init];
+    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+    [self.navigationController pushViewController:tab animated:YES];
+    
+    [listNav release];
+    [addPageNav release];
+    [settingNav release];
+    
+    [list release];
+    [addPage release];
+    [settings release];
+    
+    //add suggest user input name page here?
+    [self checkIfUserNameSaved];
 }
 
 #pragma mark -
@@ -223,7 +289,7 @@
 - (void)HUDWasHidden:(MBProgressHUD *)hUD {
     // Remove _HUD from screen when the _HUD was hidded
     [_HUD removeFromSuperview];
-    //[_HUD release];
+    [_HUD release];
 	_HUD = nil;
 }
 
@@ -239,5 +305,47 @@
    } else {
        [_userNameTextField becomeFirstResponder];
    }
+}
+
+#pragma mark _
+#pragma mark PartyUserNameInput Method and Delegate
+
+- (void)checkIfUserNameSaved {
+    //1.datamanager check
+    BOOL isSaved = [[DataManager sharedDataManager] checkIfUserNameSaved];
+    if (isSaved) {
+        return;
+    }
+    //2.show viewController
+    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+    vc.delegate = self;
+    [self presentModalViewController:vc animated:YES];
+    [vc release];
+}
+
+- (void)cancleInput {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)saveInputDidBegin {
+    //wait DataManager method
+    _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+	[self.navigationController.view addSubview:_HUD];
+	
+    _HUD.labelText = @"Loading";
+    
+    _HUD.delegate = self;
+    
+    [_HUD show:YES];
+}
+
+- (void)saveInputFinished {
+    [_HUD hide:YES];
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)saveInputFailed {
+    [_HUD hide:YES];
+    [self.navigationController dismissModalViewControllerAnimated:YES];
 }
 @end

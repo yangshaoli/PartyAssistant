@@ -16,10 +16,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
 - (id)init
 {
     self = [super init];
-    if (self) {
-        // Initialization code here.
-    }
-    
+    self.partyList = [self getPartyList];
     return self;
 }
 

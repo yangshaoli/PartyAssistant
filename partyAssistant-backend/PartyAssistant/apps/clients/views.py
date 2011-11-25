@@ -3,97 +3,107 @@
 @summary: 报名处理，包括公开报名和邮件邀请报名
 @author:chenyang
 '''
-from django.shortcuts import render_to_response, redirect, get_object_or_404
-from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
-from django.template import RequestContext
+from apps.parties.models import Party, PartiesClients
+from apps.clients.models import Client
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.response import TemplateResponse
+from django.utils import simplejson
+from django.contrib.auth.decorators import login_required
 
-from apps.clients.models import Client, ClientParty
-from apps.parties.models import Party
+#获得报名/未响应/不参加的客户数
+@login_required
+def get_client_sum(party_id):
+    party = Party.objects.get(id=party_id)
+    client_sum = {
+        'apply':PartiesClients.objects.filter(party=party).filter(apply_status='apply').count(),
+        'noanswer':PartiesClients.objects.filter(party=party).filter(apply_status='noanswer').count(),
+        'reject':PartiesClients.objects.filter(party=party).filter(apply_status='reject').count(),
+    }
+    return client_sum
 
-def public_enroll(request, party_id):
-    if request.method=='POST':
-        #将用户加入clients,状态为'已报名'
-        name = request.POST['name']
-        email = request.POST['email']
-        phone = request.POST['phone']
-        if Client.objects.filter(email=email).count() == 0:
-            client = Client.objects.create(name=name, email=email, phone=phone, invite_type='public')
-            #TODO 
-            ClientParty.objects.create(client=client, party=Party.objects.get(pk=party_id), apply_status=u'已报名') #在UserProfile中写入号码
-            return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
-        else:
-            return render_to_response('message.html', {'message':u'您已经报名了'}, context_instance=RequestContext(request))
-        
-    else:
-        party = Party.objects.get(id=party_id)
-        ctx = {
-               'party' : party
-        }    
-        return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))
-
-def invite_enroll(request, email, party_id):
-    if request.method=='POST':
-        client = Client.objects.get(email=email)
-        party = Party.objects.get(pk=party_id)
-        status = ClientParty.objects.get(client=client, party=party)
-        if request.POST['action'] == 'yes': #如果点击参加
-            status.apply_status = u'已报名'
-            status.save()
-            return render_to_response('message.html', {'message':u'报名成功'}, context_instance=RequestContext(request))
-        else:
-            status.apply_status = u'不参加'
-            status.save()
-            return render_to_response('message.html', {'message':u'您已经拒绝了这次邀请'}, context_instance=RequestContext(request))
-
-    else:
-        party = Party.objects.get(id=party_id)
-        client = Client.objects.get(email=email,creator=party.creator)
-        ctx = {
-               'client': client,
-               'party' : party
-        } 
-        return render_to_response('clients/web_enroll.html', ctx, context_instance=RequestContext(request))
 
 '''
 @author: liuxue
 '''
-
-def change_apply_status(request):
-    if request.method == 'POST':
-        client_party = ClientParty.objects.get(pk=int(request.POST['id']))      
-        client_party.apply_status = request.POST['apply_status']
-        client_party.save()
-        print client_party.apply_status
-    return HttpResponse("OK")
+@login_required
+def change_apply_status(request, id, applystatus):
+    client_party = PartiesClients.objects.get(pk=id)      
+    client_party.apply_status = applystatus
+    client_party.save()        
+    return HttpResponse('ok') 
 
 
 #受邀人员列表
-def invite_list(request,party_id):
-#    if request.method == 'POST':
-    party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party)
-    #去除公共报名的人
-    for i in range(len(client_party_list)):
-        if client_party_list[i].client.invite_type == 'public':
-            client_party_list.remove(i)
-    return render_to_response('clients/invite_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+@login_required
+def invite_list(request, party_id):
+    party = get_object_or_404(Party, id=party_id)
+    party_clients_list = PartiesClients.objects.filter(party=party)
+    
+    party_clients = {
+        'apply': {
+            'is_check': True, 
+            'client_count': 0
+        }, 
+        'noanswer': {
+            'is_check': True, 
+            'client_count': 0
+        }, 
+        'reject': {
+            'is_check': True, 
+            'client_count': 0
+        }
+    }
+    
+    for party_client in party_clients_list:
+        if party_client.apply_status == 'apply':
+            party_clients['apply']['client_count'] = party_clients['apply']['client_count'] + 1
+            if not party_client.is_check:
+                party_clients['apply']['is_check'] = False
+        elif party_client.apply_status == 'noanswer':
+            party_clients['noanswer']['client_count'] = party_clients['noanswer']['client_count'] + 1
+            if not party_client.is_check:
+                party_clients['noanswer']['is_check'] = False
+        if party_client.apply_status == 'reject':
+            party_clients['reject']['client_count'] = party_clients['reject']['client_count'] + 1
+            if not party_client.is_check:
+                party_clients['reject']['is_check'] = False
+    
+    return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
-#报名人员列表
-def enrolled_list(request,party_id):
-    party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'已报名')
-    return render_to_response('clients/apply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+@login_required
+def invite_list_ajax(request, party_id):
+    apply_status = request.GET.get('apply', 'all')
+    party = get_object_or_404(Party, id=party_id)
+    
+    if apply_status == 'all':
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party)
+    else:
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
+    
+    party_clients_data = []
+    for party_client in party_clients_list:
+        party_client_data = {
+            'id' : party_client.id,
+            'name' : party_client.client.name, 
+            'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
+            'is_check': party_client.is_check
+        }    
+        party_clients_data.append(party_client_data)
+        
+        if not party_client.is_check:
+            party_client.is_check = True
+            party_client.save()
+    
+    return HttpResponse(simplejson.dumps(party_clients_data))
 
-#未向应人员列表
-def noenroll_list(request,party_id):
-    party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'未报名')
-    return render_to_response('clients/notresponse_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
-
-#未报名人员列表
-def reject_list(request,party_id):
-    party = get_object_or_404(Party, pk=int(party_id))
-    client_party_list=ClientParty.objects.filter(party=party,apply_status=u'不参加')
-    return render_to_response('clients/notapply_list.html',{'client_party_list':client_party_list}, context_instance=RequestContext(request)) 
+def ajax_get_client_list(request, invite_type):
+    clients = Client.objects.filter(creator=request.user)
+    clients_data = []
+    for client in clients:
+        client_data = {
+            'name' : client.name, 
+            'address': invite_type == 'email' and client.email or client.phone
+        }
+        clients_data.append(client_data)
+    return HttpResponse(simplejson.dumps(clients_data))

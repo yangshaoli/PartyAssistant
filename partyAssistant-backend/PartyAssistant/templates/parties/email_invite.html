@@ -1,0 +1,134 @@
+{% extends 'login_base.html' %}
+{% block style %}
+<link href="/static/libs/jquery-ui-1/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
+<style>
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        /* prevent horizontal scrollbar */
+        overflow-x: hidden;
+        /* add padding to account for vertical scrollbar */
+        padding-right: 20px;
+    }
+    
+    /* IE 6 doesn't support max-height
+     * we use height instead, but this forces the menu to always be this tall
+     */ * html .ui-autocomplete {
+        height: 100px;
+    }
+</style>
+{% endblock %}
+{% block script %}
+<script src="/static/js/jquery-1.6.4.min.js">
+</script>
+<script src="/static/libs/jquery-ui-1/js/jquery-ui-1.8.16.custom.min.js">
+</script>
+<script type="text/javascript">
+    function calculate_send_email_count(){
+        client_email_list = $('#id_client_email_list').val().split(',');
+        client_email_list_length = client_email_list.length;
+        count = 0;
+        for (i = 0; i < client_email_list_length; i++) {
+            if (client_email_list[i].replace(/^\s+|\s+$/g, "") != "") {
+                count = count + 1;
+            }
+        }
+        $('#id_send_email_count').html("发件人人数统计： " + count);
+    }
+    
+    var availableTags = eval({{client_data|safe}});
+    $(function(){
+		calculate_send_email_count();
+        //var availableTags = ["ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++", "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran", "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl", "PHP", "Python", "Ruby", "Scala", "Scheme"];
+        function split(val){
+            return val.split(/,\s*/);
+        }
+        function extractLast(term){
+            return split(term).pop();
+        }
+        
+        $("#id_client_email_list") // don't navigate away from the field on tab when selecting an item
+    .bind("keydown", function(event){
+            if (event.keyCode === $.ui.keyCode.TAB &&
+            $(this).data("autocomplete").menu.active) {
+                event.preventDefault();
+            }
+        }).autocomplete({
+            minLength: 0,
+            autoFocus: true,
+            source: function(request, response){
+                // delegate back to autocomplete, but extract the last term
+                response($.ui.autocomplete.filter(availableTags, extractLast(request.term)));
+            },
+            focus: function(){
+                // prevent value inserted on focus
+                return false;
+            },
+            select: function(event, ui){
+                var terms = split(this.value);
+                // remove the current input
+                terms.pop();
+                // add the selected item
+                terms.push(ui.item.value);
+                // add placeholder to get the comma-and-space at the end
+                terms.push("");
+                this.value = terms.join(", ");
+				calculate_send_email_count();
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% block content %}
+<div id="content">
+    <div id="ac_dropdownlist">
+        <ul>
+        </ul>
+    </div>
+    <div class="grid_a">
+        <h2 class="title">发送邮件邀请</h2>
+        <form action="{% url email_invite party.id %}" method="post" class="creat_exercise">
+            {% csrf_token %}
+            <div class="field">
+                <label for="client_email_list">
+                    收件人
+                </label>
+                {{ form.client_email_list.errors }}
+                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
+            </div>
+            <div class="field">
+                <label for="id_send_email_count">
+                    &nbsp;
+                </label>
+                <p id="id_send_email_count">
+                    收件人人数统计： 0
+                </p>
+            </div>
+            <div class="field">
+                <label for="id_content">
+                    邮件内容
+                </label>
+                {{ form.content }}
+            </div>
+            <div class="field">
+                <label for="id_is_apply_tips">
+                    &nbsp;
+                </label>
+                <p>
+                    {{ form.is_apply_tips }}带报名链接
+                </p>
+            </div>
+            <div class="field">
+                <label>
+                    &nbsp;
+                </label>
+                <input id="id_email_invite_submit" type="submit" value="发送" />
+                <button id="id_back_to_list" onclick="location.href={% url list_party %}; return false;">
+                    返回列表
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
