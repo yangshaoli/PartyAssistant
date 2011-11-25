@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
+from django.core.paginator import Paginator
 from forms import CreatePartyForm
 from models import Party
 from settings import SYS_EMAIL_ADDRESS
@@ -396,8 +397,9 @@ def delete_party_notice(request, party_id):
 
 @login_required
 def list_party(request):
-    party_list = Party.objects.filter(creator = request.user).order_by('-id')[0:10] 
-    
+    party_list = Party.objects.filter(creator = request.user).order_by('-id')
+
+        
     for party in party_list:
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
         client = {
@@ -430,7 +432,11 @@ def list_party(request):
     if 'send_status' in request.session:
         send_status = request.session['send_status']
         del request.session['send_status']        
+    #分页
+    paginator = Paginator(party_list,10)
+    page = request.GET.get('page',1)
 
+    party_list = paginator.page(page)
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status})
 
 def _public_enroll(request, party_id):

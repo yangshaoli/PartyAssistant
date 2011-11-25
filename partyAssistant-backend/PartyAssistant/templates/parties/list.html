@@ -47,7 +47,7 @@
     </ul>
     <div class="activity_content">
      <div class="sub_tab"><strong>全部</strong><span class="indicator"></span!--></div>
-     {% for party in party_list %}
+     {% for party in party_list.object_list %}
      {% if not forloop.first %}
      <div class="line"></div>
      {% endif %}
@@ -61,6 +61,21 @@
       </div>
     </div>
     {% endfor %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if party_list.has_previous %}
+                        <a href="?page={{ party_list.previous_page_number }}">Previous</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        Page {{ party_list.number }} of {{ party_list.paginator.num_pages }}.
+                    </span>
+            
+                    {% if party_list.has_next %}
+                        <a href="?page={{ party_list.next_page_number }}">Next</a>
+                    {% endif %}
+                </span>
+            </div>
     </div>
   </div>
  </div>
