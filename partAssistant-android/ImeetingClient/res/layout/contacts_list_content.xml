@@ -19,22 +19,25 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         >
-	 <LinearLayout
+	 <RelativeLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal"
 		android:background="@drawable/blue_button">
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
 			android:text="增加"
 			android:id="@+id/btnAdd"/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
 			android:text="取消"
 			android:id="@+id/btnCancle"
 		/>
-	</LinearLayout>
+	</RelativeLayout>
     <ListView android:id="@android:id/list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

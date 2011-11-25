@@ -4,4 +4,6 @@
   <color name="link_color">#FF0066CC</color>  
   <color name="textColorIconOverlay">#FFFFFF</color>
   <color name="textColorIconOverlayShadow">#000</color>
+  <color name="black">#000000</color>
+  <color name="myRed">#e95e48</color>
 </resources>

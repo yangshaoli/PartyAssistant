@@ -14,7 +14,7 @@
 		/>	
  <LinearLayout android:id="@+id/listLinearLayout" 
       android:layout_width="fill_parent"   
-      android:layout_height="wrap_content" 
+      android:layout_height="wrap_content"
       android:orientation="vertical">    
   
   <ListView android:id="@+id/android:list"         

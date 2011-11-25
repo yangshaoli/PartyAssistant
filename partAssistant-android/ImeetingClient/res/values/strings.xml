@@ -2,18 +2,25 @@
 <resources>
 	<string name="app_name">ImeetingClient</string>
 	<string name="create_activity">创建活动</string>
+	<string name="detailActivity">活动明细</string>
 	<string name="meeting_list">活动列表</string>
-	<string name="start_time">时间：</string>
+	<string name="start_time">何时：</string>
 	<string name="end_time">结束时间：</string>
-	<string name="destination">地点：</string>
-	<string name="people_limit">人数上限：</string>
-	<string name="desc_activity">活动描述：</string>
-	<string name="hint">请输入活动内容...</string>
-	<string name="send_message">发送手机短信邀请</string>
-	<string name="send_mail">发送电子邮件邀请</string>
+	<string name="destination">去哪：</string>
+	<string name="people_limit">几人：</string>
+	<string name="desc_activity">玩啥：</string>
+	<string name="hint">必填项,请输入活动内容...</string>
+	<string name="send_lable_content_tip">活动内容不能为空</string>
+	<string name="send_message">发送手机短信</string>
+	<string name="send_mail">发送电子邮件</string>
 	<string name="set_time_title">设置时间</string>
+	<string name="position_hint">可选填，主要作用是进行地图定位</string>
+	<string name="people_num_hint">无限制</string>
 	<string name="btn_ok">确定</string>
 	<string name="btn_cancle">取消</string>
+	<string name="btn_setting">设置</string>
+	<string name="sendLableTime">时间待定</string>
+	<string name="sendLablePosition">地点待定</string>
 	<string name="position_too_lang">您输入的字符过长，字符上限为256个字符！</string>
 	<string name="limit_num">人数上限为999，请重新输入！</string>
 	<string name="wrong_num">您不能输入其他字符，请输入数字:0~999</string>
@@ -28,10 +35,10 @@
 	<string name="login_label_signin">登 录</string>
 	<string name="login_label_find_back">找回</string>
 	<string name="login_status_logging_in">登录中...</string>
-	<string name="login_username_hint">Email或手机号</string>
+	<string name="login_username_hint">必填项，请输入账号</string>
 	<string name="login_register_link">忘记密码？</string>
 	<string name="register_label_top">用户注册</string>
-	<string name="register_lable_pass_tip">6~16位</string>
+	<string name="register_lable_pass_tip">必填项，6~16位</string>
 	<string name="pass_tip">密码不能为空</string>
 	<string name="pass_tip1">密码长度最低为6位</string>
 	<string name="pass_tip2">确认密码不能为空</string>
@@ -43,6 +50,8 @@
 	<string name="error_email">输入的邮件格式不正确</string>
 	<string name="send_airenao_reciever">收件人:</string>
 	<string name="send_airenao_title">发送邀请</string>
+	<string name="reinvate">重新邀请</string>
+	<string name="btn_back">返回</string>
 	<string name="send_airenao_add">增加</string>
 	<string name="send_airenao_content">内容</string>
 	<string name="send_airenao_with_tip">带报名提示</string>
@@ -54,16 +63,19 @@
 	<string name="unsiged_number">未报名</string>
 	<string name="unjion">未参加</string>
 	<string name="button_edit">编辑</string>
-	<string name="btn_create_lable_SMS">发送手机短信邀请</string>
-	<string name="btn_create_lable_email">发送电子邮件邀请</string>
+	<string name="btn_create_lable_SMS">发送短信</string>
+	<string name="btn_create_lable_email">发送邮件</string>
+	<string name="loadAirenao">数据加载中...</string>
 	<string name="sendLableTitle">提示</string>
+	<string name="exitMessage">是否要离开“爱热闹”？</string>
 	<string name="sendlableNotice">关闭报名提示后，在发送给邀请人的短信/邮件中，将不包含报名链接，确定吗？</string>
 	<string name="txtSendLable">
 	某某邀请您参加：某年某月某日某时某地点举办的某某活动，敬请光临
 	</string>
 	<string name="createToList">返回活动列表，则创建活动页面中的数据将丢失，是否确定？</string>
+	<string name="sendSmsTip">收件人列表为空，是否继续操作？</string>
 	<string name="sendLableLink">
-		<b>点击</b>http://www.google.com<b>进入报名链接</b>
+		<b>点击</b>www.airenao.com<b>进入报名链接</b>
 	</string>
 	<string name="showAllContactsJoinItem">Show all contacts</string>
 	<string name="noContactsWithPhoneNumbers">No contacts with phone numbers.</string>

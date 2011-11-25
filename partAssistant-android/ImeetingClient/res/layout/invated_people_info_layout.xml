@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="50sp"
+	android:orientation="horizontal"
+	android:background="@drawable/blue_button">
+	    <Button 
+	    android:id="@+id/btnPeopleLableBack"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentLeft="true"
+	    android:text="@string/btn_back"/>
+		<TextView android:layout_width="wrap_content"
+		android:textColor="#FFFFFF" android:layout_height="37sp"
+		android:text="title"
+		android:layout_gravity="center_vertical"
+		android:gravity="center" 
+		android:id="@+id/txtPeoPleInfo"
+		android:layout_centerInParent="true"/>
+		<Button
+		android:id="@+id/btnDetailEdit"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:paddingTop="0dp"
+		android:gravity="center"
+		android:text="@string/reinvate"/>
+	</RelativeLayout>
+	
+	<ListView android:id="@+id/people_infor_list"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_weight="1.0" android:paddingTop="5dip" android:cacheColorHint="#000000"/>
+</LinearLayout>

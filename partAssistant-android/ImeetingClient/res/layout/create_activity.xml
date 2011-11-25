@@ -2,7 +2,8 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:weightSum="1">
+	android:layout_height="fill_parent" android:weightSum="1"
+	android:background="@drawable/bg_balloon1">
 	<TextView android:layout_width="fill_parent"
 		android:textColor="#FFFFFF" android:layout_height="37sp" android:text="@string/create_activity"
 		android:background="@drawable/blue_button" android:gravity="center" />
@@ -20,12 +21,16 @@
 					<TextView android:layout_width="wrap_content"
 						android:layout_height="wrap_content" 
 						android:id="@+id/startTime"
+						android:textColor="#000000"
+						android:textSize="18sp"
+						android:layout_marginLeft="10dip"
 						android:layout_centerVertical="true"
 						android:layout_alignParentLeft="true"
 						android:text="@string/start_time" />
-					<EditText android:layout_width="wrap_content"
+					<EditText android:layout_width="fill_parent"
 						android:layout_height="wrap_content" 
 						android:layout_marginLeft="70dip"
+						android:layout_marginRight="19dip"
 						android:id="@+id/startTimeText" 
 						android:editable="false"
 						android:focusable="false"
@@ -41,10 +46,14 @@
 					android:layout_height="wrap_content">
 					<TextView android:layout_width="wrap_content"
 						android:layout_height="wrap_content" android:id="@+id/position"
+						android:textColor="#000000"
+			            android:textSize="18sp"
+			            android:layout_marginLeft="10dip"
 						android:text="@string/destination" />
 					<EditText android:id="@+id/positionEditText"
 						android:layout_width="fill_parent" 
-						android:layout_marginLeft="28dp"
+						android:hint="@string/position_hint"
+						android:layout_marginLeft="5dp"
 						android:layout_marginRight="19dip"
 						android:layout_height="wrap_content"
 						android:layout_weight="1" android:freezesText="true">
@@ -56,11 +65,17 @@
 					android:layout_width="fill_parent" android:orientation="horizontal"
 					android:layout_height="wrap_content">
 					<TextView android:layout_width="wrap_content"
-						android:layout_height="wrap_content" android:id="@+id/peopleNum"
+						android:layout_height="wrap_content"
+						android:id="@+id/peopleNum"
+						android:textColor="#000000"
+			            android:textSize="18sp"
+			            android:layout_marginLeft="10dip"
 						android:text="@string/people_limit" />
 					<EditText android:id="@+id/peopleNumEditText"
 						android:layout_width="fill_parent" android:layout_height="wrap_content"
+						android:hint="@string/people_num_hint"
 						android:layout_marginRight="19dip"
+						android:layout_marginLeft="5dp"
 						android:maxLength="3"
 						android:layout_weight="1" android:freezesText="true">
 						<requestFocus />
@@ -73,10 +88,14 @@
 					android:layout_height="wrap_content">
 					<TextView android:layout_width="wrap_content"
 						android:layout_height="wrap_content" android:id="@+id/descr"
+						android:textColor="#000000"
+			            android:textSize="18sp"
+			            android:layout_marginLeft="10dip"
 						android:text="@string/desc_activity" />
 					<EditText android:id="@+id/descrEditText"
 						android:layout_width="fill_parent" android:layout_height="wrap_content"
 						android:layout_weight="1" 
+						android:layout_marginLeft="5dp"
 						android:layout_marginRight="19dip"
 						android:hint="@string/hint"
 						android:minHeight="160dp" 
@@ -94,16 +113,22 @@
 				android:id="@+id/btnSendSMS"
 				android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
-			    android:layout_marginLeft="90dp"
+			    android:layout_gravity="center_horizontal"
 			    android:layout_marginTop="14dp"
+			    android:paddingLeft="7dip"
+			    android:paddingRight="7dip"
+			    android:background="@drawable/button_red"
 			    android:text="@string/btn_create_lable_SMS"
 			   />	
 			<Button
 				android:id="@+id/btnSendEmail"
 				android:layout_width="wrap_content"
 			    android:layout_height="wrap_content"
-			    android:layout_marginLeft="90dp"
+			    android:layout_gravity="center_horizontal"
 			    android:layout_marginTop="14dp"
+			    android:paddingLeft="7dip"
+			    android:paddingRight="7dip"
+			    android:background="@drawable/button_red"
 			    android:text="@string/btn_create_lable_email"
 			   />
 			</LinearLayout>

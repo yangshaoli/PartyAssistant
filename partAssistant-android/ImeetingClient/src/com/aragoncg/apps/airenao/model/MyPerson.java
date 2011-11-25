@@ -1,0 +1,65 @@
+package com.aragoncg.apps.airenao.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
+
+public  class MyPerson implements Parcelable{
+	
+	private String name;
+	private String phoneNumber;
+	private boolean checked ;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeString(name);
+		dest.writeString(phoneNumber);
+		
+	}
+	
+	public static final Parcelable.Creator<MyPerson> CREATOR = new Creator<MyPerson>() {
+		@Override
+		public MyPerson createFromParcel(Parcel source) {
+		Log.d("person","createFromParcel");
+		MyPerson mPerson = new MyPerson();
+		mPerson.name = source.readString();
+		mPerson.phoneNumber = source.readString();
+		return mPerson;
+		}
+		@Override
+		public MyPerson[] newArray(int size) {
+		// TODO Auto-generated method stub
+		return new MyPerson[size];
+		}
+		};
+}

@@ -1,46 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.aragoncg"
+      package="com.aragoncg.apps.airenao"
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="7" />
 
     <application android:icon="@drawable/icon" android:label="@string/app_name">
-    	<activity android:name=".airenao.activity.ContactsListActivity">
+    	<activity android:name=".activity.ContactsListActivity">
     		
     	</activity>
-    	<activity android:name=".airenao.activity.SendAirenaoActivity">
+    	<activity android:name=".activity.SendAirenaoActivity">
     		
     	</activity>
-    	<activity android:name=".airenao.activity.DetailActivity">
+    	<activity android:name=".activity.DetailActivity">
     		<intent-filter>
         		<action android:name="toDetailActivity"></action>
         		<category android:name="android.intent.category.DEFAULT"/>
         	</intent-filter>
     	</activity>
-    	<activity android:name=".airenao.activity.RegisterActivity"> 
+    	<activity android:name=".activity.RegisterActivity"> 
+    		<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    	<activity android:name=".activity.LoginActivity"> 
     		
         </activity>
-    	<activity android:name=".airenao.activity.LoginActivity"> 
-    		
-        </activity>
-    	<activity android:name=".airenao.activity.ImeetingClientActivity">
+    	<activity android:name=".activity.ImeetingClientActivity">
     	</activity>
     		
-        <activity android:name=".airenao.activity.CreateActivity"> 
+        <activity android:name=".activity.CreateActivity"> 
         	
         </activity>
         
 		<activity 
-		android:name=".airenao.activity.MeetingListActivity"
+		android:name=".activity.MeetingListActivity"
 		android:screenOrientation="portrait">
-			<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+			
+		</activity>
+		
+		<activity android:name=".activity.InvatedPeopleInfoActivity">
+			
 		</activity>
     </application>
-  <uses-sdk android:minSdkVersion="7" />
+  <uses-sdk android:minSdkVersion="4" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
 	<uses-permission android:name="android.permission.CALL" />
@@ -51,6 +55,7 @@
 	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission android:name="android.permission.RESTART_PACKAGES" />
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus"
 		android:required="false" />

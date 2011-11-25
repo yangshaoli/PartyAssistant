@@ -85,23 +85,28 @@
 			></EditText>
 		</LinearLayout>
 		
-			<!-- 提示框 --><!-- android:focusable="false" 就不会出现 软键盘，但要是出现滚动条是不是还要删掉 -->
+			<!-- android:background="#ded8f9"提示框 --><!-- android:focusable="false" 就不会出现 软键盘，但要是出现滚动条是不是还要删掉 -->
 		<EditText  
     		android:id="@+id/text_view"  
+    		android:background="@drawable/biankuang_hong"
     		android:layout_width="fill_parent"  
-    		android:layout_height="wrap_content"  
+    		android:layout_height="160dip"  
     		android:singleLine="false"  
     		android:maxLines="6" 
     		android:focusable="false"
-    		android:background="#ded8f9"
     		android:textColor="#000000"
     		android:layout_marginLeft="20dp"
     		android:layout_marginTop="15dp"
     		android:layout_marginRight="20dp"
+    		android:layout_marginBottom="15dp"
+    		android:gravity="top"
+    		android:paddingLeft="14dp"
+    		android:paddingRight="5dp"
+    		android:paddingTop="14dp"
     		android:enabled="false" 
     		android:scrollbars="horizontal" 
-    		android:textSize="35px"
-    		android:text="adfajldkf;ajdfjaksdjfljaskdjfl;kja;sldjf ajsl;dfj alsjdf;la fljasdlfjals;dfj;ajs;fkj aflja;lsdjf l;ajsf;lajsdfl;kjasdl;fkj a;lsjfd;lasjdflajsdkfja;lsdjfaksjdf;s ajsdlkfjadsf"
+    		android:textSize="24px"
+    		android:text="爱热闹服务涉及到的产品的所有权以及相关软件的知识产权归华美汉盛软件公司所有"
         />  	
 			<!-- 复选框 -->
 		<CheckBox android:text="是否同意本协议" 
