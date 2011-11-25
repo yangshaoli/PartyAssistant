@@ -14,7 +14,7 @@ class CreatePartyForm(forms.ModelForm):
 
     def clean_limit_count(self):
         if 'limit_count' in self.cleaned_data:
-            if self.cleaned_data['limit_count'] == None:
+            if self.cleaned_data['limit_count'] == None or self.cleaned_data['limit_count'] > 999:
                 self.cleaned_data['limit_count'] = 0
             else:
                 limit_count = self.cleaned_data['limit_count']
