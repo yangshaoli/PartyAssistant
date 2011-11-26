@@ -214,25 +214,25 @@ def email_invite(request, party_id):
         for client in Client.objects.filter(creator = request.user):
             if client.email:
                 client_data.append(client.email)
-            noanswer_client = []
-            apply_client = []
-            reject_client = []
-            parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
-            for  party_client in parties_clients :
-                if party_client.apply_status == 'noanswer':
-                    noanswer_client.append(party_client.client.email)
-                if party_client.apply_status == 'apply':
-                    apply_client.append(party_client.client.email)
-                if party_client.apply_status == 'reject':
-                    reject_client.append(party_client.client.email)
-            
-            noanswer_client = ','.join(noanswer_client)
-            apply_client = ','.join(apply_client)
-            reject_client = ','.join(reject_client)
-            quickadd_client = {'noanswer_client':noanswer_client,
-                               'apply_client':apply_client,
-                               'reject_client':reject_client
-                               }
+        noanswer_client = []
+        apply_client = []
+        reject_client = []
+        parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
+        for  party_client in parties_clients :
+            if party_client.apply_status == 'noanswer':
+                noanswer_client.append(party_client.client.email)
+            if party_client.apply_status == 'apply':
+                apply_client.append(party_client.client.email)
+            if party_client.apply_status == 'reject':
+                reject_client.append(party_client.client.email)
+        
+        noanswer_client = ','.join(noanswer_client)
+        apply_client = ','.join(apply_client)
+        reject_client = ','.join(reject_client)
+        quickadd_client = {'noanswer_client':noanswer_client,
+                           'apply_client':apply_client,
+                           'reject_client':reject_client
+                           }
                             
         return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
 
