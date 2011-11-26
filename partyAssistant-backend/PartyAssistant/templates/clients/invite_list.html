@@ -5,7 +5,23 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script>
     $(document).ready(function(){
-        ajaxGetClients('apply');//进入页面时获得[已报名]列表 
+        
+        //获得当前get参数
+        var applystatus = document.URL.split('?')[1].split('=')[1].replace('#','');
+        switch (applystatus){
+            case 'apply' : 
+                $('#tab_apply').attr('style', 'padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');
+                ajaxGetClients('apply');
+                break;
+            case 'noanswer' : 
+                $('#tab_noswer').attr('style', 'padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');
+                ajaxGetClients('noanswer');
+                break;
+            case 'reject' : 
+                $('#tab_reject').attr('style', 'padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');
+                ajaxGetClients('reject');
+                break;            
+        }
         
         $('a[id^="tab_"]').bind('click', function(){
             $("#"+this.id).siblings().attr('style','');
@@ -92,7 +108,7 @@ function ajaxChangeStatus(id, applystatus){
    <div class="accordionview">
     <div class="accordion_panel">
      <h2 class="accordion_toggle accordion_toggle_active">
-     	<a id="tab_apply" href="#" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
+     	<a id="tab_apply" href="#">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
      	<a id="tab_noanswer" href="#">犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
      	<a id="tab_reject" href="#">不来的 <strong>({{party_clients.reject.client_count}}人)</strong></a>
      	<a href='{% if party.invite_type == "email" %}{% url email_invite party.id %}{% else %}{% url sms_invite party.id %}{% endif %}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a>
