@@ -458,7 +458,7 @@ def _public_enroll(request, party_id):
         phone = request.POST['phone']
         if Client.objects.filter(creator = creator).filter(email = email).count() == 0 \
             and Client.objects.filter(creator = creator).filter(phone = phone).count() == 0:
-            client = Client.objects.create(name = name, email = email, phone = phone, invite_type = 'public')
+            client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
             PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
             return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
         else:
@@ -481,9 +481,14 @@ def _invite_enroll(request, party_id, invite_key):
     
     if request.method == 'POST':
         #保存client的姓名
-        if request.POST.get('name',request.POST['address'] ):
-            client.name = request.POST.get('name',request.POST['address'])
+        try:
+            request.POST['name']
+        except:
+            pass
+        else:
+            client.name = request.POST['name']
             client.save()
+           
         if request.POST['action'] == 'yes': #如果点击参加
             party_client.apply_status = u'apply'
             party_client.save()
