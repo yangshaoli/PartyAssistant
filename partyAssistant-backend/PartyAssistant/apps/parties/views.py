@@ -450,7 +450,7 @@ def _public_enroll(request, party_id):
         phone = request.POST['phone']
         if Client.objects.filter(creator = creator).filter(email = email).count() == 0 \
             and Client.objects.filter(creator = creator).filter(phone = phone).count() == 0:
-            client = Client.objects.create(name = name, email = email, phone = phone, invite_type = 'public')
+            client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
             PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
             return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
         else:

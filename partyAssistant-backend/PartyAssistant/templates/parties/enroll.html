@@ -98,7 +98,7 @@ function ajaxChangeStatus(id, applystatus){
        
          {% else %}
          <!--公共报名页面 -->
-        <form action="{% url enroll party.id %}" method="get" class="creat_exercise">{% csrf_token %}
+        <form action="{% url enroll party.id %}" method="POST" class="creat_exercise">{% csrf_token %}
             <div class="field">
              <label for="client_email_list">姓名</label>
                  <input type="text" name="name" id="id_name"/>
