@@ -17,7 +17,7 @@
     })
 
 function clientAction(id, applystatus){
-    var answer = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'apply\')"><button>参加</button></a>';
+    var answer = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'apply\')"><button>参&nbsp;&nbsp;&nbsp;&nbsp;加</button></a>';
     var reject = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'reject\')"><button>不参加</button></a>';
     switch (applystatus) {
         case 'apply' : 
@@ -42,7 +42,7 @@ function ajaxGetClients(applystatus){
         200: function(response){
             clients = JSON.parse(response);
             for (i in clients){
-                var new_status = clients[i].is_new?'<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />':'';
+                var new_status = !clients[i].is_check?'<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />':'';
                 var action = clientAction(clients[i].id, applystatus)//判断applystatus，显示相应按钮
                 row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
                 $('.accordion_content table tbody').append(row);    
@@ -92,7 +92,7 @@ function ajaxChangeStatus(id, applystatus){
    <div class="accordionview">
     <div class="accordion_panel">
      <h2 class="accordion_toggle accordion_toggle_active">
-     	<a id="tab_apply" href="#" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
+     	<a id="tab_apply" href="#" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if not party_clients.apply.is_check %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
      	<a id="tab_noanswer" href="#">犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
      	<a id="tab_reject" href="#">不来的 <strong>({{party_clients.reject.client_count}}人)</strong></a>
      	<a href='{% if party.invite_type == "email" %}{% url email_invite party.id %}{% else %}{% url sms_invite party.id %}{% endif %}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a>

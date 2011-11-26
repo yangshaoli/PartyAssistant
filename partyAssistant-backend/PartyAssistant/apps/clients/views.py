@@ -86,7 +86,7 @@ def invite_list_ajax(request, party_id):
         party_client_data = {
             'id' : party_client.id,
             'name' : party_client.client.name, 
-            'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
+            'address': party.invite_type == 'email' and party_client.client.email[:party_client.client.email.index('@')][:3]+'*'*6+party_client.client.email[party_client.client.email.index('@'):] or party_client.client.phone[0:3]+'*'*4+party_client.client.phone[-4:], 
             'is_check': party_client.is_check
         }    
         party_clients_data.append(party_client_data)
@@ -103,7 +103,8 @@ def ajax_get_client_list(request, invite_type):
     for client in clients:
         client_data = {
             'name' : client.name, 
-            'address': invite_type == 'email' and client.email or client.phone
+            'address': invite_type == 'email' and client.email[:client.email.index('@')][:3]+'*'*6+client.email[client.email.index('@'):] or client.phone[0:3]+'*'*4+client.phone[-4:]
+
         }
         clients_data.append(client_data)
     return HttpResponse(simplejson.dumps(clients_data))
