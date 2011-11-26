@@ -11,9 +11,7 @@
 	     window.location=url;
 	  }
 	}
-	{% if send_status %}
-   alert('{{ send_status }}');
-{% endif %}
+
 </script>
 {% endblock %}
 
@@ -40,7 +38,9 @@
       </table>
  </div>
 </div>
-
+	{% if send_status %}
+    {{ send_status }}
+    {% endif %}
  <div id="content">
   <div class="grid_a">
    <h2 class="title" style="margin-top:30px;"><a href="{% url create_party %}"><img src="/static/images/btn_creat_active.png"/></a></h2>
