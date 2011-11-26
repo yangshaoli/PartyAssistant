@@ -11,6 +11,9 @@
 	     window.location=url;
 	  }
 	}
+	{% if send_status %}
+   alert('{{ send_status }}');
+{% endif %}
 </script>
 {% endblock %}
 
