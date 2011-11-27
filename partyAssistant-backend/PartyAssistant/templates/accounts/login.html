@@ -15,7 +15,7 @@
      <label for="username">
      用户名
      </label>
-     <input id='id_username' name='username' type='text' placeholder='必填项'></input>
+     <input id='id_username' name='username' type='text' value="{{ form.username.value|default:'' }}" placeholder='必填项'></input>
      <font color="red">{{ form.username.errors.0 }}</font>
      </div>
      <div class="field">

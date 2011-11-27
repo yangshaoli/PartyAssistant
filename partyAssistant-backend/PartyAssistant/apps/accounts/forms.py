@@ -10,9 +10,9 @@ class LoginForm(AuthenticationForm):
         pass
 
 class RegistrationForm(forms.Form):
-    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
-    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
-    confirm_password = forms.CharField(max_length=16, widget=forms.PasswordInput())
+    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}))
+    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    confirm_password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
     
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -36,9 +36,9 @@ class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput())
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
-    new_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput())
-    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput())
+    old_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    new_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
     
     def __init__(self, request, data):
         if request:
