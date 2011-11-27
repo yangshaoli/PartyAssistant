@@ -101,15 +101,11 @@ function ajaxChangeStatus(id, applystatus){
         <form action="{% url enroll party.id %}" method="POST" class="creat_exercise">{% csrf_token %}
             <div class="field">
              <label for="client_email_list">姓名</label>
-                 <input type="text" name="name" id="id_name"/>
+             {{ form.name }}{{ form.name.errors.0 }}
              </div>
             <div class="field">
-             <label for="client_email_list">Email</label>
-                 <input type="text" name="email" id="id_email"/>
-             </div>
-             <div class="field">
-             <label for="client_email_list">手机号码</label>
-                 <input type="text" name="phone" id="id_phone"/>
+             <label for="client_email_list">联系方式</label>
+             {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
              </div>
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}

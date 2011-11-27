@@ -8,14 +8,15 @@ Created on 2011-10-27
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
+from apps.parties.forms import PublicEnrollForm
 from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
-from django.core.paginator import Paginator
 from forms import CreatePartyForm
 from models import Party
 from settings import SYS_EMAIL_ADDRESS
@@ -453,20 +454,36 @@ def _public_enroll(request, party_id):
     
     if request.method == 'POST':
         #将用户加入clients,状态为'已报名'
-        name = request.POST['name']
-        email = request.POST['email']
-        phone = request.POST['phone']
-        if Client.objects.filter(creator = creator).filter(email = email).count() == 0 \
-            and Client.objects.filter(creator = creator).filter(phone = phone).count() == 0:
-            client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
-            PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
-            return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+        form = PublicEnrollForm(request.POST)
+        if form.is_valid():
+            name = request.POST['name']
+            email = ''
+            phone = ''
+            if form.cleaned_data['phone_or_email'].find('@') > 0:
+                email = form.cleaned_data['phone_or_email']
+            else:
+                phone = form.cleaned_data['phone_or_email']
+                    
+            if Client.objects.filter(creator = creator).filter(email = email).count() == 0 \
+                and Client.objects.filter(creator = creator).filter(phone = phone).count() == 0:
+                client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
+                PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
+                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+            else:
+                return TemplateResponse(request, 'message.html', {'message':u'您已经报名了'})
         else:
-            return TemplateResponse(request, 'message.html', {'message':u'您已经报名了'})
+            data = {
+            'party': party,
+            'client_count': _get_client_count(party),
+            'form':form
+                   }
+            return TemplateResponse(request, 'parties/enroll.html', data)
     else:
+        form = PublicEnrollForm()
         data = {
             'party': party,
-            'client_count': _get_client_count(party)
+            'client_count': _get_client_count(party),
+            'form':form
         }
         if request.META['PATH_INFO'][0:3] == '/m/':
             return TemplateResponse(request, 'm/enroll.html', data)

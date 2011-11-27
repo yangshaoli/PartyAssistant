@@ -2,7 +2,9 @@
 
 from apps.parties.models import Party
 from django import forms
+from django.core.validators import validate_email
 from django.forms.widgets import TextInput, TimeInput, DateInput, Textarea
+import re
 
 class CreatePartyForm(forms.ModelForm):
     class Meta:
@@ -28,3 +30,35 @@ class CreatePartyForm(forms.ModelForm):
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget=forms.TextInput(), required=True)
     content = forms.CharField(widget=forms.TextInput(), required=True)   
+    
+class PublicEnrollForm(forms.Form):
+    name = forms.CharField( widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}), required=True)  
+    phone_or_email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'必填项'}), required=True)
+    
+    def clean_phone_or_email(self):
+        if 'phone_or_email' in self.cleaned_data:
+            phone_or_email = self.cleaned_data['phone_or_email']
+            print phone_or_email.find('@') == -1
+            if phone_or_email.find('@') == -1:
+                phone_re = r'1\d{10}'
+                invalid_phone = ''
+                phone = phone_or_email.strip()
+                if phone != '':
+                    if not re.search(phone_re, phone):
+                        invalid_phone = phone
+        
+                if invalid_phone:
+                    raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
+        
+            else:
+                invalid_email = ''
+                try:
+                    validate_email(phone_or_email)
+                except:
+                    invalid_email = phone_or_email
+        
+                if invalid_email:
+                    raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
+            
+            return self.cleaned_data['phone_or_email']
+    
