@@ -9,8 +9,8 @@ from django.core.validators import validate_email
 import re
 
 class EmailInviteForm(forms.Form):
-    client_email_list = forms.CharField(widget=forms.Textarea())
-    content = forms.CharField(widget=forms.Textarea(attrs={'rows':'15','cows':'70'}))
+    client_email_list = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'必填项'}))
+    content = forms.CharField(widget=forms.Textarea(attrs={'rows':'15','cows':'70','placeholder':u'必填项'}))
     is_apply_tips = forms.BooleanField(widget=forms.CheckboxInput(), required=False)
     
     def clean_client_email_list(self):
@@ -36,8 +36,8 @@ class EmailInviteForm(forms.Form):
         return self.cleaned_data['client_email_list']
 
 class SMSInviteForm(forms.Form):
-    client_phone_list = forms.CharField(widget=forms.Textarea())
-    content = forms.CharField(widget=forms.Textarea(attrs={'rows':'15','cows':'70'}))
+    client_phone_list = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'必填项'}))
+    content = forms.CharField(widget=forms.Textarea(attrs={'rows':'15','cows':'70', 'placeholder':u'必填项'}))
     is_apply_tips = forms.BooleanField(required=False)
     
     def clean_client_phone_list(self):
