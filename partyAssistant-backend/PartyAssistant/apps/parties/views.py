@@ -461,8 +461,10 @@ def _public_enroll(request, party_id):
             phone = ''
             if form.cleaned_data['phone_or_email'].find('@') > 0:
                 email = form.cleaned_data['phone_or_email']
+                phone = form.cleaned_data['phone_or_email']+'@'#虚构phone
             else:
                 phone = form.cleaned_data['phone_or_email']
+                email = form.cleaned_data['phone_or_email']+'@'#虚构email
                     
             if Client.objects.filter(creator = creator).filter(email = email).count() == 0 \
                 and Client.objects.filter(creator = creator).filter(phone = phone).count() == 0:
