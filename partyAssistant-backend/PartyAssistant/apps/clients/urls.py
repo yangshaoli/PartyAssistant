@@ -6,5 +6,5 @@ urlpatterns = patterns('apps.clients.views',
     url(r'^invite_list/(?P<party_id>\d+)/$','invite_list',name='invite_list'),
     url(r'^invite_list_ajax/(?P<party_id>\d+)/$','invite_list_ajax',name='invite_list_ajax'),
     
-    url(r'^ajax_get_client_list/(?P<invite_type>\w+)$','ajax_get_client_list',name='ajax_get_client_list'),
+    url(r'^ajax_get_client_list/(?P<party_id>\d+)/$','ajax_get_client_list',name='ajax_get_client_list'),
 )

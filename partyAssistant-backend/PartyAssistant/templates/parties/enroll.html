@@ -28,7 +28,7 @@ function ajaxGetClients(applystatus){
     
     $.ajax({
         type : 'GET',
-        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
+        url: '/clients/ajax_get_client_list/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
             clients = JSON.parse(response);

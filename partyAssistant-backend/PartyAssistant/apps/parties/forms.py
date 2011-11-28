@@ -33,7 +33,7 @@ class InviteForm(forms.Form):
     
 class PublicEnrollForm(forms.Form):
     name = forms.CharField( widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}), required=True)  
-    phone_or_email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'必填项'}), required=True)
+    phone_or_email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码或邮件地址'}), required=True)
     
     def clean_phone_or_email(self):
         if 'phone_or_email' in self.cleaned_data:

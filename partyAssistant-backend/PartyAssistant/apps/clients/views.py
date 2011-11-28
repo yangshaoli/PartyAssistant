@@ -97,14 +97,21 @@ def invite_list_ajax(request, party_id):
     
     return HttpResponse(simplejson.dumps(party_clients_data))
 
-def ajax_get_client_list(request, invite_type):
-    clients = Client.objects.filter(creator=request.user)
-    clients_data = []
-    for client in clients:
-        client_data = {
-            'name' : client.name, 
-            'address': invite_type == 'email' and client.email[:client.email.find('@')][:3]+'*'*6+client.email[client.email.find('@'):] or client.phone[0:3]+'*'*4+client.phone[-4:]
-
-        }
-        clients_data.append(client_data)
-    return HttpResponse(simplejson.dumps(clients_data))
+def ajax_get_client_list(request, party_id):
+    apply_status = request.GET.get('apply', 'all')
+    party = get_object_or_404(Party, id=party_id)
+    
+    if apply_status == 'all':
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party)
+    else:
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
+    
+    party_clients_data = []
+    for party_client in party_clients_list:
+        party_client_data = {
+            'name' : party_client.client.name, 
+            'address': party.invite_type == 'email' and party_client.client.email[:party_client.client.email.find('@')][:3]+'*'*6+party_client.client.email[party_client.client.email.find('@'):] or party_client.client.phone[0:3]+'*'*4+party_client.client.phone[-4:], 
+        }    
+        party_clients_data.append(party_client_data)
+        
+    return HttpResponse(simplejson.dumps(party_clients_data))
