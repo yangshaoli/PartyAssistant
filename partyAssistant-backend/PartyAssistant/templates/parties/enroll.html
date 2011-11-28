@@ -106,6 +106,10 @@ function ajaxChangeStatus(id, applystatus){
             <div class="field">
              <label for="client_email_list">联系方式</label>
              {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
+             <br/>
+             {% if invite_message %}
+             {{ invite_message }}
+             {% endif %}
              </div>
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}
