@@ -1,9 +1,10 @@
 #coding=utf-8
 
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms.util import ErrorList
-from django.contrib.auth.forms import AuthenticationForm
+import re
 
 class LoginForm(AuthenticationForm):
     def clean(self):
@@ -59,4 +60,27 @@ class ChangePasswordForm(forms.Form):
                 del self.cleaned_data['new_password']
                 del self.cleaned_data['confirm_password']
                 
+        return self.cleaned_data
+    
+class UserProfileForm(forms.Form):
+    true_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'姓名', 'readonly':'readonly'}), required = False)
+    phone = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码', 'readonly':'readonly'}), required = False)
+    email = forms.EmailField(max_length=75, widget=forms.TextInput(attrs={'placeholder':u'邮件地址', 'readonly':'readonly'}), required = False)
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        if phone == '':
+            self.cleaned_data['phone'] = None
+            return self.cleaned_data['phone']
+        phone_re = r'1\d{10}'
+        invalid_phone = ''
+        phone = phone.strip()
+        if phone != '':
+            if not re.search(phone_re, phone):
+                invalid_phone = phone
+
+        if invalid_phone:
+            raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
+    
+        return self.cleaned_data['phone']
+    def clean(self):
         return self.cleaned_data

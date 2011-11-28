@@ -17,10 +17,13 @@ ACTION_CHOICES = (
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     password = models.CharField(max_length=16, blank=True)
+    true_name = models.CharField(max_length=16, blank=True)
     #自己注册的为管理员
     account_type = models.CharField(max_length=16, choices=ACCOUNT_TYPE_CHOICES)
     first_login = models.BooleanField(default=True)
     phone = models.IntegerField(null=True, blank=True)
+    used_sms_count = models.IntegerField(default=0)
+    available_sms_count = models.IntegerField(default=30)
     
     def __unicode__(self):
         return self.user.username
