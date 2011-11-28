@@ -435,7 +435,6 @@ def list_party(request):
                 client['new_add_reject'].append(party_client)
         party.client = client  
         party.client['count'] = _get_client_count(party)
-        print party.client['count']
         
     send_status = ''    
     if 'send_status' in request.session:
@@ -470,6 +469,7 @@ def _public_enroll(request, party_id):
                 and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).count() == 0:
                 client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
                 PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
+
                 return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
             else:
                 return TemplateResponse(request, 'message.html', {'message':u'您已经报名了'})
@@ -500,13 +500,17 @@ def _invite_enroll(request, party_id, invite_key):
     
     if request.method == 'POST':
         #保存client的姓名
-        try:
-            request.POST['name']
-        except:
-            pass
+        if client.invite_type == 'email':
+            if request.POST.get('name'):
+                client.name = request.POST.get('name')
+            else:
+                client.name = client.email  
         else:
-            client.name = request.POST['name']
-            client.save()
+            if request.POST.get('name'):
+                client.name = request.POST.get('name')
+            else:
+                client.name = client.phone  
+        client.save()
            
         if request.POST['action'] == 'yes': #如果点击参加
             party_client.apply_status = u'apply'

@@ -1,10 +1,16 @@
-{% extends 'base.html' %}
+{% extends 'login_base.html' %}
 {% block title %} 操作成功 {% endblock %}
 {% block content %}
 
 {% if message %}
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">操作成功</h2>
+    <h2>{{message}}</h2>
+<br />
+  </div>
+ </div>
 
-{{message}}
 
 {% else %}
 

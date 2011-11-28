@@ -7,7 +7,8 @@
     $(document).ready(function(){
         
         //获得当前get参数
-        var applystatus = document.URL.split('?')[1].split('=')[1].replace('#','');
+        if ( document.URL.search(/\?/) == -1) var applystatus = 'apply';
+        else var applystatus = document.URL.split('?')[1].split('=')[1].replace('#','');
         switch (applystatus){
             case 'apply' : 
                 $('#tab_apply').attr('style', 'padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');
