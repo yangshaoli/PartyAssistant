@@ -1,40 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2008 The Android Open Source Project
 
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-          http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License.
--->
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
         >
 	 <RelativeLayout
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
+		android:layout_height="60dip"
 		android:layout_gravity="center_horizontal"
-		android:background="@drawable/blue_button">
+		android:background="@drawable/blue_button"
+		android:layout_alignParentBottom="true"
+		>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
-			android:text="增加"
+			android:layout_marginLeft="50dip"
+			android:text="@string/send_airenao_add"
 			android:id="@+id/btnAdd"/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
-			android:text="取消"
+			android:layout_marginRight="50dip"
+			android:text="@string/btn_cancle"
 			android:id="@+id/btnCancle"
 		/>
 	</RelativeLayout>
@@ -42,6 +32,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:fastScrollEnabled="true"
+            android:layout_marginBottom="60dip"
     />
 
     <ScrollView android:id="@android:id/empty"
@@ -62,4 +53,4 @@
         />
     </ScrollView>
    
-</LinearLayout>
+</RelativeLayout>

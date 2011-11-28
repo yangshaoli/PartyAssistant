@@ -23,6 +23,10 @@
 		android:layout_gravity="center_vertical"
 		android:paddingTop="0dp"
 		android:gravity="center"
+		android:paddingBottom="2dip"
+		android:paddingLeft="8dip"
+		android:paddingRight="8dip"
+		android:background="@drawable/button_red"
 		android:text="@string/button_edit"/>
 	</RelativeLayout>
 	

@@ -74,6 +74,8 @@
 	</string>
 	<string name="createToList">返回活动列表，则创建活动页面中的数据将丢失，是否确定？</string>
 	<string name="sendSmsTip">收件人列表为空，是否继续操作？</string>
+	<string name="systemMistakeTitle">对不起</string>
+	<string name="systemMistake">系统发生错误！</string>
 	<string name="sendLableLink">
 		<b>点击</b>www.airenao.com<b>进入报名链接</b>
 	</string>

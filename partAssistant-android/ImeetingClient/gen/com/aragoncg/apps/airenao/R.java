@@ -64,9 +64,9 @@ public final class R {
         public static final int btnAddOneActivity=0x7f080000;
         public static final int btnCancle=0x7f080008;
         public static final int btnDetailEdit=0x7f080023;
-        public static final int btnPeopleAction1=0x7f080036;
-        public static final int btnPeopleAction2=0x7f080037;
         public static final int btnPeopleLableBack=0x7f080025;
+        public static final int btnPeopleRegister=0x7f080036;
+        public static final int btnPeopleUnRegister=0x7f080037;
         public static final int btnRecover=0x7f080046;
         public static final int btnSend=0x7f080045;
         public static final int btnSendEmail=0x7f080021;
@@ -175,24 +175,24 @@ public final class R {
         public static final int createToList=0x7f050046;
         public static final int create_activity=0x7f050001;
         public static final int delete=0x7f050019;
-        public static final int deleteConfirmation=0x7f050058;
-        public static final int deleteConfirmation_title=0x7f050057;
+        public static final int deleteConfirmation=0x7f05005a;
+        public static final int deleteConfirmation_title=0x7f050059;
         public static final int desc_activity=0x7f050008;
         public static final int destination=0x7f050006;
         public static final int detailActivity=0x7f050002;
         public static final int end_time=0x7f050005;
         public static final int error_email=0x7f05002f;
         public static final int exitMessage=0x7f050043;
-        public static final int fast_scroll_alphabet=0x7f05004b;
-        public static final int favoritesFrquentSeparator=0x7f050051;
+        public static final int fast_scroll_alphabet=0x7f05004d;
+        public static final int favoritesFrquentSeparator=0x7f050053;
         public static final int find_lable_message=0x7f05002d;
         public static final int find_lable_tip=0x7f05002e;
         public static final int hint=0x7f050009;
         public static final int invited_number=0x7f05003a;
         public static final int limit_num=0x7f050016;
-        public static final int listFoundAllContactsZero=0x7f05004c;
-        public static final int listTotalAllContactsZero=0x7f05004d;
-        public static final int listTotalPhoneContactsZero=0x7f050050;
+        public static final int listFoundAllContactsZero=0x7f05004e;
+        public static final int listTotalAllContactsZero=0x7f05004f;
+        public static final int listTotalPhoneContactsZero=0x7f050052;
         public static final int loadAirenao=0x7f050041;
         public static final int login_label_find_back=0x7f050021;
         public static final int login_label_password=0x7f05001e;
@@ -202,25 +202,25 @@ public final class R {
         public static final int login_status_logging_in=0x7f050022;
         public static final int login_username_hint=0x7f050023;
         public static final int meeting_list=0x7f050003;
-        public static final int menu_addStar=0x7f050059;
-        public static final int menu_call=0x7f05005d;
-        public static final int menu_deleteContact=0x7f05005c;
+        public static final int menu_addStar=0x7f05005b;
+        public static final int menu_call=0x7f05005f;
+        public static final int menu_deleteContact=0x7f05005e;
         /**  Menu item used to edit a specific contact 
          */
-        public static final int menu_editContact=0x7f05005b;
+        public static final int menu_editContact=0x7f05005d;
         /**  Menu item used to remove a star from a contact, making the contact 
 		no longer show up at the top of favorites 
          */
-        public static final int menu_removeStar=0x7f05005a;
+        public static final int menu_removeStar=0x7f05005c;
         /** 
 		Menu item used to send an SMS or MMS message to a specific phone
 		number or a contacts default phone number
 	
          */
-        public static final int menu_sendSMS=0x7f05005e;
-        public static final int noContactsWithPhoneNumbers=0x7f05004a;
-        public static final int noFavoritesHelpText=0x7f05005f;
-        public static final int noMatchingContacts=0x7f050060;
+        public static final int menu_sendSMS=0x7f050060;
+        public static final int noContactsWithPhoneNumbers=0x7f05004c;
+        public static final int noFavoritesHelpText=0x7f050061;
+        public static final int noMatchingContacts=0x7f050062;
         public static final int operate=0x7f050018;
         public static final int pass_tip=0x7f050027;
         public static final int pass_tip1=0x7f050028;
@@ -235,7 +235,7 @@ public final class R {
         public static final int register_lable_pass_tip=0x7f050026;
         public static final int reinvate=0x7f050032;
         public static final int save=0x7f05001c;
-        public static final int sendLableLink=0x7f050048;
+        public static final int sendLableLink=0x7f05004a;
         public static final int sendLablePosition=0x7f050014;
         public static final int sendLableTime=0x7f050013;
         public static final int sendLableTitle=0x7f050042;
@@ -251,32 +251,34 @@ public final class R {
         public static final int send_mail=0x7f05000c;
         public static final int send_message=0x7f05000b;
         public static final int sendlableNotice=0x7f050044;
-        public static final int separatorJoinAggregateAll=0x7f05004f;
-        public static final int separatorJoinAggregateSuggestions=0x7f05004e;
+        public static final int separatorJoinAggregateAll=0x7f050051;
+        public static final int separatorJoinAggregateSuggestions=0x7f050050;
         public static final int set_time_title=0x7f05000d;
         public static final int share=0x7f05001b;
-        public static final int showAllContactsJoinItem=0x7f050049;
+        public static final int showAllContactsJoinItem=0x7f05004b;
         public static final int signed_number=0x7f05003b;
         public static final int start_time=0x7f050004;
+        public static final int systemMistake=0x7f050049;
+        public static final int systemMistakeTitle=0x7f050048;
         public static final int to_detail_activity=0x7f050039;
         public static final int txtSendLable=0x7f050045;
-        public static final int type_short_home=0x7f050052;
+        public static final int type_short_home=0x7f050054;
         /**  Single-character overlay for mobile phone numbers when creating desktop 
 		shortcuts 
          */
-        public static final int type_short_mobile=0x7f050053;
+        public static final int type_short_mobile=0x7f050055;
         /**  Single-character overlay for other phone numbers when creating desktop 
 		shortcuts 
          */
-        public static final int type_short_other=0x7f050056;
+        public static final int type_short_other=0x7f050058;
         /**  Single-character overlay for pager phone numbers when creating desktop 
 		shortcuts 
          */
-        public static final int type_short_pager=0x7f050055;
+        public static final int type_short_pager=0x7f050057;
         /**  Single-character overlay for work phone numbers when creating desktop 
 		shortcuts 
          */
-        public static final int type_short_work=0x7f050054;
+        public static final int type_short_work=0x7f050056;
         public static final int unjion=0x7f05003d;
         public static final int unsiged_number=0x7f05003c;
         public static final int user_name_check=0x7f05002b;

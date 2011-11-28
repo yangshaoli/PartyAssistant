@@ -294,25 +294,8 @@ public class CreateActivity extends Activity implements OnClickListener {
 			
 			@Override
 			public void onClick(View v) {
-				String content = activityDescText.getText().toString();
-				if("".equals(content)){
-					Toast.makeText(CreateActivity.this,R.string.send_lable_content_tip , Toast.LENGTH_SHORT).show();
-					return;
-				}
-				Bundle dataBundle = new Bundle();
-				dataBundle.putString(Constants.SEND_TIME, startTimeText.getText().toString());
-				dataBundle.putString(Constants.SEND_POSITION, positionText.getText().toString());
-				String myNumber = peopleLimitNum.getText().toString().trim();
-				if(myNumber.equals("")){
-					myNumber = "0";
-				}
-				dataBundle.putInt(Constants.SEND_NUMBER,Integer.valueOf(myNumber));
-				dataBundle.putString(Constants.SEND_CONTENT, activityDescText.getText().toString());
-				
-				Intent mIntent = new Intent(CreateActivity.this,SendAirenaoActivity.class);
-				mIntent.putExtra(Constants.TO_SEND_ACTIVITY, dataBundle);
-				startActivity(mIntent);
-				
+				//-2 发送手机短信
+				packgeDataToSendAirenaoActivity(-2);
 			}
 		});
 		
@@ -320,9 +303,8 @@ public class CreateActivity extends Activity implements OnClickListener {
 			
 			@Override
 			public void onClick(View v) {
-				
-				
-				
+				//-1 是发送email
+				packgeDataToSendAirenaoActivity(-1);
 			}
 		});
 		
@@ -334,8 +316,9 @@ public class CreateActivity extends Activity implements OnClickListener {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				
-				showSetTimeDialog(firstSetTime);
+				if(event.getAction() == MotionEvent.ACTION_UP){
+					showSetTimeDialog(firstSetTime);
+				}
 				return false;
 				
 			}
@@ -561,5 +544,28 @@ public class CreateActivity extends Activity implements OnClickListener {
 			airenao = DbHelper.select(db);
 		}
 		return airenao;
+	}
+	
+	//要发送的数据
+	public void packgeDataToSendAirenaoActivity(int sendTag){
+		String content = activityDescText.getText().toString();
+		if("".equals(content)){
+			Toast.makeText(CreateActivity.this,R.string.send_lable_content_tip , Toast.LENGTH_SHORT).show();
+			return;
+		}
+		Bundle dataBundle = new Bundle();
+		dataBundle.putString(Constants.SEND_TIME, startTimeText.getText().toString());
+		dataBundle.putString(Constants.SEND_POSITION, positionText.getText().toString());
+		String myNumber = peopleLimitNum.getText().toString().trim();
+		if(myNumber.equals("")){
+			myNumber = "0";
+		}
+		dataBundle.putInt(Constants.SEND_NUMBER,Integer.valueOf(myNumber));
+		dataBundle.putString(Constants.SEND_CONTENT, activityDescText.getText().toString());
+		
+		Intent mIntent = new Intent(CreateActivity.this,SendAirenaoActivity.class);
+		mIntent.putExtra(Constants.TO_SEND_ACTIVITY, dataBundle);
+		mIntent.putExtra("mode", sendTag);
+		startActivity(mIntent);
 	}
 }

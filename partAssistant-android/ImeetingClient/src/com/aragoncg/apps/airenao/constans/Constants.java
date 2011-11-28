@@ -68,5 +68,7 @@ public class Constants {
     public static final String  DATA_BASE_PATH = "/data/com.aragoncg.apps.airenao/databases";
     public static final String  DATA_BASE_NAME = "activityData.db";
     
+    public static final String  WHAT_PEOPLE_TAG = "whatPeopleTag";
+    
     
 }

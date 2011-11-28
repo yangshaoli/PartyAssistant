@@ -30,7 +30,7 @@ public class AirenaoUtills {
 	/* 校验只为数字 */
 	public static String regDigital = "([0-9])+";
 	/* 校验电子邮件 */
-	public static String regEmail = "^\\w+[-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
+	public static String regEmail = "^([a-z0-9A-Z]+[-|//.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?//.)+[a-zA-Z]{2,}$ ";
 	/*校验电话号码*/
 	public static String regPhoneNumber = "^(13|15|18)\\d{9}$";
 	
@@ -50,8 +50,7 @@ public class AirenaoUtills {
 	 * 
 	 */
 	public static boolean matchString(final String regEx, final String msg) {
-		String mRegEx = regEx;
-		Pattern p = Pattern.compile(mRegEx);
+		Pattern p = Pattern.compile(regEx);
 		Matcher m = p.matcher(msg);
 		boolean result = m.find();
 		return result;

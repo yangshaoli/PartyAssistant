@@ -40,7 +40,7 @@
 			
 		</activity>
 		
-		<activity android:name=".activity.InvatedPeopleInfoActivity">
+		<activity android:name=".activity.PeopleInfoActivity">
 			
 		</activity>
     </application>

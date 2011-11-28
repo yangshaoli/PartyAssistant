@@ -86,6 +86,7 @@ import android.widget.QuickContactBadge;
 import android.widget.ResourceCursorAdapter;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.constans.Constants;
@@ -181,11 +182,11 @@ public class ContactsListActivity extends ListActivity implements
 	static final int MODE_MASK_DISABLE_QUIKCCONTACT = 0x01000000;
 	/** Mask to show the total number of contacts at the top */
 	static final int MODE_MASK_SHOW_NUMBER_OF_CONTACTS = 0x00800000;
-
+	
 	/** Unknown mode */
 	static final int MODE_UNKNOWN = 0;
 	/** Default mode */
-	public static final int MODE_DEFAULT = 4 | MODE_MASK_SHOW_PHOTOS
+	public static final int MODE_DEFAULT = -2 | MODE_MASK_SHOW_PHOTOS
 			| MODE_MASK_SHOW_NUMBER_OF_CONTACTS;
 	/** Custom mode */
 	static final int MODE_CUSTOM = 8;
@@ -263,7 +264,13 @@ public class ContactsListActivity extends ListActivity implements
 			Contacts.LOOKUP_KEY, // 6
 			Contacts.HAS_PHONE_NUMBER // 7
 	};
-
+	
+	static final String[] CONTACTS_EMAIAL = new String[]{
+		ContactsContract.CommonDataKinds.Email.CONTACT_ID,
+		ContactsContract.CommonDataKinds.Email.DISPLAY_NAME,
+		ContactsContract.CommonDataKinds.Email.DATA,
+	};
+	
 	static final String[] CONTACTS_SUMMARY_PROJECTION_FROM_EMAIL = new String[] {
 			Contacts._ID, // 0
 			Contacts.DISPLAY_NAME, // 1
@@ -388,6 +395,7 @@ public class ContactsListActivity extends ListActivity implements
 	private List<MyPerson> choosedData;
 	private MyPerson tempPerson;
 	private Intent personIntent;
+	private static final int MODE_EMAIL = -1;
 	//用来统计被选中的电话
 	private static Map<Integer,String> positions;
 
@@ -480,9 +488,13 @@ public class ContactsListActivity extends ListActivity implements
 							} else {
 								Cursor c = mAdapter.getCursor();
 								if (c != null) {
-									c.moveToPosition(location);
-									int a = c.getPosition();
+									c.moveToPosition(location-1);
+									if(mMode == -2){
 									tempPerson = SmsContact(c,name);
+									}
+									if(mMode == -1){
+										tempPerson = EmailContact(c,name);
+									}
 									if(tempPerson != null){
 										choosedData.add(tempPerson);
 									}
@@ -495,7 +507,7 @@ public class ContactsListActivity extends ListActivity implements
 						personIntent.putParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND, (ArrayList<? extends Parcelable>) choosedData);
 						setResult(21, personIntent);//21只是一个返回的结果代码
 						finish();
-
+						
 					}
 
 				};
@@ -506,7 +518,6 @@ public class ContactsListActivity extends ListActivity implements
 
 			@Override
 			public void onClick(View v) {
-
 				finish();
 			}
 		});
@@ -1026,6 +1037,8 @@ public class ContactsListActivity extends ListActivity implements
 		case MODE_PICK_OR_CREATE_CONTACT: {
 			return Contacts.CONTENT_URI;
 		}
+		case MODE_EMAIL:
+			return ContactsContract.CommonDataKinds.Email.CONTENT_URI;
 		case MODE_STREQUENT: {
 			return Contacts.CONTENT_STREQUENT_URI;
 		}
@@ -1131,6 +1144,8 @@ public class ContactsListActivity extends ListActivity implements
 		case MODE_PICK_OR_CREATE_CONTACT: {
 			return CONTACTS_SUMMARY_PROJECTION;
 		}
+		case MODE_EMAIL:
+			return CONTACTS_SUMMARY_PROJECTION_FROM_EMAIL;
 		case MODE_PICK_PHONE: {
 			return PHONES_PROJECTION;
 		}
@@ -1214,7 +1229,11 @@ public class ContactsListActivity extends ListActivity implements
 		builder.appendQueryParameter("limit", String.valueOf(MAX_SUGGESTIONS));
 		return builder.build();
 	}
-
+	/**
+	 * 排序的方式
+	 * @param projectionType
+	 * @return
+	 */
 	private static String getSortOrder(String[] projectionType) {
 		/*
 		 * if (Locale.getDefault().equals(Locale.JAPAN) && projectionType ==
@@ -1237,6 +1256,7 @@ public class ContactsListActivity extends ListActivity implements
 
 		String[] projection = getProjectionForQuery();
 		// String callingPackage = getCallingPackage();
+		//uri
 		Uri uri = getUriToQuery();
 		// if (!TextUtils.isEmpty(callingPackage)) {
 		// uri = uri.buildUpon().appendQueryParameter(
@@ -1256,7 +1276,9 @@ public class ContactsListActivity extends ListActivity implements
 			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection,
 					getContactSelection(), null, getSortOrder(projection));
 			break;
-
+		case MODE_EMAIL:
+			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null, null, getSortOrder(projection));
+			break;
 		case MODE_LEGACY_PICK_PERSON:
 		case MODE_LEGACY_PICK_OR_CREATE_PERSON:
 			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null,
@@ -2139,13 +2161,14 @@ public class ContactsListActivity extends ListActivity implements
 			} else {
 				// cache.callButton.setVisibility(View.INVISIBLE);
 			}
-
-			if (cursor.getInt(SUMMARY_HAS_PHONE_COLUMN_INDEX) == 0) {
+			if(mMode != -1){
+				if (cursor.getInt(SUMMARY_HAS_PHONE_COLUMN_INDEX) == 0) {
 				//cache.callButton.setVisibility(View.INVISIBLE);
-				cache.verDivider.setVisibility(View.INVISIBLE);
-			} else {
+					cache.verDivider.setVisibility(View.INVISIBLE);
+				} else {
 				// cache.callButton.setVisibility(View.VISIBLE);
-				cache.verDivider.setVisibility(View.VISIBLE);
+					cache.verDivider.setVisibility(View.VISIBLE);
+				}
 			}
 
 			// try {
@@ -2686,7 +2709,6 @@ public class ContactsListActivity extends ListActivity implements
 	public MyPerson SmsContact(Cursor cursor,String name) {
 		if (cursor != null) {
 			boolean hasPhone = cursor.getInt(SUMMARY_HAS_PHONE_COLUMN_INDEX) != 0;
-			int a =0;
 			if (!hasPhone) {
 				// There is no phone number.
 				signalError();
@@ -2722,7 +2744,7 @@ public class ContactsListActivity extends ListActivity implements
 			if (phone == null) {
 				// Display dialog to choose a number to call.
 				//显示一个提示?????????
-				
+				Toast.makeText(ContactsListActivity.this, "该用户没有电话号码", Toast.LENGTH_SHORT).show();
 				
 				return null;
 			} else {
@@ -2734,7 +2756,42 @@ public class ContactsListActivity extends ListActivity implements
 		}
 		return null;
 	}
-	
+	/**
+	 * packge the Email
+	 * @param cursor
+	 * @param name
+	 * @return
+	 */
+	public MyPerson EmailContact(Cursor cursor, String name){
+		String email;
+		if(cursor != null){
+			email= showEmail(cursor);
+			MyPerson myPerson = new MyPerson();
+			myPerson.setName(name);
+			myPerson.setEmail(email);
+			return myPerson;
+		}
+		
+		return null;
+	}
+	/**
+	 * show Email
+	 * @param myCursor
+	 * @return
+	 */
+	 public String showEmail(Cursor myCursor)
+	   {
+	    String id = myCursor.getString(myCursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+	    Cursor emailCursor = getContentResolver().query
+	    (android.provider.Contacts.ContactMethods.CONTENT_URI,
+	      null, "_id=?", new String[]{id}, null);
+	      if(emailCursor.moveToNext())
+	      {
+	       String email = emailCursor.getString(emailCursor.getColumnIndexOrThrow("data"));
+	       return email;
+	      }
+	    return null;
+	   }	  
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		ProgressDialog dialog = new ProgressDialog(this);

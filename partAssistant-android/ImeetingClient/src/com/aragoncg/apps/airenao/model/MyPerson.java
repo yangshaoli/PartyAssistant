@@ -8,6 +8,7 @@ public  class MyPerson implements Parcelable{
 	
 	private String name;
 	private String phoneNumber;
+	private String email;
 	private boolean checked ;
 
 	public String getName() {
@@ -33,6 +34,15 @@ public  class MyPerson implements Parcelable{
 	public void setChecked(boolean checked) {
 		this.checked = checked;
 	}
+	
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	@Override
 	public int describeContents() {
@@ -44,6 +54,7 @@ public  class MyPerson implements Parcelable{
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(name);
 		dest.writeString(phoneNumber);
+		dest.writeString(email);
 		
 	}
 	
@@ -54,6 +65,7 @@ public  class MyPerson implements Parcelable{
 		MyPerson mPerson = new MyPerson();
 		mPerson.name = source.readString();
 		mPerson.phoneNumber = source.readString();
+		mPerson.email = source.readString();
 		return mPerson;
 		}
 		@Override

@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.constans.Constants;
@@ -63,11 +64,13 @@ public class SendAirenaoActivity extends Activity {
 	private List<String> tempPhoneNumbers;
 	private List<String> tempEmailAddress;
 	private String oneNumber;
+	private String oneEmail;
 	
 	private Thread threadSendMessage;
 	private Cursor cursor;
 	private String userName;
 	static final String NAME_COLUMN = Contacts.DISPLAY_NAME;
+	private int modeTag;
 
 	
 	@Override
@@ -85,9 +88,8 @@ public class SendAirenaoActivity extends Activity {
 		Intent dataIntent = getIntent();
 		getItentData(dataIntent);
 		init();
-		if(sendSMS){
-			getContacts();
-		}
+		
+		getContacts();
 		
 		 //绑定自动提示框信息
 		  final ContentApdater adapter = new ContentApdater(this, cursor);
@@ -104,10 +106,24 @@ public class SendAirenaoActivity extends Activity {
 		    String name= myCursor.getString(myCursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME));
 		    //通过获得的Id去查询电话号码
 		    String phone = showPhone(myCursor);
-		    String info =name+"的\n \t\t电话是："+phone;
+		    String email = showEmail(myCursor);
 		    
-		    info += "\n \t\t电子邮件："+showEmail(myCursor);
-		    //tv.setText(info);
+		    //将电话或者电子邮件加入到联系列表
+		    if(modeTag == -1){
+		    	if(email != null && !"".equals(email)){
+		    		tempEmailAddress.add(email);
+		    	}else{
+		    		Toast.makeText(SendAirenaoActivity.this, "此人无邮件", Toast.LENGTH_SHORT).show();
+		    	}
+		    	
+		    }
+		    if(modeTag == -2){
+		    	if(phone != null && !"".equals(phone)){
+		    		tempEmailAddress.add(phone);
+		    	}else{
+		    		Toast.makeText(SendAirenaoActivity.this, "此人无电话", Toast.LENGTH_SHORT).show();
+		    	}
+		    }
 		   }
 		 });
 	}
@@ -128,7 +144,7 @@ public class SendAirenaoActivity extends Activity {
 		    phoneCursor.close();
 		    return null;
 		   }
-		   //显示电子邮件
+		  /* //显示电子邮件
 		   public String showEmail(Cursor myCursor)
 		   {
 		    String id = myCursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
@@ -139,6 +155,19 @@ public class SendAirenaoActivity extends Activity {
 		      if(emailCursor.moveToNext())
 		      {
 		       String email = emailCursor.getString(emailCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Email.DATA));
+		       return email;
+		      }
+		    return null;
+		   }	  */
+		   public String showEmail(Cursor myCursor)
+		   {
+		    String id = myCursor.getString(myCursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+		    Cursor emailCursor = getContentResolver().query
+		    (android.provider.Contacts.ContactMethods.CONTENT_URI,
+		      null, "_id=?", new String[]{id}, null);
+		      if(emailCursor.moveToNext())
+		      {
+		       String email = emailCursor.getString(emailCursor.getColumnIndexOrThrow(android.provider.Contacts.ContactMethods.DATA));
 		       return email;
 		      }
 		    return null;
@@ -175,6 +204,12 @@ public class SendAirenaoActivity extends Activity {
 	public void getItentData(Intent intent){
 		if(intent != null){
 			Bundle dataBundle = (Bundle)intent.getBundleExtra(Constants.TO_SEND_ACTIVITY);
+			modeTag = intent.getIntExtra("mode", -2);
+			if(modeTag == -2){
+				sendSMS = true;
+			}else{
+				sendSMS = false;
+			}
 			theTime = dataBundle.getString(Constants.SEND_TIME).trim();
 			thePosition = dataBundle.getString(Constants.SEND_POSITION).trim();
 			theNumber = dataBundle.getInt(Constants.SEND_NUMBER);
@@ -243,13 +278,15 @@ public class SendAirenaoActivity extends Activity {
 			
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				
-				//Toast.makeText(SendAirenaoActivity.this, "asd", Toast.LENGTH_LONG).show();
-				Intent intent = new Intent();
-				intent.setClass(SendAirenaoActivity.this, ContactsListActivity.class);
-				startActivityForResult(intent, 24);//24 只是一个requestCode 没有别的意义
-				return false;//
-				
+				if(event.getAction() == MotionEvent.ACTION_UP){
+					//Toast.makeText(SendAirenaoActivity.this, "asd", Toast.LENGTH_LONG).show();
+					Intent intent = new Intent();
+					intent.putExtra("mode", modeTag);
+					intent.setClass(SendAirenaoActivity.this, ContactsListActivity.class);
+					startActivityForResult(intent, 24);//24 只是一个requestCode 没有别的意义
+					return false;//
+				}
+				return false;
 			}
 		});
 		//发送
@@ -257,6 +294,7 @@ public class SendAirenaoActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				
 				if(peopleNumbers.getText().toString() == null || "".equals(peopleNumbers.getText().toString())){
 					
 					AlertDialog noticeDialog = new AlertDialog.Builder(SendAirenaoActivity.this)
@@ -316,7 +354,7 @@ public class SendAirenaoActivity extends Activity {
 					}
 				}else{
 					//使用Email发送
-					sendSMSorEmail(!sendSMS,sendWithPc);
+					sendSMSorEmail(sendSMS,sendWithPc);
 				}
 				
 			}
@@ -351,6 +389,23 @@ public class SendAirenaoActivity extends Activity {
 			return tempPhoneNumbers;
 		}else{
 			tempEmailAddress = new ArrayList<String>();
+			//电话本中email
+			if(personList != null && personList.size()>0){
+				for(int i = 0;i < personList.size();i++){
+					oneEmail =  personList.get(i).getEmail();
+					tempEmailAddress.add(oneEmail);
+				}
+			}
+			//用户自己输入的email
+			
+			String inputedEmails = peopleNumbers.getText().toString();
+			String[] emailNumbers = inputedEmails.split(";", 0);
+			for(int i = 0;i < emailNumbers.length;i++){
+				if(AirenaoUtills.matchString(AirenaoUtills.regEmail, emailNumbers[i])){
+					tempEmailAddress.add(emailNumbers[i]);
+				}
+			}
+			
 			return tempEmailAddress;
 		}
 		
@@ -409,12 +464,15 @@ public class SendAirenaoActivity extends Activity {
 		if(21 == resultCode){
 			names = "";
 			String beforeNames = peopleNumbers.getText().toString();
-			names = beforeNames;
+			if(!"".equals(beforeNames)){
+				names = beforeNames+";";
+			}else{
+				names = beforeNames;
+			}
 			personList = data.getParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND);
 			if(personList != null && personList.size() > 0){
 				for(int i = 0;i < personList.size();i++){
-					 
-					names += personList.get(i).getName()+";";
+						names += personList.get(i).getName()+";";
 				}
 				peopleNumbers.setText(names);
 			}

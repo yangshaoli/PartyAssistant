@@ -16,6 +16,7 @@
               android:paddingTop="2dip"  
               android:paddingLeft="2dip" 
               android:layout_gravity="left"
+              android:layout_weight="1"
               android:text="姓名" 
                />  
                  
@@ -38,13 +39,13 @@
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
          	android:text="报名"
-         	android:id="@+id/btnPeopleAction1"/>  
+         	android:id="@+id/btnPeopleRegister"/>  
             <Button
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
          	android:text="不报名"
          	android:layout_marginRight="0dip"
-         	android:id="@+id/btnPeopleAction2"/>   
+         	android:id="@+id/btnPeopleUnRegister"/>   
          </LinearLayout>
          	  
     </LinearLayout>            

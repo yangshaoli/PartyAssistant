@@ -37,9 +37,12 @@ public class DbHelper extends SQLiteOpenHelper {
 	    
 	   public static DbHelper getInstance(Context context){
 		   if(myDbHelper == null){
-			   return new DbHelper(context);
+			   myDbHelper = new DbHelper(context);
+			  SQLiteDatabase db =  myDbHelper.getReadableDatabase();
+			  db.close();
+			    return myDbHelper;
 		   }
-		   return myDbHelper;
+		   return null;
 	   }
 
 	@Override
@@ -151,18 +154,19 @@ public class DbHelper extends SQLiteOpenHelper {
 	}
 	
 	public static SQLiteDatabase openDatabase() {
+		SQLiteDatabase database=null;
 		try {
 			String fpath = android.os.Environment.getDataDirectory()
 					.getAbsolutePath()
 					+ Constants.DATA_BASE_PATH;
 			fpath = fpath + "/" + Constants.DATA_BASE_NAME;
-			SQLiteDatabase database = SQLiteDatabase.openOrCreateDatabase(
+			 database = SQLiteDatabase.openOrCreateDatabase(
 					fpath, null);
 			return database;
 		} catch (Exception e) {
-			Log.e("", e.getMessage());
+			Log.d("", e.getMessage());
 		}
-		return null;
+		return database;
 	}
 	
 	public static void close(SQLiteDatabase db) {
