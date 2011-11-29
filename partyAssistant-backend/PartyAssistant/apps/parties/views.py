@@ -6,6 +6,7 @@ Created on 2011-10-27
 '''
 
 from apps.clients.models import Client
+from apps.accounts.models import UserProfile
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
 from apps.parties.forms import PublicEnrollForm
@@ -288,13 +289,27 @@ def sms_invite(request, party_id):
                         )
 
             send_status = u'短信发送失败'
+            sms_tip = ''
             with transaction.commit_on_success():
-                send_message = Outbox(address = form.cleaned_data['client_phone_list'], base_message = sms_message)
+                client_phone_list = form.cleaned_data['client_phone_list'].split(',')
+                client_phone_list_len = len(client_phone_list)
+                userprofile = UserProfile.objects.get(user = request.user) 
+                sms_count = userprofile.available_sms_count
+                
+                if client_phone_list_len > sms_count:#短信人数大与可发送的短信数目
+                    client_phone_list = client_phone_list[:sms_count]
+                    userprofile.available_sms_count = 0
+                    userprofile.used_sms_count = userprofile.used_sms_count + sms_count
+                else:
+                    userprofile.available_sms_count = userprofile.available_sms_count - client_phone_list_len
+                    userprofile.used_sms_count = userprofile.used_sms_count + client_phone_list_len
+                userprofile.save()
+                
+                send_message = Outbox(address = client_phone_list, base_message = sms_message)
                 send_message.save()
                 send_status = u'短信发送成功'
-             
-            request.session['send_status'] = send_status
-            
+                sms_tip = u'你的当前可用短信数量为：'+str(userprofile.available_sms_count)+' '+u'是否需要充值?'
+            request.session['send_status'] = send_status+' '+sms_tip
             return redirect('list_party')
         else:
             client_data = []

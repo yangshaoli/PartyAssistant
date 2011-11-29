@@ -15,6 +15,7 @@ from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
 import logging
 import random
+from django.utils import simplejson
 logger = logging.getLogger('airenao')
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
@@ -131,3 +132,11 @@ def change_password(request):
         form = ChangePasswordForm(request, None)
     
     return TemplateResponse(request, 'accounts/change_password.html', {'form': form})
+
+@login_required
+def get_availbale_sms_count_ajax(request):
+    userprofile = UserProfile.objects.get(user=request.user)
+    data={'available_count' : userprofile.available_sms_count          
+          }
+    return HttpResponse(simplejson.dumps(data))
+    pass
