@@ -24,7 +24,7 @@ from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
 import datetime
 import logging
-
+from  settings import DOMAIN_NAME
 logger = logging.getLogger('airenao')
 
 
@@ -425,6 +425,7 @@ def list_party(request):
 
         
     for party in party_list:
+        party.enroll_url = DOMAIN_NAME+'/parties/'+str(party.id)+'/enroll/'
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
         client = {
             'invite': [],
