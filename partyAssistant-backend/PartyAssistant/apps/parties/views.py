@@ -499,10 +499,16 @@ def _public_enroll(request, party_id):
             return TemplateResponse(request, 'parties/enroll.html', data)
     else:
         form = PublicEnrollForm()
+        invite_message = ''
+        if party.invite_type == 'email':
+            invite_message = u'请填写邮件，以免收不到活动的具体通知。'
+        else:
+            invite_message = u'请填写手机号码，以免收不到活动的具体通知。'
         data = {
             'party': party,
             'client_count': _get_client_count(party),
-            'form':form
+            'form':form,
+            'invite_message':invite_message
         }
         if request.META['PATH_INFO'][0:3] == '/m/':
             return TemplateResponse(request, 'm/enroll.html', data)
