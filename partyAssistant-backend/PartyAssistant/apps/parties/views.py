@@ -502,8 +502,7 @@ def _public_enroll(request, party_id):
         data = {
             'party': party,
             'client_count': _get_client_count(party),
-            'form':form,
-            'invite_message':invite_message
+            'form':form
         }
         if request.META['PATH_INFO'][0:3] == '/m/':
             return TemplateResponse(request, 'm/enroll.html', data)
