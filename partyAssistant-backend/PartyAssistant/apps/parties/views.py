@@ -304,7 +304,7 @@ def sms_invite(request, party_id):
                     userprofile.available_sms_count = userprofile.available_sms_count - client_phone_list_len
                     userprofile.used_sms_count = userprofile.used_sms_count + client_phone_list_len
                 userprofile.save()
-                
+                client_phone_list = ','.join(client_phone_list)  
                 send_message = Outbox(address = client_phone_list, base_message = sms_message)
                 send_message.save()
                 send_status = u'短信发送成功'
