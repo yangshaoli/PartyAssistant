@@ -481,6 +481,9 @@ def _public_enroll(request, party_id):
                     
             if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).count() == 0 \
                 and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).count() == 0:
+                if party.limit_count != 0:#有人数限制
+                    if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
+                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
                 client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
                 PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
 
@@ -499,7 +502,8 @@ def _public_enroll(request, party_id):
         data = {
             'party': party,
             'client_count': _get_client_count(party),
-            'form':form
+            'form':form,
+            'invite_message':invite_message
         }
         if request.META['PATH_INFO'][0:3] == '/m/':
             return TemplateResponse(request, 'm/enroll.html', data)
@@ -527,6 +531,9 @@ def _invite_enroll(request, party_id, invite_key):
         client.save()
            
         if request.POST['action'] == 'yes': #如果点击参加
+            if party.limit_count != 0:#有人数限制
+                if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
+                    return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
             party_client.apply_status = u'apply'
             party_client.save()
             return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
@@ -547,6 +554,10 @@ def _invite_enroll(request, party_id, invite_key):
             return TemplateResponse(request, 'parties/enroll.html', data)
         
 def enroll(request, party_id):
+    try:
+        get_object_or_404(Party, id = party_id)
+    except :
+        return TemplateResponse(request, 'message.html', {'message':u'该会议已经删除'}) 
     invite_key = request.GET.get('key', '')
     if invite_key:
         return _invite_enroll(request, party_id, invite_key)
