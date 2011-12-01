@@ -11,6 +11,7 @@ import com.aragoncg.apps.airenao.constans.Constants;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +22,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
@@ -65,6 +67,10 @@ public class AirenaoUtills {
 		try {
 			ConnectivityManager conManager = (ConnectivityManager) ctx
 					.getSystemService(Context.CONNECTIVITY_SERVICE);
+			try{
+				NetworkInfo netInfo = conManager.getActiveNetworkInfo();
+			}catch(Exception e){e.printStackTrace();}
+			
 			if (conManager.getActiveNetworkInfo() == null
 					|| !conManager.getActiveNetworkInfo().isAvailable()) {
 				return false;
@@ -72,8 +78,10 @@ public class AirenaoUtills {
 				return true;
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
+		
 	}
 	
 	/**
@@ -452,5 +460,21 @@ public class AirenaoUtills {
 		}
 		return false;
 	}
+	/**
+	 * progressing dialog
+	 * @param context
+	 * @param title
+	 * @param message
+	 * @return
+	 */
+	public static ProgressDialog generateProgressingDialog(Context context, String title, String message){
+		ProgressDialog myDialog = new ProgressDialog(context);
+		myDialog.setTitle(title);
+		myDialog.setMessage(message);
+		return myDialog;
+	}
 	
+	public static String linkResult(String result){
+		return  "{"+"output"+":"+result+"}";
+	}
 }

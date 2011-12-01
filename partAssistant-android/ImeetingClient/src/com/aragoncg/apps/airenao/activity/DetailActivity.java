@@ -315,9 +315,13 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 	public void getComponentsCache() {
 		myCache.txtTime = (EditText) findViewById(R.id.startTimeText);
+		myCache.txtTime.setBackgroundDrawable(null);
 		myCache.txtPosition = (EditText) findViewById(R.id.positionEditText);
+		myCache.txtPosition.setBackgroundDrawable(null);
 		myCache.txtNum = (EditText) findViewById(R.id.peopleNumEditText);
+		myCache.txtNum.setBackgroundDrawable(null);
 		myCache.txtContent = (EditText) findViewById(R.id.descrEditText);
+		myCache.txtContent.setBackgroundDrawable(null);
 		myCache.btnEdit = (Button) findViewById(R.id.btnDetailEdit);
 	}
 

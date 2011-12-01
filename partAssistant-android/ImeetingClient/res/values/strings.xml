@@ -63,11 +63,14 @@
 	<string name="unsiged_number">未报名</string>
 	<string name="unjion">未参加</string>
 	<string name="button_edit">编辑</string>
+	<string name="user_off">注销</string>
+	<string name="user_off_message">确定要注销吗？</string>
 	<string name="btn_create_lable_SMS">发送短信</string>
 	<string name="btn_create_lable_email">发送邮件</string>
 	<string name="loadAirenao">数据加载中...</string>
 	<string name="sendLableTitle">提示</string>
 	<string name="exitMessage">是否要离开“爱热闹”？</string>
+	<string name="clickSetTime">点击设置时间</string>
 	<string name="sendlableNotice">关闭报名提示后，在发送给邀请人的短信/邮件中，将不包含报名链接，确定吗？</string>
 	<string name="txtSendLable">
 	某某邀请您参加：某年某月某日某时某地点举办的某某活动，敬请光临
@@ -165,5 +168,14 @@
 	</string>
 	
 	<string name="noMatchingContacts">No matching contacts found.</string>
+	<string name="rgPgrsTitle">正在联网下载数据...</string>
+	<string name="holdMessage">请稍候...</string>
+	<string name="rgMessage">注册并登录中....</string>
+	<string name="rgVictoryMessage">注册成功，登陆中...</string>
+	<string name="logining">登陆中...</string>
+	<string name="registerUrl">http://192.168.1.15:43401/a/accounts/regist/</string>
+	<string name="loginUrl">http://192.168.1.15:43401/a/accounts/login/</string>
+	<string name="partyListUrl">http://192.168.1.15:43401/a/parties/partylist/</string>
+	
 
 </resources> 

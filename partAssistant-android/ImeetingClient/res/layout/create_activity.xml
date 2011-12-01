@@ -4,9 +4,39 @@
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="1"
 	android:background="@drawable/bg_balloon1">
-	<TextView android:layout_width="fill_parent"
+	<LinearLayout
+	android:layout_width="fill_parent"
+	android:layout_height="40sp"
+	android:orientation="horizontal"
+	android:paddingTop="0dip"
+	android:background="@drawable/blue_button">
+	<LinearLayout
+	android:id="@+id/userChange"
+	android:layout_width="wrap_content"
+	android:layout_height="40sp"
+	android:padding="0dip"
+	android:orientation="horizontal"
+	android:clickable="true"
+	>
+	<ImageView
+	android:layout_width="wrap_content"
+	android:layout_height="37sp"
+	android:src="@drawable/user_icon"/>
+	<TextView
+	android:layout_width="wrap_content"
+	android:id="@+id/userTitle"
+	android:layout_height="37sp"
+	android:textStyle="bold"
+	android:layout_marginTop="9sp"
+	android:text="ad"/>
+	</LinearLayout>
+	
+	<TextView android:layout_width="wrap_content"
+		android:layout_weight="1"
 		android:textColor="#FFFFFF" android:layout_height="37sp" android:text="@string/create_activity"
-		android:background="@drawable/blue_button" android:gravity="center" />
+		 android:gravity="center" />
+	</LinearLayout>
+	
 	<ScrollView android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:layout_marginTop="8dip">
@@ -31,6 +61,7 @@
 						android:layout_height="wrap_content" 
 						android:layout_marginLeft="70dip"
 						android:layout_marginRight="19dip"
+						android:hint="@string/clickSetTime"
 						android:id="@+id/startTimeText" 
 						android:editable="false"
 						android:focusable="false"
@@ -98,6 +129,7 @@
 						android:layout_marginLeft="5dp"
 						android:layout_marginRight="19dip"
 						android:hint="@string/hint"
+						android:gravity="top"
 						android:minHeight="160dp" 
 						android:freezesText="true">
 						<requestFocus />

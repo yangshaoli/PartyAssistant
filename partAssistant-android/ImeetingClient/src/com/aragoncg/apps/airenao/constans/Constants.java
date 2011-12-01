@@ -50,7 +50,7 @@ public class Constants {
     public static final String  FROMCONTACTSLISTTOSEND = "from_contactsList_to_send";
     public static final String  IS_FROM_MEETING_LIST = "isFromMeetingList";
     
-    
+    public static final String  HENDLER_MESSAGE = "hendMessage";
     
     /**
      * 获取list列表中的数据
@@ -62,6 +62,7 @@ public class Constants {
     public static final String  AIRENAO_SHARED_DATA = "airenaoSharedData";
     public static final String  AIRENAO_USER_NAME = "airenaoUserName";
     public static final String  AIRENAO_PASSWORD = "airenaoPassword";
+    public static final String  AIRENAO_USER_ID = "uid";
     /**
      * database path
      */
@@ -70,5 +71,25 @@ public class Constants {
     
     public static final String  WHAT_PEOPLE_TAG = "whatPeopleTag";
     
+    
+    public static final String 	APP_USED_FLAG = "appUsedFlag";
+    //表示没有用过
+    public static final int  APP_USED_FLAG_Z = 0; 
+    //表示用过
+    public static final int  APP_USED_FLAG_O = 1; 
+    
+    
+    public  static final int LOGIN_SUCCESS_CASE = 2;
+    public  static final int POST_MESSAGE_CASE = 1;
+	
+    public static final String  TRANSFER_DATA = "TransferData";
+    
+    //解析 Json 常用数据
+    
+    public static final String OUT_PUT = "output";
+    public static final String STATUS = "status";
+    public static final String DESCRIPTION = "description";
+    public static final String DATA_SOURCE = "datasource";
+   
     
 }

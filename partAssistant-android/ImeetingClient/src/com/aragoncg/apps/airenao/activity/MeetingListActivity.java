@@ -1,18 +1,15 @@
 package com.aragoncg.apps.airenao.activity;
 
-import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -20,6 +17,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,45 +28,61 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
+import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class MeetingListActivity extends ListActivity implements
 		OnScrollListener {
 
 	private List<Map<String, Object>> mData;
 	private MyAdapter myDaAdapter;
-	private static String ACTIVITY_NAME = "activityName";
-	private static String ACTIVITY_TIME = "activityTime";
-	private static String ACTIVITY_CONTENT = "activityContent";
-	private static String PEOPLE_LIMIT_NUM = "peopleLimitNum";
-	private static String ACTIVITY_POSITION = "activityPosition";
+	
 	private ImageButton btnAddOneActivity;
 	private LayoutInflater layoutInflater;
 	private View footerView;
 	private Thread mThread;
-	private Thread firstLoadDataThread;
+	private Runnable firstLoadDataThread;
 	private Handler handler;
 	private Context mContext;
 	private ListView myListView;
 	List<Map<String, Object>> list;
-	private String urlForGetData;
+	private String partyListUrl;
+	private Button btnRefresh;
+	private String userName="";
+	private String userId="";
+	private int page = 1;
+	private String status;
+	private String description;
+	private JSONObject dataSource;
+	private JSONArray myJsonArray;
+	private Handler postHandler;
+	
+	public static final String PAGE = "page";
+	public static final String PARTY_LIST = "partyList";
+	public static final String PARTY_ID = "partyId";
+	public static final String POEPLE_MAXMUM = "peopleMaximum";
+	public static final String PARTY_DESCRIPTION = "description";
+	public static final String PARTY_START_TIME = "starttime";
+	public static final String PARTY_LOCATION = "location";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -77,8 +92,12 @@ public class MeetingListActivity extends ListActivity implements
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_list);
 		AirenaoUtills.activityList.add(this);
-		mContext = getBaseContext();
-		mData = getData();
+		
+		mContext = getBaseContext()
+				;
+		Intent intent = getIntent();
+		mData = getData(intent);
+		dismissDialog(1);
 		myDaAdapter = new MyAdapter(this);
 		setListAdapter(myDaAdapter);
 		init();
@@ -115,8 +134,21 @@ public class MeetingListActivity extends ListActivity implements
 				startActivity(mIntent);
 			}
 		});
+		//处理刷新事件
+		setButtonRefresh();
 	}
-
+	
+	public void setButtonRefresh(){
+		btnRefresh = (Button)findViewById(R.id.btnRefresh);
+		btnRefresh.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+	}
+	//对footerView的处理
 	private void init() {
 
 		layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -124,7 +156,6 @@ public class MeetingListActivity extends ListActivity implements
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				// TODO Auto-generated method stub
 				switch (msg.what) {
 				case 1:
 					if (myDaAdapter.count <= 20) {
@@ -183,17 +214,17 @@ public class MeetingListActivity extends ListActivity implements
 
 			AirenaoActivity copyOneActivity = new AirenaoActivity();
 			copyOneActivity.setActivityName((String) (mData.get(listItemId)
-					.get(ACTIVITY_NAME)));
+					.get(Constants.ACTIVITY_NAME)));
 			copyOneActivity.setActivityTime((String) (mData.get(listItemId)
-					.get(ACTIVITY_TIME)));
+					.get(Constants.ACTIVITY_TIME)));
 			copyOneActivity.setActivityPosition((String) (mData.get(listItemId)
-					.get(ACTIVITY_POSITION)));
-			if ((String) (mData.get(listItemId).get(PEOPLE_LIMIT_NUM)) != null)
+					.get(Constants.ACTIVITY_POSITION)));
+			if ((String) (mData.get(listItemId).get(Constants.ACTIVITY_NUMBER)) != null)
 				copyOneActivity.setPeopleLimitNum(Integer
 						.valueOf((String) (mData.get(listItemId)
-								.get(PEOPLE_LIMIT_NUM))));
+								.get(Constants.ACTIVITY_NUMBER))));
 			copyOneActivity.setActivityContent((String) (mData.get(listItemId)
-					.get(ACTIVITY_CONTENT)));
+					.get(Constants.ACTIVITY_CONTENT)));
 			// 进入“创建活动”页面
 			startActivity(new Intent(MeetingListActivity.this,
 					ImeetingClientActivity.class));
@@ -229,24 +260,23 @@ public class MeetingListActivity extends ListActivity implements
 				.get(Constants.ACTIVITY_POSITION));
 		airenaoData.setActivityContent((String) dataHashMap
 				.get(Constants.ACTIVITY_CONTENT));
-		airenaoData.setInvitedPeople((Integer) dataHashMap
-				.get(Constants.ACTIVITY_INVITED_PEOPLE));
-		airenaoData.setPeopleLimitNum((Integer) dataHashMap
-				.get(Constants.ACTIVITY_NUMBER));
-		airenaoData.setSignUp((Integer) dataHashMap
-				.get(Constants.ACTIVITY_SIGNED_PEOPLE));
-		airenaoData.setUnSignUp((Integer) dataHashMap
-				.get(Constants.ACTIVITY_UNSIGNED_PEOPLE));
-		airenaoData.setUnJoin((Integer) dataHashMap
-				.get(Constants.ACTIVITY_UNJIONED_PEOPLE));
-
+		if("".equals(dataHashMap
+				.get(Constants.ACTIVITY_NUMBER))){
+			airenaoData.setPeopleLimitNum(100000);
+		}else{
+			airenaoData.setPeopleLimitNum(Integer.valueOf((String) dataHashMap
+					.get(Constants.ACTIVITY_NUMBER)));
+		}
+		
+		
+		/*
+		 * 点击活动列表中的一项，进入到活动详情当中 跳转到具体活动Activity 中
+		 */
 		Intent intent = new Intent(getString(R.string.to_detail_activity));
 		intent.putExtra(Constants.TO_DETAIL_ACTIVITY, airenaoData);
 
 		startActivity(intent);
-		/*
-		 * 点击活动列表中的一项，进入到活动详情当中 跳转到具体活动Activity 中
-		 */
+		
 	}
 
 	/**
@@ -259,62 +289,68 @@ public class MeetingListActivity extends ListActivity implements
 	 * @throws
 	 * 
 	 */
-	private List<Map<String, Object>> getData() {
+	private List<Map<String, Object>> getData(Intent data) {
+		postHandler = new Handler(){
+
+			@Override
+			public void handleMessage(Message msg) {
+				switch(msg.what){
+				 case Constants.POST_MESSAGE_CASE:{
+					 String message = msg.getData().getString(Constants.HENDLER_MESSAGE);
+					 AlertDialog aDig = new AlertDialog.Builder(
+								MeetingListActivity.this).setMessage(
+										message).create();
+						aDig.show();
+				 }
+				}
+				super.handleMessage(msg);
+			}
+			
+		};
+		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(MeetingListActivity.this);
+		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME, null);
+		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
+		
 		// 在map装配的时候，一个活动的所有属性全部装配
-		// showDialog(1);
+		//先从本地获得数据，如果数据为空那么在从后台取数据
+		 showDialog(1);
 		if (list == null) {
 			list = new ArrayList<Map<String, Object>>();
 		}
-		if (firstLoadDataThread == null || !firstLoadDataThread.isAlive()) {
-			firstLoadDataThread = new Thread() {
+		list = getDataFromServer();
+		if(list.size()>0){
+			return list;
+		}else{
+			if (firstLoadDataThread == null) {
+				firstLoadDataThread = new Runnable() {
 
-				@Override
-				public void run() {
-					// 配置url
-					urlForGetData = Constants.URL_GET_DATA;
-					HttpGet httpRequest = new HttpGet(urlForGetData);
-
-					try {
-						HttpResponse httpResponse = new DefaultHttpClient()
-								.execute(httpRequest);
-						if ("ok".equals(httpResponse.getStatusLine()
-								.getReasonPhrase())) {
-							// httpResponse.
-
-						}
-					} catch (ClientProtocolException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
+					@Override
+					public void run() {
+						// 配置url
+						partyListUrl = getString(R.string.partyListUrl);
+						partyListUrl = partyListUrl + userId + "/" + page + "/";
+						HttpHelper myHttpHelper = new HttpHelper();
+						String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
+						dataResult = AirenaoUtills.linkResult(dataResult);
+						analyzeJson(dataResult);
+						
 					}
-
-				}
-			};
+				};
+				postHandler.post(firstLoadDataThread);
+				return list;
+			}
+			
+			return list;
 		}
-
-		Map<String, Object> map;
-
-		int count = 10;
-		for (int i = 0; i < count; i++) {
-			map = new HashMap<String, Object>();
-			String a = "活动";
-			map.put(Constants.ACTIVITY_NAME, a);
-			map.put(Constants.ACTIVITY_TIME, "sad");
-			map.put(Constants.ACTIVITY_POSITION, "beijing");
-			map.put(Constants.ACTIVITY_CONTENT, "tizuqiu");
-			map.put(Constants.ACTIVITY_INVITED_PEOPLE, 30);
-			map.put(Constants.ACTIVITY_NUMBER, 40);
-			map.put(Constants.ACTIVITY_SIGNED_PEOPLE, 20);
-			map.put(Constants.ACTIVITY_UNSIGNED_PEOPLE, 10);
-			map.put(Constants.ACTIVITY_UNJIONED_PEOPLE, 2);
-			list.add(map);
-
-		}
-
-		return list;
 
 	}
-
+	/**
+	 * 获得本地数据
+	 */
+	public List<Map<String, Object>> getDataFromServer(){
+		SQLiteDatabase db = DbHelper.openDatabase();
+		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db); 
+	}
 	/**
 	 * 
 	 * ClassName:ViewHolder Function: TODO all the Component Reason: TODO ADD
@@ -449,7 +485,12 @@ public class MeetingListActivity extends ListActivity implements
 						try {
 							if (myDaAdapter.getCount() <= 20) {
 								// 这里放你网络数据请求的方法，我在这里用线程休眠5秒方法来处理
-
+								page += 1;
+								partyListUrl = getString(R.string.partyListUrl) + userId + "/" + page +"/";
+								HttpHelper myHttpHelper = new HttpHelper();
+								String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
+								dataResult = AirenaoUtills.linkResult(dataResult);
+								analyzeJson(dataResult);
 							}
 							Thread.sleep(5000);
 						} catch (InterruptedException e) {
@@ -512,5 +553,88 @@ public class MeetingListActivity extends ListActivity implements
 		}
 		return false;
 	}
+	/**
+	 * 解析Json 	
+	 */
+	public void analyzeJson(String result) {
+		SQLiteDatabase db = DbHelper.openDatabase();
 
+		try {
+			JSONObject output = new JSONObject(result)
+					.getJSONObject(Constants.OUT_PUT);
+			status = output.getString(Constants.STATUS);
+			description = output.getString(Constants.DESCRIPTION);
+		if("ok".equals(status)){
+			dataSource = output.getJSONObject(Constants.DATA_SOURCE);
+			page = Integer.valueOf(dataSource.getString(PAGE));
+			myJsonArray = dataSource.getJSONArray(PARTY_LIST);
+			for (int i = 0; myJsonArray.length() > 0; i++) {
+				JSONObject tempActivity = myJsonArray.getJSONObject(i);
+				list.add(organizeMap(tempActivity));
+				try {
+					DbHelper.insert(db, organizeOneActivity(tempActivity),
+							DbHelper.ACTIVITY_TABLE_NAME);
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					db.close();
+				}
+			}
+		}else{
+			Message message = new Message();
+			message.what = Constants.POST_MESSAGE_CASE;
+			Bundle bundle = new Bundle();
+			bundle.putString(Constants.HENDLER_MESSAGE, description);
+			message.setData(bundle);
+			postHandler.sendMessage(message);
+		}
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 将Json解析出来的数据装到MAP
+	 * @param data
+	 * @return
+	 */
+	public HashMap<String, Object> organizeMap(JSONObject data){
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		try {
+			map.put(Constants.ACTIVITY_NAME, data.getString(PARTY_DESCRIPTION).substring(0, 6));
+			map.put(Constants.ACTIVITY_TIME, data.getString(PARTY_START_TIME));
+			map.put(Constants.ACTIVITY_POSITION, data.getString(PARTY_LOCATION));//data.getString()
+			map.put(Constants.ACTIVITY_CONTENT, data.getString(PARTY_DESCRIPTION));
+			map.put(Constants.ACTIVITY_NUMBER, data.getString(POEPLE_MAXMUM));
+		} catch (JSONException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return map;
+	}
+	/**
+	 * 封装一个活动
+	 * @param data
+	 * @return
+	 */
+	public AirenaoActivity organizeOneActivity(JSONObject data){
+		AirenaoActivity myActivity = new AirenaoActivity();
+		try {
+			myActivity.setActivityName(data.getString(description.substring(0, 6)));
+			myActivity.setActivityTime(data.getString(PARTY_START_TIME));
+			myActivity.setActivityPosition(data.getString(PARTY_LOCATION));//data.getString()
+			myActivity.setActivityContent(data.getString(PARTY_DESCRIPTION));
+			if(data.getString(POEPLE_MAXMUM)!= null && !"".equals(data.getString(POEPLE_MAXMUM))){
+				myActivity.setPeopleLimitNum(Integer.valueOf(data.getString(POEPLE_MAXMUM)));
+			}
+			
+		} catch (JSONException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return myActivity;
+	}
 }

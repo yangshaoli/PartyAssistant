@@ -1,10 +1,14 @@
 package com.aragoncg.apps.airenao.DB;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 
+import android.app.ListActivity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,18 +21,22 @@ public class DbHelper extends SQLiteOpenHelper {
 
 	 private final static String DATABASE_NAME="activityData.db";
 	    private final static int DATABASE_VERSION=1;
-	    private final static String LAST_TABLE_NAME="activity_pwd";
+	    public final static String LAST_TABLE_NAME="activity_pwd";
+	    public final static String ACTIVITY_TABLE_NAME = "myActivitys";
 	    public final static String FIELD_ID="_id"; 
 	    public final static String FIELD_TITLE_TIME = "time";
 	    public final static String FIELD_TITLE_POSITION = "position"; 
 	    public final static String FIELD_TITLE_NUMBER = "number";
 	    public final static String FIELD_TITLE_CONTENT = "content";	
 	    private static DbHelper myDbHelper;
-	    
+	    private static List<Map<String, Object>> listActivity;
 	    static String time;
 	    static String position;
 	    static String number;
 	    static String content;
+	    
+	    public static final String deleteLastSql = "delete from "+LAST_TABLE_NAME;
+	    public static final String deleteActivitySql = "delete from "+ACTIVITY_TABLE_NAME;
 	    
 	   private DbHelper(Context context)
 	    {
@@ -50,7 +58,11 @@ public class DbHelper extends SQLiteOpenHelper {
 			
 		 String sql="Create table "+LAST_TABLE_NAME+"("+FIELD_ID+" integer primary key autoincrement,"
 			        +FIELD_TITLE_TIME+" text, "+ FIELD_TITLE_POSITION+ " text, " + FIELD_TITLE_NUMBER+" text, "+FIELD_TITLE_CONTENT+" text);";
-			        db.execSQL(sql);
+		 
+		 String sql1="Create table "+ACTIVITY_TABLE_NAME+"("+FIELD_ID+" integer primary key autoincrement,"
+			        +FIELD_TITLE_TIME+" text, "+ FIELD_TITLE_POSITION+ " text, " + FIELD_TITLE_NUMBER+" text, "+FIELD_TITLE_CONTENT+" text);";
+		 db.execSQL(sql);
+		 db.execSQL(sql1);
 			        
 
 	}
@@ -59,7 +71,9 @@ public class DbHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
 		 String sql=" DROP TABLE IF EXISTS "+LAST_TABLE_NAME;
+		 String sql1=" DROP TABLE IF EXISTS "+ACTIVITY_TABLE_NAME;
 	        db.execSQL(sql);
+	        db.execSQL(sql1);
 	        onCreate(db);
 
 	}
@@ -74,6 +88,25 @@ public class DbHelper extends SQLiteOpenHelper {
 	        cv.put(FIELD_TITLE_CONTENT, ""+airenao.getActivityContent());
 	        long row = -1;
 	        try{ row=db.insert(LAST_TABLE_NAME, null, cv);
+	        }catch(SQLException e){
+	        	e.printStackTrace();
+	        }
+	        
+	        return row;
+	    }
+	 
+	 
+	 public static long insert(SQLiteDatabase db,AirenaoActivity airenao,String tableName)
+	    {
+	        //SQLiteDatabase db=this.getWritableDatabase();
+	        ContentValues cv=new ContentValues(); 
+	        cv.put(FIELD_TITLE_TIME, ""+airenao.getActivityTime());
+	        cv.put(FIELD_TITLE_POSITION, ""+airenao.getActivityPosition());
+	        cv.put(FIELD_TITLE_NUMBER, ""+airenao.getPeopleLimitNum());
+	        cv.put(FIELD_TITLE_CONTENT, ""+airenao.getActivityContent());
+	        long row = -1;
+	        try{ 
+	        	row=db.insert(tableName, null, cv);
 	        }catch(SQLException e){
 	        	e.printStackTrace();
 	        }
@@ -103,7 +136,51 @@ public class DbHelper extends SQLiteOpenHelper {
 	        }
 	        
 	    }
+	 
+	 public static List<Map<String, Object>> selectActivitys(SQLiteDatabase db) {
+		 
+			AirenaoActivity airenao = new AirenaoActivity();
+			listActivity = new ArrayList<Map<String,Object>>();
+			//SQLiteDatabase db = this.getReadableDatabase();
+			Cursor cursor = null;
+			String sql = "select * from " + ACTIVITY_TABLE_NAME ;//+ " order by datetime()";
+			try {
+				cursor = db.rawQuery(sql, null);
+					
+				if (cursor.moveToNext()) {
+					HashMap<String, Object> hashMap = new HashMap<String, Object>();
+					time = cursor
+							.getString(cursor.getColumnIndex(FIELD_TITLE_TIME));
+					position = cursor.getString(cursor
+							.getColumnIndex(FIELD_TITLE_POSITION));
+					number = cursor.getString(cursor
+							.getColumnIndex(FIELD_TITLE_NUMBER));
+					content = cursor.getString(cursor
+							.getColumnIndex(FIELD_TITLE_CONTENT));
+					hashMap.put(Constants.ACTIVITY_NAME, content.substring(0, 5));
+					hashMap.put(Constants.ACTIVITY_TIME, time);
+					hashMap.put(Constants.ACTIVITY_POSITION, position);
+					hashMap.put(Constants.ACTIVITY_NUMBER, number);
+					hashMap.put(Constants.ACTIVITY_CONTENT, content);
+					listActivity.add(hashMap);
+				}else{
+					listActivity.clear();
+				}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				
+			}finally{
+				if(cursor!=null){
+					cursor.close();
+				}
+				db.close();
+				
+			}
 
+			return listActivity;
+		}
+	 
 	public static AirenaoActivity select(SQLiteDatabase db) {
 		AirenaoActivity airenao = new AirenaoActivity();
 		//SQLiteDatabase db = this.getReadableDatabase();
@@ -111,7 +188,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		String sql = "select * from " + LAST_TABLE_NAME + " where _id=0";
 		try {
 			cursor = db.rawQuery(sql, null);
-			if (cursor.getCount() > 0) {
+			if (cursor.moveToNext()) {
 				time = cursor
 						.getString(cursor.getColumnIndex(FIELD_TITLE_TIME));
 				position = cursor.getString(cursor
@@ -120,6 +197,7 @@ public class DbHelper extends SQLiteOpenHelper {
 						.getColumnIndex(FIELD_TITLE_NUMBER));
 				content = cursor.getString(cursor
 						.getColumnIndex(FIELD_TITLE_CONTENT));
+				
 				airenao.setActivityTime(time);
 				airenao.setActivityPosition(position);
 				airenao.setPeopleLimitNum(Integer.valueOf(number));
@@ -127,30 +205,28 @@ public class DbHelper extends SQLiteOpenHelper {
 			}else{
 				airenao = null;
 			}
-			cursor.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			
 		}finally{
 			cursor.close();
-			db.close();
+			//db.close();
 			
 		}
 
 		return airenao;
 	}
 	
-	public static void delete(SQLiteDatabase db){
+	public static void delete(SQLiteDatabase db,String sql){
 		
-		String sql = "delete from "+LAST_TABLE_NAME;
+		
 		//SQLiteDatabase db=this.getWritableDatabase();
 		try{
 			db.execSQL(sql);
 		}catch(Exception e){
 			e.printStackTrace();
-		}finally{
-			db.close();
 		}
+		
 	}
 	
 	public static SQLiteDatabase openDatabase() {

@@ -3,9 +3,32 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-    <TextView android:layout_width="fill_parent"
-		android:textColor="#FFFFFF" android:layout_height="37sp" android:text="@string/meeting_list"
-		android:background="@drawable/blue_button" android:gravity="center" />
+    <RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="45sp"
+	android:orientation="horizontal"
+	android:background="@drawable/blue_button">
+		<TextView android:layout_width="wrap_content"
+		android:textColor="#FFFFFF" android:layout_height="37sp"
+		android:text="@string/meeting_list"
+		android:layout_gravity="center_vertical"
+		android:gravity="center" 
+		android:id="@+id/txtListTitle"
+		android:layout_centerInParent="true"/>
+		<Button
+		android:id="@+id/btnRefresh"
+		android:layout_alignParentRight="true"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:paddingTop="0dp"
+		android:gravity="center"
+		android:paddingBottom="2dip"
+		android:paddingLeft="8dip"
+		android:paddingRight="8dip"
+		android:background="@drawable/button_red"
+		android:text="刷新"/>
+	</RelativeLayout>
 	<ImageButton
 		android:id="@+id/btnAddOneActivity"
 		android:layout_width="fill_parent"

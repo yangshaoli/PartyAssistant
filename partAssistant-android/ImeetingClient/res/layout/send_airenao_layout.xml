@@ -30,17 +30,36 @@
 				android:layout_centerVertical="true"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:src="@android:drawable/ic_menu_add" />
-			<MultiAutoCompleteTextView android:layout_width="fill_parent"
+			<LinearLayout
+				android:layout_width="fill_parent"
 				android:layout_toRightOf="@id/txtSend"
 				android:layout_toLeftOf="@id/btnSendReciever"
 				android:layout_height="wrap_content" 
 				android:layout_marginLeft="5dip"
+				
+				android:layout_centerVertical="true"
+				android:layout_centerHorizontal="true"
+				android:orientation="vertical">
+				<MultiAutoCompleteTextView android:layout_width="fill_parent"
+				android:layout_height="wrap_content" 
+				android:layout_marginTop="15dip"
 				android:layout_centerVertical="true"
 				android:layout_centerHorizontal="true"
 				android:completionThreshold="1"
 				android:id="@+id/txtSendReciever" />
+				<TextView
+				android:gravity="top"
+				android:layout_width="fill_parent"
+				android:layout_marginLeft="20dip"
+				android:layout_gravity="center_horizontal"
+				android:textColor="@color/myRed"
+				android:textSize="11dip"
+				android:layout_height="wrap_content"
+				android:text="联系人之间请用;隔开"/>
+			</LinearLayout>
+			
 		</RelativeLayout>
-
+		
 		<!-- <requestFocus /> -->
 		<EditText android:id="@+id/txtSendLable"
 			android:layout_marginTop="20dp"

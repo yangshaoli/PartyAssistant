@@ -10,6 +10,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
@@ -53,6 +55,8 @@ public class CreateActivity extends Activity implements OnClickListener {
 	private EditText positionText;
 	private TextView peopleLimitNum;
 	private TextView activityDescText;
+	private TextView userTitle;
+	private LinearLayout userLayout;
 	private boolean firstSetTime = true;
 	private boolean sendSmsOrnot = true;
 	private boolean fromDetail = false;
@@ -62,6 +66,7 @@ public class CreateActivity extends Activity implements OnClickListener {
 	private String activityDes;
 	private List<AirenaoActivity> activitys;
 	private AirenaoActivity activityFromDetail;
+	private AirenaoActivity activityDb;
 	
 	private Button btnSendSMS;
 	private Button btnSendEmail;
@@ -72,6 +77,8 @@ public class CreateActivity extends Activity implements OnClickListener {
 	private boolean isOk = false;
 	private SQLiteDatabase db;
 	private AirenaoActivity theLastData;
+	private String userName;
+	private String passWord;
 	
 	
 
@@ -88,14 +95,14 @@ public class CreateActivity extends Activity implements OnClickListener {
 		AirenaoUtills.activityList.add(this);
 		activitys = new ArrayList<AirenaoActivity>() ;
 		Intent intent = getIntent();
-		setWidgetListener();
+		initView();
 		getCurrentTime();
 		createDbThread(this);
 		dbThread.run();
 		if(intent != null){
-			getDataFromDetail(intent);
+			initData(intent);
 		}
-		// startTimeBtn.seto
+		setUserTitle();
 	}
 	
 	
@@ -282,11 +289,32 @@ public class CreateActivity extends Activity implements OnClickListener {
 	 * @throws
 	 * 
 	 */
-	public void setWidgetListener() {
+	public void initView() {
 		startTimeText = (EditText) findViewById(R.id.startTimeText);
 		positionText = (EditText) findViewById(R.id.positionEditText);
 		peopleLimitNum = (TextView) findViewById(R.id.peopleNumEditText);
-		
+		userLayout = (LinearLayout)findViewById(R.id.userChange);
+		userLayout.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				AlertDialog dialog = new AlertDialog.Builder(CreateActivity.this)
+				.setTitle(R.string.user_off)
+				.setMessage(R.string.user_off_message)
+				.setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent();
+						intent.setClass(CreateActivity.this, LoginActivity.class);
+						startActivity(intent);
+					}
+				})
+				.create();
+				dialog.show();
+				
+			}
+		}); 
 		btnSendSMS = (Button) findViewById(R.id.btnSendSMS);
 		btnSendEmail = (Button)findViewById(R.id.btnSendEmail);
 		
@@ -384,14 +412,10 @@ public class CreateActivity extends Activity implements OnClickListener {
 			}
 		});
 		
-	
-		
-		
-		
-		
 		
 	}
-
+	
+	
 	/**
 	 * 
 	 * Method:getCurrentTime TODO(获得系统当前的时间)
@@ -511,16 +535,37 @@ public class CreateActivity extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				db = DbHelper.openDatabase();
-				DbHelper.insert(db, myList.get(0));
+				//先删除再保存
+				try{
+					DbHelper.delete(db,DbHelper.deleteLastSql);
+					DbHelper.insert(db, myList.get(0));
+				}catch(Exception e){
+					e.printStackTrace();
+				}finally{
+					db.close();
+				}
+				
 			}
 			
 		};
 	}
 	//如果数据是从活动明细转过来的那么就配置数据
-	public void getDataFromDetail(Intent intent){
+	public void initData(Intent intent){
+		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(CreateActivity.this);
+		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME, null);
+		Editor editor = mySharedPreferences.edit();
+		editor.putInt(Constants.APP_USED_FLAG, Constants.APP_USED_FLAG_O);
+		editor.commit();
 		
 		activityFromDetail = (AirenaoActivity) intent.getSerializableExtra(Constants.TO_CREATE_ACTIVITY);
 		fromDetail = intent.getBooleanExtra(Constants.FROMDETAIL,false);
+		activityDb = (AirenaoActivity) intent.getSerializableExtra(Constants.TRANSFER_DATA);
+		if(activityDb != null){
+			this.startTimeText.setText(activityDb.getActivityTime());
+			this.positionText.setText(activityDb.getActivityPosition());
+			this.peopleLimitNum.setText(String.valueOf(activityDb.getPeopleLimitNum()));
+			this.activityDescText.setText(activityDb.getActivityContent());
+		}
 		//邀请人的所有电话数据
 		if(activityFromDetail != null && fromDetail == true){
 			this.startTimeText.setText(activityFromDetail.getActivityTime());
@@ -567,5 +612,10 @@ public class CreateActivity extends Activity implements OnClickListener {
 		mIntent.putExtra(Constants.TO_SEND_ACTIVITY, dataBundle);
 		mIntent.putExtra("mode", sendTag);
 		startActivity(mIntent);
+	}
+	
+	public void setUserTitle(){
+		userTitle = (TextView)findViewById(R.id.userTitle);
+		userTitle.setText(userName);
 	}
 }
