@@ -46,7 +46,9 @@
         function extractLast(term){
             return split(term).pop();
         }
-        
+        $('#id_client_email_list').bind("keyup", function(event){
+			calculate_send_email_count();
+		});
         $("#id_client_email_list") // don't navigate away from the field on tab when selecting an item
     .bind("keydown", function(event){
             if (event.keyCode === $.ui.keyCode.TAB &&
@@ -95,7 +97,7 @@
                     收件人
                 </label>
                 {{ form.client_email_list.errors }}
-                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
+                <textarea id="id_client_email_list" rows="4" cols="70" name="client_email_list">{{ form.client_email_list.value }}</textarea>
             </div>
             <div class="field">
                 <label for="id_send_email_count">
@@ -109,7 +111,7 @@
                 <label for="id_content">
                     邮件内容
                 </label>
-                {{ form.content }}
+                <textarea id="id_content" rows="15" cols="70" name="content">admin邀请你参加：Test,时间、地点，另行通知。</textarea>
             </div>
             <div class="field">
                 <label for="id_is_apply_tips">

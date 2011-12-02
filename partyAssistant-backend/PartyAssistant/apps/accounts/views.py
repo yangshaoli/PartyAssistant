@@ -10,11 +10,9 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from settings import SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
-import hashlib
 import random
 from django.contrib.auth import login, authenticate
-
-
+from django.contrib.auth.decorators import login_required
 
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
@@ -66,9 +64,11 @@ def get_password(request):
         form = GetPasswordForm()
         return render_to_response('accounts/get_password.html', {'form': form},context_instance = RequestContext(request))
 
+@login_required
 def profile(request):
     return TemplateResponse(request, 'accounts/profile.html')
 
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = ChangePasswordForm(request, request.POST)

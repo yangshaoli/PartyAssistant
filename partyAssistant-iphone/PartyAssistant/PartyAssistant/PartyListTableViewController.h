@@ -17,6 +17,8 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "WeiboLoginViewController.h"
+#import "WeiboNavigationController.h"
 
 @interface PartyListTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate, UIAlertViewDelegate>{
     NSMutableArray *partyList;

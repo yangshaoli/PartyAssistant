@@ -2,7 +2,7 @@
 from django.utils import simplejson
 from django.http import HttpResponse
 
-from utils.tools.my_exception import myException
+from utils.structs.my_exception import myException
 
 def apis_json_response_decorator(func):
     def new_func(*args, **kargs):

@@ -112,6 +112,12 @@
 		8947F02D1458044400017ED1 /* BaseInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F02C1458044400017ED1 /* BaseInfoService.m */; };
 		8966754F147B3568007CEAF3 /* SettingsListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */; };
 		89667550147B3568007CEAF3 /* SettingsListTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */; };
+		899B03001484632B0056EEFD /* WeiboNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899B02FE1484632B0056EEFD /* WeiboNavigationController.m */; };
+		899B03011484632B0056EEFD /* WeiboNavigationController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899B02FF1484632B0056EEFD /* WeiboNavigationController.xib */; };
+		899B0306148475690056EEFD /* WeiboManagerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899B0304148475690056EEFD /* WeiboManagerTableViewController.m */; };
+		899B0307148475690056EEFD /* WeiboManagerTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899B0305148475690056EEFD /* WeiboManagerTableViewController.xib */; };
+		899B030B1484C4F10056EEFD /* PostWeiboViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899B03091484C4EC0056EEFD /* PostWeiboViewController.m */; };
+		899B030C1484C4F10056EEFD /* PostWeiboViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */; };
 		899BE0BE146CF4B000591957 /* ClientStatusTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899BE0BC146CF4B000591957 /* ClientStatusTableViewController.m */; };
 		899BE0BF146CF4B000591957 /* ClientStatusTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899BE0BD146CF4B000591957 /* ClientStatusTableViewController.xib */; };
 		899BE85A145A9431000BAFEC /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 899BE859145A9431000BAFEC /* MessageUI.framework */; };
@@ -141,8 +147,8 @@
 		89AB048A146E14D5008DC8C9 /* ResendSMSTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89AB0488146E14D5008DC8C9 /* ResendSMSTableViewController.xib */; };
 		89B173921473469C0066B58E /* EmailObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B173911473469C0066B58E /* EmailObjectService.m */; };
 		89B17396147346C60066B58E /* EmailObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 89B17395147346C60066B58E /* EmailObject.m */; };
-		89BEFA4E147F3F0400B3408F /* WeibViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA4C147F3F0400B3408F /* WeibViewController.m */; };
-		89BEFA4F147F3F0400B3408F /* WeibViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89BEFA4D147F3F0400B3408F /* WeibViewController.xib */; };
+		89BEFA4E147F3F0400B3408F /* WeiboLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA4C147F3F0400B3408F /* WeiboLoginViewController.m */; };
+		89BEFA4F147F3F0400B3408F /* WeiboLoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89BEFA4D147F3F0400B3408F /* WeiboLoginViewController.xib */; };
 		89BEFA52147F791500B3408F /* WeiboLoginView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA51147F791400B3408F /* WeiboLoginView.m */; };
 		89BEFA55147F794800B3408F /* WeiboRetweetView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89BEFA54147F794800B3408F /* WeiboRetweetView.m */; };
 		89E5F440147F24F6008FC556 /* WeiBoLoginWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */; };
@@ -344,6 +350,15 @@
 		8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsListTableViewController.m; sourceTree = "<group>"; };
 		8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsListTableViewController.xib; sourceTree = "<group>"; };
 		898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRequestErrorMSG.h; sourceTree = "<group>"; };
+		899B02FD1484632B0056EEFD /* WeiboNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboNavigationController.h; sourceTree = "<group>"; };
+		899B02FE1484632B0056EEFD /* WeiboNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboNavigationController.m; sourceTree = "<group>"; };
+		899B02FF1484632B0056EEFD /* WeiboNavigationController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WeiboNavigationController.xib; sourceTree = "<group>"; };
+		899B0303148475690056EEFD /* WeiboManagerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboManagerTableViewController.h; sourceTree = "<group>"; };
+		899B0304148475690056EEFD /* WeiboManagerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboManagerTableViewController.m; sourceTree = "<group>"; };
+		899B0305148475690056EEFD /* WeiboManagerTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WeiboManagerTableViewController.xib; sourceTree = "<group>"; };
+		899B03081484C4EA0056EEFD /* PostWeiboViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostWeiboViewController.h; sourceTree = "<group>"; };
+		899B03091484C4EC0056EEFD /* PostWeiboViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostWeiboViewController.m; sourceTree = "<group>"; };
+		899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PostWeiboViewController.xib; sourceTree = "<group>"; };
 		899BE0BB146CF4AF00591957 /* ClientStatusTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientStatusTableViewController.h; sourceTree = "<group>"; };
 		899BE0BC146CF4B000591957 /* ClientStatusTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientStatusTableViewController.m; sourceTree = "<group>"; };
 		899BE0BD146CF4B000591957 /* ClientStatusTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ClientStatusTableViewController.xib; sourceTree = "<group>"; };
@@ -384,9 +399,9 @@
 		89B173911473469C0066B58E /* EmailObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObjectService.m; sourceTree = "<group>"; };
 		89B17394147346C60066B58E /* EmailObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmailObject.h; sourceTree = "<group>"; };
 		89B17395147346C60066B58E /* EmailObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmailObject.m; sourceTree = "<group>"; };
-		89BEFA4B147F3F0400B3408F /* WeibViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeibViewController.h; sourceTree = "<group>"; };
-		89BEFA4C147F3F0400B3408F /* WeibViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeibViewController.m; sourceTree = "<group>"; };
-		89BEFA4D147F3F0400B3408F /* WeibViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WeibViewController.xib; sourceTree = "<group>"; };
+		89BEFA4B147F3F0400B3408F /* WeiboLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboLoginViewController.h; sourceTree = "<group>"; };
+		89BEFA4C147F3F0400B3408F /* WeiboLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboLoginViewController.m; sourceTree = "<group>"; };
+		89BEFA4D147F3F0400B3408F /* WeiboLoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WeiboLoginViewController.xib; sourceTree = "<group>"; };
 		89BEFA50147F791400B3408F /* WeiboLoginView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboLoginView.h; sourceTree = "<group>"; };
 		89BEFA51147F791400B3408F /* WeiboLoginView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiboLoginView.m; sourceTree = "<group>"; };
 		89BEFA53147F794800B3408F /* WeiboRetweetView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiboRetweetView.h; sourceTree = "<group>"; };
@@ -617,6 +632,9 @@
 				8966754C147B3568007CEAF3 /* SettingsListTableViewController.h */,
 				8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */,
 				8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */,
+				899B0303148475690056EEFD /* WeiboManagerTableViewController.h */,
+				899B0304148475690056EEFD /* WeiboManagerTableViewController.m */,
+				899B0305148475690056EEFD /* WeiboManagerTableViewController.xib */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -679,9 +697,15 @@
 				89BEFA51147F791400B3408F /* WeiboLoginView.m */,
 				89E5F43E147F24F6008FC556 /* WeiBoLoginWebView.h */,
 				89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */,
-				89BEFA4B147F3F0400B3408F /* WeibViewController.h */,
-				89BEFA4C147F3F0400B3408F /* WeibViewController.m */,
-				89BEFA4D147F3F0400B3408F /* WeibViewController.xib */,
+				89BEFA4B147F3F0400B3408F /* WeiboLoginViewController.h */,
+				89BEFA4C147F3F0400B3408F /* WeiboLoginViewController.m */,
+				89BEFA4D147F3F0400B3408F /* WeiboLoginViewController.xib */,
+				899B02FD1484632B0056EEFD /* WeiboNavigationController.h */,
+				899B02FE1484632B0056EEFD /* WeiboNavigationController.m */,
+				899B02FF1484632B0056EEFD /* WeiboNavigationController.xib */,
+				899B03081484C4EA0056EEFD /* PostWeiboViewController.h */,
+				899B03091484C4EC0056EEFD /* PostWeiboViewController.m */,
+				899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */,
 			);
 			name = CustomClass;
 			sourceTree = "<group>";
@@ -1018,7 +1042,10 @@
 				89395905147DEB56003A883C /* close@2x.png in Resources */,
 				89395906147DEB56003A883C /* delete.png in Resources */,
 				89395907147DEB56003A883C /* delete@2x.png in Resources */,
-				89BEFA4F147F3F0400B3408F /* WeibViewController.xib in Resources */,
+				89BEFA4F147F3F0400B3408F /* WeiboLoginViewController.xib in Resources */,
+				899B03011484632B0056EEFD /* WeiboNavigationController.xib in Resources */,
+				899B0307148475690056EEFD /* WeiboManagerTableViewController.xib in Resources */,
+				899B030C1484C4F10056EEFD /* PostWeiboViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1136,9 +1163,12 @@
 				893FE0E4147E24CF0081BFD1 /* SBJsonParser.m in Sources */,
 				893FE0E5147E24CF0081BFD1 /* SBJsonWriter.m in Sources */,
 				89E5F440147F24F6008FC556 /* WeiBoLoginWebView.m in Sources */,
-				89BEFA4E147F3F0400B3408F /* WeibViewController.m in Sources */,
+				89BEFA4E147F3F0400B3408F /* WeiboLoginViewController.m in Sources */,
 				89BEFA52147F791500B3408F /* WeiboLoginView.m in Sources */,
 				89BEFA55147F794800B3408F /* WeiboRetweetView.m in Sources */,
+				899B03001484632B0056EEFD /* WeiboNavigationController.m in Sources */,
+				899B0306148475690056EEFD /* WeiboManagerTableViewController.m in Sources */,
+				899B030B1484C4F10056EEFD /* PostWeiboViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,16 +1,18 @@
 //
-//  SettingsListTableViewController.m
+//  WeiboManagerTableViewController.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-11-22.
+//  Created by 超 李 on 11-11-29.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "SettingsListTableViewController.h"
+#import "WeiboManagerTableViewController.h"
 
-#define NAVIGATION_CONTROLLER_TITLE @"个人设置"
+#define SINA_WEIBO_LOGIN_BTN_TAG 11
+#define SINA_WEIBO_LOGOUT_BTN_TAG 12
 
-@implementation SettingsListTableViewController
+@implementation WeiboManagerTableViewController
+@synthesize weibo;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -34,14 +36,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    if (!weibo) {
+        self.weibo = [[WeiBo alloc] initWithAppKey:WEIBOPRIVATEAPPKEY withAppSecret:WEIBOPRIVATEAPPSECRETE];
+    }
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
 }
 
 - (void)viewDidUnload
@@ -88,31 +90,44 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 5;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = nil;//[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     // Configure the cell...
-    if (indexPath.row == 0) {
-        cell.textLabel.text = @"更改昵称";
-    }else if(indexPath.row == 1){
-        cell.textLabel.text = @"变更密码";
-    }else if(indexPath.row == 2){
-        cell.textLabel.text = @"微博管理";
-    }else if(indexPath.row == 3){
-        cell.textLabel.text = @"帮我们评分";
-    }else if(indexPath.row == 4){
-        cell.textLabel.text = @"登出";
+    cell.textLabel.text = @"新浪微博:";
+    if (weibo.isUserLoggedin) {
+        WeiboService *s = [WeiboService sharedWeiboService];
+        WeiboPersonalProfile *p = [s getWeiboPersonalProfile];
+        UILabel *lb = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 44)];
+        lb.text = p.nickname;
+        lb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:lb];
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        btn.frame = CGRectMake(260, 10, 40, 30);
+        btn.tag = SINA_WEIBO_LOGOUT_BTN_TAG;
+        [btn setTitle:@"登出" forState:UIControlStateNormal];
+        //[btn setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+        [btn addTarget:self action:@selector(UserLogout) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:btn];
+    }else{
+        UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [btn setTitle:@"登录" forState:UIControlStateNormal];
+        btn.tag = SINA_WEIBO_LOGIN_BTN_TAG;
+//        [btn setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+        btn.frame = CGRectMake(260, 10, 40, 30);
+        [btn addTarget:self action:@selector(UserLogin) forControlEvents:UIControlEventTouchUpInside];
+        [cell addSubview:btn];
     }
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -166,12 +181,41 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
-//    WeiboService *s = [WeiboService sharedWeiboService];
-//    [s WeiboLogin];
-    if(indexPath.row == 2){
-        WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
-        [self.navigationController pushViewController:vc animated:YES];
-    }
+}
+
+-(void)UserLogout
+{
+    [weibo LogOut];
+    [self.tableView reloadData];
+}
+
+-(void)UserLogin
+{
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    rootVC.isOnlyLogin = YES;
+    rootVC.delegate = self;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
+}
+
+-(void)WeiboDidLoginSuccess{
+    id loginBtn = [self.view viewWithTag:SINA_WEIBO_LOGIN_BTN_TAG];
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    [loginBtn removeFromSuperview];
+    WeiboService *s = [WeiboService sharedWeiboService];
+    WeiboPersonalProfile *p = [s getWeiboPersonalProfile];
+    UILabel *lb = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 44)];
+    lb.text = p.nickname;
+    lb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:lb];
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    btn.frame = CGRectMake(260, 10, 40, 30);
+    btn.tag = SINA_WEIBO_LOGOUT_BTN_TAG;
+    [btn setTitle:@"登出" forState:UIControlStateNormal];
+    //[btn setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];
+    [btn addTarget:self action:@selector(UserLogout) forControlEvents:UIControlEventTouchUpInside];
+    [cell addSubview:btn];
 }
 
 @end

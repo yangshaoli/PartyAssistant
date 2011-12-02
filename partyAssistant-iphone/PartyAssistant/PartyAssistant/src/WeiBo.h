@@ -18,6 +18,7 @@
 #import "WBRequest.h"
 #import "WBSendView.h"
 #import "WBAuthorize.h"
+#import "WeiboService.h"
 
 extern NSString* domainWeiboError;						//The domain of the error which we defined and will be returned in all the protocols.
 
@@ -52,6 +53,7 @@ typedef enum
 	NSString* _userID;
 	NSString* _accessToken;
 	NSString* _accessTokenSecret;
+    NSString* _userNickName;
 	
 	WBSendView * _sendView;
 	WBRequest* _request;
@@ -62,6 +64,7 @@ typedef enum
 @property (nonatomic,retain,readonly) NSString* userID;
 @property (nonatomic,retain,readonly) NSString* accessToken;
 @property (nonatomic,retain,readonly) NSString* accessTokenSecret;
+@property (nonatomic,retain,readonly) NSString* userNickName;
 
 @property (nonatomic,assign) id<WBSessionDelegate> delegate;
 
@@ -89,6 +92,8 @@ typedef enum
 - (void)showSendViewWithWeiboText:(NSString*) weiboText 
 						 andImage:(UIImage*)image 
 					  andDelegate:(id)delegate;
+
+- (void)requestToGetUserNickName;
 
 - (void)dismissSendView;
 @end
