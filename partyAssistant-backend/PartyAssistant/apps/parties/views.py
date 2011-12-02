@@ -5,8 +5,8 @@ Created on 2011-10-27
 @author: liuxue
 '''
 
-from apps.clients.models import Client
 from apps.accounts.models import UserProfile
+from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
 from apps.parties.forms import PublicEnrollForm
@@ -20,11 +20,10 @@ from django.template.response import TemplateResponse
 from django.utils import simplejson
 from forms import CreatePartyForm
 from models import Party
-from settings import SYS_EMAIL_ADDRESS
+from settings import DOMAIN_NAME, SYS_EMAIL_ADDRESS, BASIC_MESSAGE_LENGTH, SHORT_LINK_LENGTH
 from utils.tools.email_tool import send_emails
 import datetime
 import logging
-from  settings import DOMAIN_NAME
 logger = logging.getLogger('airenao')
 
 
@@ -246,6 +245,7 @@ def sms_invite(request, party_id):
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
         if form.is_valid():
+            number_of_message = 1     #每次邀请转换为短信的条数， 默认一条       
             with transaction.commit_on_success():
                 party.invite_type = 'phone' #将邀请方式修改为phone
                 party.save()
@@ -256,7 +256,8 @@ def sms_invite(request, party_id):
                     sms_message.content = form.cleaned_data['content']
                     sms_message.is_apply_tips = form.cleaned_data['is_apply_tips']
                     sms_message.save()
-                
+                # 计算消息可转换为多少条短信    
+                number_of_message = (len(sms_message.content) + (SHORT_LINK_LENGTH if sms_message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
                 clients = Client.objects.filter(creator = request.user)
@@ -295,14 +296,15 @@ def sms_invite(request, party_id):
                 client_phone_list_len = len(client_phone_list)
                 userprofile = UserProfile.objects.get(user = request.user) 
                 sms_count = userprofile.available_sms_count
-                
-                if client_phone_list_len > sms_count:#短信人数大与可发送的短信数目
-                    client_phone_list = client_phone_list[:sms_count]
-                    userprofile.available_sms_count = 0
-                    userprofile.used_sms_count = userprofile.used_sms_count + sms_count
+                will_send_message_num = client_phone_list_len*number_of_message #可能发送的从短信条数
+                if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
+                    will_receive_clients_num = sms_count/number_of_message #将会收到短信的联系人数
+                    client_phone_list = client_phone_list[:will_receive_clients_num]
+                    userprofile.available_sms_count = userprofile.available_sms_count - number_of_message*will_receive_clients_num
+                    userprofile.used_sms_count = userprofile.used_sms_count + number_of_message*will_receive_clients_num
                 else:
-                    userprofile.available_sms_count = userprofile.available_sms_count - client_phone_list_len
-                    userprofile.used_sms_count = userprofile.used_sms_count + client_phone_list_len
+                    userprofile.available_sms_count = userprofile.available_sms_count - will_send_message_num
+                    userprofile.used_sms_count = userprofile.used_sms_count + will_send_message_num
                 userprofile.save()
                 client_phone_list = ','.join(client_phone_list)  
                 send_message = Outbox(address = client_phone_list, base_message = sms_message)
