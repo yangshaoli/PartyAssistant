@@ -71,33 +71,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
     [self.weiboPersonalProfile clearObject];
 }
 
-- (void)WeiboLogin
-{
-    WeiBo *weibo = [[WeiBo alloc] initWithAppKey:WEIBOAPPKEY withAppSecret:WEIBOAPPSECRET];
-    weibo.delegate = self;
-	[weibo startAuthorize];
-}
 
-- (void)weiboDidLogin
-{
-	UIAlertView* alertView = [[UIAlertView alloc]initWithTitle:nil 
-													   message:@"用户验证已成功！" 
-													  delegate:nil 
-											 cancelButtonTitle:@"确定" 
-											 otherButtonTitles:nil];
-	[alertView show];
-    self.weiboPersonalProfile._isLogin = YES;
-    [self saveWeiboPersonalProfile];
-}
-
-- (void)weiboLoginFailed:(BOOL)userCancelled withError:(NSError*)error
-{
-	UIAlertView* alertView = [[UIAlertView alloc]initWithTitle:@"用户验证失败！"  
-													   message:userCancelled?@"用户取消操作":[error description]  
-													  delegate:nil
-											 cancelButtonTitle:@"确定" 
-											 otherButtonTitles:nil];
-	[alertView show];
-}
 
 @end

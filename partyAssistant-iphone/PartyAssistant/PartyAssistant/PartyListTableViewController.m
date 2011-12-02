@@ -312,7 +312,11 @@
 
 - (void)sharePartyAtID:(NSInteger)pIndex
 {
-
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    BaseInfoObject *b = [self.partyList objectAtIndex:pIndex];
+    rootVC.baseinfo = b;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{

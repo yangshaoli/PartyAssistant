@@ -124,7 +124,7 @@
 		}
 
 7. EditParty:
-	url:"/a/partie/editparty/",
+	url:"/a/parties/editparty/",
 	method:"POST",
 	input:{
 		"partyID":Integer,
@@ -152,3 +152,29 @@
 		"description":"ok",
 		"datasource":{}
 		}
+
+9 GetPartyClientSeperatedList
+	url:"/a/parties/get_party_client_seperated_list/(party id)/( type name)/",<party id> Integer   < type name > String of "all","applied","refused","donothing"
+	method:"GET",
+	input:{},
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				'clientList':Client Array
+				}
+		}
+	Client Array: 
+		if  (type == "all"):
+			{
+                   	'cName':clientparty.client.name,
+                   	'cValue':cValue,
+                   	'backendID':clientparty.id,
+                   	'status':clientparty.apply_status
+                   	}
+		else:
+			{
+                   	'cName':clientparty.client.name,
+                   	'cValue':cValue,
+                   	'backendID':clientparty.id,
+                   	}
