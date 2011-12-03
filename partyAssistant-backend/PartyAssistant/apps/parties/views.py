@@ -483,8 +483,8 @@ def _public_enroll(request, party_id):
             else:
                 phone = form.cleaned_data['phone_or_email']
                     
-            if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).count() == 0 \
-                and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).count() == 0:
+            if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).exclude(email='').count() == 0 \
+                and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).exclude(phone='').count() == 0:
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
                         return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
