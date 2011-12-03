@@ -84,15 +84,15 @@
             <div class="pagination">
                 <span class="step-links">
                     {% if party_list.has_previous %}
-                        <a href="?page={{ party_list.previous_page_number }}">Previous</a>
+                        <a href="?page={{ party_list.previous_page_number }}">上一页</a>
                     {% endif %}
             
                     <span class="current">
-                        Page {{ party_list.number }} of {{ party_list.paginator.num_pages }}.
+                        当前页 {{ party_list.number }} ，共 {{ party_list.paginator.num_pages }}页.
                     </span>
             
                     {% if party_list.has_next %}
-                        <a href="?page={{ party_list.next_page_number }}">Next</a>
+                        <a href="?page={{ party_list.next_page_number }}">下一页</a>
                     {% endif %}
                 </span>
             </div>
