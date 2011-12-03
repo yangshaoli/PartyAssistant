@@ -20,10 +20,12 @@ from django.template.response import TemplateResponse
 from django.utils import simplejson
 from forms import CreatePartyForm
 from models import Party
-from settings import DOMAIN_NAME, SYS_EMAIL_ADDRESS, BASIC_MESSAGE_LENGTH, SHORT_LINK_LENGTH
+from settings import DOMAIN_NAME, SYS_EMAIL_ADDRESS
 from utils.tools.email_tool import send_emails
 import datetime
 import logging
+BASIC_MESSAGE_LENGTH = 65
+SHORT_LINK_LENGTH = 21
 logger = logging.getLogger('airenao')
 
 
