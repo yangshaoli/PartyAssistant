@@ -20,9 +20,10 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     return self;
 }
 
-- (NSArray *)getPartyList
+- (NSMutableArray *)getPartyList
 {
     if (partyList) {
+        NSLog(@"partyList1:%@",partyList);
         return partyList;
     }
     
@@ -39,7 +40,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     } else {
         self.partyList = [[NSMutableArray alloc] initWithCapacity:0];
     }
-    
+    NSLog(@"partyList2:%@",partyList);
     return self.partyList;
 }
 - (void)savePartyList

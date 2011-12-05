@@ -19,7 +19,7 @@
 #import "WBSendView.h"
 #import "WBAuthorize.h"
 #import "WeiboService.h"
-
+#import "JSON.h"
 extern NSString* domainWeiboError;						//The domain of the error which we defined and will be returned in all the protocols.
 
 typedef enum

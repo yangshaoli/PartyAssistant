@@ -107,12 +107,13 @@
     if (weibo.isUserLoggedin) {
         WeiboService *s = [WeiboService sharedWeiboService];
         WeiboPersonalProfile *p = [s getWeiboPersonalProfile];
-        UILabel *lb = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 44)];
+        UILabel *lb = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 255, 44)];
         lb.text = p.nickname;
+        lb.textAlignment = UITextAlignmentRight;
         lb.backgroundColor = [UIColor clearColor];
         [cell addSubview:lb];
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        btn.frame = CGRectMake(260, 10, 40, 30);
+        btn.frame = CGRectMake(260, 8, 40, 30);
         btn.tag = SINA_WEIBO_LOGOUT_BTN_TAG;
         [btn setTitle:@"登出" forState:UIControlStateNormal];
         //[btn setTitleColor:[UIColor blackColor] forState:UIControlStateHighlighted];

@@ -21,8 +21,8 @@
 NSString* domainWeiboError = @"domainWeiboError";
 NSString* keyCodeWeiboSDKError = @"weibo_error_code";
 
-static NSString* weiboHttpRequestDomain		= @"https://api.weibo.com/";
-static NSString* weiboAPIHttpRequestDomain		= @"https://api.weibo.com/";
+static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
+//static NSString* weiboAPIHttpRequestDomain		= @"https://api.weibo.com/";
 
 
 @implementation WeiBo
@@ -183,12 +183,12 @@ static NSString* weiboAPIHttpRequestDomain		= @"https://api.weibo.com/";
 {
     NSLog(@"getLogined:");
     NSLog(@"key:%@ token:%@ id:%@",_appKey,_accessToken,_userID);
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:_userID,@"uid", _accessToken,@"access_token",_appKey,@"source", nil];
-    [self requestWithMethodName:@"2/users/show.json" andParams:params andHttpMethod:@"GET" andDelegate:self];
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:_userID,@"user_id", _accessToken,@"access_token",_appKey,@"source", nil];
+    [self requestWithMethodName:@"users/show.json" andParams:params andHttpMethod:@"GET" andDelegate:self];
 }
 - (void)request:(WBRequest *)request didReceiveResponse:(NSURLResponse *)response
 {
-    NSLog(@"request:%@",[request responseText]);
+//    NSLog(@"request:%@",[response ]);
 //    NSString *response = [request responseString];
 //	SBJsonParser *parser = [[SBJsonParser alloc] init];
 //	NSDictionary *result = [parser objectWithString:response];
@@ -204,7 +204,14 @@ static NSString* weiboAPIHttpRequestDomain		= @"https://api.weibo.com/";
 }
 - (void)request:(WBRequest *)request didLoadRawResponse:(NSData *)data
 {
-    NSLog(@"data:%@",data);
+    NSString *responseData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"data:%@",responseData);
+    SBJsonParser *parser = [[SBJsonParser alloc] init];
+    NSDictionary *result = [parser objectWithString:responseData];
+    NSString *nickname = [result objectForKey:@"screen_name"];
+    WeiboService *s = [WeiboService sharedWeiboService];
+    [s saveNickName:nickname];
+    
 }
 #pragma mark -
 #pragma mark For Http Request

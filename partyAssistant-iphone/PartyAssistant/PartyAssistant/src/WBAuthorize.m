@@ -369,7 +369,10 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 	NSLog(@"signatureString:%@",signatureString);
 	NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObject:[WBAuthorize stringFromDictionaryForOAuthRequestHeadField:headInfo] forKey:@"Authorization"];
 	[dictionary addEntriesFromDictionary:headerFieldsInfo];
-	
+	NSLog(@"authorization:%@",dictionary);
+    NSLog(@"params:%@",params);
+    NSLog(@"url:%@",url);
+    NSLog(@"HTTP Method:%@",httpMethod);
 	return [WBRequest getRequestWithParams:params
 								httpMethod:httpMethod 
 							  postDataType:postDataType 
