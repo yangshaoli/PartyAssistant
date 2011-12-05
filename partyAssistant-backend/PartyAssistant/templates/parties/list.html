@@ -54,9 +54,7 @@
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important"><i class="icon_new"></i>{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
        <p class="statistics"><a href="{%url invite_list party.id %}?apply=noanswer">犹豫的：<strong class="important">{{ party.client.count.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=apply">爱热闹的：<strong class="important">{% if party.client.new_add_apply %}<i class="icon_new"></i>{% endif %}{{ party.client.count.apply }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不来的：<strong class="important">{% if party.client.new_add_reject %}<i class="icon_new"></i>{% endif %}{{ party.client.count.reject }}</strong></p></a>
-       <p class="share"><a href="#">分享
-       <script type="text/javascript" charset="utf-8">
-       
+       <p class="share"><a href="#">分享</a><script type="text/javascript" charset="utf-8">     
 (function(){
   var _w = 72 , _h = 16;
   var uu = '{{ party.enroll_url }}';
@@ -76,8 +74,7 @@
     temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
   }
   document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://hits.sinajs.cn/A1/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
-})()
-</script></a> | <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url edit_party party.id %}">编辑</a>
+})()</script>| <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url edit_party party.id %}">编辑</a>
       </div>
     </div>
     {% endfor %}

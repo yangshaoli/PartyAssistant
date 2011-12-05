@@ -9,13 +9,14 @@ from apps.accounts.models import UserProfile
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
-from apps.parties.forms import PublicEnrollForm
+from apps.parties.forms import PublicEnrollForm, EnrollForm
 from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render_to_response
+from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 from forms import CreatePartyForm
@@ -489,7 +490,7 @@ def _public_enroll(request, party_id):
                     if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
                         return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
                 client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
-                PartiesClients.objects.create(client = client, party = party, apply_status = u'apply')
+                PartiesClients.objects.create(client = client, party = party, apply_status = u'apply', is_check=False, leave_message = form.cleaned_data['leave_message'])
 
                 return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
             else:
@@ -526,35 +527,51 @@ def _invite_enroll(request, party_id, invite_key):
     client = party_client.client
     
     if request.method == 'POST':
-        #保存client的姓名
-        if client.invite_type == 'email':
-            if request.POST.get('name'):
-                client.name = request.POST.get('name')
+        form = EnrollForm(request.POST) 
+        if form.is_valid():
+            #保存client的姓名
+            if client.invite_type == 'email':
+                if request.POST.get('name'):
+                    client.name = request.POST.get('name')
+                else:
+                    client.name = client.email  
             else:
-                client.name = client.email  
-        else:
-            if request.POST.get('name'):
-                client.name = request.POST.get('name')
+                if request.POST.get('name'):
+                    client.name = request.POST.get('name')
+                else:
+                    client.name = client.phone  
+            client.save()
+               
+            if request.POST['action'] == 'yes': #如果点击参加
+                if party.limit_count != 0:#有人数限制
+                    if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
+                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
+                party_client.apply_status = u'apply'
+                party_client.leave_message = form.cleaned_data['leave_message']
+                party_client.save()
+                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
             else:
-                client.name = client.phone  
-        client.save()
-           
-        if request.POST['action'] == 'yes': #如果点击参加
-            if party.limit_count != 0:#有人数限制
-                if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
-                    return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
-            party_client.apply_status = u'apply'
-            party_client.save()
-            return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+                party_client.apply_status = u'reject'
+                party_client.leave_message = form.cleaned_data['leave_message']
+                party_client.save()
+                return TemplateResponse(request, 'message.html', {'message':u'您已经拒绝了这次邀请'})
         else:
-            party_client.apply_status = u'reject'
-            party_client.save()
-            return TemplateResponse(request, 'message.html', {'message':u'您已经拒绝了这次邀请'})
+            data = {
+                'client': client,
+                'party': party,
+                'client_count': _get_client_count(party),
+                'form' : form
+             }
+            if request.META['PATH_INFO'][0:3] == '/m/':
+                return TemplateResponse(request, 'm/enroll.html', data)
+            else:
+                return TemplateResponse(request, 'parties/enroll.html', data)
     else:
         data = {
             'client': client,
             'party': party,
-            'client_count': _get_client_count(party)
+            'client_count': _get_client_count(party),
+            'form' : EnrollForm()
         }
         
         if request.META['PATH_INFO'][0:3] == '/m/':
@@ -650,7 +667,7 @@ def invite_list_ajax(request, party_id):
             'id' : party_client.id,
             'name' : party_client.client.name, 
             'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
-            'is_check': party_client.is_check
+            'is_check': party_client.is_check,
         }    
         party_clients_data.append(party_client_data)
         

@@ -30,11 +30,20 @@ class CreatePartyForm(forms.ModelForm):
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget=forms.TextInput(), required=True)
     content = forms.CharField(widget=forms.TextInput(), required=True)   
-    
+            
 class PublicEnrollForm(forms.Form):
     name = forms.CharField( widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}), required=True)  
     phone_or_email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码或邮件地址'}), required=True)
+    leave_message = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'不可超过100字', 'cols':'20', 'rows':'5'}), required=False)
     
+    def clean_leave_message(self):
+        if 'leave_message' in self.cleaned_data:
+            leave_message = self.cleaned_data['leave_message']
+            if len(leave_message) > 100:
+                raise forms.ValidationError(u'留言超过100字符')
+            
+            return self.cleaned_data['leave_message']
+        
     def clean_phone_or_email(self):
         if 'phone_or_email' in self.cleaned_data:
             phone_or_email = self.cleaned_data['phone_or_email']
@@ -61,4 +70,14 @@ class PublicEnrollForm(forms.Form):
                     raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
             
             return self.cleaned_data['phone_or_email']
+
+class EnrollForm(forms.Form):
+    leave_message = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'不可超过100字', 'cols':'20', 'rows':'5', 'default':''}), required=False)
     
+    def clean_leave_message(self):
+        if 'leave_message' in self.cleaned_data:
+            leave_message = self.cleaned_data['leave_message']
+            if len(leave_message) > 100:
+                raise forms.ValidationError(u'留言超过100字符')
+            
+            return self.cleaned_data['leave_message']

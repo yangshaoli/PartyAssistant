@@ -28,7 +28,7 @@ class Party(models.Model):
     start_time = models.TimeField(blank=True, null=True)
     address = models.CharField(max_length=256, blank=True)
     description = models.TextField()
-    limit_count = models.IntegerField(max_length=3, default=0,blank=True)
+    limit_count = models.IntegerField(max_length=3, default=0, blank=True)
     
     clients = models.ManyToManyField(Client, through='PartiesClients')
     
@@ -47,6 +47,7 @@ class PartiesClients(models.Model):
     apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default='noanswer')
     is_check = models.BooleanField(default=True)
     invite_key = models.CharField(max_length=32)
+    leave_message = models.CharField(max_length=100, blank=True)
 
 def update_invite_key(sender=None, instance=None, **kwargs):
     party = instance.party
