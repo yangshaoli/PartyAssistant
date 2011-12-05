@@ -154,7 +154,7 @@
 		}
 
 9 GetPartyClientSeperatedList
-	url:"/a/parties/get_party_client_seperated_list/(party id)/( type name)/",<party id> Integer   < type name > String of "all","applied","refused","donothing"
+	url:"/a/parties/get_party_client_seperated_list/(party id)/( type name)/" ,   <party id> Integer   < type name > String of "all","applied","refused","donothing"
 	method:"GET",
 	input:{},
 	output:{
