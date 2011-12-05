@@ -71,7 +71,7 @@ def invite_list(request, party_id):
     
     return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
-@login_required
+
 def invite_list_ajax(request, party_id):
     apply_status = request.GET.get('apply', 'all')
     party = get_object_or_404(Party, id=party_id)

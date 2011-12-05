@@ -491,10 +491,15 @@ def _public_enroll(request, party_id):
                         return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
                 client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
                 PartiesClients.objects.create(client = client, party = party, apply_status = u'apply', is_check=False, leave_message = form.cleaned_data['leave_message'])
-
-                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+                if request.META['PATH_INFO'][0:3] == '/m/':
+                    return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功'})
+                else:	
+                    return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
             else:
-                return TemplateResponse(request, 'message.html', {'message':u'您已经报名了'})
+                if request.META['PATH_INFO'][0:3] == '/m/':
+                    return TemplateResponse(request, 'm/message.html', {'title':u'报名失败','message': u'您已经报名了'})
+                else:
+                    return TemplateResponse(request, 'message.html', {'message':u'您已经报名了'})
         else:
             data = {
             'party': party,
@@ -545,16 +550,28 @@ def _invite_enroll(request, party_id, invite_key):
             if request.POST['action'] == 'yes': #如果点击参加
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
-                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
+                        if request.META['PATH_INFO'][0:3] == '/m/':
+                            return TemplateResponse(request, 'm/message.html', {'title':u'人数限制', 'message': u'来晚了，下次早点来吧。'})
+                        else:	
+                            return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点来吧。'})
+
                 party_client.apply_status = u'apply'
                 party_client.leave_message = form.cleaned_data['leave_message']
                 party_client.save()
-                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+
+                if request.META['PATH_INFO'][0:3] == '/m/':
+                    return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功，请记得按时参加活动。'})
+                else:	
+                    return TemplateResponse(request, 'message.html', {'message': u'报名成功，请记得按时参加活动。'})
             else:
                 party_client.apply_status = u'reject'
                 party_client.leave_message = form.cleaned_data['leave_message']
                 party_client.save()
-                return TemplateResponse(request, 'message.html', {'message':u'您已经拒绝了这次邀请'})
+                
+                if request.META['PATH_INFO'][0:3] == '/m/':
+                    return TemplateResponse(request, 'm/message.html', {'title':u'成功拒绝', 'message': u'您已经选择不参加这个活动'})
+                else:	
+                    return TemplateResponse(request, 'message.html', {'message': u'您已经选择不参加这个活动'})
         else:
             data = {
                 'client': client,
