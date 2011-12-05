@@ -1,8 +1,9 @@
+from apps.accounts.forms import LoginForm
 from django.conf.urls.defaults import patterns, url
 from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns('apps.accounts.views',
-    url(r'^login/$', auth_views.login, {'template_name': 'accounts/login.html'}, name='login'),
+    url(r'^login/$', auth_views.login, {'template_name': 'accounts/login.html', 'authentication_form':LoginForm }, name='login'),
     url(r'^register/$', 'register', name='register'),
     url(r'^logout/$', auth_views.logout_then_login, name='logout'),
     

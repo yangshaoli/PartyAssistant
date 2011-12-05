@@ -488,7 +488,7 @@ def _public_enroll(request, party_id):
                 and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).exclude(phone='').count() == 0:
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
-                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
+                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
                 client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
                 PartiesClients.objects.create(client = client, party = party, apply_status = u'apply', is_check=False, leave_message = form.cleaned_data['leave_message'])
 
@@ -506,9 +506,9 @@ def _public_enroll(request, party_id):
         form = PublicEnrollForm()
         invite_message = ''
         if party.invite_type == 'email':
-            invite_message = u'请填写邮件，以免收不到活动的具体通知。'
+            invite_message = u'请填写邮件，以免收不到活动的具体通知'
         else:
-            invite_message = u'请填写手机号码，以免收不到活动的具体通知。'
+            invite_message = u'请填写手机号码，以免收不到活动的具体通知'
         data = {
             'party': party,
             'client_count': _get_client_count(party),
@@ -545,7 +545,7 @@ def _invite_enroll(request, party_id, invite_key):
             if request.POST['action'] == 'yes': #如果点击参加
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
-                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧。'})
+                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
                 party_client.apply_status = u'apply'
                 party_client.leave_message = form.cleaned_data['leave_message']
                 party_client.save()

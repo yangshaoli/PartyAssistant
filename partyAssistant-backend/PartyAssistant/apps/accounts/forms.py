@@ -1,19 +1,33 @@
 #coding=utf-8
 
 from django import forms
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms.util import ErrorList
 import re
 
 class LoginForm(AuthenticationForm):
+    username = forms.CharField(error_messages = {'required': u'用户名不能为空'}, max_length=30)
+    password = forms.CharField(error_messages = {'required': u'密码不能为空'}, widget=forms.PasswordInput(attrs={'placeholder':u'必填项'}))
+   
     def clean(self):
-        pass
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            self.user_cache = authenticate(username=username, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError("请输入正确的用户名、密码")
+            elif not self.user_cache.is_active:
+                raise forms.ValidationError("该账户未激活")
+        self.check_for_test_cookie()
+        return self.cleaned_data
 
 class RegistrationForm(forms.Form):
-    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, widget=forms.TextInput(attrs={'placeholder':u'必填项，输入范围6-14字符'}))
-    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，输入范围6-16字符'}))
-    confirm_password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，输入范围6-16字符'}))
+    username = forms.RegexField(error_messages = {'required': u'用户名不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'regex':u'用户名不规范'}, regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, widget=forms.TextInput(attrs={'placeholder':u'必填项，输入范围6-14字符'}))
+    password = forms.CharField(error_messages = {'required': u'密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，输入范围6-16字符'}))
+    confirm_password = forms.CharField(error_messages = {'required': u'确认密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，输入范围6-16字符'}))
     
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -37,9 +51,9 @@ class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput())
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
-    new_password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
-    confirm_password = forms.CharField(required=False, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    old_password = forms.CharField(error_messages = {'required': u'原始密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    new_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    confirm_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, required=False, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
     
     def __init__(self, request, data):
         if request:
