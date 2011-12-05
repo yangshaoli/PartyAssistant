@@ -96,8 +96,15 @@
 		             count = count+1;
 		         }
 		     }
-		     if(count > sms_count){
-		         if(window.confirm("您的是收件人数大于您可使用的短信数量,是否要继续操作么?")){
+		     content_length = $('#id_content').val().length;
+		     if (document.getElementById('id_is_apply_tips').checked){
+		     	content_length = content_length + 21;
+		     }
+		     message_count = Math.round((content_length+65-1)/65); //计算条数
+		     //alert(message_count*count);
+		     //return false;
+		     if((count*message_count) > sms_count){
+		         if(window.confirm("您将要发送的短信数量大于您可使用的短信数量("+sms_count+"条),是否需要进行调整操作?")){
 		         	return false;
 		         }else{
 		         	document.id_form.submit();

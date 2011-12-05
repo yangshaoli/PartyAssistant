@@ -7,11 +7,11 @@ from django.forms.widgets import TextInput, TimeInput, DateInput, Textarea
 import re
 
 class CreatePartyForm(forms.ModelForm):
+    limit_count = forms.CharField(required=False, widget=forms.TextInput(attrs={'maxlength':'3', 'placeholder':u'无限制'}))
     class Meta:
         model = Party
-        fields = ('start_date', 'start_time', 'address', 'description', 'limit_count')
+        fields = ('start_date', 'start_time', 'address', 'description')
         widgets = {
-            'limit_count': TextInput(attrs={'maxlength':'3', 'placeholder':u'无限制'}),
             'start_time' : TimeInput(attrs={'placeholder':u'选填项,格式如8：00', 'class':'input-txt3 mys TimePker', 'autocomplete':'off'}),
             'start_date' : DateInput(attrs={'placeholder':u'选填项,格式如2008-08-08', 'class':'input-txt3 mys', 'style':'width:150px'}),
             'address'    : TextInput(attrs={'placeholder':u'可选填，主要作用是进行地图定位', 'style':'width=315px'}),
@@ -30,11 +30,20 @@ class CreatePartyForm(forms.ModelForm):
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget=forms.TextInput(), required=True)
     content = forms.CharField(widget=forms.TextInput(), required=True)   
-    
+            
 class PublicEnrollForm(forms.Form):
     name = forms.CharField( widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}), required=True)  
     phone_or_email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码或邮件地址'}), required=True)
+    leave_message = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'不可超过100字', 'cols':'20', 'rows':'5'}), required=False)
     
+    def clean_leave_message(self):
+        if 'leave_message' in self.cleaned_data:
+            leave_message = self.cleaned_data['leave_message']
+            if len(leave_message) > 100:
+                raise forms.ValidationError(u'留言超过100字符')
+            
+            return self.cleaned_data['leave_message']
+        
     def clean_phone_or_email(self):
         if 'phone_or_email' in self.cleaned_data:
             phone_or_email = self.cleaned_data['phone_or_email']
@@ -61,4 +70,14 @@ class PublicEnrollForm(forms.Form):
                     raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
             
             return self.cleaned_data['phone_or_email']
+
+class EnrollForm(forms.Form):
+    leave_message = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'不可超过100字', 'cols':'20', 'rows':'5', 'default':''}), required=False)
     
+    def clean_leave_message(self):
+        if 'leave_message' in self.cleaned_data:
+            leave_message = self.cleaned_data['leave_message']
+            if len(leave_message) > 100:
+                raise forms.ValidationError(u'留言超过100字符')
+            
+            return self.cleaned_data['leave_message']

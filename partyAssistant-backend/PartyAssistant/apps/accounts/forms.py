@@ -11,9 +11,9 @@ class LoginForm(AuthenticationForm):
         pass
 
 class RegistrationForm(forms.Form):
-    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}))
-    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
-    confirm_password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    username = forms.RegexField(regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, widget=forms.TextInput(attrs={'placeholder':u'必填项，输入范围6-14字符'}))
+    password = forms.CharField(min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，输入范围6-16字符'}))
+    confirm_password = forms.CharField(max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，输入范围6-16字符'}))
     
     def clean_username(self):
         username = self.cleaned_data['username']

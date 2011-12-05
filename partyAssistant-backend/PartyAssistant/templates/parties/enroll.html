@@ -91,7 +91,10 @@ function ajaxChangeStatus(id, applystatus){
              </div>
         <div class="field">
         {% endif %}
-        
+        <div class="field">
+        <label for="client_leave_message">我要留言</label>
+        {{ form.leave_message }}{{ form.leave_message.errors.0 }}
+        </div> 
      <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
      <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
      <input id="id_action" type="hidden" name="action" value="" />
@@ -111,6 +114,10 @@ function ajaxChangeStatus(id, applystatus){
              {{ invite_message }}
              {% endif %}
              </div>
+            <div class="field">
+             <label for="client_email_list">我要留言</label>
+             {{ form.leave_message }}{{ form.leave_message.errors.0 }}
+             </div> 
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}
     </form>

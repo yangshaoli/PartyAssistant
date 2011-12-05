@@ -87,7 +87,8 @@ def invite_list_ajax(request, party_id):
             'id' : party_client.id,
             'name' : party_client.client.name, 
             'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
-            'is_check': party_client.is_check
+            'is_check': party_client.is_check,
+            'leave_message' : party_client.leave_message
         }    
         party_clients_data.append(party_client_data)
         

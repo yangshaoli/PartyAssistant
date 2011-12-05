@@ -32,7 +32,7 @@ def register(request):
             UserProfile.objects.create(user=user)
             login(request, user)
             
-            return redirect('list_party')
+            return redirect('profile')
     else:
         form = RegistrationForm()
 

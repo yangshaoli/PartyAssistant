@@ -48,7 +48,14 @@ function clientAction(id, applystatus){
             return action;
     }
 }
-
+function bubblepopup(o){
+	$('.popup .bd tbody').html(o);
+	$('.popup').show(500);
+	
+}
+function closepopup(){
+	$('.popup').hide(500);
+}
 function ajaxGetClients(applystatus){
     $('.accordion_content table tbody').children().remove();
     var link = $('img[alt="please"]').parent().attr('href').split('?')[0];
@@ -60,8 +67,13 @@ function ajaxGetClients(applystatus){
             clients = JSON.parse(response);
             for (i in clients){
                 var new_status = !clients[i].is_check?'<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />':'';
-                var action = clientAction(clients[i].id, applystatus)//判断applystatus，显示相应按钮
-                row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
+                var action = clientAction(clients[i].id, applystatus);//判断applystatus，显示相应按钮
+                var leave_message = clients[i].leave_message;
+                leave_message_tag = '';
+                if( leave_message.replace(/^\s+|\s+$/g, "") != ""){
+                	leave_message_tag="<a href='#' onclick=\"bubblepopup(\'"+leave_message+"\');\"><img src=\"/static/images/bubble.png\" width=\"18\" style=\"margin-left:5px;\"/></a>";
+                }
+                row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+leave_message_tag+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
                 $('.accordion_content table tbody').append(row);    
             }
             //修改重新邀请的链接
@@ -90,6 +102,20 @@ function ajaxChangeStatus(id, applystatus){
 {% endblock %}
 
 {% block content %}
+<div class="popup">
+	<div class="hd">
+ 	<h2></h2>
+  <a href="#" onclick="closepopup();" class="close">close</a>
+ </div>
+ <div class="bd">
+ 	<table width="100%" border="0" cellspacing="0" class="table">
+      <thead>留言:
+       </thead>
+       <tbody>
+       </tbody>
+      </table>
+ </div>
+ </div>
 <script>
  
   function refesh(){
@@ -109,9 +135,9 @@ function ajaxChangeStatus(id, applystatus){
    <div class="accordionview">
     <div class="accordion_panel">
      <h2 class="accordion_toggle accordion_toggle_active">
-     	<a id="tab_apply" href="#">爱热闹的 <strong>{% if not party_clients.apply.is_check %}<i class="icon_new">{% endif %}</i>({{party_clients.apply.client_count}}人)</strong></a>
+     	<a id="tab_apply" href="#">爱热闹的 <strong>{% if not party_clients.apply.is_check %}<i class="icon_new"></i>{% endif %}({{party_clients.apply.client_count}}人)</strong></a>
      	<a id="tab_noanswer" href="#">犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
-     	<a id="tab_reject" href="#">不来的 <strong>({{party_clients.reject.client_count}}人)</strong></a>
+     	<a id="tab_reject" href="#">不来的 <strong>{% if not party_clients.reject.is_check %}<i class="icon_new"></i>{% endif %}({{party_clients.reject.client_count}}人)</strong></a>
      	<a href='{% if party.invite_type == "email" %}{% url email_invite party.id %}{% else %}{% url sms_invite party.id %}{% endif %}'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a>
      </h2>
      <div class="accordion_content">
