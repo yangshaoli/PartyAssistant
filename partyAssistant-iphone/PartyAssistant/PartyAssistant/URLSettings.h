@@ -6,7 +6,7 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#define DOMAIN_NAME @"http://192.168.3.151:8000"
+#define DOMAIN_NAME @"http://192.168.2.210:8000"
 
 #define CREATE_PARTY [NSString stringWithFormat:@"%@/a/parties/createparty/",DOMAIN_NAME]
 #define DELETE_PARTY [NSString stringWithFormat:@"%@/a/parties/deleteparty/",DOMAIN_NAME]

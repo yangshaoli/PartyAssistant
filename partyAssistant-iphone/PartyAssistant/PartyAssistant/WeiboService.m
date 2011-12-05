@@ -46,6 +46,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
     return self.weiboPersonalProfile;
 }
 
+- (void)saveNickName:(NSString *)nickName{
+    if (!self.weiboPersonalProfile) {
+        return;
+    }
+    self.weiboPersonalProfile.nickname = nickName;
+    [self saveWeiboPersonalProfile];
+}
+
 - (void)saveWeiboPersonalProfile
 {
     if (!self.weiboPersonalProfile) {

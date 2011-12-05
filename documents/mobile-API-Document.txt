@@ -178,3 +178,16 @@
                    	'cValue':cValue,
                    	'backendID':clientparty.id,
                    	}
+
+10 ChangeClientStatus
+	url:"/a/parties/change_client_status/"
+	method:"POST",
+	input:{
+		"cpID":Integer(clientparty.id),
+		"cpAction":"reject" or ""
+		},
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}

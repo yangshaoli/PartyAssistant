@@ -22,6 +22,7 @@
 
 + (WeiboService *)sharedWeiboService;
 - (WeiboPersonalProfile *)getWeiboPersonalProfile;
+- (void)saveNickName:(NSString *)nickName;
 - (void)saveWeiboPersonalProfile;
 - (void)clearWeiboPersonalProfile;
 
