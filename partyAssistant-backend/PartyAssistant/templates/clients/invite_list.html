@@ -71,7 +71,7 @@ function ajaxGetClients(applystatus){
                 var leave_message = clients[i].leave_message;
                 leave_message_tag = '';
                 if( leave_message.replace(/^\s+|\s+$/g, "") != ""){
-                	leave_message_tag="<a href='#' onclick=\"bubblepopup(\'"+leave_message+"\');\">bubble</a>";
+                	leave_message_tag="<a href='#' onclick=\"bubblepopup(\'"+leave_message+"\');\"><img src=\"/static/images/bubble.png\" width=\"18\" style=\"margin-left:5px;\"/></a>";
                 }
                 row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+leave_message_tag+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
                 $('.accordion_content table tbody').append(row);    
