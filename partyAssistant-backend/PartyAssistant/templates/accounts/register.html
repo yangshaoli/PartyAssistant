@@ -1,5 +1,11 @@
 {% extends 'not_login_base.html' %}
 
+{% block style %}
+<style>
+.grid_a input[type=password], #id_username {width:200px;}
+</style> 
+{% endblock %}
+
 {% block content %}
  <!--START: content -->
  <div id="content">
@@ -12,7 +18,7 @@
          <label for="username">
          用户名
          </label>
-         <input id='id_username' name='username' placeholder='必填项，以字母开始，至少输入六个字符'></input>
+         <input id='id_username' name='username' placeholder='必填，以字母开始，至少6个字符'></input>
          <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
          <div class="field">
