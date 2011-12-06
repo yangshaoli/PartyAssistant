@@ -194,7 +194,8 @@ def email_invite(request, party_id):
             form = EmailInviteForm(initial = data)
         else:
             #生成默认内容
-            content = party.creator.username + u'邀请你参加：'+party.description+u'活动'
+            userprofile = UserProfile.objects.get(user=party.creator)
+            content = (userprofile.true_name if userprofile.true_name else party.creator.username) + u'邀请你参加：'+party.description+u'活动'
             address_content = ','+u'地点:'+(party.address if party.address != "" else u'待定') 
             if party.start_date == None and party.start_time == None:
                 if party.address == "":
@@ -364,7 +365,8 @@ def sms_invite(request, party_id):
             form = SMSInviteForm(initial = data)
         else:
             #生成默认内容
-            content = party.creator.username + u'邀请你参加：'+party.description+u'活动'
+            userprofile = UserProfile.objects.get(user=party.creator)
+            content = (userprofile.true_name if userprofile.true_name else party.creator.username) + u'邀请你参加：'+party.description+u'活动'
             address_content = ','+u'地点:'+(party.address if party.address != "" else u'待定') 
             if party.start_date == None and party.start_time == None:
                 if party.address == "":
@@ -514,6 +516,8 @@ def _public_enroll(request, party_id):
             invite_message = u'请填写邮件，以免收不到活动的具体通知'
         else:
             invite_message = u'请填写手机号码，以免收不到活动的具体通知'
+        userprofile = UserProfile.objects.get(user=party.creator)
+        party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username    
         data = {
             'party': party,
             'client_count': _get_client_count(party),
@@ -584,6 +588,8 @@ def _invite_enroll(request, party_id, invite_key):
             else:
                 return TemplateResponse(request, 'parties/enroll.html', data)
     else:
+        userprofile = UserProfile.objects.get(user=party.creator)
+        party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
         data = {
             'client': client,
             'party': party,
