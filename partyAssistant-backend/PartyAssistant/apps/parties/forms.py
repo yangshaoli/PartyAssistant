@@ -33,7 +33,7 @@ class InviteForm(forms.Form):
     content = forms.CharField(widget=forms.TextInput(), required=True)   
             
 class PublicEnrollForm(forms.Form):
-    name = forms.CharField( widget=forms.TextInput(attrs={'placeholder':'必填项，输入范围6-14字符'}), required=True)  
+    name = forms.CharField( widget=forms.TextInput(attrs={'placeholder':'必填项'}), required=True)  
     phone_or_email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码或邮件地址'}), required=True)
     leave_message = forms.CharField(widget=forms.Textarea(attrs={'placeholder':u'不可超过100字', 'cols':'20', 'rows':'5'}), required=False)
     
