@@ -106,9 +106,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-CLIENT_SOLR_PORT = 'http://localhost:8984/solr'
-MEETING_SOLR_PORT = 'http://localhost:8983/solr'
-
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -200,5 +197,4 @@ LOGIN_REDIRECT_URL = '/parties/list/'
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
 
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'

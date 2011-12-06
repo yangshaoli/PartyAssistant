@@ -38,16 +38,6 @@ def register(request):
 
     return TemplateResponse(request, 'accounts/register.html', {'form': form})
 
-def activate(request, email , random_str):
-    note = get_object_or_404(TempActivateNote, email = email, random_str = random_str, action = u'新建账户')
-    if User.objects.filter(username = email):
-        note.delete()
-        return HttpResponse(u'用户已存在')
-    user = User.objects.create_user(email, email, password=note.password)
-    UserProfile.objects.create(user=user, account_type=note.aim_limit )
-    note.delete()
-    return redirect(reverse('create_party'))
-
 @login_required
 def profile(request):
     if request.method == 'POST':
@@ -115,8 +105,7 @@ def change_password(request):
 
 @login_required
 def get_availbale_sms_count_ajax(request):
-    userprofile = UserProfile.objects.get(user=request.user)
-    data={'available_count' : userprofile.available_sms_count          
-          }
+    data = {
+        'available_count' : request.user.get_profile.available_sms_count          
+    }
     return HttpResponse(simplejson.dumps(data))
-    pass

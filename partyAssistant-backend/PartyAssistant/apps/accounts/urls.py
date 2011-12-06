@@ -8,7 +8,6 @@ urlpatterns = patterns('apps.accounts.views',
     url(r'^logout/$', auth_views.logout_then_login, name='logout'),
     
     url(r'^profile/$', 'profile', name='profile'),
-    url(r'^activate/(?P<email>\S+)/(?P<random_str>\w+)/$', 'activate', name = 'activate'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'home.html'}, name='logout'),
     url(r'^change_password/$', 'change_password', name='change_password'), 
     url(r'^get_availbale_sms_count_ajax/$', 'get_availbale_sms_count_ajax', name='get_availbale_sms_count_ajax'), 
