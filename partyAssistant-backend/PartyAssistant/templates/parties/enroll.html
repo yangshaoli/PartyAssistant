@@ -33,7 +33,11 @@ function ajaxGetClients(applystatus){
         200: function(response){
             clients = JSON.parse(response);
             for (i in clients){
-                row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td></td></tr>"
+                if(clients[i].client_id == '{{ client.id }}'){
+                	row = "<tr><td></td><th>"+'{{ client.name }}'+"</th><td>"+clients[i].address+"</td><td></td></tr>"
+                }else{
+                	row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td></td></tr>"
+                }
                 $('.accordion_content table tbody').append(row);    
             }
             
