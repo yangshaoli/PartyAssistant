@@ -13,6 +13,10 @@
 @synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+    if(addressBook == nil) {
+        addressBook = ABAddressBookCreate();
+        ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
+    }
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
@@ -58,4 +62,10 @@
      */
 }
 
+void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
+    //	DialerAppDelegate *dialerDelegate = context;
+    //	[dialerDelegate refreshServices];
+    //	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
+    //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
+}
 @end

@@ -14,6 +14,7 @@
 
 @implementation PartyListTableViewController
 @synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex,_currentDeletePartyID,_currentDeletePartyCellIndex;
+@synthesize countNumber;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -57,6 +58,7 @@
     }
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AfterCreatedDone) name:CREATE_PARTY_SUCCESS object:nil];
+    NSLog(@"viewDidLoad中self.partyList.count>>>>>%d",self.partyList.count);
 }
 
 - (void)viewDidUnload
@@ -245,6 +247,7 @@
                 biObj.partyId = [party objectForKey:@"partyId"];
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
+                
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
@@ -260,6 +263,16 @@
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
+    //wxz
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.countNumber=self.partyList.count;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    [defaults setInteger:self.countNumber  forKey:keyString];    //wxz
+    
+    NSLog(@"count:%d",self.partyList.count);
+    NSLog(@"打印数组%@",self.partyList);
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

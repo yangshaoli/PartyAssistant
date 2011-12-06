@@ -154,6 +154,13 @@
 		89E7D93B146378CD0059ADF4 /* UserObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D93A146378CD0059ADF4 /* UserObjectService.m */; };
 		89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */; };
 		89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */; };
+		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
+		CE638DA0148645A000572CF8 /* ABContact.m in Sources */ = {isa = PBXBuildFile; fileRef = CE638D95148645A000572CF8 /* ABContact.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CE638DA1148645A000572CF8 /* ABContactsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CE638D97148645A000572CF8 /* ABContactsHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CE638DA2148645A000572CF8 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CE638D99148645A000572CF8 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CE638DA3148645A000572CF8 /* AddressBookDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CE638D9B148645A000572CF8 /* AddressBookDataManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CE638DA4148645A000572CF8 /* ContactData.m in Sources */ = {isa = PBXBuildFile; fileRef = CE638D9D148645A000572CF8 /* ContactData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CE638DA5148645A000572CF8 /* englishletter.c in Sources */ = {isa = PBXBuildFile; fileRef = CE638D9E148645A000572CF8 /* englishletter.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -410,6 +417,20 @@
 		89F05AE3146E028A00EBA2CB /* EditPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPartyTableViewController.h; sourceTree = "<group>"; };
 		89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPartyTableViewController.m; sourceTree = "<group>"; };
 		89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditPartyTableViewController.xib; sourceTree = "<group>"; };
+		CE472E9D148DB53E00E24742 /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pinyin.c; path = PartyAssistant/pinyin.c; sourceTree = SOURCE_ROOT; };
+		CE472E9E148DB53E00E24742 /* pinyin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pinyin.h; path = PartyAssistant/pinyin.h; sourceTree = SOURCE_ROOT; };
+		CE638D94148645A000572CF8 /* ABContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABContact.h; sourceTree = "<group>"; };
+		CE638D95148645A000572CF8 /* ABContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABContact.m; sourceTree = "<group>"; };
+		CE638D96148645A000572CF8 /* ABContactsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABContactsHelper.h; sourceTree = "<group>"; };
+		CE638D97148645A000572CF8 /* ABContactsHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABContactsHelper.m; sourceTree = "<group>"; };
+		CE638D98148645A000572CF8 /* ABGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABGroup.h; sourceTree = "<group>"; };
+		CE638D99148645A000572CF8 /* ABGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABGroup.m; sourceTree = "<group>"; };
+		CE638D9A148645A000572CF8 /* AddressBookDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDataManager.h; sourceTree = "<group>"; };
+		CE638D9B148645A000572CF8 /* AddressBookDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDataManager.m; sourceTree = "<group>"; };
+		CE638D9C148645A000572CF8 /* ContactData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactData.h; sourceTree = "<group>"; };
+		CE638D9D148645A000572CF8 /* ContactData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactData.m; sourceTree = "<group>"; };
+		CE638D9E148645A000572CF8 /* englishletter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = englishletter.c; path = ../../../../../Desktop/ContactListTest/Main/Model/englishletter.c; sourceTree = "<group>"; };
+		CE638D9F148645A000572CF8 /* englishletter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = englishletter.h; path = ../../../../../Desktop/ContactListTest/Main/Model/englishletter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -624,6 +645,9 @@
 		891A4DC61457B19700A2CF47 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				CE638D93148645A000572CF8 /* AddressBook */,
+				CE638D9E148645A000572CF8 /* englishletter.c */,
+				CE638D9F148645A000572CF8 /* englishletter.h */,
 				89395918147DECE2003A883C /* WeiboPersonalProfile.h */,
 				89395919147DECE3003A883C /* WeiboPersonalProfile.m */,
 				8947F01B145800E100017ED1 /* PartyObject.h */,
@@ -645,6 +669,7 @@
 		89326531145E7440006E827D /* CustomClass */ = {
 			isa = PBXGroup;
 			children = (
+				CE81DA4514847B5800E5BFA7 /* SearchIndex */,
 				899D8C6E146B6DD300B48698 /* MBProgressHUD.h */,
 				899D8C6F146B6DD300B48698 /* MBProgressHUD.m */,
 				899D8C65146B6D9C00B48698 /* Common.h */,
@@ -907,6 +932,34 @@
 			name = Accounts;
 			sourceTree = "<group>";
 		};
+		CE638D93148645A000572CF8 /* AddressBook */ = {
+			isa = PBXGroup;
+			children = (
+				CE638D94148645A000572CF8 /* ABContact.h */,
+				CE638D95148645A000572CF8 /* ABContact.m */,
+				CE638D96148645A000572CF8 /* ABContactsHelper.h */,
+				CE638D97148645A000572CF8 /* ABContactsHelper.m */,
+				CE638D98148645A000572CF8 /* ABGroup.h */,
+				CE638D99148645A000572CF8 /* ABGroup.m */,
+				CE638D9A148645A000572CF8 /* AddressBookDataManager.h */,
+				CE638D9B148645A000572CF8 /* AddressBookDataManager.m */,
+				CE638D9C148645A000572CF8 /* ContactData.h */,
+				CE638D9D148645A000572CF8 /* ContactData.m */,
+			);
+			name = AddressBook;
+			path = ../../../../../Desktop/ContactListTest/Main/Model/AddressBook;
+			sourceTree = "<group>";
+		};
+		CE81DA4514847B5800E5BFA7 /* SearchIndex */ = {
+			isa = PBXGroup;
+			children = (
+				CE472E9D148DB53E00E24742 /* pinyin.c */,
+				CE472E9E148DB53E00E24742 /* pinyin.h */,
+			);
+			name = SearchIndex;
+			path = ../../../../SearchIndex;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1139,6 +1192,13 @@
 				89BEFA4E147F3F0400B3408F /* WeibViewController.m in Sources */,
 				89BEFA52147F791500B3408F /* WeiboLoginView.m in Sources */,
 				89BEFA55147F794800B3408F /* WeiboRetweetView.m in Sources */,
+				CE638DA0148645A000572CF8 /* ABContact.m in Sources */,
+				CE638DA1148645A000572CF8 /* ABContactsHelper.m in Sources */,
+				CE638DA2148645A000572CF8 /* ABGroup.m in Sources */,
+				CE638DA3148645A000572CF8 /* AddressBookDataManager.m in Sources */,
+				CE638DA4148645A000572CF8 /* ContactData.m in Sources */,
+				CE638DA5148645A000572CF8 /* englishletter.c in Sources */,
+				CE472E9F148DB53E00E24742 /* pinyin.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1262,7 +1322,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1276,7 +1336,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

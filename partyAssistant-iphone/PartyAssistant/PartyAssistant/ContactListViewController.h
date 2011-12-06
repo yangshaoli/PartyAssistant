@@ -19,7 +19,7 @@
 
 @end
 
-@interface ContactListViewController : UITableViewController
+@interface ContactListViewController : UITableViewController <ContactorPhoneDetailsViewControllerDelegate>
 {
     NSArray *contactorsArray;
     CFArrayRef contactorsArrayRef;
@@ -27,6 +27,19 @@
     NSString *msgType;
     NSInteger currentSelectedRowIndex;
     id<ContactListViewControllerDelegate> contactListDelegate;
+    
+    
+    //wxz
+    UISearchDisplayController *searchDC;
+	UISearchBar *searchBar;
+    NSMutableArray *filteredArray;
+	NSMutableArray *contactNameArray;
+	NSMutableDictionary *contactNameDic;
+	NSMutableArray *sectionArray;
+	NSArray *contacts;
+    NSArray *abData;
+	NSString *sectionName;
+  
 }
 
 @property(nonatomic,retain)NSArray *contactorsArray;
@@ -34,12 +47,30 @@
 @property(nonatomic,assign)CFArrayRef contactorsArrayRef;
 @property(nonatomic,retain)NSString *msgType;
 @property(nonatomic,assign)NSInteger currentSelectedRowIndex;
+@property(nonatomic,assign)NSInteger currentSelectedSectionIndex;
 @property(nonatomic,retain)id<ContactListViewControllerDelegate> contactListDelegate;
+
+//wxz
+@property (retain) NSArray *abData;
+@property (nonatomic,retain) NSArray *contacts;
+@property (nonatomic,retain) NSMutableArray *filteredArray;
+@property (nonatomic,retain) NSMutableArray *contactNameArray;
+@property (nonatomic,retain) NSMutableDictionary *contactNameDic;
+@property (nonatomic,retain) NSMutableArray *sectionArray;
+@property (nonatomic,retain) UISearchDisplayController *searchDC;
+@property (nonatomic,retain) NSMutableArray *sectionContactArray;
+@property (nonatomic,retain) UISearchBar *searchBar;
+
+
 
 - (void)alertError:(NSString *)errorStr;
 - (void)showOrCancleSelectedMark:(UITableViewCell *)cell mutableMSGValue:(id)msgVal;
 - (void)selectContactor:(NSDictionary *)userinfo;
 - (void)addInfoToArray:(NSInteger)cID uname:(NSString *)name value:(NSString *)val;
 - (void)removeInfoFromArray:(NSInteger)cID;
+
+//wxz
+-(void)initData;
+-(BOOL)searchResult:(NSString *)contactName searchText:(NSString *)searchT;
 
 @end

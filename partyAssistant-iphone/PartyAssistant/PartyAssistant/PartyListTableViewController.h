@@ -25,6 +25,7 @@
     NSInteger pageIndex;
     NSInteger _currentDeletePartyID;
     NSInteger _currentDeletePartyCellIndex;
+    NSInteger countNumber;
 }
 
 @property(nonatomic, retain)NSMutableArray *partyList;
@@ -33,7 +34,7 @@
 @property(nonatomic, assign)NSInteger pageIndex;
 @property(nonatomic, assign)NSInteger _currentDeletePartyID;
 @property(nonatomic, assign)NSInteger _currentDeletePartyCellIndex;
-
+@property(nonatomic, assign)NSInteger countNumber;
 - (void)refreshBtnAction;
 - (void)copyPartyAtID:(NSInteger)pIndex;
 - (void)deletePartyAtID:(NSInteger)pIndex;
