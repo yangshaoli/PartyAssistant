@@ -48,26 +48,6 @@ def activate(request, email , random_str):
     note.delete()
     return redirect(reverse('create_party'))
 
-def get_password(request):
-    email_subject = u'爱热闹取回密码'
-    random_password = ''.join(random.sample([chr(i) for i in range(48, 57) + range(65, 90) + range(97, 122)], 16))
-    if request.method == 'POST':
-        form = GetPasswordForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            email_content = EMAIL_CONTENT % (random_password)
-            #重新设置用户密码
-            user = User.objects.get(email=email)
-            user.set_password(random_password)
-            user.save()
-            send_emails(email_subject, email_content, SYS_EMAIL_ADDRESS, [email])
-            return render_to_response('message.html', {'message':u'新密码已发送到您的邮箱'}, context_instance = RequestContext(request))
-        else:
-            return render_to_response('message.html', {'message':u'邮箱错误，密码取回失败'}, context_instance = RequestContext(request))
-    else:
-        form = GetPasswordForm()
-        return render_to_response('accounts/get_password.html', {'form': form},context_instance = RequestContext(request))
-
 @login_required
 def profile(request):
     if request.method == 'POST':

@@ -16,7 +16,6 @@ urlpatterns += patterns('apps.accounts.views',
     url(r'^register/$', 'register'),
     url(r'^logout/$', auth_views.logout_then_login),
     
-    url(r'^get_password/$', 'get_password'),
     url(r'^profile/$', 'profile'),
     url(r'^activate/(?P<email>\S+)/(?P<random_str>\w+)/$', 'activate'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'home.html'}),
