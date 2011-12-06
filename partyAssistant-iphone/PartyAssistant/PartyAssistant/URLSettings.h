@@ -10,6 +10,7 @@
 #define DOMAIN_NAME @"http://www.airenao.com"
 //#define DOMAIN_NAME @"http://127.0.0.1"
 
+//#define DOMAIN_NAME @"http://192.168.1.15:43401"
 #define CREATE_PARTY [NSString stringWithFormat:@"%@/a/parties/createparty/",DOMAIN_NAME]
 #define DELETE_PARTY [NSString stringWithFormat:@"%@/a/parties/deleteparty/",DOMAIN_NAME]
 #define EDIT_PARTY [NSString stringWithFormat:@"%@/a/parties/editparty/",DOMAIN_NAME]

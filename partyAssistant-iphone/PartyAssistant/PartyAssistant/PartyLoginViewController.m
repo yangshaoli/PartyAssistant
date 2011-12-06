@@ -13,7 +13,7 @@
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
 #import "SettingsListTableViewController.h"
-
+#import "PartyListService.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -102,7 +102,8 @@
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
-    [registerButton release];
+    
+       [registerButton release];
     
     [tableFooterView release];
 }
@@ -194,6 +195,7 @@
         //2
         [self pushToContentVC];
     }
+    
 
 }
 
@@ -242,8 +244,13 @@
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
-    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+//    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, nil];
     [self.navigationController pushViewController:tab animated:YES];
+    
+    
+   
+    
     
     [listNav release];
     [addPageNav release];
@@ -255,6 +262,25 @@
     
     //add suggest user input name page here?
     [self checkIfUserNameSaved];
+    
+  
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
+        
+    if(getDefaultCountNumber!=0){  
+        NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
+        tab.selectedIndex=1;
+        NSLog(@"有趴列表");
+    }else{
+        tab.selectedIndex=0;
+        NSLog(@"无趴列表");
+        
+    }
+
 }
 
 #pragma mark -

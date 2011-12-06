@@ -13,7 +13,6 @@
 @synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-   
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -58,6 +57,10 @@
 #pragma Push Notification
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
+    if(addressBook == nil) {
+        addressBook = ABAddressBookCreate();
+        ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
+    }
     // other codes here.
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
@@ -99,4 +102,10 @@
     
 }
 
+void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
+    //	DialerAppDelegate *dialerDelegate = context;
+    //	[dialerDelegate refreshServices];
+    //	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
+    //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
+}
 @end

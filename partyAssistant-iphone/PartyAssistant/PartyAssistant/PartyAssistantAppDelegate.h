@@ -10,9 +10,15 @@
 #import "PartyLoginViewController.h"
 #import "PartyListTableViewController.h"
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import <AddressBook/AddressBook.h>
 
+ABAddressBookRef addressBook;
 @interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-//-(void)alertNotice:(NSString *)title withMSG:(NSString *)msg cancleButtonTitle:(NSString *)cancleTitle otherButtonTitle:(NSString *)otherTitle;
+
+void addressBookChanged (ABAddressBookRef addressBook,
+                         CFDictionaryRef info,
+                         void *context);
+
 @end
