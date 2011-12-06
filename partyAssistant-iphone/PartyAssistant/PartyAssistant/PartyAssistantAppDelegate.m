@@ -13,10 +13,7 @@
 @synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
-    [_window addSubview:nav.view];
+   
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -56,6 +53,49 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
+}
+
+#pragma Push Notification
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
+    // other codes here.
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
+    [_window addSubview:nav.view];
+    application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
+    return YES;  
+}  
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {  
+    NSLog(@"deviceToken: %@", deviceToken);  
+}  
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {  
+    NSLog(@"Error in registration. Error: %@", error);  
+}  
+
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo  
+//{  
+//    
+//    NSLog(@"收到推送消息 ：%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);  
+//    if ([[userInfo objectForKey:@"aps"] objectForKey:@"alert"]!=NULL) {  
+//        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"推送通知"   
+//                                                        message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]           
+//                                                       delegate:self          
+//                                              cancelButtonTitle:@"关闭"       
+//                                              otherButtonTitles:@"更新状态",nil];  
+//        [alert show];  
+//        [alert release];  
+//    }  
+//}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    NSLog(@"收到推送消息 ：%@",userInfo);
+    for (id key in userInfo) {
+        NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
+    }    
+    
 }
 
 @end
