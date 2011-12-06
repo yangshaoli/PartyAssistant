@@ -7,7 +7,7 @@ from django.contrib.auth import views as auth_views
 from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('',
-    url(r'^$', 'views.home'),
+    url(r'^$', 'apps.main.views.home'),
     url(r'^(?P<short_link>[a-zA-Z]+)$', 'apps.common.views.short_link'),
 )
 

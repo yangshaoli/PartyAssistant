@@ -80,6 +80,7 @@ class UserProfileForm(forms.Form):
     true_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'姓名', 'readonly':'readonly'}), required = False)
     phone = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码', 'readonly':'readonly'}), required = False)
     email = forms.EmailField(max_length=75, widget=forms.TextInput(attrs={'placeholder':u'邮件地址', 'readonly':'readonly'}), required = False)
+    
     def clean_phone(self):
         phone = self.cleaned_data['phone']
         if phone == '':
@@ -96,5 +97,6 @@ class UserProfileForm(forms.Form):
             raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
     
         return self.cleaned_data['phone']
+    
     def clean(self):
         return self.cleaned_data
