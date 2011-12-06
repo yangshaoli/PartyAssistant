@@ -53,6 +53,7 @@ $(document).ready(function(){
       var result = v.match(re);
       switch (result.length){
           case 2 : startDate = result[0]+result[1]+':00'; break;
+          case 3 : startDate = result[0]+':'+result[1]+result[2]; break;
           case 4 : startDate = result[0]+result[1]+':'+result[2]+result[3]; break;
           default : startDate = h+':'+m;break;
       }
