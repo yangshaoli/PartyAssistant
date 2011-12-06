@@ -92,6 +92,7 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSLog(@"收到推送消息 ：%@",userInfo);
+    application.applicationIconBadgeNumber = 0;
     for (id key in userInfo) {
         NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
     }    
