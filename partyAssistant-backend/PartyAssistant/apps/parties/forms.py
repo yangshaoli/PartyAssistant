@@ -8,14 +8,15 @@ import re
 
 class CreatePartyForm(forms.ModelForm):
     limit_count = forms.CharField(required=False, widget=forms.TextInput(attrs={'maxlength':'3', 'placeholder':u'无限制'}))
+    address = forms.CharField(error_messages={'max_length':u'地址的最大长度不要超过256个字符'}, required=False, max_length=256, widget=forms.TextInput(attrs={'placeholder':u'可选填，最大长度为256'}))
     class Meta:
         model = Party
         fields = ('start_date', 'start_time', 'address', 'description')
         widgets = {
-            'start_time' : TimeInput(attrs={'placeholder':u'选填项,格式如8：00', 'class':'input-txt3 mys TimePker', 'autocomplete':'off'}),
-            'start_date' : DateInput(attrs={'placeholder':u'选填项,格式如2008-08-08', 'class':'input-txt3 mys', 'style':'width:150px'}),
+            'start_time' : TimeInput(attrs={'placeholder':u'选填项', 'class':'input-txt3 mys TimePker', 'autocomplete':'off'}),
+            'start_date' : DateInput(attrs={'placeholder':u'选填项', 'class':'input-txt3 mys', 'style':'width:150px'}),
             'address'    : TextInput(attrs={'placeholder':u'可选填，主要作用是进行地图定位', 'style':'width=315px'}),
-            'description': Textarea( attrs={'placeholder':u'必填项', 'cols':'70', 'rows':'13'}),
+            'description': Textarea( attrs={'cols':'70', 'rows':'13'}),
         }
 
     def clean_limit_count(self):
