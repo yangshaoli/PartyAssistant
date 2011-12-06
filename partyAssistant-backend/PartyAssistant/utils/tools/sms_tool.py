@@ -25,9 +25,8 @@ def _post_api_request_sendSMS(params):
 
     return res 
  
-def sms_modem_send_sms(outbox_message):
+def sms_modem_send_sms(outbox_message, message, party):
     try:
-        message = outbox_message.base_message.get_subclass_obj()
         phone_list = outbox_message.address.split(',')
         if message.is_apply_tips:
             link_count = ShortLink.objects.all().count()
@@ -36,7 +35,6 @@ def sms_modem_send_sms(outbox_message):
             else:
                 last_key = 'airenao'
             
-            party = message.party
             for phone in phone_list:
                 content = message.content
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
