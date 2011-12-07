@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'dantalion@onlinegalgame.com'),
+    ('AIMeeting', 'admin@airenao.com'),
 )
 
 DATABASES = {
@@ -191,17 +191,11 @@ LOGGING = {
     }
 }
 
-SYS_EMAIL_ADDRESS = '570863597@qq.com'
-DOMAIN_NAME = 'http://127.0.0.1:8000'
+SYS_EMAIL_ADDRESS = 'admin@airenao.com'
+DOMAIN_NAME = 'http://192.168.1.15:43401'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
-
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
-
-EMAIL_HOST = 'smtp.qq.com'
+EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
 
-EMAIL_HOST_USER = '570863597@qq.com'
-EMAIL_HOST_PASSWORD = 'liusun1224'
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
