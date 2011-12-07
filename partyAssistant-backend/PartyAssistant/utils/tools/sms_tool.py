@@ -14,7 +14,7 @@ import logging
 import urllib2
 
 logger = logging.getLogger('airenao')
-SMS_SERVER_NAME = 'http://192.168.3.155:8000'
+SMS_SERVER_NAME = 'http://192.168.2.111:8000'
 SEND_SMS_SERVICE_ADDRESS = '%s/sendsms' % SMS_SERVER_NAME 
 
 def _post_api_request_sendSMS(params):
