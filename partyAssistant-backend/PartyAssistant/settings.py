@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'apps.parties',
     'apps.messages', 
     'apps.common', 
+    'apps.charge', 
 )
 
 
