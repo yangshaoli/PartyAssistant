@@ -81,13 +81,33 @@
     
     ABAddressBookRef addressBook = ABAddressBookCreate();
     self.contactorsArrayRef = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook,nil,1);
-    //(__bridge_transfer NSString*)
-    NSArray *array1=(__bridge_transfer NSArray*)self.contactorsArrayRef;
-    //NSLog(@"转换之后的数组。。%@",array1);
-    // NSLog(@"数组self.contactorsArrayRef。。。。。%@",self.contactorsArrayRef); 
-    for(int i=0;i<array1.count;i++){
+
+    //实例化数组很耗资
+//    NSArray *array1=(__bridge_transfer NSArray*)self.contactorsArrayRef;
+//    
+//    for(int i=0;i<array1.count;i++){
+//        ABRecordRef card = CFArrayGetValueAtIndex(self.contactorsArrayRef,i);
+//        ABRecordID recordID = ABRecordGetRecordID(card);
+//        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonFirstNameProperty);
+//        if (personFName == nil) {
+//            personFName = @"";
+//        }
+//        NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonLastNameProperty);
+//        if (personLName == nil) {
+//            personLName = @"";
+//        }
+//        NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonMiddleNameProperty);
+//        if (personMName == nil) {
+//            personMName = @"";
+//        }
+//        //NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
+//        NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];      [contactNameArray addObject:cellString];
+//        
+//    }
+
+    for (CFIndex i = CFArrayGetCount(self.contactorsArrayRef)-1; i >= 0; i--){
+    
         ABRecordRef card = CFArrayGetValueAtIndex(self.contactorsArrayRef,i);
-        ABRecordID recordID = ABRecordGetRecordID(card);
         NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonFirstNameProperty);
         if (personFName == nil) {
             personFName = @"";
@@ -102,13 +122,12 @@
         }
         //NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
         NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];      [contactNameArray addObject:cellString];
-        
     }
-    
+        
+   // NSLog(@"新方法打印数组%@",contactNameArray);
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
- 
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectContactor:) name:SELECT_CONTACT_MANNER object:nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
@@ -235,7 +254,7 @@
 		else if([self searchResult:string searchText:@"单"])
 			sectionName = @"S";
 		else
-            sectionName = [[NSString stringWithFormat:@"%c",stringFirstLetter([[string uppercaseString] characterAtIndex:0])] uppercaseString];
+            sectionName = [[NSString stringWithFormat:@"%c",pinyinFirstLetter([[string uppercaseString] characterAtIndex:0])] uppercaseString];
 		NSUInteger firstLetter = [ALPHA rangeOfString:[sectionName substringToIndex:1]].location;
 		if (firstLetter != NSNotFound) {
 			[[self.sectionArray objectAtIndex:firstLetter] addObject:string];

@@ -163,7 +163,6 @@
 		89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */; };
 		89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */; };
 		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
-		CEB2888D148E160C00B7E3B7 /* englishletter.c in Sources */ = {isa = PBXBuildFile; fileRef = CEB2888B148E160C00B7E3B7 /* englishletter.c */; };
 		CEB28899148E17A300B7E3B7 /* ABContact.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28890148E17A300B7E3B7 /* ABContact.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28894148E17A300B7E3B7 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -440,8 +439,6 @@
 		89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditPartyTableViewController.xib; sourceTree = "<group>"; };
 		CE472E9D148DB53E00E24742 /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pinyin.c; path = PartyAssistant/pinyin.c; sourceTree = SOURCE_ROOT; };
 		CE472E9E148DB53E00E24742 /* pinyin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pinyin.h; path = PartyAssistant/pinyin.h; sourceTree = SOURCE_ROOT; };
-		CEB2888B148E160C00B7E3B7 /* englishletter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = englishletter.c; path = Main/Model/englishletter.c; sourceTree = "<group>"; };
-		CEB2888C148E160C00B7E3B7 /* englishletter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = englishletter.h; path = Main/Model/englishletter.h; sourceTree = "<group>"; };
 		CEB2888F148E17A300B7E3B7 /* ABContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABContact.h; sourceTree = "<group>"; };
 		CEB28890148E17A300B7E3B7 /* ABContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABContact.m; sourceTree = "<group>"; };
 		CEB28891148E17A300B7E3B7 /* ABContactsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABContactsHelper.h; sourceTree = "<group>"; };
@@ -674,8 +671,6 @@
 			isa = PBXGroup;
 			children = (
 				CEB2888E148E17A300B7E3B7 /* AddressBook */,
-				CEB2888B148E160C00B7E3B7 /* englishletter.c */,
-				CEB2888C148E160C00B7E3B7 /* englishletter.h */,
 				89395918147DECE2003A883C /* WeiboPersonalProfile.h */,
 				89395919147DECE3003A883C /* WeiboPersonalProfile.m */,
 				8947F01B145800E100017ED1 /* PartyObject.h */,
@@ -1241,7 +1236,6 @@
 				CE638DA4148645A000572CF8 /* ContactData.m in Sources */,
 				CE638DA5148645A000572CF8 /* englishletter.c in Sources */,
 				CE472E9F148DB53E00E24742 /* pinyin.c in Sources */,
-				CEB2888D148E160C00B7E3B7 /* englishletter.c in Sources */,
 				CEB28899148E17A300B7E3B7 /* ABContact.m in Sources */,
 				CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */,
 				CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */,

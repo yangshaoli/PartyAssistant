@@ -298,6 +298,17 @@
 }
 
 - (void)doneBtnAction{
+  if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        
+        
+  }else{
     [self saveSMSInfo];
     if ([self.receiverArray count] == 0) {
         UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
@@ -306,6 +317,7 @@
     }else{
         [self sendCreateRequest];
     }
+  }
 }
 - (void)sendCreateRequest{
     [self showWaiting];

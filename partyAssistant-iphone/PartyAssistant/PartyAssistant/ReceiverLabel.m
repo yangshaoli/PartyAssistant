@@ -9,7 +9,7 @@
 #import "ReceiverLabel.h"
 
 #define MAX_LABLEL_WIDTH 140
-
+#define MIN_LABLEL_WIDTH 20
 @implementation ReceiverLabel
 
 
@@ -39,7 +39,7 @@
 - (void)drawTextInRect:(CGRect)rect
 {
     // Drawing code
-    rect.origin.x += 10;
+    rect.origin.x +=10;
     [super drawTextInRect:rect];
 }
 
@@ -49,7 +49,7 @@
     if (size.width > MAX_LABLEL_WIDTH) {
         size.width = MAX_LABLEL_WIDTH;
     }
-    oldFrame.size.width = size.width;
+    oldFrame.size.width = size.width+MIN_LABLEL_WIDTH;//wxz控制最小区域宽度
     self.frame = oldFrame;
     self.textAlignment = UITextAlignmentLeft;
     [super setText:text];

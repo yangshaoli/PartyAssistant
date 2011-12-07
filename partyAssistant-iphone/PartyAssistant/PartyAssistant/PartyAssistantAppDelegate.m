@@ -7,7 +7,6 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
-
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -61,7 +60,6 @@
         addressBook = ABAddressBookCreate();
         ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
     }
-    // other codes here.
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
