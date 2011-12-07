@@ -92,8 +92,9 @@ def createParty(request):
                 msg.is_send_by_self = _issendbyself
                 msg.save()
         
-        with transaction.commit_on_success():
-            Outbox.objects.create(address=addressString, base_message=msg)
+        if not msg.is_send_by_self:
+            with transaction.commit_on_success():
+                Outbox.objects.create(address=addressString, base_message=msg)
 
         return {'partyId':party.id}
 
@@ -345,7 +346,8 @@ def resendMsg(request):
                 msg.is_send_by_self = _issendbyself
                 msg.save()
         
-        with transaction.commit_on_success():
-            Outbox.objects.create(address=addressString, base_message=msg)
+        if not msg.is_send_by_self:
+            with transaction.commit_on_success():
+                Outbox.objects.create(address=addressString, base_message=msg)
         
         return {'partyId':party.id}
