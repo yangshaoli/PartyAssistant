@@ -42,9 +42,12 @@ class Outbox(models.Model):
     base_message = models.ForeignKey(BaseMessage)
     
 def thread_send_message(sender=None, instance=None, **kwargs):
-    if instance.base_message.get_subclass_type() == 'Email':
-        thread.start_new_thread(send_email, (instance,))
+    message = instance.base_message.get_subclass_obj()
+    party = message.party
+    
+    if isinstance(message, EmailMessage):
+        thread.start_new_thread(send_email, (instance, message, party))
     else:
-        thread.start_new_thread(sms_modem_send_sms, (instance,))
+        thread.start_new_thread(sms_modem_send_sms, (instance, message, party))
    
 signals.post_save.connect(thread_send_message, sender = Outbox)

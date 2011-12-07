@@ -59,8 +59,9 @@ def delete_party(request, party_id):
 
 @login_required
 def edit_party(request, party_id):
+    party = get_object_or_404(Party, id = party_id)
+    
     if request.method == 'POST':
-        party = get_object_or_404(Party, id = party_id)
         form = CreatePartyForm(request.POST, instance = party)
         if form.is_valid():
             party = form.save()
@@ -77,14 +78,10 @@ def edit_party(request, party_id):
                     return redirect('email_invite', party_id = party.id)
                 else:
                     return redirect('list_party')
-        else :
-            return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
-                    
     else:
-        party = get_object_or_404(Party, id = party_id)
         form = CreatePartyForm(instance = party)
     
-        return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
+    return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
 
 @login_required
 @transaction.commit_on_success
@@ -410,21 +407,6 @@ def sms_invite(request, party_id):
                            'reject_client':reject_client
                            }        
         return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
-
-
-def delete_party_notice(request, party_id):
-    party = get_object_or_404(Party, pk = party_id)
-    PartiesClients_list = PartiesClients.objects.filter(party = party)
-    for PartiesClients in PartiesClients_list:
-        client = PartiesClients.client
-        if client.invite_type == 'email':
-            title = u'活动取消通知'
-            content = u'尊敬的 ' + client.name + ' :' + ' 于' + party.time.strftime('%Y-%m-%d %H:%M') + ' 在' + party.address + '的活动取消'
-            send_emails(title, content, SYS_EMAIL_ADDRESS, [client.email])
-        if client.invite_type == 'phone':
-            content = u'尊敬的 ' + client.name + ' :' + ' 于' + party.time.strftime('%Y-%m-%d %H:%M') + ' 在' + party.address + '的活动取消'
-    return delete_party(request, party_id) 
-
 
 @login_required
 def list_party(request):
