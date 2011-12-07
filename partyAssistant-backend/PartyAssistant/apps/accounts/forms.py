@@ -9,7 +9,7 @@ import re
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(error_messages = {'required': u'用户名不能为空'}, max_length=30)
-    password = forms.CharField(error_messages = {'required': u'密码不能为空'}, widget=forms.PasswordInput(attrs={'placeholder':u'必填项'}))
+    password = forms.CharField(error_messages = {'required': u'密码不能为空'})
    
     def clean(self):
         username = self.cleaned_data.get('username')
@@ -25,9 +25,9 @@ class LoginForm(AuthenticationForm):
         return self.cleaned_data
 
 class RegistrationForm(forms.Form):
-    username = forms.RegexField(error_messages = {'required': u'用户名不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'regex':u'用户名不规范'}, regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14, widget=forms.TextInput(attrs={'placeholder':u'必填项，6-14字符'}))
-    password = forms.CharField(error_messages = {'required': u'密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'必填项，6-16字符'}))
-    confirm_password = forms.CharField(error_messages = {'required': u'确认密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':u'与密码相同'}))
+    username = forms.RegexField(error_messages = {'required': u'用户名不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'regex':u'用户名不规范'}, regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
+    password = forms.CharField(error_messages = {'required': u'密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16)
+    confirm_password = forms.CharField(error_messages = {'required': u'确认密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, max_length=16)
     
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -51,9 +51,9 @@ class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput())
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(error_messages = {'required': u'原始密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
-    new_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
-    confirm_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, required=False, max_length=16, widget=forms.PasswordInput(attrs={'placeholder':'必填项'}))
+    old_password = forms.CharField(error_messages = {'required': u'原始密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16 )
+    new_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length=6, max_length=16 )
+    confirm_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, required=False, max_length=16)
     
     def __init__(self, request, data):
         if request:
@@ -77,24 +77,22 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data
     
 class UserProfileForm(forms.Form):
-    true_name = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'姓名', 'readonly':'readonly'}), required = False)
-    phone = forms.CharField(widget=forms.TextInput(attrs={'placeholder':u'手机号码', 'readonly':'readonly'}), required = False)
-    email = forms.EmailField(max_length=75, widget=forms.TextInput(attrs={'placeholder':u'邮件地址', 'readonly':'readonly'}), required = False)
+    true_name = forms.RegexField(required = False, error_messages = {'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'regex':u'用户名不规范'}, regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
+    phone = forms.IntegerField(required = False)
+    email = forms.EmailField(max_length=75, required = False)
     
     def clean_phone(self):
         phone = self.cleaned_data['phone']
-        if phone == '':
-            self.cleaned_data['phone'] = None
-            return self.cleaned_data['phone']
-        phone_re = r'1\d{10}'
-        invalid_phone = ''
-        phone = phone.strip()
-        if phone != '':
-            if not re.search(phone_re, phone):
-                invalid_phone = phone
-
-        if invalid_phone:
-            raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
+        if phone != None:                
+            phone = str(phone)
+            phone_re = r'1\d{10}'
+            invalid_phone = ''
+            if phone != '':
+                if not re.search(phone_re, phone):
+                    invalid_phone = phone
+        
+            if invalid_phone:
+                raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
     
         return self.cleaned_data['phone']
     

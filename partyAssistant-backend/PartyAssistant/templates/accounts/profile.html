@@ -18,10 +18,13 @@ function changetoAble(o){
 <br />
 <a href="{% url change_password %}">修改密码</a><br/>
 <form method='post' action='{% url profile %}'>
-姓&nbsp;&nbsp;&nbsp;&nbsp;名：{{ form.true_name }}{{ form.true_name.errors.0 }}</input><a href="#" onclick="changetoAble('id_true_name')" >更改?</a><br/>
-电子邮件:{{ form.email }}{{ form.email.errors.0 }}</input><a href="#" onclick="changetoAble('id_email')" >更改?</a><br/>
-手&nbsp;&nbsp;&nbsp;&nbsp;机：{{ form.phone }}{{ form.phone.errors.0 }}<a href="#" onclick="changetoAble('id_phone')">更改?</a><br/>
-剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="#">充值?</a>
+姓&nbsp;&nbsp;&nbsp;&nbsp;名：<input type='text' name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}' placeholder='姓名' readonly='readonly'></input>{{ form.true_name.errors.0 }}
+<a href="#" onclick="changetoAble('id_true_name')" >更改?</a><br/>
+电子邮件:<input type='text' name='email' id='id_email' value='{{ form.email.value|default:'' }}' placeholder='邮件' readonly='readonly'></input>{{ form.email.errors.0 }}
+<a href="#" onclick="changetoAble('id_email')" >更改?</a><br/>
+手&nbsp;&nbsp;&nbsp;&nbsp;机：<input type='text' name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}' placeholder='手机' readonly='readonly'></input>{{ form.phone.errors.0 }}
+<a href="#" onclick="changetoAble('id_phone')">更改?</a><br/>
+剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="#">充值</a>
 <br><input type='submit' value='保存'></input>
 </form>
 {% if profile_status %}

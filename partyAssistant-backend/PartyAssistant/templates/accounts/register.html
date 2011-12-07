@@ -10,23 +10,23 @@
         <fieldset>
          <div class="field">
          <label for="username">
-         用户名
+         用户名<font color="red">*</font>
          </label>
-         {{ form.username }}
+         <input name='username' id='id_username' value='{{ form.username.value|default:'' }}' placeholder='6-14字符'></input>
          <font color="red">{{ form.username.errors.0 }}</font> 
          </div>
          <div class="field">
          <label for="password">
-         密码
+         密码<font color="red">*</font>
          </label>
-         {{ form.password }}
+         <input type='password' name='password' id='id_password' value='{{ form.password.value|default:'' }}' placeholder='6-16字符'></input>
          <font color="red">{{ form.password.errors.0 }}</font>
          </div>
          <div class="field">
          <label for="confirm_password">
-         确认密码
+         确认密码<font color="red">*</font>
          </label>
-         {{ form.confirm_password }}
+         <input type='password' name='confirm_password' id='id_confirm_password' value='{{ form.confirm_password.value|default:'' }}' placeholder='与密码一致'></input>
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="submit_field">

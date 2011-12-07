@@ -13,16 +13,15 @@
      <p style="margin-bottom:10px; color:red;"> {{ form.non_field_errors.0 }}</p>
      <div class="field">
      <label for="username">
-     用户名
+     用户名<font color="red">*</font>
      </label>
-     <input id='id_username' name='username' type='text' value="{{ form.username.value|default:'' }}" placeholder='必填项'></input>
-     <font color="red">{{ form.username.errors.0 }}</font>
+     <input id='id_username' name='username' type='text' value="{{ form.username.value|default:'' }}" placeholder='6-14字符'></input><font color="red">{{ form.username.errors.0 }}</font>
      </div>
      <div class="field">
      <label for="password">
-     密码
+     密码<font color="red">*</font>
      </label>
-     <input name='password' type='password' placeholder="必填项" id="id_password"><font color="red">{{ form.password.errors.0 }}</font>
+     <input name='password' type='password'  id="id_password" placeholder='6-16字符'><font color="red">{{ form.password.errors.0 }}</font>
      </div>
      <!--div class="field">
      	<label>

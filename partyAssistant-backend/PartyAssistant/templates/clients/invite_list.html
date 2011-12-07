@@ -34,14 +34,14 @@
     })
 
 function clientAction(id, applystatus){
-    var answer = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'apply\')"><button>参&nbsp;&nbsp;&nbsp;&nbsp;加</button></a>';
+    var answer = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'apply\')"><button>参&nbsp;&nbsp;加</button></a>';
     var reject = '<a href="#" onclick="ajaxChangeStatus(\''+id+'\',\'reject\')"><button>不参加</button></a>';
     switch (applystatus) {
         case 'apply' : 
             var action = reject;
             return action; 
         case 'noanswer' : 
-            var action = answer + reject;
+            var action = answer + ' ' + reject;
             return action;
         case 'reject' :
             var action = answer;
