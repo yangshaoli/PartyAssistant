@@ -106,6 +106,6 @@ def change_password(request):
 @login_required
 def get_availbale_sms_count_ajax(request):
     data = {
-        'available_count' : request.user.get_profile.available_sms_count          
+        'available_count' : request.user.get_profile().available_sms_count          
     }
     return HttpResponse(simplejson.dumps(data))
