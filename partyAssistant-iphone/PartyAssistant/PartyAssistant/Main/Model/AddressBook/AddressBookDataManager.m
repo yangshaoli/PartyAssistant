@@ -10,7 +10,7 @@
 #import "SynthesizeSingleton.h"
 #import "ABContact.h"
 #import "englishletter.h"
-#import "ContactListTestAppDelegate.h"
+#import "PartyAssistantAppDelegate.h"
 
 @implementation AddressBookDataManager
 @synthesize contactArray,contactNumberDic;

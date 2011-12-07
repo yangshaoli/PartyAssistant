@@ -1,6 +1,6 @@
 #import "ABGroup.h"
 #import "ABContactsHelper.h"
-#import "ContactListTestAppDelegate.h"
+#import "PartyAssistantAppDelegate.h"
 
 @implementation ABGroup
 @synthesize record;

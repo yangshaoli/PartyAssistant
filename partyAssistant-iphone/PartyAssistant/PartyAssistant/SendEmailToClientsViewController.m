@@ -117,7 +117,11 @@
 {
     // Return the number of rows in the section.
     if (section == 3) {
-        return 2;
+        if([MFMailComposeViewController canSendMail]==YES){
+            return 2;
+        }else{
+            self.emailObject._isSendBySelf = FALSE;
+        }
     }
     return 1;
 }
@@ -327,29 +331,37 @@
         if ([description isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
-                /* */
-                MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
-                if (self.emailObject._isApplyTips) {
-                    NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
-                    [vc setMessageBody:emailcontent isHTML:NO];
-                }else{
-                    NSString *emailcontent = self.emailObject.emailContent;
-                    [vc setMessageBody:emailcontent isHTML:NO];
-                };
-                [vc setSubject:self.emailObject.emailSubject];
-                NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
-                for(int i=0;i<[self.receiverArray count];i++){
-                    [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
-                }
-                [vc setToRecipients:aArray];
-                vc.mailComposeDelegate = self;
-                [self presentModalViewController:vc animated:YES];
-                EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                [se clearEmailObject];
-                SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
-                [ss clearSMSObject];
-                BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-                [bs clearBaseInfo];
+              if([MFMailComposeViewController canSendMail]==YES){//wxz
+                    NSLog(@"可以发送邮件");
+                    MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
+                  if (self.emailObject._isApplyTips) {
+                      NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                      [vc setMessageBody:emailcontent isHTML:NO];
+                  }else{
+                      NSString *emailcontent = self.emailObject.emailContent;
+                      [vc setMessageBody:emailcontent isHTML:NO];
+                  };
+                  [vc setSubject:self.emailObject.emailSubject];
+                  NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+                  for(int i=0;i<[self.receiverArray count];i++){
+                      [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                  }
+                  [vc setToRecipients:aArray];
+                  vc.mailComposeDelegate = self;
+                  [self presentModalViewController:vc animated:YES];
+                  EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
+                  [se clearEmailObject];
+                  SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
+                  [ss clearSMSObject];
+                  BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+                  [bs clearBaseInfo];
+                  
+              }else{
+                    NSLog(@"不能发送邮件");
+                    [self createPartySuc];
+                    return;
+              }
+                         
             }else{
                 [self createPartySuc];
             }
