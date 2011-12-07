@@ -9,7 +9,6 @@
 #import "AddressBookDataManager.h"
 #import "SynthesizeSingleton.h"
 #import "ABContact.h"
-#import "englishletter.h"
 #import "PartyAssistantAppDelegate.h"
 
 @implementation AddressBookDataManager
