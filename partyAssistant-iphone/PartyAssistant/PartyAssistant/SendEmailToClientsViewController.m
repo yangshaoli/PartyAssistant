@@ -154,6 +154,7 @@
             }
             contentTextView.text = self.emailObject.emailContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font = [UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
             cell.textLabel.text  = @"邮件内容";
         }else if(indexPath.section == 3){
@@ -285,14 +286,27 @@
 }
 
 - (void)doneBtnAction{
-    [self saveEmailInfo];
-    if ([self.receiverArray count] == 0) {
-        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的邮件未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-        alertV.tag = DONE_ALERT_TAG;
-        [alertV show];
-    }else{
-        [self sendCreateRequest];
-    }
+    if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"邮件内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        
+    
+  }else{
+      [self saveEmailInfo];
+      if ([self.receiverArray count] == 0) {
+          UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的邮件未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+          alertV.tag = DONE_ALERT_TAG;
+          [alertV show];
+      }else{
+          [self sendCreateRequest];
+      }  
+  }
+    
 }
 - (void)sendCreateRequest{
     [self showWaiting];

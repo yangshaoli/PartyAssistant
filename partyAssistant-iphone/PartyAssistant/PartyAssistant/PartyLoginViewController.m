@@ -14,6 +14,9 @@
 #import "PartyUserRegisterViewController.h"
 #import "SettingsListTableViewController.h"
 #import "PartyListService.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -103,9 +106,22 @@
     
     self.navigationItem.rightBarButtonItem = registerButton;
     
-       [registerButton release];
+    [registerButton release];
     
     [tableFooterView release];
+   
+    //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+    NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
+    if(-1!=getDefaulUserId){
+        [self pushToContentVC];
+    }
+    [keyString release];
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -186,6 +202,16 @@
 - (void)gotoContentVC {
     //use different work flow
     
+    //登陆连接服务器成功后   保存用户信息到本地   登出时需要清空才可
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+   
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+    [defaults setInteger:user.uID  forKey:keyString];    
+    [keyString  release];
+    
+
     //1.modal
     
     //2.nav
@@ -248,10 +274,6 @@
     tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, nil];
     [self.navigationController pushViewController:tab animated:YES];
     
-    
-   
-    
-    
     [listNav release];
     [addPageNav release];
     [settingNav release];
@@ -260,17 +282,18 @@
     [addPage release];
     [settings release];
     
-    //add suggest user input name page here?
+     //add suggest user input name page here?
     [self checkIfUserNameSaved];
     
-  
+    
+    //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
-        
+    
     if(getDefaultCountNumber!=0){  
         NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
         tab.selectedIndex=1;
@@ -280,7 +303,7 @@
         NSLog(@"无趴列表");
         
     }
-
+    [keyString release];
 }
 
 #pragma mark -
@@ -347,7 +370,21 @@
     vc.delegate = self;
     [self presentModalViewController:vc animated:YES];
     [vc release];
-}
+    
+//    //wxz判断   只在用户首次登陆才执行
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//    NSString *keyString1=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+//    NSUserDefaults *defaults1 = [NSUserDefaults standardUserDefaults];  
+//    NSInteger  getDefaulUserId=[defaults1 integerForKey:keyString1];
+//    if(-1==getDefaulUserId){
+//        PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//        vc.delegate = self;
+//        [self presentModalViewController:vc animated:YES];
+//        [vc release];
+//    }
+//    [keyString1 release];
+} 
 
 - (void)cancleInput {
     [self.navigationController dismissModalViewControllerAnimated:YES];

@@ -7,7 +7,6 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
-
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -21,6 +20,7 @@
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
     [_window addSubview:nav.view];
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
