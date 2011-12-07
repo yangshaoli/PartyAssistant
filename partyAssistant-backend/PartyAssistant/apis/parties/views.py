@@ -18,11 +18,11 @@ from utils.tools.apis_json_response_tool import apis_json_response_decorator
 from utils.tools.paginator_tool import process_paginator
 import datetime
 import re
+from django.db import transaction
 
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
 @apis_json_response_decorator
-@commit_on_success
 def createParty(request):
     if request.method == 'POST' :
         receivers = eval(request.POST['receivers'])
@@ -48,56 +48,53 @@ def createParty(request):
             starttime = None
         if len(location) > 256:
             raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
-        #创建活动
-        party = Party.objects.create(start_date = startdate,
-                                     start_time = starttime,
-                                     address = location,
-                                     description = description,
-                                     creator = user,
-                                     limit_count = peopleMaximum,
-                                     )
-        addressArray = []
-        for i in range(len(receivers)):
-            receiver = receivers[i]
-            
-            if msgType == 'SMS':
-                client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
-                                                                  name = receiver['cName'],
-                                                                  creator = user,
-                                                                  )
-            else:
-                client, is_created = Client.objects.get_or_create(email = receiver['cValue'],
-                                                                  name = receiver['cName'],
-                                                                  creator = user,
-                                                                  )
-            PartiesClients.objects.create(
-                                          party = party,
-                                          client = client,
-                                          ) 
-            addressArray.append(receiver['cValue'])
-        addressString = simplejson.dumps(addressArray)
-        if msgType == 'SMS':
-            msg, created = SMSMessage.objects.get_or_create(party = party)
-            msg.content = content
-            msg.is_apply_tips = _isapplytips
-            msg.is_send_by_self = _issendbyself
-            msg.save()
-            Outbox.objects.create(address = addressString, base_message = msg.basemessage_ptr)
-        else:
-            msg, created = EmailMessage.objects.get_or_create(party = party)
-            msg.subject = subject
-            msg.content = content
-            msg.is_apply_tips = _isapplytips
-            msg.is_send_by_self = _issendbyself
-            msg.save()
-            Outbox.objects.create(address = addressString, base_message = msg.basemessage_ptr)
-#        try :
-#            pass     
-#            #send_emails(subject, content, SYS_EMAIL_ADDRESS, [receiver['cValue']])
-#        except:
-#            print 'exception'
-#            data['Email'] = u'邮件发送失败'
         
+        with transaction.commit_on_success():
+            #创建活动
+            party = Party.objects.create(start_date = startdate,
+                                         start_time = starttime,
+                                         address = location,
+                                         description = description,
+                                         creator = user,
+                                         limit_count = peopleMaximum,
+                                         )
+            addressArray = []
+            for i in range(len(receivers)):
+                receiver = receivers[i]
+                
+                if msgType == 'SMS':
+                    client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
+                                                                      name = receiver['cName'],
+                                                                      creator = user,
+                                                                      )
+                else:
+                    client, is_created = Client.objects.get_or_create(email = receiver['cValue'],
+                                                                      name = receiver['cName'],
+                                                                      creator = user,
+                                                                      )
+                PartiesClients.objects.create(
+                                              party = party,
+                                              client = client,
+                                              ) 
+                addressArray.append(receiver['cValue'])
+            addressString = simplejson.dumps(addressArray)
+            if msgType == 'SMS':
+                msg, created = SMSMessage.objects.get_or_create(party = party)
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+            else:
+                msg, created = EmailMessage.objects.get_or_create(party = party)
+                msg.subject = subject
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+        
+        with transaction.commit_on_success():
+            Outbox.objects.create(address=addressString, base_message=msg)
+
         return {'partyId':party.id}
 
 @csrf_exempt
@@ -305,49 +302,50 @@ def resendMsg(request):
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        
         try:
             party = Party.objects.get(pk = partyID, creator = user)
         except Exception:
             raise myException(u'该会议会议已被删除')
-        addressArray = []
-        for i in range(len(receivers)):
-            receiver = receivers[i]
-            
+        
+        with transaction.commit_on_success():
+            addressArray = []
+            for i in range(len(receivers)):
+                receiver = receivers[i]
+                
+                if msgType == 'SMS':
+                    client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
+                                                                  name = receiver['cName'],
+                                                                  creator = user,
+                                                                  )
+                else:
+                    client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
+                                                                  name = receiver['cName'],
+                                                                  creator = user,
+                                                                  )
+                PartiesClients.objects.get_or_create(
+                                                  party = party,
+                                                  client = client,
+                                                  apply_status = u'noanswer'
+                                                  ) 
+                addressArray.append(receiver['cValue'])
+    
+            addressString = simplejson.dumps(addressArray)
             if msgType == 'SMS':
-                client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
-                                                              name = receiver['cName'],
-                                                              creator = user,
-                                                              )
+                msg, created = SMSMessage.objects.get_or_create(party = party)
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
             else:
-                client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
-                                                              name = receiver['cName'],
-                                                              creator = user,
-                                                              )
-            PartiesClients.objects.get_or_create(
-                                              party = party,
-                                              client = client,
-                                              apply_status = u'noanswer'
-                                              ) 
-#            receiversDic = {
-#                            'addressType':addressType,
-#                            'addressData':receivers
-#                            }
-#            receiversString = simplejson.dumps(receiversDic)
-            addressArray.append(receiver['cValue'])
-        addressString = simplejson.dumps(addressArray)
-        if msgType == 'SMS':
-            msg, created = SMSMessage.objects.get_or_create(party = party)
-            msg.content = content
-            msg.is_apply_tips = _isapplytips
-            msg.is_send_by_self = _issendbyself
-            msg.save()
-            Outbox.objects.create(address = addressString, base_message = msg.basemessage_ptr)
-        else:
-            msg, created = EmailMessage.objects.get_or_create(party = party)
-            msg.subject = subject
-            msg.content = content
-            msg.is_apply_tips = _isapplytips
-            msg.is_send_by_self = _issendbyself
-            msg.save()
-            Outbox.objects.create(address = addressString, base_message = msg.basemessage_ptr)
+                msg, created = EmailMessage.objects.get_or_create(party = party)
+                msg.subject = subject
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+        
+        with transaction.commit_on_success():
+            Outbox.objects.create(address=addressString, base_message=msg)
+        
         return {'partyId':party.id}
