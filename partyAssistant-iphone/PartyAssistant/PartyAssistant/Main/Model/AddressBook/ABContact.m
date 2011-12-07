@@ -1,7 +1,7 @@
 #import "ABContact.h"
 #import "ABContactsHelper.h"
 #import "AddressBookDataManager.h"
-#import "ContactListTestAppDelegate.h"
+#import "PartyAssistantAppDelegate.h"
 
 @implementation ABContact
 @synthesize record;
@@ -259,12 +259,6 @@
 	
 	if (cFirstName || cLastName)
 	{
-		if (cLastName) {
-			[string appendFormat:@"%@",[cLastName substringToIndex:1]];
-		} else {
-			[string appendFormat:@"%@",[cFirstName substringToIndex:1]];
-		}
-		
 		if (self.prefix) [string appendFormat:@"%@ ", self.prefix];
 		if (cLastName) [string appendFormat:@"%@ ", cLastName];
 		if (self.nickname) [string appendFormat:@"\"%@\" ", self.nickname];
@@ -279,7 +273,7 @@
 		
 		//if (self.organization) [string appendString:self.organization];
 	} else {
-		return @"NNo Name";
+		return @"No Name";
 	}
 
 	return [string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

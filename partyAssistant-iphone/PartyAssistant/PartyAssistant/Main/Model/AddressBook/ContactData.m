@@ -1,6 +1,6 @@
 #import "ContactData.h"
 #import "AddressBookDataManager.h"
-#import "ContactListTestAppDelegate.h"
+#import "PartyAssistantAppDelegate.h"
 
 @implementation ContactData
 

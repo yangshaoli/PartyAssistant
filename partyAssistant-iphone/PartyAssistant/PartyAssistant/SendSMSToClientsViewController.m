@@ -117,7 +117,11 @@
 {
     // Return the number of rows in the section.
     if (section == 2) {
-        return 2;
+        if([MFMessageComposeViewController canSendText]==YES){
+            return 2;
+        }else{
+            self.smsObject._isSendBySelf = FALSE;
+        }
     }
     return 1;
 }
@@ -153,11 +157,14 @@
                 cell.textLabel.text = @"带报名提示：";
                 [cell addSubview:applyTipsSwitch];
             }else if (indexPath.row == 1){
-                UISwitch *sendBySelfSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
-                [sendBySelfSwitch setOn:self.smsObject._isSendBySelf];
-                [sendBySelfSwitch addTarget:self action:@selector(sendBySelfSwitchAction:) forControlEvents:UIControlEventValueChanged];
-                cell.textLabel.text = @"通过自己的手机发送：";
-                [cell addSubview:sendBySelfSwitch];
+                if([MFMessageComposeViewController canSendText]==YES){//wxz
+                    UISwitch *sendBySelfSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
+                    [sendBySelfSwitch setOn:self.smsObject._isSendBySelf];
+                    [sendBySelfSwitch addTarget:self action:@selector(sendBySelfSwitchAction:) forControlEvents:UIControlEventValueChanged];
+                    cell.textLabel.text = @"通过自己的手机发送：";
+                    [cell addSubview:sendBySelfSwitch];
+                }
+                NSLog(@"手机发送开关");
             }
         }else if (indexPath.section == 3){
             UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -337,25 +344,35 @@
         if ([description isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
-                MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
-                if (self.smsObject._isApplyTips) {
-                    vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
-                }else{
-                    vc.body = self.smsObject.smsContent;
-                };
-                NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
-                for(int i=0;i<[self.receiverArray count];i++){
-                    [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
-                }
-                vc.recipients = aArray;
-                vc.messageComposeDelegate = self;
-                [self presentModalViewController:vc animated:YES];
-                SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
-                [s clearSMSObject];
-                BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-                [bs clearBaseInfo];
-                EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                [se clearEmailObject];
+              if([MFMessageComposeViewController canSendText]==YES){
+                  NSLog(@"可以发送短信");
+                  MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
+                  if (self.smsObject._isApplyTips) {
+                      vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                  }else{
+                      vc.body = self.smsObject.smsContent;
+                  };
+                  NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+                  for(int i=0;i<[self.receiverArray count];i++){
+                      [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                  }
+                  vc.recipients = aArray;
+                  vc.messageComposeDelegate = self;
+                  [self presentModalViewController:vc animated:YES];
+                  SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+                  [s clearSMSObject];
+                  BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+                  [bs clearBaseInfo];
+                  EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
+                  [se clearEmailObject];                  
+              }else{
+                    NSLog(@"不能发送短信");
+                    [self createPartySuc];
+                    #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
+                         return;
+                    #endif
+              }
+                
             }else{
                 [self createPartySuc];
             }
