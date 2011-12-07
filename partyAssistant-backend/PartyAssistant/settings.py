@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'admin@airenao.com'),
+    ('AIMeeting', 'airenao@cn-acg.com'),
 )
 
 DATABASES = {
@@ -130,7 +130,6 @@ INSTALLED_APPS = (
     'apps.parties',
     'apps.messages', 
     'apps.common', 
-    'apps.charge', 
 )
 
 
@@ -191,7 +190,7 @@ LOGGING = {
     }
 }
 
-SYS_EMAIL_ADDRESS = 'admin@airenao.com'
+SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
 DOMAIN_NAME = 'http://192.168.1.15:43401'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
