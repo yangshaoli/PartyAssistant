@@ -94,7 +94,9 @@ def createParty(request):
         
         if not msg.is_send_by_self:
             with transaction.commit_on_success():
-                Outbox.objects.create(address=addressString, base_message=msg)
+                if addressArray:
+                    addressString = ','.join(addressArray)
+                    Outbox.objects.create(address=addressString, base_message=msg)
 
         return {'partyId':party.id}
 
@@ -331,7 +333,6 @@ def resendMsg(request):
                                                   ) 
                 addressArray.append(receiver['cValue'])
     
-            addressString = simplejson.dumps(addressArray)
             if msgType == 'SMS':
                 msg, created = SMSMessage.objects.get_or_create(party = party)
                 msg.content = content
@@ -348,6 +349,8 @@ def resendMsg(request):
         
         if not msg.is_send_by_self:
             with transaction.commit_on_success():
-                Outbox.objects.create(address=addressString, base_message=msg)
+                if addressArray:
+                    addressString = ','.join(addressArray)
+                    Outbox.objects.create(address=addressString, base_message=msg)
         
         return {'partyId':party.id}
