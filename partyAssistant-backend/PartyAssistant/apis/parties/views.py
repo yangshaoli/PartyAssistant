@@ -28,8 +28,8 @@ def createParty(request):
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
         subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips']
-        _issendbyself = request.POST['_issendbyself']
+        _isapplytips = request.POST['_isapplytips'] == '1'
+        _issendbyself = request.POST['_issendbyself'] == '1'
         msgType = request.POST['msgType']
         starttime = request.POST['starttime']
         location = request.POST['location']
@@ -298,8 +298,8 @@ def resendMsg(request):
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
         subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips']
-        _issendbyself = request.POST['_issendbyself']
+        _isapplytips = request.POST['_isapplytips'] == '1'
+        _issendbyself = request.POST['_issendbyself'] == '1'
         msgType = request.POST['msgType']
         partyID = request.POST['partyID']
         uID = request.POST['uID']
