@@ -77,24 +77,7 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data
     
 class UserProfileForm(forms.Form):
-    true_name = forms.RegexField(required = False, error_messages = {'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'regex':u'用户名不规范'}, regex='^[a-zA-Z0-9]\w*$', min_length=6, max_length=14)
-    phone = forms.IntegerField(required = False)
-    email = forms.EmailField(max_length=75, required = False)
+    true_name = forms.CharField(required = False, error_messages = {'max_length':u'最多是14个字符'}, max_length=14)
+    phone = forms.RegexField(required = False, regex='1\d{10}', error_messages = {'invalid':u'手机号码不规范'})
+    email = forms.EmailField(max_length=75, required = False, error_messages = {'max_length':u'邮箱地址不要超过75字符'})
     
-    def clean_phone(self):
-        phone = self.cleaned_data['phone']
-        if phone != None:                
-            phone = str(phone)
-            phone_re = r'1\d{10}'
-            invalid_phone = ''
-            if phone != '':
-                if not re.search(phone_re, phone):
-                    invalid_phone = phone
-        
-            if invalid_phone:
-                raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
-    
-        return self.cleaned_data['phone']
-    
-    def clean(self):
-        return self.cleaned_data

@@ -29,7 +29,6 @@ def register(request):
             
             # django bug, must authenticate before login
             user = authenticate(username=username, password=password)
-            UserProfile.objects.create(user=user)
             login(request, user)
             
             return redirect('profile')
@@ -74,7 +73,7 @@ def profile(request):
         
     else:    
         user = request.user
-        userprofile, created = UserProfile.objects.get_or_create(user=user)
+        userprofile = user.get_profile()
         
         email = user.email
         phone = userprofile.phone
