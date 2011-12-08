@@ -191,21 +191,9 @@ def email_invite(request, party_id):
             form = EmailInviteForm(initial = data)
         else:
             #生成默认内容
-            userprofile = UserProfile.objects.get(user=party.creator)
-            content = (userprofile.true_name if userprofile.true_name else party.creator.username) + u'邀请你参加：'+party.description+u'活动'
-            address_content = ','+u'地点:'+(party.address if party.address != "" else u'待定') 
-            if party.start_date == None and party.start_time == None:
-                if party.address == "":
-                    content += ','+u'具体安排待定'
-                else:
-                    content += ','+address_content
-            if party.start_date != None and party.start_time == None:
-                content += address_content+','+u'日期:'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+u',时间暂定'
-            if party.start_date == None and party.start_time != None:
-                content += address_content+','+ u'日期暂定'+','+u'时间:'+datetime.time.strftime(party.start_time, '%H:%M')
-            if party.start_date != None and party.start_time != None:
-                content += address_content+','+u'具体时间：'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+' '+datetime.time.strftime(party.start_time, '%H:%M')        
-            content += u'。'
+            userprofile = request.user.get_profile()
+            creator = userprofile.true_name if userprofile.true_name else request.user.name  
+            content = _create_default_content(creator, party.start_date, party.start_time , party.address, party.description)
             data = {
                 'client_email_list': '',
                 'content': content,
@@ -362,21 +350,9 @@ def sms_invite(request, party_id):
             form = SMSInviteForm(initial = data)
         else:
             #生成默认内容
-            userprofile = UserProfile.objects.get(user=party.creator)
-            content = (userprofile.true_name if userprofile.true_name else party.creator.username) + u'邀请你参加：'+party.description+u'活动'
-            address_content = ','+u'地点:'+(party.address if party.address != "" else u'待定') 
-            if party.start_date == None and party.start_time == None:
-                if party.address == "":
-                    content += ','+u'具体安排待定'
-                else:
-                    content += ','+address_content
-            if party.start_date != None and party.start_time == None:
-                content += address_content+','+u'日期:'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+u',时间暂定'
-            if party.start_date == None and party.start_time != None:
-                content += address_content+','+ u'日期暂定'+','+u'时间:'+datetime.time.strftime(party.start_time, '%H:%M')
-            if party.start_date != None and party.start_time != None:
-                content += address_content+','+u'具体时间：'+datetime.date.strftime(party.start_date, '%Y-%m-%d')+' '+datetime.time.strftime(party.start_time, '%H:%M')        
-            content += u'。'
+            userprofile = request.user.get_profile()
+            creator = userprofile.true_name if userprofile.true_name else request.user.name  
+            content = _create_default_content(creator, party.start_date, party.start_time , party.address, party.description)
             data = {
                'client_phone_list': '',
                'content': content,
@@ -681,3 +657,22 @@ def invite_list_ajax(request, party_id):
             party_client.save()
     
     return HttpResponse(simplejson.dumps(party_clients_data))
+
+#生成默认内容
+def _create_default_content(creator, start_date, start_time , address, description):
+    content = creator + u'邀请你参加：'+ description +u'活动'
+    address_content = ','+u'地点:'+(address if address != "" else u'待定') 
+    if start_date == None and start_time == None:
+        if address == "":
+            content += ','+u'具体安排待定'
+        else:
+            content += ','+address_content
+    if start_date != None and start_time == None:
+        content += address_content+','+u'日期:'+datetime.date.strftime(start_date, '%Y-%m-%d')+u',时间暂定'
+    if start_date == None and start_time != None:
+        content += address_content+','+ u'日期暂定'+','+u'时间:'+datetime.time.strftime(start_time, '%H:%M')
+    if start_date != None and start_time != None:
+        content += address_content+','+u'具体时间：'+datetime.date.strftime(start_date, '%Y-%m-%d')+' '+datetime.time.strftime(start_time, '%H:%M')        
+    content += u'。'
+    return content
+    
