@@ -14,16 +14,56 @@ import logging
 import urllib2
 
 logger = logging.getLogger('airenao')
-SMS_SERVER_NAME = 'http://192.168.3.155:8000'
-SEND_SMS_SERVICE_ADDRESS = '%s/sendsms' % SMS_SERVER_NAME 
+SMS_SERVER_NAME = 'http://u.wangxun360.com'
+WS_BATCH_SEND ='/ws/BatchSend.aspx'
 
-def _post_api_request_sendSMS(params):
-    req = urllib2.Request(SEND_SMS_SERVICE_ADDRESS)
-    response = urllib2.urlopen(req, params)
-    result = response.read()
-    res = simplejson.loads(result)
 
+#SMS_SERVER_NAME = 'http://192.168.3.155:8000'
+#SEND_SMS_SERVICE_ADDRESS = '%s/sendsms' % SMS_SERVER_NAME 
+
+#def _post_api_request_sendSMS(params):
+#    req = urllib2.Request(SEND_SMS_SERVICE_ADDRESS)
+#    response = urllib2.urlopen(req, params)
+#    result = response.read()
+#    res = simplejson.loads(result)
+#
+#    return res 
+output_message={#短信返回值的含义
+                '0' : u'发送成功进入审核阶段',
+                '1' : u'直接发送成功',
+                '-1' : u'帐号未注册',
+                '-2' : u'其他错误',
+                '-3' : u'帐号或密码错误',
+                '-4' : u'一次提交信息不能超过600个手机号码',
+                '-5' : u'余额不足，请先充值',
+                '-6' : u'定时发送时间不是一个有效的时间格式',
+                '-8' : u'发送内容需在3到250字之间',
+                '-9' : u'发送号码为空'
+                }
+#params={
+#      'CorpID' : 'ZLJK00123',#帐号, String
+#      'Pwd' : '659402',#密码, String
+#      'Mobile':'13641115243',#发送手机号码, String
+#      'Content':'last',#发送内容, String
+#      'Cell':'',#子号, String
+#      'SendTime':'' #定时发送时间, String(14)          
+#      } 
+def _ws_post_api_request_sendSMS(SMS_SERVER_NAME, WS_INTERFACE, params={}):
+    urlp = []
+    for key in params.keys():
+        urlp.append(key +'='+params[key])
+    urlp = '&'.join(urlp)    
+    url = '%s%s?%s' % (SMS_SERVER_NAME, WS_INTERFACE, urlp)
+    res = urllib2.urlopen(url).read()
     return res 
+
+def _post_api_request_sendSMS(params={}):
+    params['CorpID'] = 'ZLJK00123'
+    params['Pwd'] = '659402'
+    params['Cell'] = ''
+    params['SendTime'] = ''
+    return _ws_post_api_request_sendSMS(SMS_SERVER_NAME, WS_BATCH_SEND, params)  
+ 
  
 def sms_modem_send_sms(outbox_message, message, party):
     try:
