@@ -97,7 +97,8 @@ function ajaxChangeStatus(id, applystatus){
         {% endif %}
         <div class="field">
         <label for="client_leave_message">我要留言</label>
-        {{ form.leave_message }}{{ form.leave_message.errors.0 }}
+        <textarea name='leave_message' id='id_leave_message' cols='25' rows='4'>{{ form.leave_message.value|default:'' }}</textarea>
+        <font color='red'>{{ form.leave_message.errors.0 }}</font>
         </div> 
      <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
      <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
@@ -107,12 +108,14 @@ function ajaxChangeStatus(id, applystatus){
          <!--公共报名页面 -->
         <form action="{% url enroll party.id %}" method="POST" class="creat_exercise">{% csrf_token %}
             <div class="field">
-             <label for="client_email_list">姓名</label>
-             {{ form.name }}{{ form.name.errors.0 }}
+             <label for="client_email_list">姓名<font color='red'>*</font></label>
+             <input type='text' name='name' id='id_name' value='{{ form.name.value.value|default:'' }}'></input>
+             <font color='red'>{{ form.name.errors.0 }}<font>
              </div>
             <div class="field">
-             <label for="client_email_list">联系方式</label>
-             {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
+             <label for="client_email_list">联系方式<font color='red'>*</font></label>
+             <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' placeholder='手机号码或者邮箱地址'></input>
+             <font color='red'>{{ form.phone_or_email.errors.0 }}</font>
              <br/>
              {% if invite_message %}
              {{ invite_message }}
@@ -120,7 +123,8 @@ function ajaxChangeStatus(id, applystatus){
              </div>
             <div class="field">
              <label for="client_email_list">我要留言</label>
-             {{ form.leave_message }}{{ form.leave_message.errors.0 }}
+             <textarea name='leave_message' id='id_leave_message' cols='25' rows='4'>{{ form.leave_message.value|default:'' }}</textarea>
+             <font color='red'>{{ form.leave_message.errors.0 }}</font>
              </div> 
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}

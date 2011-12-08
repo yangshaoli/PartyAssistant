@@ -13,6 +13,7 @@ from apps.parties.forms import PublicEnrollForm, EnrollForm
 from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404, render_to_response
@@ -66,11 +67,10 @@ def edit_party(request, party_id):
         if form.is_valid():
             party = form.save()
             if 'save_send' in request.POST:
-                if party.invite_type != None:
-                    if party.invite_type == 'email':
-                        return redirect('email_invite', party_id = party.id)
-                    else:
-                        return redirect('sms_invite', party_id = party.id)  
+                if party.invite_type == 'email':
+                    return redirect('email_invite', party_id = party.id)
+                else:
+                    return redirect('sms_invite', party_id = party.id)  
             else:
                 if 'sms_invite' in request.POST:
                     return redirect('sms_invite', party_id = party.id)
@@ -414,7 +414,7 @@ def list_party(request):
 
         
     for party in party_list:
-        party.enroll_url = DOMAIN_NAME+'/parties/'+str(party.id)+'/enroll/'
+        party.enroll_url = DOMAIN_NAME+reverse('enroll', args=[party.id])
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
         client = {
             'invite': [],
@@ -525,12 +525,14 @@ def _invite_enroll(request, party_id, invite_key):
                 if request.POST.get('name'):
                     client.name = request.POST.get('name')
                 else:
-                    client.name = client.email  
+                    if not client.name:
+                        client.name = client.email  
             else:
                 if request.POST.get('name'):
                     client.name = request.POST.get('name')
                 else:
-                    client.name = client.phone  
+                    if not client.name:
+                        client.name = client.phone  
             client.save()
                
             if request.POST['action'] == 'yes': #如果点击参加

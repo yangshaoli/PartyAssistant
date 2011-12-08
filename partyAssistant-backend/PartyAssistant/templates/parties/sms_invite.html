@@ -148,10 +148,10 @@
 		{% csrf_token %}
      <div class="field">
      <label for="client_email_list">
-     收件人
+     收件人<font color='red'>*</font>
      </label>
-	 <textarea id="id_client_phone_list" rows="4" cols="70" name="client_phone_list">{{ form.client_phone_list.value }}</textarea>
-     {{ form.client_phone_list.errors }}
+	 <textarea id="id_client_phone_list" rows="4" cols="70" name="client_phone_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_phone_list.value }}</textarea>
+     &nbsp;<font color='red'>{{ form.client_phone_list.errors.0 }}</font>
      {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
         <script>
           var reject = '{{ quickadd_client.reject_client }}';
@@ -211,14 +211,15 @@
      </div>
      <div class="field">
      <label for="id_content">
-     短信内容
+     短信内容<font color='red'>*</font>
      </label>
-     {{ form.content.errors }}
-     {{ form.content }}
+    <font color='red'>{{ form.content.errors.0 }}</font>
+    <textarea name='content' id='id_content' cols='70' rows='15'>{{ form.content.value|default:'' }}</textarea>
      </div>
     	<div class="field">
     		<label for="id_is_apply_tips">&nbsp;</label>
-    		<p>{{ form.is_apply_tips }}带报名链接</p>
+    		<p> <input type='checkbox' name='is_apply_tips' id='id_is_apply_tips' {% if form.is_apply_tips.value %}checked='checked'{% endif %}></input>带报名链接
+                </p>
     	</div>
      <div class="field">
      	<label>&nbsp;</label>

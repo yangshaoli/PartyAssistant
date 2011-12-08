@@ -91,7 +91,7 @@ iframe{
                     {% endif %}
             
                     <span class="current">
-                        当前页 {{ party_list.number }} ，共 {{ party_list.paginator.num_pages }}页.
+                        第{{ party_list.number }}页 ，共{{ party_list.paginator.num_pages }}页.
                     </span>
             
                     {% if party_list.has_next %}
