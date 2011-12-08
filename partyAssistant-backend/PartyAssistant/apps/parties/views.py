@@ -411,35 +411,32 @@ def sms_invite(request, party_id):
 @login_required
 def list_party(request):
     party_list = Party.objects.filter(creator = request.user).order_by('-id')
-
-        
     for party in party_list:
         party.enroll_url = DOMAIN_NAME+reverse('enroll', args=[party.id])
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
-        client = {
-            'invite': [],
-            'apply': [],
-            'new_add_apply':[],
-            'noanswer':[],
-            'reject':[],
-            'new_add_reject':[],
-            'count':{}
+        client_counts = {
+            'invite': 0,
+            'apply': 0,
+            'new_add_apply':0,
+            'noanswer':0,
+            'reject':0,
+            'new_add_reject':0,
         }
         for party_client in party_clients:
             if party_client.client.invite_type != 'public':
-                client['invite'].append(party_client)
+                client_counts['invite'] = client_counts['invite'] + 1
             if party_client.apply_status == 'apply':
-                client['apply'].append(party_client)
+                client_counts['apply'] = client_counts['apply'] + 1
             if party_client.apply_status == 'apply' and party_client.is_check == False:
-                client['new_add_apply'].append(party_client)
+                client_counts['new_add_apply'] = client_counts['new_add_apply'] + 1 
             if party_client.apply_status == 'noanswer':
-                client['noanswer'].append(party_client)
+                client_counts['noanswer'] = client_counts['noanswer'] + 1
             if party_client.apply_status == 'reject':
-                client['reject'].append(party_client)
+                client_counts['reject'] = client_counts['reject'] + 1 
             if party_client.apply_status == 'reject' and party_client.is_check == False:
-                client['new_add_reject'].append(party_client)
-        party.client = client  
-        party.client['count'] = _get_client_count(party)
+                client_counts['new_add_reject'] = client_counts['new_add_reject'] + 1
+          
+        party.client_counts = client_counts
         
     send_status = ''    
     if 'send_status' in request.session:
@@ -450,6 +447,7 @@ def list_party(request):
     page = request.GET.get('page',1)
 
     party_list = paginator.page(page)
+    
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status})
 
 def _public_enroll(request, party_id):
