@@ -82,7 +82,7 @@ def sms_modem_send_sms(outbox_message, message, party):
                 short_link = DOMAIN_NAME + '/' + last_key
                 content = content + u' 快来报名：%s' % short_link
                 ShortLink.objects.create(short_link=last_key, long_link=enroll_link)
-                data = simplejson.dumps({'phone':phone, 'content':content})
+                data = {'Mobile':phone, 'Content':content}
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res['status'] != 'OK':
@@ -92,7 +92,7 @@ def sms_modem_send_sms(outbox_message, message, party):
         else:
             for phone in phone_list:
                 content = message.content
-                data = simplejson.dumps({'phone':phone, 'content':content})
+                data = {'Mobile':phone, 'Content':content}
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res['status'] != 'OK':
