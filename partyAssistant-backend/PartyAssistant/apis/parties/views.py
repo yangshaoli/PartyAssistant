@@ -38,12 +38,13 @@ def createParty(request):
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        startdate = None
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except Exception:
             startdate = None
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
@@ -110,12 +111,13 @@ def editParty(request):
         peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
+        startdate = None
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except:
             startdate = None               
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
