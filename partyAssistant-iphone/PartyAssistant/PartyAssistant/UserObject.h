@@ -14,13 +14,14 @@
     NSString *phoneNum;
     NSString *userName;
     NSString *nickName;
+    NSString *emailInfo;//wxz
 }
 
 @property(nonatomic, assign)NSInteger uID;
 @property(nonatomic, retain)NSString *phoneNum;
 @property(nonatomic, retain)NSString *userName;
 @property(nonatomic, retain)NSString *nickName;
-
+@property(nonatomic, retain)NSString *emailInfo;//wxz
 - (void)clearObject;
 
 @end

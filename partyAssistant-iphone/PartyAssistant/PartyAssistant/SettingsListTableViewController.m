@@ -7,7 +7,7 @@
 //
 
 #import "SettingsListTableViewController.h"
-
+#import "NicknameManageTableViewController.h"
 #define NAVIGATION_CONTROLLER_TITLE @"个人设置"
 
 @implementation SettingsListTableViewController
@@ -102,7 +102,7 @@
     
     // Configure the cell...
     if (indexPath.row == 0) {
-        cell.textLabel.text = @"更改昵称";
+        cell.textLabel.text = @"更改个人信息";
     }else if(indexPath.row == 1){
         cell.textLabel.text = @"变更密码";
     }else if(indexPath.row == 2){
@@ -168,6 +168,10 @@
      */
 //    WeiboService *s = [WeiboService sharedWeiboService];
 //    [s WeiboLogin];
+    if(indexPath.row == 0){
+        NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
+        [self.navigationController pushViewController:nickChangeVc animated:YES];
+    }
     if(indexPath.row == 2){
         WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
         [self.navigationController pushViewController:vc animated:YES];

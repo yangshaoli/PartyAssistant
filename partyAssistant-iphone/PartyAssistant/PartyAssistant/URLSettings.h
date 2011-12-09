@@ -23,4 +23,9 @@
 #define CLIENT_APPLY_URL [NSString stringWithFormat:@"%@/clients/public_enroll/",DOMAIN_NAME]
 #define ACCOUNT_LOGIN [NSString stringWithFormat:@"%@/a/accounts/login/",DOMAIN_NAME]
 #define ACCOUNT_REGIST [NSString stringWithFormat:@"%@/a/accounts/regist/",DOMAIN_NAME]
+//wxz
 #define ACCOUNT_SET_NICKNAME [NSString stringWithFormat:@"%@/a/accounts/nickname/",DOMAIN_NAME]
+#define ACCOUNT_SET_PHONENUM [NSString stringWithFormat:@"%@/a/accounts/phoneNum/",DOMAIN_NAME]
+#define ACCOUNT_SET_EMAILINFO [NSString stringWithFormat:@"%@/a/accounts/emailInfo/",DOMAIN_NAME]
+//wxz
+#define ACCOUNT_SET_CHANGEINFO [NSString stringWithFormat:@"%@/a/accounts/changeInfo/",DOMAIN_NAME]

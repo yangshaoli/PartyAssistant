@@ -105,13 +105,13 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 5;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if (section == 3) {
+    if (section == 2) {
         return 2;
     }
     return 1;
@@ -131,23 +131,25 @@
         if (indexPath.section == 0) {
             
         }
-        if (indexPath.section == 1) {
-            if (!subjectTextField) {
-                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
-            }
-            subjectTextField.backgroundColor = [UIColor clearColor];
-            subjectTextField.text = self.emailObject.emailSubject;
-            [cell addSubview:subjectTextField];
-            cell.textLabel.text = @"邮件主题";
-        }else if(indexPath.section == 2){
+//        if (indexPath.section == 1) {
+//            if (!subjectTextField) {
+//                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
+//            }
+//            subjectTextField.backgroundColor = [UIColor clearColor];
+//            subjectTextField.text = self.emailObject.emailSubject;
+//            [cell addSubview:subjectTextField];
+//            cell.textLabel.text = @"邮件主题";
+       // }else 
+            
+        if(indexPath.section == 1){
             if (!contentTextView) {
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.emailObject.emailContent;
             contentTextView.backgroundColor = [UIColor clearColor];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"短信内容";
-        }else if(indexPath.section == 3){
+            cell.textLabel.text  = @"邮件内容";
+        }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
                 [applyTipsSwitch setOn:self.emailObject._isApplyTips];
@@ -191,7 +193,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 2) {
+    if (indexPath.section == 1) {
         return 180;
     }else if(indexPath.section == 0){
         return 44.0*3;

@@ -113,14 +113,24 @@
     //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
-    NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
-    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
-    if(-1!=getDefaulUserId){
-        [self pushToContentVC];
+//    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+   NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+//    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
+   // [keyString release]; 
+    if(user){
+        NSLog(@"用户信息不空");
+        if(user.uID > 0){
+            NSLog(@"用户id不等于－1");
+            [self pushToContentVC];
+        }else{
+            return;
+        }    
+    }else{
+        NSLog(@"用户信息为空");
+        return;
     }
-    [keyString release];
+    
     
 }
 
@@ -202,14 +212,14 @@
 - (void)gotoContentVC {
     //use different work flow
     
-    //登陆连接服务器成功后   保存用户信息到本地   登出时需要清空才可
-    UserObjectService *us = [UserObjectService sharedUserObjectService];
-    UserObject *user = [us getUserObject];
-   
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
-    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
-    [defaults setInteger:user.uID  forKey:keyString];    
-    [keyString  release];
+//    //登陆连接服务器成功后   保存用户信息到本地   登出时需要清空才可
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//   
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+//    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+//    [defaults setInteger:user.uID  forKey:keyString];    
+//    [keyString  release];
     
 
     //1.modal

@@ -1229,12 +1229,6 @@
 				899B0306148475690056EEFD /* WeiboManagerTableViewController.m in Sources */,
 				899B030B1484C4F10056EEFD /* PostWeiboViewController.m in Sources */,
 				8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */,
-				CE638DA0148645A000572CF8 /* ABContact.m in Sources */,
-				CE638DA1148645A000572CF8 /* ABContactsHelper.m in Sources */,
-				CE638DA2148645A000572CF8 /* ABGroup.m in Sources */,
-				CE638DA3148645A000572CF8 /* AddressBookDataManager.m in Sources */,
-				CE638DA4148645A000572CF8 /* ContactData.m in Sources */,
-				CE638DA5148645A000572CF8 /* englishletter.c in Sources */,
 				CE472E9F148DB53E00E24742 /* pinyin.c in Sources */,
 				CEB28899148E17A300B7E3B7 /* ABContact.m in Sources */,
 				CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */,
@@ -1332,7 +1326,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PROVISIONING_PROFILE = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
@@ -1353,7 +1347,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1372,7 +1366,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				WRAPPER_EXTENSION = app;
@@ -1389,7 +1383,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				WRAPPER_EXTENSION = app;
