@@ -24,13 +24,13 @@ class EmailInviteForm(forms.Form):
             if email != '':
                 try:
                     validate_email(email)
-                    valid_email_list.append(email)
+                    if not email in valid_email_list:
+                        valid_email_list.append(email)
                 except:
                     invalid_email = email
         
         if invalid_email:
             raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
-        
         self.cleaned_data['client_email_list'] = ','.join(valid_email_list)
         
         return self.cleaned_data['client_email_list']
@@ -53,7 +53,8 @@ class SMSInviteForm(forms.Form):
                 if not re.search(phone_re, phone):
                     invalid_phone = phone
                 else:
-                    valid_phone_list.append(phone)
+                    if not phone in valid_phone_list:
+                        valid_phone_list.append(phone)
         
         if invalid_phone:
             raise forms.ValidationError(u'手机号码 %s 格式错误' % invalid_phone)
