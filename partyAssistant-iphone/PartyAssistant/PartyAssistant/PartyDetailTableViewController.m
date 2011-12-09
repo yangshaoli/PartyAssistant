@@ -211,6 +211,7 @@
         [cell addSubview:delBtn];
         cell.backgroundColor = [UIColor clearColor];
     }
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
     return cell;
 }
 

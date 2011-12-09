@@ -14,6 +14,10 @@
 @interface NicknameManageTableViewController : UITableViewController
 {
     UITextField *nicknameTextField;
+    UITextField *phoneNumberTextField;
+    UITextField *emailTextField;
 }
 @property(nonatomic,retain)UITextField *nicknameTextField;
+@property(nonatomic,retain)UITextField *phoneNumberTextField;
+@property(nonatomic,retain)UITextField *emailTextField;
 @end

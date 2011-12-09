@@ -110,13 +110,13 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 5;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if (section == 3) {
+    if (section == 2) {
         if([MFMailComposeViewController canSendMail]==YES){
             return 2;
         }else{
@@ -140,15 +140,15 @@
         
         // Configure the cell...
         if (indexPath.section == 0) {
+       // }else if(indexPath.section == 1){
+//            if(!subjectTextField){
+//                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
+//            }
+//            subjectTextField.text = self.emailObject.emailSubject;
+//            subjectTextField.backgroundColor = [UIColor clearColor];
+//            [cell addSubview:subjectTextField];
+//            cell.textLabel.text = @"邮件主题";
         }else if(indexPath.section == 1){
-            if(!subjectTextField){
-                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
-            }
-            subjectTextField.text = self.emailObject.emailSubject;
-            subjectTextField.backgroundColor = [UIColor clearColor];
-            [cell addSubview:subjectTextField];
-            cell.textLabel.text = @"邮件主题";
-        }else if(indexPath.section == 2){
             if (!contentTextView) {
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
@@ -157,7 +157,7 @@
             contentTextView.font = [UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
             cell.textLabel.text  = @"邮件内容";
-        }else if(indexPath.section == 3){
+        }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
                 [applyTipsSwitch setOn:self.emailObject._isApplyTips];
@@ -171,7 +171,7 @@
                 cell.textLabel.text = @"通过自己的手机发送：";
                 [cell addSubview:sendBySelfSwitch];
             }
-        }else if (indexPath.section == 4){
+        }else if (indexPath.section == 3){
             UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
             [setDefaultBtn setFrame:CGRectMake(10, 0, 300, 44)];
             [setDefaultBtn setTitle:@"恢复默认内容" forState:UIControlStateNormal];
@@ -201,7 +201,7 @@
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 2) {
+    if (indexPath.section == 1) {
         return 180;
     }else if(indexPath.section == 0){
         return 44.0*3;

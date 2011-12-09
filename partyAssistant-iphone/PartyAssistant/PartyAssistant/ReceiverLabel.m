@@ -9,7 +9,8 @@
 #import "ReceiverLabel.h"
 
 #define MAX_LABLEL_WIDTH 140
-#define MIN_LABLEL_WIDTH 20
+#define MIN_LABLEL_WIDTH 40
+#define MIN_LABLEL_HIGHT 20
 @implementation ReceiverLabel
 
 
@@ -50,6 +51,7 @@
         size.width = MAX_LABLEL_WIDTH;
     }
     oldFrame.size.width = size.width+MIN_LABLEL_WIDTH;//wxz控制最小区域宽度
+     oldFrame.size.height = MIN_LABLEL_HIGHT;//wxz控制最小区域高度
     self.frame = oldFrame;
     self.textAlignment = UITextAlignmentLeft;
     [super setText:text];

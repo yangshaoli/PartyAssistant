@@ -10,7 +10,7 @@
 #import "DataManager.h"
 
 @implementation NicknameManageTableViewController
-@synthesize nicknameTextField;
+@synthesize nicknameTextField,phoneNumberTextField,emailTextField;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -18,8 +18,7 @@
     if (self) {
         // Custom initialization
     }
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
-    self.navigationItem.rightBarButtonItem = doneBtn;
+    
     return self;
 }
 
@@ -36,6 +35,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
+    self.navigationItem.rightBarButtonItem = doneBtn;
+    self.title=@"更改个人信息";
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -88,7 +90,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 1;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -101,17 +103,40 @@
     }
     
     // Configure the cell...
-    
-    cell.textLabel.text = @"昵称：";
     UserObjectService *s = [UserObjectService sharedUserObjectService];
     UserObject *user = [s getUserObject];
-    if (!nicknameTextField) {
-        self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+    
+    if(indexPath.row==0){
+        cell.textLabel.text = @"昵称：";
+        if (!nicknameTextField) {
+            self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+        }
+        nicknameTextField.text = user.nickName;
+        nicknameTextField.textAlignment = UITextAlignmentRight;
+        nicknameTextField.backgroundColor = [UIColor clearColor];
+        [cell addSubview:nicknameTextField];        
     }
-    nicknameTextField.text = user.nickName;
-    nicknameTextField.textAlignment = UITextAlignmentRight;
-    nicknameTextField.backgroundColor = [UIColor clearColor];
-    [cell addSubview:nicknameTextField];
+    if(indexPath.row==1){
+        cell.textLabel.text = @"手机号：";
+        if (!phoneNumberTextField) {
+            self.phoneNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+        }
+        phoneNumberTextField.text = user.phoneNum;
+        phoneNumberTextField.textAlignment = UITextAlignmentRight;
+        phoneNumberTextField.backgroundColor = [UIColor clearColor];
+        [cell addSubview:phoneNumberTextField];        
+    }
+    if(indexPath.row==2){
+        cell.textLabel.text = @"邮箱：";
+        if (!emailTextField) {
+            self.emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+        }
+        emailTextField.text = user.emailInfo;
+        emailTextField.textAlignment = UITextAlignmentRight;
+        emailTextField.backgroundColor = [UIColor clearColor];
+        [cell addSubview:emailTextField];        
+    }
+    
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
@@ -171,11 +196,17 @@
 - (void)doneBtnAction
 {
     [self showWaiting];
-    NSString *nickName = self.nicknameTextField.text;
+    
     UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
 //    NSNumber *userId = [NSNumber numberWithInt:user.uID];
     DataManager *dataManager = [DataManager sharedDataManager];
+    NSString *nickName = self.nicknameTextField.text;
     NetworkConnectionStatus status = [dataManager setNickNameForUserWithUID:user.uID withNewNickName:nickName];
+    NSString *phoneNum = self.phoneNumberTextField.text;
+    NetworkConnectionStatus  phoneStatus = [dataManager  setPhoneNumForUserWithUID:user.uID withNewPhoneNum:phoneNum];
+    NSString *emailInfo = self.emailTextField.text;
+    NetworkConnectionStatus  emailStatus = [dataManager setEmailInfoForUserWithUID:user.uID withNewEmailInfo:emailInfo];
+    
 }
 
 @end
