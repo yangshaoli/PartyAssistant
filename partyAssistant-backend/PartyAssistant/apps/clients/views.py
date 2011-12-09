@@ -73,6 +73,20 @@ def invite_list(request, party_id):
 
 @login_required
 def invite_list_ajax(request, party_id):
+    party_clients_datas ,party_clients_list  = _invite_list(request, party_id)
+    for party_client in party_clients_list:
+        if not party_client.is_check:
+            party_client.is_check = True
+            party_client.save()
+    
+    return HttpResponse(simplejson.dumps(party_clients_datas))
+
+def ajax_get_client_list(request, party_id):
+    party_clients_datas ,party_clients_list  = _invite_list(request, party_id)  
+
+    return HttpResponse(simplejson.dumps(party_clients_datas))
+
+def _invite_list(request, party_id):
     apply_status = request.GET.get('apply', 'all')
     party = get_object_or_404(Party, id=party_id)
     
@@ -81,7 +95,7 @@ def invite_list_ajax(request, party_id):
     else:
         party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
     
-    party_clients_data = []
+    party_clients_datas = []
     for party_client in party_clients_list:
         party_client_data = {
             'id' : party_client.id,
@@ -90,30 +104,6 @@ def invite_list_ajax(request, party_id):
             'is_check': party_client.is_check,
             'leave_message' : party_client.leave_message
         }    
-        party_clients_data.append(party_client_data)
+        party_clients_datas.append(party_client_data)
         
-        if not party_client.is_check:
-            party_client.is_check = True
-            party_client.save()
-    
-    return HttpResponse(simplejson.dumps(party_clients_data))
-
-def ajax_get_client_list(request, party_id):
-    apply_status = request.GET.get('apply', 'all')
-    party = get_object_or_404(Party, id=party_id)
-    
-    if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party)
-    else:
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
-    
-    party_clients_data = []
-    for party_client in party_clients_list:
-        party_client_data = {
-            'client_id' : party_client.client.id,  
-            'name' : ( party_client.client.name != party_client.client.phone and party_client.client.name != party_client.client.email ) and party_client.client.name or (party.invite_type == 'email' and party_client.client.email[:party_client.client.email.find('@')][:3]+'*'*6+party_client.client.email[party_client.client.email.find('@'):] or party_client.client.phone[0:3]+'*'*4+party_client.client.phone[-4:]), 
-            'address': party.invite_type == 'email' and party_client.client.email[:party_client.client.email.find('@')][:3]+'*'*6+party_client.client.email[party_client.client.email.find('@'):] or party_client.client.phone[0:3]+'*'*4+party_client.client.phone[-4:], 
-        }    
-        party_clients_data.append(party_client_data)
-        
-    return HttpResponse(simplejson.dumps(party_clients_data))
+    return  party_clients_datas,  party_clients_list
