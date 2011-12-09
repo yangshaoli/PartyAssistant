@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="deleteMenu">
+ 	 <item>删除并提示客户</item>
+ 	 <item>直接删除</item>  
+  	 <item>取消</item>
+	</array>
+</resources>
