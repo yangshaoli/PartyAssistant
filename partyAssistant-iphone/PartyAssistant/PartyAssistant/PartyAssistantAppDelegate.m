@@ -68,13 +68,19 @@
     return YES;  
 }  
 
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {  
-    NSLog(@"deviceToken: %@", deviceToken);  
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{  
+    NSLog(@"deviceToken: %@", deviceToken);
+    NSString *data = [[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding];
+    [DeviceTokenService saveDeviceToken:data];
 }  
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {  
     NSLog(@"Error in registration. Error: %@", error);  
 }  
+
+-(void)sendRequestToSaveUserToken{
+    
+}
 
 //- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo  
 //{  
@@ -93,11 +99,15 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSLog(@"收到推送消息 ：%@",userInfo);
-    application.applicationIconBadgeNumber = 0;
-    for (id key in userInfo) {
-        NSLog(@"key: %@, value: %@", key, [userInfo objectForKey:key]);
-    }    
-    
+    NSString *badge = [[userInfo objectForKey:@"aps"] objectForKey:@"badge"];
+    application.applicationIconBadgeNumber = [badge intValue];
+    NSString *operation = [userInfo objectForKey:@"operation"];
+    NSLog(@"operation:%@",operation);
+    if ([operation isEqualToString:@"unread"]) {
+        
+        NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:badge,@"badge",nil]];
+        [[NSNotificationCenter defaultCenter] postNotification:notification];
+    }
 }
 
 void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {

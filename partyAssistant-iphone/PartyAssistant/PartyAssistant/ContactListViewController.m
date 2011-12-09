@@ -53,7 +53,6 @@
     
     //wxz
     CGRect viewFrame = self.tableView.frame;
-    NSLog(@"%f",viewFrame.size.height);
     viewFrame.size.height = 316.0f;
     self.tableView.frame = viewFrame;
     // Create a search bar
@@ -70,7 +69,6 @@
 	NSMutableArray *filterearray =  [[NSMutableArray alloc] init];
 	self.filteredArray = filterearray;
 	//[filterearray release];
-    
     [self initData];
 	NSMutableArray *namearray =  [[NSMutableArray alloc] init];
 	self.contactNameArray = namearray;
@@ -81,7 +79,6 @@
     
     ABAddressBookRef addressBook = ABAddressBookCreate();
     self.contactorsArrayRef = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook,nil,1);
-
     //实例化数组很耗资
 //    NSArray *array1=(__bridge_transfer NSArray*)self.contactorsArrayRef;
 //    
@@ -123,7 +120,6 @@
         //NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
         NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];      [contactNameArray addObject:cellString];
     }
-        
    // NSLog(@"新方法打印数组%@",contactNameArray);
     
     // Uncomment the following line to preserve selection between presentations.
@@ -221,7 +217,6 @@
 		[self.sectionArray addObject:[NSMutableArray array]];
 		[self.sectionContactArray addObject:[NSMutableArray array]];
 	}
-
     for(ABContact *contact in abData) {
 		NSString *phone;
 		//NSArray *phoneCount = [ContactData getPhoneNumberAndPhoneLabelArray:contact];
@@ -235,7 +230,7 @@
 		//			[contactNameArray addObject:[NSString stringWithFormat:@" %@",phone]];
 		
 		//NSString *string = [contactNameArray objectAtIndex:i];
-        NSLog(@"%@",contact.contactName);
+//        NSLog(@"%@",contact.contactName);
 		NSString *string = [contact.contactName length] > 0 ? contact.contactName : [NSString stringWithFormat:@" %@",phone];
 		if([self searchResult:string searchText:@"曾"])
             sectionName = @"Z";
@@ -263,7 +258,6 @@
 		} 
 		
 	}
-
 }
 
 
@@ -373,7 +367,7 @@
 {
     // Return the number of sections.
     if (aTableView == self.tableView) {
-        [self initData]; 
+        [self initData];
         return 27;    
     }else{
         return  1;

@@ -38,7 +38,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -133,6 +135,10 @@
     }else{
         cell.textLabel.text = baseinfo.description;
     }
+    
+    UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
+    imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
+    [cell addSubview:imgV];
     
     UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(130, 44, 150, 16)];
     timeLabel.textAlignment = UITextAlignmentRight;
@@ -389,5 +395,11 @@
 - (void)AfterCreatedDone{
     [self.navigationController popToRootViewControllerAnimated:YES];
     [self refreshBtnAction];
+}
+
+- (void)AddBadgeToTabbar:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+    tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }
 @end

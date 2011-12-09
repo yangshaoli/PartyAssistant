@@ -10,6 +10,8 @@
 #import "PartyLoginViewController.h"
 #import "PartyListTableViewController.h"
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "DeviceTokenService.h"
+#import "NotificationSettings.h"
 #import <AddressBook/AddressBook.h>
 
 ABAddressBookRef addressBook;

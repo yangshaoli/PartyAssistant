@@ -174,6 +174,9 @@
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
+//            UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
+//            imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
+//            [cell addSubview:imgV];
         }else if(indexPath.row == 1){
             cell.textLabel.text = @"已报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];

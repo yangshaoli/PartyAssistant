@@ -19,7 +19,7 @@
 
 @end
 
-@interface ContactListViewController : UITableViewController <ContactorPhoneDetailsViewControllerDelegate>
+@interface ContactListViewController : UITableViewController <ContactorPhoneDetailsViewControllerDelegate, UISearchBarDelegate>
 {
     NSArray *contactorsArray;
     CFArrayRef contactorsArrayRef;
