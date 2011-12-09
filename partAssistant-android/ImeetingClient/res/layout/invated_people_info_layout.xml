@@ -22,19 +22,23 @@
 		android:id="@+id/txtPeoPleInfo"
 		android:layout_centerInParent="true"/>
 		<Button
-		android:id="@+id/btnDetailEdit"
+		android:id="@+id/btnResend"
 		android:layout_alignParentRight="true"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_vertical"
 		android:paddingTop="0dp"
 		android:gravity="center"
+		android:paddingBottom="2dip"
+		android:paddingLeft="8dip"
+		android:paddingRight="8dip"
+		android:background="@drawable/button_red"
 		android:text="@string/reinvate"/>
 	</RelativeLayout>
 	
 	<ListView android:id="@+id/people_infor_list"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:background="@drawable/background_red"
+		android:background="@drawable/bj"
 		android:layout_weight="1.0" android:paddingTop="5dip" android:cacheColorHint="#00000000"/>
 </LinearLayout>

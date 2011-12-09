@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.constans.Constants;
 
 import android.app.Activity;
@@ -32,8 +33,8 @@ public class AirenaoUtills {
 	/* 校验只为数字 */
 	public static String regDigital = "([0-9])+";
 	/* 校验电子邮件 */
-	public static String regEmail = "^([a-z0-9A-Z]+[-|//.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?//.)+[a-zA-Z]{2,}$ ";
-	/*校验电话号码*/
+	public static String regEmail = "^([\\w-\\.]+)@[\\w-.]+(\\.?[a-zA-Z]{2,4}$)";
+	/*校验电话号码*/					
 	public static String regPhoneNumber = "^(13|15|18)\\d{9}$";
 	
 	
@@ -54,7 +55,7 @@ public class AirenaoUtills {
 	public static boolean matchString(final String regEx, final String msg) {
 		Pattern p = Pattern.compile(regEx);
 		Matcher m = p.matcher(msg);
-		boolean result = m.find();
+		boolean result = m.matches();
 		return result;
 	}
 	
@@ -476,5 +477,10 @@ public class AirenaoUtills {
 	
 	public static String linkResult(String result){
 		return  "{"+"output"+":"+result+"}";
+	}
+	
+	public static String linkSQL(String id){
+		
+		return "delete from "+DbHelper.ACTIVITY_TABLE_NAME+" where " + DbHelper.PARTY_ID +" = " + id;
 	}
 }

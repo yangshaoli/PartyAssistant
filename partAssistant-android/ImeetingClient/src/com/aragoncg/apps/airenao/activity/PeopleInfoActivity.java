@@ -5,10 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,21 +31,40 @@ import android.widget.TextView;
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.exceptions.MyRuntimeException;
+import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
+import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class PeopleInfoActivity extends Activity {
-	
+
 	private final static int INVATED_PEOPLE = 0;
 	private final static int SIGNED_PEOPLE = 1;
 	private final static int UNSIGNED_PEOPLE = 2;
 	private final static int UNRESPONSED_PEOPLE = 3;
 	
-	private List<Map<String,Object>> mData;
+	private final static int APPLAY_RESULT = 0;
+
+	private final static String TYPE_ALL = "all";
+	private final static String TYPE_APPLIED = "applied";
+	private final static String TYPE_REFUSED = "refused";
+	private final static String TYPE_DONOTHING = "donothing";
+
+	private List<Map<String, Object>> mData;
 	private Button btnBack;
 	private Button reInvated;
 	private TextView myTitle;
 	private int peopleTag = -1;
-	
+	private int partyId = -1;
+	private String getPeopleInfoUrl;
+	private String applayUrl;
+	private ProgressDialog myProgressDialog;
+	private MyAdapter  myAdapter;
+	private Thread applyThread;
+	private String backendID;
+	private String action;
+	private Handler myHandler;
+	private AirenaoActivity myAirenaoActivity;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,188 +75,374 @@ public class PeopleInfoActivity extends Activity {
 		setContentView(R.layout.invated_people_info_layout);
 		Intent myIntent = getIntent();
 		getData(myIntent);
-		MyAdapter myAdapter = new MyAdapter(this);
-		ListView dataListView = (ListView)findViewById(R.id.people_infor_list);
+		myAdapter = new MyAdapter(this);
+		ListView dataListView = (ListView) findViewById(R.id.people_infor_list);
 		dataListView.setAdapter(myAdapter);
-		
-		init();
+
+		initView();
 	}
-	
-	public void init(){
-		myTitle = (TextView)findViewById(R.id.txtPeoPleInfo);
-		
-		if(peopleTag == this.INVATED_PEOPLE){
+
+	public void initView() {
+		reInvated = (Button) findViewById(R.id.btnResend);
+		myTitle = (TextView) findViewById(R.id.txtPeoPleInfo);
+
+		if (peopleTag == INVATED_PEOPLE) {
 			myTitle.setText(R.string.invited_number);
+			reInvated.setText(R.string.sendTip);
+			
+			if(mData.size()<=0){
+				reInvated.setClickable(false);
+			}
 		}
-		if(peopleTag == this.SIGNED_PEOPLE){
+		if (peopleTag == SIGNED_PEOPLE) {
 			myTitle.setText(R.string.signed_number);
+			reInvated.setText(R.string.sendTip);
+			if(mData.size()<=0){
+				reInvated.setClickable(false);
+			}
 		}
-		if(peopleTag == this.UNSIGNED_PEOPLE){
+		if (peopleTag == UNSIGNED_PEOPLE) {
 			myTitle.setText(R.string.unsiged_number);
+			reInvated.setVisibility(View.GONE);
+			if(mData.size()<=0){
+				reInvated.setClickable(false);
+			}
 		}
-		if(peopleTag == this.UNRESPONSED_PEOPLE){
+		if (peopleTag == UNRESPONSED_PEOPLE) {
 			myTitle.setText(R.string.unjion);
+			if(mData.size()<=0){
+				reInvated.setClickable(false);
+			}
 		}
+		//左上角按钮的事件添加
+		reInvated.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+					if(mData.size()>0){
+						Intent intent = new Intent();
+						//封装数据
+						myAirenaoActivity.setPeopleList(mData);
+						intent.putExtra(Constants.ONE_PARTY, myAirenaoActivity);
+						intent.putExtra(Constants.FROM_PEOPLE_INFO, true);
+						intent.setClass(PeopleInfoActivity.this, SendAirenaoActivity.class);
+						startActivity(intent);
+					}
+						
+				
+			}
+		});
 		
-		btnBack = (Button)findViewById(R.id.btnPeopleLableBack);
+		btnBack = (Button) findViewById(R.id.btnPeopleLableBack);
 		btnBack.setVisibility(View.GONE);
 	}
-	
-	
-	public void getData(Intent intent){
-		
-		peopleTag = intent.getIntExtra(Constants.WHAT_PEOPLE_TAG, -1);
-		if(peopleTag == -1){
-			throw new MyRuntimeException(PeopleInfoActivity.this,getString(R.string.systemMistakeTitle),getString(R.string.systemMistake));
-		}
-		if(peopleTag == this.INVATED_PEOPLE){
-			//获得邀请人的信息
-		}
-		if(peopleTag == this.SIGNED_PEOPLE){
-			//获得已报名人的信息
-		}
-		if(peopleTag == this.UNSIGNED_PEOPLE){
-			//获得未报名人的信息
-		}
-		if(peopleTag == this.UNRESPONSED_PEOPLE){
-			//获得为参加人的信息
-		}
-		mData = new ArrayList<Map<String,Object>>();
-		int count = 10;
-		mData.clear();
-		for(int i=0;i<count;i++){
-			Map map = new HashMap<String, Object>();
-			String a= "孙超"+i;
-			map.put(Constants.PEOPLE_NAME,a);
-			map.put(Constants.PEOPLE_CONTACTS,"sad");
-			mData.add(map);
-			
-		}
 
+	/**
+	 * 显示加载对话框
+	 * 
+	 * @param activity
+	 */
+
+	public void cancleProgressDialog() {
+		if (myProgressDialog != null) {
+			myProgressDialog.cancel();
+		}
+	}
+
+	public void getData(Intent intent) {
+		myProgressDialog = new ProgressDialog(PeopleInfoActivity.this);
+		myProgressDialog.setTitle("");
+		myProgressDialog.setMessage(getString(R.string.rgPgrsTitle));
+		myProgressDialog.show();
+	
+		applayUrl = getString(R.string.applayUrl);
+		
+		//加载数据
+		mData = new ArrayList<Map<String, Object>>();
+		mData.clear();
+		myAirenaoActivity = (AirenaoActivity) intent.getSerializableExtra(Constants.ONE_PARTY);
+		peopleTag = intent.getIntExtra(Constants.WHAT_PEOPLE_TAG, -1);
+		partyId = intent.getIntExtra(Constants.PARTY_ID, -1);
+		getPeopleInfoUrl = getString(R.string.getPeopleInfoUrl);
+		if (peopleTag == -1 || partyId == -1) {
+			throw new MyRuntimeException(PeopleInfoActivity.this,
+					getString(R.string.systemMistakeTitle),
+					getString(R.string.systemMistake));
+		}
+		if (peopleTag == INVATED_PEOPLE) {
+			
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_ALL);
+			asynTask.execute(getPeopleInfoUrl);
+		}
+		if (peopleTag == SIGNED_PEOPLE) {
+			// 获得已报名人的信息
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_APPLIED);
+			asynTask.execute(getPeopleInfoUrl);
+		}
+		if (peopleTag == UNSIGNED_PEOPLE) {
+			// 获得未报名人的信息
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_REFUSED);
+			asynTask.execute(getPeopleInfoUrl);
+		}
+		if (peopleTag == UNRESPONSED_PEOPLE) {
+			// 获得为参加人的信息
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_DONOTHING);
+			asynTask.execute(getPeopleInfoUrl);
+		}
+		
+
+	}
+	
+	public Thread getThread(){
+		return new Thread(){
+
+			@Override
+			public void run() {
+				HttpHelper httpHelper = new HttpHelper();
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("cpID", backendID);
+				map.put("cpAction", action);
+				String result = httpHelper.performPost(applayUrl, map, PeopleInfoActivity.this);
+				result = AirenaoUtills.linkResult(result);
+				String status;
+				String description;
+				try {
+					JSONObject resultObject = new JSONObject(result);
+					status = resultObject.getString(Constants.STATUS);
+					description = resultObject.getString(Constants.DESCRIPTION);
+					Message message = new Message();
+					message.what = APPLAY_RESULT;
+					//myHandler.sendMessage(message);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				
+			}
+			
+		};
 		
 	}
 	/**
-	 * item holder
+	 * 异步加载数据 --- client count
+	 * 
 	 * @author cuikuangye
-	 *
+	 * 
 	 */
-	public final class ViewHolder {
+	class AsyncTaskLoad extends AsyncTask<String, Integer, String[]> {
+		private String id = "";
+		private Context context;
+		private String type = "";
+		private HashMap<String, String> additionalHeaders;
 
-		public TextView peopleName;
+		public AsyncTaskLoad(Context context, String id, String type) {
+			this.context = context;
+			this.id = id;
+			this.type = type;
+		}
 
-		public TextView peoPleContacts;
+		@Override
+		protected String[] doInBackground(String... params) {
+			
+			HttpHelper httpHelper = new HttpHelper();
+			String result = httpHelper.performGet(params[0] + id + "/" + type
+					+ "/", null, null, null, context);
+			result = AirenaoUtills.linkResult(result);
+			analyzeJson(result,type);
+			return new String[3];
+		}
+
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+
+			super.onProgressUpdate(values);
+		}
+
+		@Override
+		protected void onPostExecute(String[] result) {
+			myAdapter.notifyDataSetChanged();
+			cancleProgressDialog();
+		}
 		
-		public Button btnRegister;
+		public void analyzeJson(String result,String type){
+			String status;
+			String description;
+			JSONObject datasource; 
+			
+			try {
+				JSONObject outPut = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+				status = outPut.getString(Constants.STATUS);
+				description = outPut.getString(Constants.DESCRIPTION);
+				datasource = outPut.getJSONObject(Constants.DATA_SOURCE);
+				if("ok".equals(status)){
+					JSONArray jsonArray = datasource.getJSONArray("clientList");
+					if(TYPE_ALL.equals(type)){
+						for(int i = 0;i < jsonArray.length();i++){
+							String cName = jsonArray.getJSONObject(i).getString("cName");
+							String cValue = jsonArray.getJSONObject(i).getString("cValue");
+							backendID = jsonArray.getJSONObject(i).getString("backendID");
+							String myStatus = jsonArray.getJSONObject(i).getString("status");
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put(Constants.PEOPLE_NAME, cName);
+							map.put(Constants.PEOPLE_CONTACTS, cValue);
+							map.put(Constants.PARTY_ID, backendID);
+							map.put(Constants.STATUS, myStatus);
+							mData.add(map);
+						}
+					}else{
+						for(int i = 0;i < jsonArray.length();i++){
+							String cName = jsonArray.getJSONObject(i).getString("cName");
+							String cValue = jsonArray.getJSONObject(i).getString("cValue");
+							backendID = jsonArray.getJSONObject(i).getString("backendID");
+							HashMap<String, Object> map = new HashMap<String, Object>();
+							map.put(Constants.PEOPLE_NAME, cName);
+							map.put(Constants.PEOPLE_CONTACTS, cValue);
+							map.put(Constants.PARTY_ID, backendID);
+							mData.add(map);
+						}
+					}
+				}
+				
+			} catch (JSONException e) {
+				
+				e.printStackTrace();
+			}
+			
+		}
 		
-		public Button btnUnRegister;
-
 	}
-	
-	
-	public class MyAdapter extends BaseAdapter {
+		/**
+		 * item holder
+		 * 
+		 * @author cuikuangye
+		 * 
+		 */
+		public final class ViewHolder {
 
-		private LayoutInflater mInflater;
-		public int count;
+			public TextView peopleName;
 
-		public MyAdapter(Context context) {
+			public TextView peoPleContacts;
 
-			this.mInflater = LayoutInflater.from(context);
+			public Button btnRegister;
 
-		}
-
-		@Override
-		public int getCount() {
-			count =  mData.size();
-			return count;
+			public Button btnUnRegister;
 
 		}
 
-		@Override
-		public Object getItem(int position) {
+		public class MyAdapter extends BaseAdapter {
 
-			return null;
+			private LayoutInflater mInflater;
+			public int count;
 
-		}
+			public MyAdapter(Context context) {
 
-		@Override
-		public long getItemId(int position) {
-
-			return 0;
-
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-
-			ViewHolder holder = null;
-
-			if (convertView == null) {
-
-				holder = new ViewHolder();
-
-				convertView = mInflater.inflate(R.layout.people_item_property,
-						null);
-
-				holder.peopleName = (TextView) convertView
-						.findViewById(R.id.people_name);
-
-				holder.peoPleContacts = (TextView) convertView
-						.findViewById(R.id.people_contacts);
-
-				holder.btnRegister = (Button) convertView.findViewById(R.id.btnPeopleRegister);
-				
-				holder.btnUnRegister = (Button) convertView.findViewById(R.id.btnPeopleUnRegister);
-				
-				convertView.setTag(holder);
-
-			} else {
-
-				holder = (ViewHolder) convertView.getTag();
+				this.mInflater = LayoutInflater.from(context);
 
 			}
 
-			bindView(holder,position);
+			@Override
+			public int getCount() {
+				count = mData.size();
+				return count;
 
-			return convertView;
+			}
 
-		}
-		
-		public void bindView(ViewHolder viewHolder,final int position){
-			viewHolder.peopleName.setText((String) mData.get(position).get(
-					Constants.PEOPLE_NAME));
-			viewHolder.peoPleContacts.setText((String) mData.get(position).get(
-					Constants.PEOPLE_CONTACTS));
-			
-			viewHolder.btnRegister.setOnClickListener(new OnClickListener() {
+			@Override
+			public Object getItem(int position) {
+
+				return null;
+
+			}
+
+			@Override
+			public long getItemId(int position) {
+
+				return 0;
+
+			}
+
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+
+				ViewHolder holder = null;
+
+				if (convertView == null) {
+
+					holder = new ViewHolder();
+
+					convertView = mInflater.inflate(
+							R.layout.people_item_property, null);
+
+					holder.peopleName = (TextView) convertView
+							.findViewById(R.id.people_name);
+
+					holder.peoPleContacts = (TextView) convertView
+							.findViewById(R.id.people_contacts);
+
+					holder.btnRegister = (Button) convertView
+							.findViewById(R.id.btnPeopleRegister);
+
+					holder.btnUnRegister = (Button) convertView
+							.findViewById(R.id.btnPeopleUnRegister);
+
+					convertView.setTag(holder);
+
+				} else {
+
+					holder = (ViewHolder) convertView.getTag();
+
+				}
+
+				bindView(holder, position);
+
+				return convertView;
+
+			}
+
+			public void bindView(final ViewHolder viewHolder, final int position) {
+				viewHolder.peopleName.setText((String) mData.get(position).get(
+						Constants.PEOPLE_NAME));
+				viewHolder.peoPleContacts.setText((String) mData.get(position)
+						.get(Constants.PEOPLE_CONTACTS));
+
+				viewHolder.btnRegister
+						.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								action = "apply";
+								applyThread = getThread();
+								applyThread.start();
+								viewHolder.btnRegister.setClickable(false);
+								return;
+							}
+						});
 				
-				@Override
-				public void onClick(View v) {
-					
+				viewHolder.btnUnRegister
+						.setOnClickListener(new OnClickListener() {
+
+							@Override
+							public void onClick(View v) {
+								action = "";
+								applyThread = getThread();
+								applyThread.start();
+								viewHolder.btnUnRegister.setClickable(false);
+								return;
+							}
+						});
+				if (peopleTag == INVATED_PEOPLE) {
 					
 				}
-			});
-			
-			viewHolder.btnUnRegister.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					
-					
+				if (peopleTag == SIGNED_PEOPLE) {
+					viewHolder.btnRegister.setVisibility(View.GONE);
 				}
-			});
-			if(peopleTag == INVATED_PEOPLE){
-				//获得邀请人的信息
-			}
-			if(peopleTag == SIGNED_PEOPLE){
-				viewHolder.btnRegister.setVisibility(View.GONE);
-			}
-			if(peopleTag == UNSIGNED_PEOPLE){
-				viewHolder.btnUnRegister.setVisibility(View.GONE);
-			}
-			if(peopleTag == UNRESPONSED_PEOPLE){
-				
+				if (peopleTag == UNSIGNED_PEOPLE) {
+					viewHolder.btnUnRegister.setVisibility(View.GONE);
+				}
+				if (peopleTag == UNRESPONSED_PEOPLE) {
+
+				}
 			}
 		}
-	}
-	
+
 }

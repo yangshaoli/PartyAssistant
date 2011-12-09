@@ -89,12 +89,15 @@ public class RegisterActivity extends Activity {
 					 */
 					userNameReg = (String) msg.getData().get(
 							Constants.AIRENAO_USER_NAME);
+					pass2Reg = (String)msg.getData().get(
+							Constants.AIRENAO_PASSWORD);
 					String uId = (String) msg.getData().get(
 							Constants.AIRENAO_USER_ID);
 					SharedPreferences mySharedPreferences = AirenaoUtills
 							.getMySharedPreferences(myContext);
 					Editor editor = mySharedPreferences.edit();
 					editor.putString(Constants.AIRENAO_USER_NAME, userNameReg);
+					editor.putString(Constants.AIRENAO_PASSWORD, pass2Reg);
 					editor.putString(Constants.AIRENAO_USER_ID, uId);
 					editor.commit();
 				}
@@ -125,11 +128,11 @@ public class RegisterActivity extends Activity {
 
 				JSONObject jsonObject;
 				try {
-					jsonObject = new JSONObject(result).getJSONObject("output");
+					jsonObject = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
 					String status;
 					String description;
-					status = jsonObject.getString("status");
-					description = jsonObject.getString("description");
+					status = jsonObject.getString(Constants.STATUS);
+					description = jsonObject.getString(Constants.DESCRIPTION);
 					if ("ok".equals(status) && "ok".equals(description)) {
 						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
 						// 注册成功后，登陆
@@ -141,14 +144,17 @@ public class RegisterActivity extends Activity {
 								.getJSONObject("output");
 						status = jsonObject.getString("status");
 						description = jsonObject.getString("description");
-						jsonObject =  jsonObject.getJSONObject("datasource");
-						String UserId = jsonObject.getString("uid");
-						if ("ok".equals(status) && "ok".equals(description)) {
+						
+						if ("ok".equals(status)) {
+							jsonObject =  jsonObject.getJSONObject("datasource");
+							String UserId = jsonObject.getString("uid");
 							Message message = new Message();
 							message.what = 2;
 							Bundle bundle = new Bundle();
 							bundle.putString(Constants.AIRENAO_USER_NAME,
 									userNameReg);
+							bundle.putString(Constants.AIRENAO_PASSWORD,
+									pass1Reg);
 							bundle.putString(Constants.AIRENAO_USER_ID,
 									UserId);
 							message.setData(bundle);
@@ -157,7 +163,7 @@ public class RegisterActivity extends Activity {
 							// 如果不是第一次启动
 							if (appFlag == Constants.APP_USED_FLAG_O) {
 
-								SQLiteDatabase db = DbHelper.openDatabase();
+								SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 								tempActivity = DbHelper.select(db);
 								listActivity = (ArrayList<Map<String, Object>>) DbHelper
 										.selectActivitys(db);
@@ -309,6 +315,7 @@ public class RegisterActivity extends Activity {
 					myProgressDialog.show();
 					initThread();
 					registerThread.start();
+					return;
 
 				} else {
 					AlertDialog aDig = new AlertDialog.Builder(

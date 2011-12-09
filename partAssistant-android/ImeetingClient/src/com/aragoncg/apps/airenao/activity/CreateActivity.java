@@ -1,6 +1,5 @@
 package com.aragoncg.apps.airenao.activity;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -16,6 +15,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,6 +46,8 @@ public class CreateActivity extends Activity implements OnClickListener {
 	public static final int ok = 0x7f050012;
 	public static final int cancle = 0x7f050018;
 	public static final int nextBtn=0x7f050015;
+	public static final int MENU_SET = 0;
+	public static final int MENU_OFF = 1;
 
 	private int mYear;
 	private int mMonth;
@@ -99,6 +102,12 @@ public class CreateActivity extends Activity implements OnClickListener {
 		getCurrentTime();
 		createDbThread(this);
 		dbThread.run();
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+		try{
+			DbHelper.delete(db, DbHelper.deleteLastSql);
+		}catch(Exception e){
+			e.printStackTrace();}
+		finally{db.close();}
 		if(intent != null){
 			initData(intent);
 		}
@@ -508,22 +517,10 @@ public class CreateActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void run() {
-				String fpath = android.os.Environment.getDataDirectory()
-						.getAbsolutePath()
-						+ Constants.DATA_BASE_PATH;
-				fpath = fpath + "/" + Constants.DATA_BASE_NAME;
-				if(!new File(fpath).exists()){
-					myDbHelper = DbHelper.getInstance(context);
-				}else{
-					/*db = DbHelper.openDatabase();
-					theLastData = getLastAirenaoData();
-					DbHelper.delete(db);*/
-					
-				}
 				
+					DbHelper.getInstance(CreateActivity.this);
 			}
-			
-		};
+		  };
 	}
 	
 	//保存数据
@@ -534,7 +531,7 @@ public class CreateActivity extends Activity implements OnClickListener {
 
 			@Override
 			public void run() {
-				db = DbHelper.openDatabase();
+				db = DbHelper.openOrCreateDatabase();
 				//先删除再保存
 				try{
 					DbHelper.delete(db,DbHelper.deleteLastSql);
@@ -592,6 +589,11 @@ public class CreateActivity extends Activity implements OnClickListener {
 	}
 	
 	//要发送的数据
+	/**
+	 * -2代表发送手机短信
+	 * -1代表发送Emial
+	 * @param sendTag
+	 */
 	public void packgeDataToSendAirenaoActivity(int sendTag){
 		String content = activityDescText.getText().toString();
 		if("".equals(content)){
@@ -599,13 +601,27 @@ public class CreateActivity extends Activity implements OnClickListener {
 			return;
 		}
 		Bundle dataBundle = new Bundle();
-		dataBundle.putString(Constants.SEND_TIME, startTimeText.getText().toString());
-		dataBundle.putString(Constants.SEND_POSITION, positionText.getText().toString());
+		
+		String time = startTimeText.getText().toString();
+		if(time==null || "".equals(time)){
+			dataBundle.putString(Constants.SEND_TIME, "");
+		}else{
+			dataBundle.putString(Constants.SEND_TIME, time);
+		}
+		
+		String positon = positionText.getText().toString();
+		if(positon==null || "".equals(positon)){
+			dataBundle.putString(Constants.SEND_POSITION, "");
+		}else{
+			dataBundle.putString(Constants.SEND_POSITION, positon);
+		}
+		
 		String myNumber = peopleLimitNum.getText().toString().trim();
 		if(myNumber.equals("")){
 			myNumber = "0";
 		}
 		dataBundle.putInt(Constants.SEND_NUMBER,Integer.valueOf(myNumber));
+		
 		dataBundle.putString(Constants.SEND_CONTENT, activityDescText.getText().toString());
 		
 		Intent mIntent = new Intent(CreateActivity.this,SendAirenaoActivity.class);
@@ -618,4 +634,44 @@ public class CreateActivity extends Activity implements OnClickListener {
 		userTitle = (TextView)findViewById(R.id.userTitle);
 		userTitle.setText(userName);
 	}
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		  menu.add(0, MENU_SET, 0, getString(R.string.btn_setting)); 
+		  menu.add(0, MENU_OFF, 0, getString(R.string.user_off)); 
+		    
+		return super.onCreateOptionsMenu(menu);
+	}
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		  switch (item.getItemId()) { 
+		    case MENU_SET: 
+		        //newGame(); 
+		        return true; 
+		    case MENU_OFF: 
+		    	AlertDialog dialog = new AlertDialog.Builder(CreateActivity.this)
+				.setTitle(R.string.user_off)
+				.setMessage(R.string.user_off_message)
+				.setPositiveButton(R.string.btn_ok, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent();
+						intent.setClass(CreateActivity.this, LoginActivity.class);
+						startActivity(intent);
+					}
+				})
+				.create();
+				dialog.show();
+		        return true; 
+		  }
+		return super.onOptionsItemSelected(item);
+	}
+	
+	
+	
+	
 }

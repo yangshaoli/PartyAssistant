@@ -71,6 +71,10 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				myProgressDialog = AirenaoUtills.generateProgressingDialog(LoginActivity.this,
+						"",getString(R.string.logining));
+				myProgressDialog.setOwnerActivity(LoginActivity.this);
+				myProgressDialog.show();
 				boolean isEmail;
 				userName = userNameText.getText().toString();
 				passWord = passWordText.getText().toString();
@@ -100,12 +104,10 @@ public class LoginActivity extends Activity {
 									}).create();
 					return;
 				}*/
-				myProgressDialog = AirenaoUtills.generateProgressingDialog(LoginActivity.this,
-						"",getString(R.string.logining));
-				myProgressDialog.setOwnerActivity(LoginActivity.this);
-				myProgressDialog.show();
+			
 				// 启动线程登录
 				loginThread.start();
+				return;
 			}
 		});
 
@@ -153,6 +155,7 @@ public class LoginActivity extends Activity {
 			public void handleMessage(Message msg) {
 				switch(msg.what){
 					case Constants.POST_MESSAGE_CASE:
+						myProgressDialog.cancel();
 						String message = (String) msg.getData().get(Constants.HENDLER_MESSAGE);
 						AlertDialog aDig = new AlertDialog.Builder(
 								LoginActivity.this).setMessage(
@@ -161,7 +164,7 @@ public class LoginActivity extends Activity {
 					case Constants.LOGIN_SUCCESS_CASE:
 					/*
 					 * 保存用户名和密码
-					 */
+					 */ myProgressDialog.cancel();
 						userName = (String) msg.getData().get(Constants.AIRENAO_USER_NAME);
 						String uId = (String) msg.getData().get(Constants.AIRENAO_USER_ID);
 						SharedPreferences mySharedPreferences = AirenaoUtills
@@ -194,9 +197,9 @@ public class LoginActivity extends Activity {
 					jsonObject = new JSONObject(result).getJSONObject("output");
 					String status = jsonObject.getString("status");
 					String description = jsonObject.getString("description");
-					String uId = jsonObject.getJSONObject("datasource").getString("uid");
-					if ("ok".equals(status) && "ok".equals(description)) {
-						
+					
+					if ("ok".equals(status)) {
+						String uId = jsonObject.getJSONObject("datasource").getString("uid");
 						Message message = new Message();
 						message.what = 2;
 						Bundle bundle = new Bundle();
@@ -205,7 +208,7 @@ public class LoginActivity extends Activity {
 						message.setData(bundle);
 						myHandler.sendMessage(message);
 						
-						SQLiteDatabase db = DbHelper.openDatabase();
+						SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 						tempActivity = DbHelper.select(db);
 						activityList = (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
 						if (tempActivity != null) {
@@ -228,7 +231,7 @@ public class LoginActivity extends Activity {
 							
 						}
 						
-						myProgressDialog.cancel();
+						//myProgressDialog.cancel();
 					}else{
 						Message message = new Message();
 						message.what = 1;
@@ -236,7 +239,7 @@ public class LoginActivity extends Activity {
 						bundle.putString(Constants.HENDLER_MESSAGE, description);
 						message.setData(bundle);
 						myHandler.sendMessage(message);
-						myProgressDialog.cancel();
+						//myProgressDialog.cancel();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

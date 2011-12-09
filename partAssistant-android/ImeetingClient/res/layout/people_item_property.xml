@@ -38,7 +38,7 @@
          	<Button
          	android:layout_width="wrap_content"
          	android:layout_height="wrap_content"
-         	android:text="报名"
+         	android:text="代报名"
          	android:id="@+id/btnPeopleRegister"/>  
             <Button
          	android:layout_width="wrap_content"

@@ -21,7 +21,6 @@ import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -42,6 +41,7 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 
 import android.content.Context;
 
@@ -57,11 +57,6 @@ import android.content.Context;
  * 
  */
 public class HttpHelper {
-
-	// TODO add cookie support
-	// TODO multi-part binary data
-	// TODO follow 302s?
-	// TODO shutdown connection mgr? - client.getConnectionManager().shutdown();
 
 	private static final String CONTENT_TYPE = "Content-Type";
 	private static final int POST_TYPE = 1;
@@ -135,7 +130,7 @@ public class HttpHelper {
 	 */
 	public String performGet(final String url, final Context context) {
 		return performRequest(null, url, null, null, null, null,
-				HttpHelper.GET_TYPE,context);
+				HttpHelper.GET_TYPE, context);
 	}
 
 	/**
@@ -143,18 +138,59 @@ public class HttpHelper {
 	 * 
 	 */
 	public String performGet(final String url, final String user,
-			final String pass, final Map<String, String> additionalHeaders, final Context context) {
+			final String pass, final Map<String, String> additionalHeaders,
+			final Context context) {
 		return performRequest(null, url, user, pass, additionalHeaders, null,
-				HttpHelper.GET_TYPE,context);
+				HttpHelper.GET_TYPE, context);
 	}
 
 	/**
 	 * Perform a simplified HTTP POST operation.
 	 * 
 	 */
-	public String performPost(final String url, final Map<String, String> params, final Context context) {
+	public String performPost(final String url,
+			final Map<String, String> params, final Context context) {
 		return performRequest(HttpHelper.MIME_FORM_ENCODED, url, null, null,
 				null, params, HttpHelper.POST_TYPE, context);
+	}
+
+	public String savePerformPost(final String url,
+			final Map<String, String> params, final Context ctx) {
+		String response = "";
+		int respondCode = 0;
+
+		if (!AirenaoUtills.isNetWorkExist(ctx)) {
+			return NO_DATA_CONNECTION;
+		}
+		HttpPost httpRequest = new HttpPost(url);
+		List<NameValuePair> nvps = null;
+		if ((params != null) && (params.size() > 0)) {
+			nvps = new ArrayList<NameValuePair>();
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				nvps.add(new BasicNameValuePair(entry.getKey(), entry
+						.getValue()));
+			}
+		}
+		try {
+			httpRequest.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+			HttpResponse httpResponse = new DefaultHttpClient()
+					.execute(httpRequest);
+			respondCode = httpResponse.getStatusLine().getStatusCode();
+			
+			if (respondCode == 200) {
+				response = EntityUtils.toString(httpResponse.getEntity());
+				return response;
+			} else {
+				
+				response = EntityUtils.toString(httpResponse.getEntity());
+				return response;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			//response = "服务器返回错误代码";
+		}
+		return response;
 	}
 
 	/**
@@ -178,16 +214,16 @@ public class HttpHelper {
 	public String performPost(final String contentType, final String url,
 			final String user, final String pass,
 			final Map<String, String> additionalHeaders,
-			final Map<String, String> params,final Context context) {
+			final Map<String, String> params, final Context context) {
 		return performRequest(contentType, url, user, pass, additionalHeaders,
 				params, HttpHelper.POST_TYPE, context);
 	}
 
-
 	private String performRequest(final String contentType, final String url,
 			final String user, final String pass,
 			final Map<String, String> headers,
-			final Map<String, String> params, final int requestType, final Context ctx) {
+			final Map<String, String> params, final int requestType,
+			final Context ctx) {
 
 		if (!AirenaoUtills.isNetWorkExist(ctx)) {
 			return NO_DATA_CONNECTION;
@@ -261,18 +297,13 @@ public class HttpHelper {
 		String response = null;
 		// execute method returns?!? (rather than async) - do it here sync, and
 		// wrap async elsewhere
+
 		try {
 			response = HttpHelper.client.execute(method, responseHandler);
-		} catch (ClientProtocolException e) {
-			response = UNABLE_TO_RETRIEVE_INFO;// HttpHelper.HTTP_RESPONSE_ERROR
-												// + " - " +
-												// e.getClass().getSimpleName()
-												// + " " + e.getMessage();
-		} catch (IOException e) {
-			response = UNABLE_TO_RETRIEVE_INFO;// HttpHelper.HTTP_RESPONSE_ERROR
-												// + " - " +
-												// e.getClass().getSimpleName()
-												// + " " + e.getMessage();
+		} catch (Exception e) {
+			// response = UNABLE_TO_RETRIEVE_INFO;
+			e.printStackTrace();
+
 		}
 		return response;
 	}

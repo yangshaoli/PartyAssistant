@@ -75,6 +75,8 @@ public class MeetingListActivity extends ListActivity implements
 	private JSONObject dataSource;
 	private JSONArray myJsonArray;
 	private Handler postHandler;
+	private boolean needRefresh;
+	private int tempCount;
 	
 	public static final String PAGE = "page";
 	public static final String PARTY_LIST = "partyList";
@@ -83,6 +85,8 @@ public class MeetingListActivity extends ListActivity implements
 	public static final String PARTY_DESCRIPTION = "description";
 	public static final String PARTY_START_TIME = "starttime";
 	public static final String PARTY_LOCATION = "location";
+	public static final int MSG_ID_DELETE = 2;
+	public static final int MSG_ID_SCROLL = 1;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -144,7 +148,17 @@ public class MeetingListActivity extends ListActivity implements
 			
 			@Override
 			public void onClick(View v) {
+				onCreateDialog(1);
 				
+					if(list == null){
+						list = new ArrayList<Map<String,Object>>();
+					}
+					list.clear();
+					firstLoadDataThread = initLoadThread();
+					postHandler.post(firstLoadDataThread);
+					myDaAdapter.notifyDataSetChanged();
+					
+				dismissDialog(1);
 			}
 		});
 	}
@@ -157,19 +171,23 @@ public class MeetingListActivity extends ListActivity implements
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
-				case 1:
-					if (myDaAdapter.count <= 20) {
+				case MSG_ID_SCROLL:
+					/*if (myDaAdapter.count <= 20) {
 						myDaAdapter.count += 7;
 						int currentPage = myDaAdapter.count / 7;
 						// Toast.makeText(getApplicationContext(),"第" +
 						// currentPage + "页", Toast.LENGTH_LONG).show();
 					} else {
-						myListView.removeFooterView(footerView);
+					//	myListView.removeFooterView(footerView);
 						Toast.makeText(getApplicationContext(), "恰面网提示底了！",
-								Toast.LENGTH_LONG).show();
+								Toast.LENGTH_LONG).show();s
 					}
 					// 重新刷新Listview的adapter里面数据
-					myDaAdapter.notifyDataSetChanged();
+*/					myDaAdapter.notifyDataSetChanged();
+					break;
+				case MSG_ID_DELETE:
+					String message = (String) msg.getData().get(Constants.DESCRIPTION);
+					Toast.makeText(MeetingListActivity.this, message, Toast.LENGTH_SHORT).show();
 					break;
 				default:
 					break;
@@ -187,7 +205,7 @@ public class MeetingListActivity extends ListActivity implements
 		AdapterView.AdapterContextMenuInfo menuInfo;
 		menuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 		int menuItemId = item.getItemId();
-		int listItemId = menuInfo.position;
+		final int listItemId = menuInfo.position;
 		System.out.println("点击了长按菜单里面的第" + item.getItemId() + "个项目" + "地址是："
 				+ menuInfo.position);
 		switch (menuItemId) {
@@ -195,8 +213,53 @@ public class MeetingListActivity extends ListActivity implements
 
 			AlertDialog dilog = new AlertDialog.Builder(
 					MeetingListActivity.this)
-					.setTitle(getString(R.string.delete))
+					.setTitle(getString(R.string.deleteMenu))
 					.setIcon(android.R.drawable.ic_delete)
+					.setItems(R.array.deleteMenu, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							HashMap<String, Object> map = (HashMap<String, Object>) mData.get(listItemId);
+							final Integer partyID = Integer.valueOf((String) map.get(Constants.PARTY_ID));
+							final String delteUrl = getString(R.string.deleteUrl);
+							//userId
+							switch(which){
+								case 0://删除并提醒
+									
+								break;
+								case 1: //直接删除
+									Runnable remove = new Runnable() {
+										
+										@Override
+										public void run() {
+											//删除后台
+											deleleOnePraty(delteUrl,partyID);
+											//删除缓存
+											removeActivity(listItemId);
+											//删除数据库
+											SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+											String sql = AirenaoUtills.linkSQL(partyID+"");
+											try{
+												DbHelper.delete(db, sql);
+												}
+											catch(Exception e){
+												e.printStackTrace();
+											}finally{
+												db.close();
+											}
+										}
+									};
+									remove.run();
+									
+								break;
+								case 2://取消
+									
+								break;
+								
+							}
+							
+						}
+					})
 					// .setView(view);
 					.create();
 			dilog.show();
@@ -208,7 +271,7 @@ public class MeetingListActivity extends ListActivity implements
 			 * 单击“取消”：取消删除动作
 			 */
 			// 先显示对话框再做删除操作
-			removeActivity(listItemId);
+			
 			break;
 		case 1:// copy the data of "listItemId"
 
@@ -238,7 +301,41 @@ public class MeetingListActivity extends ListActivity implements
 		return super.onContextItemSelected(item);
 
 	}
-
+	
+	/**
+	 * 删除一个party
+	 * @param url
+	 * @param partyId
+	 */
+	public void deleleOnePraty(final String url,Integer partyId){
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("pID", partyId+"");
+		params.put("uID", userId);
+		HttpHelper httpClient = new HttpHelper();
+		String status="";
+		String description="";
+		
+		String result = httpClient.performPost(url, params, MeetingListActivity.this);
+		result = AirenaoUtills.linkResult(result);
+		try {
+			JSONObject outPut = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+			status = outPut.getString(Constants.STATUS);
+			description = outPut.getString(Constants.DESCRIPTION);
+			if(!"ok".equals(status)){
+				Message msg = new Message();
+				Bundle bundle = new Bundle();
+				bundle.putString(Constants.DESCRIPTION, description);
+				msg.setData(bundle);
+				msg.what = MSG_ID_DELETE;
+				handler.sendMessage(msg);
+			}
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+	}
+	
+	
 	// 重写onListItemClick但是ListView条目事件
 	@Override
 	protected void onListItemClick(ListView listView, View v, int position,
@@ -252,6 +349,8 @@ public class MeetingListActivity extends ListActivity implements
 		HashMap<String, Object> dataHashMap = (HashMap<String, Object>) mData
 				.get(position);
 		AirenaoActivity airenaoData = new AirenaoActivity();
+		airenaoData.setId(Integer.valueOf(Integer.valueOf((String) dataHashMap
+				.get(Constants.PARTY_ID))));
 		airenaoData.setActivityName((String) dataHashMap
 				.get(Constants.ACTIVITY_NAME));
 		airenaoData.setActivityTime((String) dataHashMap
@@ -290,6 +389,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * 
 	 */
 	private List<Map<String, Object>> getData(Intent data) {
+		needRefresh = data.getBooleanExtra(Constants.NEED_REFRESH, false);
 		postHandler = new Handler(){
 
 			@Override
@@ -317,25 +417,15 @@ public class MeetingListActivity extends ListActivity implements
 		if (list == null) {
 			list = new ArrayList<Map<String, Object>>();
 		}
-		list = getDataFromServer();
+		if(!needRefresh){
+			list = getDataFromServer();
+		}
+		
 		if(list.size()>0){
 			return list;
 		}else{
 			if (firstLoadDataThread == null) {
-				firstLoadDataThread = new Runnable() {
-
-					@Override
-					public void run() {
-						// 配置url
-						partyListUrl = getString(R.string.partyListUrl);
-						partyListUrl = partyListUrl + userId + "/" + page + "/";
-						HttpHelper myHttpHelper = new HttpHelper();
-						String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
-						dataResult = AirenaoUtills.linkResult(dataResult);
-						analyzeJson(dataResult);
-						
-					}
-				};
+				firstLoadDataThread = initLoadThread();
 				postHandler.post(firstLoadDataThread);
 				return list;
 			}
@@ -344,11 +434,28 @@ public class MeetingListActivity extends ListActivity implements
 		}
 
 	}
+	
+	public Runnable initLoadThread(){
+	 return	new Runnable() {
+
+			@Override
+			public void run() {
+				// 配置url
+				partyListUrl = getString(R.string.partyListUrl);
+				partyListUrl = partyListUrl + userId + "/" + page + "/";
+				HttpHelper myHttpHelper = new HttpHelper();
+				String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
+				dataResult = AirenaoUtills.linkResult(dataResult);
+				analyzeJson(dataResult);
+				
+			}
+		};
+	}
 	/**
 	 * 获得本地数据
 	 */
 	public List<Map<String, Object>> getDataFromServer(){
-		SQLiteDatabase db = DbHelper.openDatabase();
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db); 
 	}
 	/**
@@ -483,7 +590,7 @@ public class MeetingListActivity extends ListActivity implements
 					@Override
 					public void run() {
 						try {
-							if (myDaAdapter.getCount() <= 20) {
+							if (myDaAdapter.getCount()> Constants.MAX_NUM_PER_PAGE && tempCount > 0) {
 								// 这里放你网络数据请求的方法，我在这里用线程休眠5秒方法来处理
 								page += 1;
 								partyListUrl = getString(R.string.partyListUrl) + userId + "/" + page +"/";
@@ -502,6 +609,7 @@ public class MeetingListActivity extends ListActivity implements
 					}
 				};
 				mThread.start();
+				return;
 			}
 		}
 
@@ -557,7 +665,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * 解析Json 	
 	 */
 	public void analyzeJson(String result) {
-		SQLiteDatabase db = DbHelper.openDatabase();
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 
 		try {
 			JSONObject output = new JSONObject(result)
@@ -568,18 +676,22 @@ public class MeetingListActivity extends ListActivity implements
 			dataSource = output.getJSONObject(Constants.DATA_SOURCE);
 			page = Integer.valueOf(dataSource.getString(PAGE));
 			myJsonArray = dataSource.getJSONArray(PARTY_LIST);
+			tempCount = myJsonArray.length();
+			if(tempCount>0){
+			DbHelper.delete(db, DbHelper.deleteActivitySql);
+			}
 			for (int i = 0; myJsonArray.length() > 0; i++) {
 				JSONObject tempActivity = myJsonArray.getJSONObject(i);
 				list.add(organizeMap(tempActivity));
 				try {
+					
 					DbHelper.insert(db, organizeOneActivity(tempActivity),
 							DbHelper.ACTIVITY_TABLE_NAME);
 				} catch (Exception e) {
 					e.printStackTrace();
-				} finally {
-					db.close();
 				}
 			}
+			
 		}else{
 			Message message = new Message();
 			message.what = Constants.POST_MESSAGE_CASE;
@@ -592,6 +704,10 @@ public class MeetingListActivity extends ListActivity implements
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+		if(db != null){
+			db.close();
+		}
+		
 	}
 	
 	/**
@@ -602,8 +718,13 @@ public class MeetingListActivity extends ListActivity implements
 	public HashMap<String, Object> organizeMap(JSONObject data){
 		HashMap<String, Object> map = new HashMap<String, Object>();
 		try {
-			map.put(Constants.ACTIVITY_NAME, data.getString(PARTY_DESCRIPTION).substring(0, 6));
-			map.put(Constants.ACTIVITY_TIME, data.getString(PARTY_START_TIME));
+			map.put(Constants.PARTY_ID, data.get(PARTY_ID)+"");
+			map.put(Constants.ACTIVITY_NAME, data.getString(PARTY_DESCRIPTION));
+			if(data.getString(PARTY_START_TIME)=="null" || "".equals(data.getString(PARTY_START_TIME))){
+				map.put(Constants.ACTIVITY_TIME, "时间待定");
+			}else{
+				map.put(Constants.ACTIVITY_TIME, data.getString(PARTY_START_TIME));
+			}
 			map.put(Constants.ACTIVITY_POSITION, data.getString(PARTY_LOCATION));//data.getString()
 			map.put(Constants.ACTIVITY_CONTENT, data.getString(PARTY_DESCRIPTION));
 			map.put(Constants.ACTIVITY_NUMBER, data.getString(POEPLE_MAXMUM));
@@ -622,8 +743,13 @@ public class MeetingListActivity extends ListActivity implements
 	public AirenaoActivity organizeOneActivity(JSONObject data){
 		AirenaoActivity myActivity = new AirenaoActivity();
 		try {
-			myActivity.setActivityName(data.getString(description.substring(0, 6)));
-			myActivity.setActivityTime(data.getString(PARTY_START_TIME));
+			myActivity.setId(Integer.valueOf(data.getString(PARTY_ID)));
+			myActivity.setActivityName(data.getString(PARTY_DESCRIPTION));
+			String time = data.getString(PARTY_START_TIME);
+			if(time==null || time.equals("null")){
+				time = "时间待定";
+			}
+			myActivity.setActivityTime(time);
 			myActivity.setActivityPosition(data.getString(PARTY_LOCATION));//data.getString()
 			myActivity.setActivityContent(data.getString(PARTY_DESCRIPTION));
 			if(data.getString(POEPLE_MAXMUM)!= null && !"".equals(data.getString(POEPLE_MAXMUM))){

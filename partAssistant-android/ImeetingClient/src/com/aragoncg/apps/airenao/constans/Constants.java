@@ -32,6 +32,7 @@ public class Constants {
     public static final String TO_DETAIL_ACTIVITY = "toDetailActivity";
     public static final String TO_CREATE_ACTIVITY = "toCreateActivity";
     
+    public static final String ACTIVITY_ID = "id";
     public static final String ACTIVITY_NAME = "activityName";	
     public static final String ACTIVITY_TIME = "activityTime";
     public static final String ACTIVITY_POSITION = "activityPosition";
@@ -41,12 +42,20 @@ public class Constants {
     public static final String ACTIVITY_SIGNED_PEOPLE = "activitySignedPeople";
     public static final String ACTIVITY_UNSIGNED_PEOPLE = "activityUnsignedPeople";
     public static final String ACTIVITY_UNJIONED_PEOPLE = "activityUnjionedPeople";
+    public static final String ACTIVITY_RECEIVERS = "receivers";
+    public static final String EMAIL_SUBJECT = "subject";
+    public static final String ACTIVITY_WITH_LINK = "_isapplytips";
+    public static final String ACTIVITY_SEND_BYSELF = "_issendbyself";
+    public static final String MSG_TYPE = "msgType";
+    public static final String ADDRESS_TYPE = "addressType";
+    
     
     public static final String 	PEOPLE_NAME = "peopelName";
     public static final String 	PEOPLE_NUM = "peopelNum";
     public static final String  PEOPLE_CONTACTS = "peopleContacts";
     
     public static final String  FROMDETAIL = "fromDetail";
+    public static final String 	FROM_PEOPLE_INFO = "fromPeopleInfo";
     public static final String  FROMCONTACTSLISTTOSEND = "from_contactsList_to_send";
     public static final String  IS_FROM_MEETING_LIST = "isFromMeetingList";
     
@@ -66,7 +75,7 @@ public class Constants {
     /**
      * database path
      */
-    public static final String  DATA_BASE_PATH = "/data/com.aragoncg.apps.airenao/databases";
+    public static final String  DATA_BASE_PATH = "/airenao/databases";
     public static final String  DATA_BASE_NAME = "activityData.db";
     
     public static final String  WHAT_PEOPLE_TAG = "whatPeopleTag";
@@ -90,6 +99,14 @@ public class Constants {
     public static final String STATUS = "status";
     public static final String DESCRIPTION = "description";
     public static final String DATA_SOURCE = "datasource";
-   
+    //每页显示的最大条数
+    public static final int MAX_NUM_PER_PAGE = 20;
     
+    public static final String PARTY_ID = "partyId";
+    public static final String ONE_PARTY = "oneParty";
+    public static final String CONTENT = "content";
+    public static final String START_TIME = "starttime";
+    public static final String LOCATION = "location";
+    public static final String POEPLE_MAXIMUM = "peopleMaximum";
+    public static final String NEED_REFRESH = "refresh";
 }

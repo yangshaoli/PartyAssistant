@@ -3,8 +3,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="1"
-	android:background="@drawable/bg_balloon1">
-	<LinearLayout
+	android:background="@drawable/bj">
+	<RelativeLayout
 	android:layout_width="fill_parent"
 	android:layout_height="40sp"
 	android:orientation="horizontal"
@@ -30,12 +30,11 @@
 	android:layout_marginTop="9sp"
 	android:text="ad"/>
 	</LinearLayout>
-	
-	<TextView android:layout_width="wrap_content"
-		android:layout_weight="1"
-		android:textColor="#FFFFFF" android:layout_height="37sp" android:text="@string/create_activity"
-		 android:gravity="center" />
-	</LinearLayout>
+	<TextView android:layout_width="fill_parent"
+		android:textColor="#FFFFFF"
+		android:layout_height="37sp" android:text="@string/create_activity"
+		android:gravity="center|center_horizontal" />
+	</RelativeLayout>
 	
 	<ScrollView android:layout_width="fill_parent"
 		android:layout_height="fill_parent"

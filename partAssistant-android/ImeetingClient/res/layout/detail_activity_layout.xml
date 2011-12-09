@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent" android:weightSum="1"
-	android:background="@drawable/background_red">
+	android:background="@drawable/bj">
 	<RelativeLayout
 	android:layout_width="fill_parent"
 	android:layout_height="45sp"
@@ -31,7 +31,7 @@
 	</RelativeLayout>
 	
 	<ScrollView android:layout_width="fill_parent"
-		android:background="@drawable/background_red"
+		android:background="@drawable/bj"
 		android:layout_height="fill_parent" android:layout_marginTop="8dip">
 		<LinearLayout android:layout_width="fill_parent"
 			android:layout_height="wrap_content" android:orientation="vertical">

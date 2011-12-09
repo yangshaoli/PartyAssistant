@@ -1,6 +1,8 @@
 package com.aragoncg.apps.airenao.model;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -20,7 +22,7 @@ public class AirenaoActivity implements Serializable{
 	 */
 	
 	private static final long serialVersionUID = 1L;
-	private int id = 0;
+	private int id ;
 	private String activityName;
 	private String activityTime;
 	private String activityPosition;
@@ -30,7 +32,27 @@ public class AirenaoActivity implements Serializable{
 	private int signUp;
 	private int unSignUp;
 	private int unJoin;
+	private String sendType;
+	private List<Map<String,Object>> peopleList;
 	
+	
+	
+	public String getSendType() {
+		return sendType;
+	}
+
+	public void setSendType(String sendType) {
+		this.sendType = sendType;
+	}
+
+	public List<Map<String, Object>> getPeopleList() {
+		return peopleList;
+	}
+
+	public void setPeopleList(List<Map<String, Object>> peopleList) {
+		this.peopleList = peopleList;
+	}
+
 	public AirenaoActivity() {
 		
 		super();
