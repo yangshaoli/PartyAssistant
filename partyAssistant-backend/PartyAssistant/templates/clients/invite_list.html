@@ -61,7 +61,7 @@ function ajaxGetClients(applystatus){
     var link = $('img[alt="please"]').parent().attr('href').split('?')[0];
     $.ajax({
         type : 'GET',
-        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
+        url: '/parties/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
             clients = JSON.parse(response);
