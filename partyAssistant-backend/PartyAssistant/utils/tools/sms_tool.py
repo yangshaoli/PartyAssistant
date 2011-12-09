@@ -16,6 +16,8 @@ import urllib2
 logger = logging.getLogger('airenao')
 SMS_SERVER_NAME = 'http://u.wangxun360.com'
 WS_BATCH_SEND ='/ws/BatchSend.aspx'
+CORPID = 'ZLJK00123'
+PWD = '659402'
 
 
 #SMS_SERVER_NAME = 'http://192.168.3.155:8000'
@@ -58,8 +60,8 @@ def _ws_post_api_request_sendSMS(SMS_SERVER_NAME, WS_INTERFACE, params={}):
     return res 
 
 def _post_api_request_sendSMS(params={}):
-    params['CorpID'] = 'ZLJK00123'
-    params['Pwd'] = '659402'
+    params['CorpID'] = CORPID
+    params['Pwd'] = PWD
     params['Cell'] = ''
     params['SendTime'] = ''
     return _ws_post_api_request_sendSMS(SMS_SERVER_NAME, WS_BATCH_SEND, params)  
