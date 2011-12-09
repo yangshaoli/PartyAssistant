@@ -11,6 +11,7 @@ from settings import DOMAIN_NAME
 from utils.tools.str_tool import next_key
 import hashlib
 import logging
+import urllib
 import urllib2
 
 logger = logging.getLogger('airenao')
@@ -51,12 +52,10 @@ output_message={#短信返回值的含义
 #      'SendTime':'' #定时发送时间, String(14)          
 #      } 
 def _ws_post_api_request_sendSMS(SMS_SERVER_NAME, WS_INTERFACE, params={}):
-    urlp = []
-    for key in params.keys():
-        urlp.append(key +'='+params[key])
-    urlp = '&'.join(urlp)    
-    url = '%s%s?%s' % (SMS_SERVER_NAME, WS_INTERFACE, urlp)
-    res = urllib2.urlopen(url).read()
+    url = '%s%s' % (SMS_SERVER_NAME, WS_INTERFACE)
+    params = urllib.urlencode(params)
+    request = urllib2.Request(url,params)
+    res = urllib2.urlopen(request).read()
     return res 
 
 def _post_api_request_sendSMS(params={}):
@@ -64,6 +63,7 @@ def _post_api_request_sendSMS(params={}):
     params['Pwd'] = PWD
     params['Cell'] = ''
     params['SendTime'] = ''
+    
     return _ws_post_api_request_sendSMS(SMS_SERVER_NAME, WS_BATCH_SEND, params)  
  
  
@@ -84,21 +84,21 @@ def sms_modem_send_sms(outbox_message, message, party):
                 short_link = DOMAIN_NAME + '/' + last_key
                 content = content + u' 快来报名：%s' % short_link
                 ShortLink.objects.create(short_link=last_key, long_link=enroll_link)
-                data = {'Mobile':phone, 'Content':content}
+                data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
-                    if res['status'] != 'OK':
-                        logger.error(res['msg'])
+                    if res != '1':
+                        logger.error(res)
                 except:
                     logger.exception('send sms error!')
         else:
             for phone in phone_list:
                 content = message.content
-                data = {'Mobile':phone, 'Content':content}
+                data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
-                    if res['status'] != 'OK':
-                        logger.error(res['msg'])
+                    if res != '1':
+                        logger.error(res)
                 except:
                     logger.exception('send sms error!')
     except:
