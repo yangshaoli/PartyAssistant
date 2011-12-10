@@ -130,11 +130,10 @@ def editParty(request):
             raise myException(u'您要编辑的会议已被删除')
         party.start_date = startdate
         party.start_time = starttime
-        party.descrption = description
+        party.description = description
         party.address = location
         party.limit_count = peopleMaximum
         party.save()
-
 @csrf_exempt
 @commit_on_success
 @apis_json_response_decorator
