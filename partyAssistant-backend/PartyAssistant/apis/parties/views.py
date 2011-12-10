@@ -134,6 +134,7 @@ def editParty(request):
         party.address = location
         party.limit_count = peopleMaximum
         party.save()
+        
 @csrf_exempt
 @commit_on_success
 @apis_json_response_decorator
@@ -154,7 +155,7 @@ def PartyList(request, uid, page = 1):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
     partylist = Party.objects.filter(creator = user).order_by('-created_time')  
-    GMT_FORMAT = '%Y-%m-%d %H:%M'
+    GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     partylist = process_paginator(partylist, page, LIST_MEETING_PAGE_SIZE).object_list
     for party in partylist:
         partyObject = {}
