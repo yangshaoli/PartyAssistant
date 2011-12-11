@@ -22,18 +22,18 @@ function changetoAble(o){
     <fieldset>
         <div class="field">
         <label for="true_name">姓名</label>
-         {{ form.true_name }}{{ form.true_name.errors.0 }}<a href="#" onclick="changetoAble('id_true_name')" >更改?</a>
+         {{ form.true_name }}{{ form.true_name.errors.0 }}
          </div>
          <div class="field">
          <label for="email">电子邮件</label>
-         {{ form.email }}{{ form.email.errors.0 }}<a href="#" onclick="changetoAble('id_email')" >更改?</a>
+         {{ form.email }}{{ form.email.errors.0 }}
          </div>
          <div class="field">
          <label for="phone">手机</label>
-         {{ form.confirm_password }}{{ form.phone }}{{ form.phone.errors.0 }}<a href="#" onclick="changetoAble('id_phone')">更改?</a>
+         {{ form.confirm_password }}{{ form.phone }}{{ form.phone.errors.0 }}
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
-         <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="#">充值?</a></div>
+         <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>
           <input type='submit' value='保存'></input>
         </fieldset>	
     </form>
