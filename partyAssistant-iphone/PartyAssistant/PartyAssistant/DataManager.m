@@ -113,6 +113,7 @@ static DataManager *sharedDataManager = nil;
                                     [NSURL URLWithString:ACCOUNT_REGIST]];
     [request setPostValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
     [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"];
+    [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     NSError *error = [request error];
     //3.get result
