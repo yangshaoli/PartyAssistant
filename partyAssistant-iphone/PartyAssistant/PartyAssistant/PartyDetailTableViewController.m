@@ -168,11 +168,11 @@
     }else if(indexPath.section == 1){
         if (indexPath.row == 0) {
             cell.textLabel.text = @"邀请人:";
-            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            NumberLabel *lb_1 = [[NumberLabel alloc] initWithBlueNumber:[self.peopleCountArray objectAtIndex:0] withFrame:CGRectMake(10, 14, 280, 44)];
+            
             lb_1.tag = 1;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:0]];
             lb_1.textAlignment = UITextAlignmentRight;
-            lb_1.backgroundColor = [UIColor clearColor];
+//            lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
 //            UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
 //            imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
@@ -181,7 +181,7 @@
             cell.textLabel.text = @"已报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:1]];
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -189,7 +189,7 @@
             cell.textLabel.text = @"不报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 3;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:2]];
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:2]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -197,7 +197,7 @@
             cell.textLabel.text = @"未报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 4;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:3]];
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:3]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -305,7 +305,7 @@
             NSNumber *appliedClientcount = [dataSource objectForKey:@"appliedClientcount"];
             NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
             NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
-            NSArray *countArray = [NSArray arrayWithObjects:allClientcount,appliedClientcount,refusedClientcount,donothingClientcount, nil];
+            NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[refusedClientcount stringValue],[donothingClientcount stringValue], nil];
             self.peopleCountArray = countArray;
             [self.tableView reloadData];
         }else{

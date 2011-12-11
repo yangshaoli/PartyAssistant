@@ -163,6 +163,7 @@
 		89C709F11490A5BC00699AE0 /* list_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 89C709EE1490A5BC00699AE0 /* list_icon.png */; };
 		89C709F21490A5BC00699AE0 /* new_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 89C709EF1490A5BC00699AE0 /* new_icon.png */; };
 		89C709F31490A5BC00699AE0 /* setting_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 89C709F01490A5BC00699AE0 /* setting_icon.png */; };
+		89CC34641491F27C0074E898 /* NumberLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 89CC34631491F27C0074E898 /* NumberLabel.m */; };
 		89E5F440147F24F6008FC556 /* WeiBoLoginWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */; };
 		89E7D926146280900059ADF4 /* SMSObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D925146280900059ADF4 /* SMSObjectService.m */; };
 		89E7D93014628C400059ADF4 /* UIViewControllerExtra.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D92D14628C400059ADF4 /* UIViewControllerExtra.m */; };
@@ -439,6 +440,8 @@
 		89C709EE1490A5BC00699AE0 /* list_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list_icon.png; sourceTree = "<group>"; };
 		89C709EF1490A5BC00699AE0 /* new_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new_icon.png; sourceTree = "<group>"; };
 		89C709F01490A5BC00699AE0 /* setting_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = setting_icon.png; sourceTree = "<group>"; };
+		89CC34621491F27C0074E898 /* NumberLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberLabel.h; sourceTree = "<group>"; };
+		89CC34631491F27C0074E898 /* NumberLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberLabel.m; sourceTree = "<group>"; };
 		89DE4BBD148DADDF006D7075 /* PartyAssistant.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PartyAssistant.entitlements; sourceTree = "<group>"; };
 		89E5F43E147F24F6008FC556 /* WeiBoLoginWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeiBoLoginWebView.h; sourceTree = "<group>"; };
 		89E5F43F147F24F6008FC556 /* WeiBoLoginWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeiBoLoginWebView.m; sourceTree = "<group>"; };
@@ -766,6 +769,8 @@
 				899B03081484C4EA0056EEFD /* PostWeiboViewController.h */,
 				899B03091484C4EC0056EEFD /* PostWeiboViewController.m */,
 				899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */,
+				89CC34621491F27C0074E898 /* NumberLabel.h */,
+				89CC34631491F27C0074E898 /* NumberLabel.m */,
 			);
 			name = CustomClass;
 			sourceTree = "<group>";
@@ -1277,6 +1282,7 @@
 				CEB2889C148E17A300B7E3B7 /* AddressBookDataManager.m in Sources */,
 				CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */,
 				89C709C114908E0D00699AE0 /* DeviceTokenService.m in Sources */,
+				89CC34641491F27C0074E898 /* NumberLabel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -42,7 +42,13 @@
     self.navigationItem.rightBarButtonItem = doneBtn;
     self.navigationItem.leftBarButtonItem.title = @"取消";
     //wxz
-    NSString *titleString=[[NSString alloc]initWithFormat:@"%@...",[baseInfoObject.description substringToIndex:3]];
+    NSString *titleString;
+    if (baseInfoObject.description.length>3) {
+        titleString=[[NSString alloc]initWithFormat:@"%@...",[baseInfoObject.description substringToIndex:3]];
+    }else{
+        titleString = baseInfoObject.description;
+    }
+    
     self.title=titleString;
 }
 
