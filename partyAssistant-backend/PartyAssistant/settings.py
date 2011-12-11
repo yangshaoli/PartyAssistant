@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'admin@aimeeting.com'),
+    ('AIMeeting', 'dantalion@onlinegalgame.com'),
 )
 
 DATABASES = {
@@ -106,9 +106,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-CLIENT_SOLR_PORT = 'http://localhost:8984/solr'
-MEETING_SOLR_PORT = 'http://localhost:8983/solr'
-
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -134,7 +131,6 @@ INSTALLED_APPS = (
     'apps.messages', 
     'apps.common', 
 )
-
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -193,9 +189,17 @@ LOGGING = {
     }
 }
 
-SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
+SYS_EMAIL_ADDRESS = '570863597@qq.com'
 DOMAIN_NAME = 'http://127.0.0.1:8000'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
+
 SMS_ISP_USERNAME = 's1002020649'
 SMS_ISP_PASSWORD = '13488891003'
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+
+EMAIL_HOST_USER = '570863597@qq.com'
+EMAIL_HOST_PASSWORD = 'liusun1224'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'

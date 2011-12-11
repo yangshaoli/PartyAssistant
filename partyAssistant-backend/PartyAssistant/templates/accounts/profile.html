@@ -1,15 +1,35 @@
 {% extends 'login_base.html' %}
 
-{% block title %} 账户信息  {% endblock %}
-
+{% block title %} 用户信息  {% endblock %}
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript">
+function changetoAble(o){
+   $(document.getElementById(o)).removeAttr('readonly');
+   
+}
+</script>
+{% endblock %}
 {% block content %}
 <div id="content">
   <div class="grid_a">
    <h2 class="title">用户信息</h2>
     欢迎你, {{user.username}}<br/><br/>
-    Email:{{user.email}}<br/>
 <br />
-<a href="{% url change_password %}">修改密码</a>
+<a href="{% url change_password %}">修改密码</a><br/>
+<form method='post' action='{% url profile %}'>
+姓&nbsp;&nbsp;&nbsp;&nbsp;名：<input type='text' name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}' placeholder='姓名' ></input>{{ form.true_name.errors.0 }}
+<br/>
+电子邮件:<input type='text' name='email' id='id_email' value='{{ form.email.value|default:'' }}' placeholder='邮件' ></input>{{ form.email.errors.0 }}
+<br/>
+手&nbsp;&nbsp;&nbsp;&nbsp;机：<input type='text' name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}' placeholder='手机' ></input>{{ form.phone.errors.0 }}
+<br/>
+剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="#">充值</a>
+<br><input type='submit' value='保存'></input>
+</form>
+{% if profile_status %}
+{{ profile_status }}
+{% endif%}
   </div>
  </div>
 

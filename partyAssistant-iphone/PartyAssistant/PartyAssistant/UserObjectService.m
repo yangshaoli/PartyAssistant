@@ -16,7 +16,10 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserObjectService)
 - (id)init
 {
     self = [super init];
-    self.userObject = [self getUserObject];
+    if (self) {
+        // Initialization code here.
+    }
+    
     return self;
 }
 

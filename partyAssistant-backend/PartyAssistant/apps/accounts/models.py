@@ -1,6 +1,7 @@
 #coding=utf-8
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import signals
 
 ACCOUNT_TYPE_CHOICES = (
                (u'管理员', u'管理员'),
@@ -17,10 +18,13 @@ ACTION_CHOICES = (
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     password = models.CharField(max_length=16, blank=True)
+    true_name = models.CharField(max_length=16, blank=True)
     #自己注册的为管理员
     account_type = models.CharField(max_length=16, choices=ACCOUNT_TYPE_CHOICES)
     first_login = models.BooleanField(default=True)
     phone = models.IntegerField(null=True, blank=True)
+    used_sms_count = models.IntegerField(default=0)
+    available_sms_count = models.IntegerField(default=30)
     
     def __unicode__(self):
         return self.user.username
@@ -36,3 +40,10 @@ class TempActivateNote(models.Model):
     
     def __unicode__(self):
         return self.email
+
+    
+def crerate_user_profile(sender=None, instance=None, created=False, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+   
+signals.post_save.connect(crerate_user_profile, sender = User)

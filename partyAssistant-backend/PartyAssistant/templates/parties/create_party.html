@@ -1,16 +1,33 @@
 {% extends 'login_base.html' %}
 {% block title %}创建活动 {% endblock %}
 
+{% block style %}
+<style>
+#id_description { padding:3px;}
+</style>
+{% endblock %}
+
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
-<script>
+<script type="text/javascript" src="/static/js/time.js"></script>
+<script type="text/javascript" src="/static/js/ui.core.js"></script>
+<script type="text/javascript" src="/static/js/jquery.form.js"></script>
+<script type="text/javascript" src="/static/js/ui.datepicker.js"></script>
+<link type="text/css" href="/static/css/datepicker.css" rel="stylesheet" />
+<link type="text/css" href="/static/css/datepicker2.css" rel="stylesheet" />
+<script type="text/javascript">
+ 
+$(document).ready(function(){
+   $("#id_start_date").datepicker();    
+
+});
 $(document).ready(function(){
    $("#id_start_date").blur(function(){
-      var currentDate = new Date() 
+      var currentDate = new Date()
       var startDate = ''
       var y = currentDate.getFullYear();
       var m = currentDate.getMonth() + 1;
-      var d = currentDate.getDate(); 
+      var d = currentDate.getDate();
       var v = $("#id_start_date").val();
       var re = new RegExp(/\d/g);
       var result = v.match(re);
@@ -27,7 +44,7 @@ $(document).ready(function(){
    });
    
    $("#id_start_time").blur(function(){
-      var currentTime = new Date() 
+      var currentTime = new Date()
       var startTime = ''
       var h = currentTime.getHours();
       var m = currentTime.getMinutes();
@@ -36,75 +53,59 @@ $(document).ready(function(){
       var result = v.match(re);
       switch (result.length){
           case 2 : startDate = result[0]+result[1]+':00'; break;
+          case 3 : startDate = result[0]+':'+result[1]+result[2]; break;
           case 4 : startDate = result[0]+result[1]+':'+result[2]+result[3]; break;
           default : startDate = h+':'+m;break;
       }
       $("#id_start_time").val(startDate);
    });
 });
+
 </script>
+
 {% endblock %}
 
 {% block content %}
-<style>
-</style>
-<script type="text/javascript">
-	function formonsubmit(){
-    date_time = id_start_date_time.value.split(' ');
-    date = date_time[0]
-    time = date_time[1]
-    id_start_date.value = date
-    id_start_time.value = time
-    alert('');
-    return false;
-	}
-</script>
  <!--START: content -->
 <div id="content">
   <div class="grid_a">
    <h2 class="title">创建活动</h2>
-   <form method="post" ation="{% url create_party %}" class="creat_exercise" onsubmit="formonsubmit();">
+   <form method="post" ation="{% url create_party %}" class="creat_exercise">
     	{% csrf_token %}
     <fieldset>
      <div class="field">
      <label for="id_start_date">
      何时
      </label>
-     <input name='start_date_time' id='id_start_date_time'  placeholder='选填，格式如2008-08-08 08:08'></input>
-     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08'></input>
-     {{ form.start_date.errors }}
-     </div>
-     <div class="field">
-     <label for="id_start_time">
-     开始时间
-     </label>
-     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08'></input>
-     {{ form.start_time.errors }}
+	<input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|date:'Y-m-d'|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
+	<input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|time:'H:i'|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
+	 <font color='red'>{{ form.start_date.errors.0 }}
+     {{ form.start_time.errors.0 }}<font>
      </div>
      <div class="field">
      <label for="id_address">
      去哪
      </label>
-     <input name='address' id='id_address' placeholder='选填项'></input>
-     {{ form.address.errors }}
+     <input name='address' id='id_address' type='text' value='{{ form.address.value|default:'' }}' placeholder='选填'></input>
+     <font color='red'>{{ form.address.errors.0 }}</font>
      </div>
      <div class="field">
      <label for="id_description">
-     玩啥
+     玩啥<span style="color:red">*</span>
      </label>
-     {{ form.description.errors }}
-     <input name='description' id='id_description' placeholder='必填项'></input>
+     <font color='red'>{{ form.description.errors.0 }}</font>
+     <textarea name='description' id='id_description'  cols='70' rows='13'>{{ form.description.value|default:'' }}</textarea>
      </div>
      <div class="field">
      <label for="id_limit_count">
      最多几个人
      </label>
-     <input name='limit_count' id='id_limit_count' placeholder='无限制'></input>
-     {{ form.limit_count.errors }}
+     <input type='text' name='limit_count' id='id_limit_count' value='{{ form.limit_count.value|default:'' }}' placeholder='无限制'>
+     <font color='red'>{{ form.limit_count.errors.0 }}</font>
      </div>
      <div class="submit_field">
-      <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信邀请" alt="sms"/>
-      <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件邀请" alt="sms"/>
+      <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信" alt="sms"/>
+      <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件" alt="email"/>
      </div>
     </fieldset>
    </form>

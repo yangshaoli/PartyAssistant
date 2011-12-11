@@ -26,20 +26,18 @@ def send_emails(subject, content, from_address, to_list):
     email1.send()
     connection.close()
 
-def send_email(outbox_message):
+def send_email(outbox_message, message, party):
     subject = u'[爱热闹]您收到一个活动邀请'
     try:
-        message = outbox_message.base_message.get_subclass_obj()
         address_list = outbox_message.address.split(',')
         if message.is_apply_tips:
-            party = message.party
             for address in address_list:
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, address)).hexdigest())
                 content = message.content
                 content = content + u'\r\n快来报名：<a href="%s">%s</a>' % (enroll_link, enroll_link)
                 send_emails(subject, content, SYS_EMAIL_ADDRESS, [address])
         else:
-            send_emails(subject, outbox_message.base_message.get_subclass_obj().content, 
+            send_emails(subject, message.content, 
                         SYS_EMAIL_ADDRESS, address_list)
     except:
         logger.exception('send email error!')

@@ -10,22 +10,14 @@ from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
 from apps.parties.models import Party, PartiesClients
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
-from django.http import HttpResponse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
-from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME
-from utils.tools.apis_json_response import apis_json_response_decorator
-from utils.tools.email_tool import send_emails
-from utils.tools.my_exception import myException
-from utils.tools.page_size_setting import LIST_MEETING_PAGE_SIZE
+from utils.settings.page_size_setting import LIST_MEETING_PAGE_SIZE
+from utils.structs.my_exception import myException
+from utils.tools.apis_json_response_tool import apis_json_response_decorator
 from utils.tools.paginator_tool import process_paginator
-from utils.tools.reg_phone_num import regPhoneNum
 import datetime
 import re
-from datetime import *
- 
-
-
 
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
@@ -46,12 +38,13 @@ def createParty(request):
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        startdate = None
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except Exception:
             startdate = None
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
@@ -118,12 +111,13 @@ def editParty(request):
         peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
+        startdate = None
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except:
             startdate = None               
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
@@ -136,11 +130,11 @@ def editParty(request):
             raise myException(u'您要编辑的会议已被删除')
         party.start_date = startdate
         party.start_time = starttime
-        party.descrption = description
+        party.description = description
         party.address = location
         party.limit_count = peopleMaximum
         party.save()
-
+        
 @csrf_exempt
 @commit_on_success
 @apis_json_response_decorator
@@ -161,12 +155,12 @@ def PartyList(request, uid, page = 1):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
     partylist = Party.objects.filter(creator = user).order_by('-created_time')  
-    GMT_FORMAT = '%Y-%m-%d %H:%M'
+    GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     partylist = process_paginator(partylist, page, LIST_MEETING_PAGE_SIZE).object_list
     for party in partylist:
         partyObject = {}
         try:
-            party.start_time = datetime.combine(party.start_date, party.start_time)
+            party.start_time = datetime.datetime.combine(party.start_date, party.start_time)
             partyObject['starttime'] = party.start_time.strftime(GMT_FORMAT)
         except Exception, e:
             partyObject['starttime'] = None

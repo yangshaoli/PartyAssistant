@@ -71,39 +71,3 @@ def invite_list(request, party_id):
     
     return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
-@login_required
-def invite_list_ajax(request, party_id):
-    apply_status = request.GET.get('apply', 'all')
-    party = get_object_or_404(Party, id=party_id)
-    
-    if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party)
-    else:
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party=party).filter(apply_status=apply_status)
-    
-    party_clients_data = []
-    for party_client in party_clients_list:
-        party_client_data = {
-            'id' : party_client.id,
-            'name' : party_client.client.name, 
-            'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone, 
-            'is_check': party_client.is_check
-        }    
-        party_clients_data.append(party_client_data)
-        
-        if not party_client.is_check:
-            party_client.is_check = True
-            party_client.save()
-    
-    return HttpResponse(simplejson.dumps(party_clients_data))
-
-def ajax_get_client_list(request, invite_type):
-    clients = Client.objects.filter(creator=request.user)
-    clients_data = []
-    for client in clients:
-        client_data = {
-            'name' : client.name, 
-            'address': invite_type == 'email' and client.email or client.phone
-        }
-        clients_data.append(client_data)
-    return HttpResponse(simplejson.dumps(clients_data))
