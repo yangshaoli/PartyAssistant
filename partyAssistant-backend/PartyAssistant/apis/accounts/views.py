@@ -31,17 +31,31 @@ def accountLogin(request):
         user = authenticate(username = request.POST['username'], password = request.POST['password'])
         if user:
             device_token = request.POST['device_token']
+            print device_token
             if device_token:
 #                if request.POST['device_type'] == 'iphone':
-                UserIPhoneToken.objects.get_or_create(user = user, device_token = device_token)
+                UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
             return {
                     'uid':user.id,
-                    'name':user.username,
+                    'name':user.userprofile.true_name,
                     }
         else:
             print 'error'
             raise myException(ERROR_ACCOUNTLOGIN_INVALID_PWD)
 
+@csrf_exempt
+@apis_json_response_decorator
+@commit_on_success
+def accountLogout(request):
+    if request.method == 'POST':
+        user = request.user
+        if user:
+            device_token = request.POST['device_token']
+            user_token_list = UserIPhoneToken.objects.filter(user = user, device_token = device_token)
+            for user_token in user_token_list:
+                user_token.delete()
+        logout(request)
+        
 @csrf_exempt
 @apis_json_response_decorator
 @commit_on_success

@@ -20,6 +20,8 @@ import datetime
 import re
 from django.db import transaction
 
+PARTY_COUNT_PER_PAGE = 20
+
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
 @apis_json_response_decorator
@@ -97,7 +99,7 @@ def createParty(request):
             with transaction.commit_on_success():
                 if addressArray:
                     addressString = ','.join(addressArray)
-                    Outbox.objects.create(address=addressString, base_message=msg)
+                    Outbox.objects.create(address = addressString, base_message = msg)
 
         return {'partyId':party.id}
 
@@ -151,12 +153,14 @@ def deleteParty(request):
 
 @csrf_exempt
 @apis_json_response_decorator
-def PartyList(request, uid, page = 1):
+def PartyList(request, uid, start_id = 0):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
-    partylist = Party.objects.filter(creator = user).order_by('-created_time')  
+    if start_id == 0:
+        partylist = Party.objects.filter(creator = user).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+    else:
+        partylist = Party.objects.filter(creator = user, pk__lt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
-    partylist = process_paginator(partylist, page, LIST_MEETING_PAGE_SIZE).object_list
     for party in partylist:
         partyObject = {}
         try:
@@ -168,11 +172,40 @@ def PartyList(request, uid, page = 1):
         partyObject['peopleMaximum'] = party.limit_count
         partyObject['location'] = party.address
         partyObject['partyId'] = party.id
-        PartyObjectArray.append(partyObject) 
-    return {
-            'page':page,
-            'partyList':PartyObjectArray
-            }
+        
+        #各个活动的人数情况
+        party_clients = PartiesClients.objects.select_related('client').filter(party = party)
+        client_counts = {
+            'appliedClientcount': 0,
+            'newAppliedClientcount':0,
+            'donothingClientcount':0,
+            'refusedClientcount':0,
+            'newRefusedClientcount':0,
+        }
+        for party_client in party_clients:
+            if party_client.apply_status == 'apply':
+                client_counts['appliedClientcount'] += 1
+            if party_client.apply_status == 'apply' and party_client.is_check == False:
+                client_counts['newAppliedClientcount'] += 1 
+            if party_client.apply_status == 'noanswer':
+                client_counts['donothingClientcount'] += 1
+            if party_client.apply_status == 'reject':
+                client_counts['refusedClientcount'] += 1 
+            if party_client.apply_status == 'reject' and party_client.is_check == False:
+                client_counts['newRefusedClientcount'] += 1
+        partyObject['clientsData'] = client_counts
+        
+        PartyObjectArray.append(partyObject)
+    if partylist:
+        return {
+                'page':partylist[partylist.count() - 1].id,
+                'partyList':PartyObjectArray
+                }
+    else:
+        return {
+                'page':start_id,
+                'partyList':[]
+                }
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -227,12 +260,31 @@ def GetPartyClientMainCount(request, pid):
     applied_client_count = clientparty_list.filter(apply_status = u'apply').count()
     donothing_client_count = clientparty_list.filter(apply_status = u'noanswer').count()
     refused_client_count = clientparty_list.filter(apply_status = u'reject').count()
-    return {
-            'allClientcount':all_client_count,
-            'appliedClientcount':applied_client_count,
-            'refusedClientcount':refused_client_count,
-            'donothingClientcount':donothing_client_count,
-            }
+    #各个活动的人数情况
+    party_clients = PartiesClients.objects.select_related('client').filter(party = party)
+    client_counts = {
+                    'allClientcount':0,
+                    'appliedClientcount': 0,
+                    'newAppliedClientcount':0,
+                    'donothingClientcount':0,
+                    'refusedClientcount':0,
+                    'newRefusedClientcount':0,
+                    }
+    for party_client in party_clients:
+        if party_client.client.invite_type != 'public':
+            client_counts['allClientcount'] += 1
+        if party_client.apply_status == 'apply':
+            client_counts['appliedClientcount'] += 1
+        if party_client.apply_status == 'apply' and party_client.is_check == False:
+            client_counts['newAppliedClientcount'] += 1 
+        if party_client.apply_status == 'noanswer':
+            client_counts['donothingClientcount'] += 1
+        if party_client.apply_status == 'reject':
+            client_counts['refusedClientcount'] += 1 
+        if party_client.apply_status == 'reject' and party_client.is_check == False:
+            client_counts['newRefusedClientcount'] += 1
+
+    return client_counts
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -242,32 +294,32 @@ def GetPartyClientSeperatedList(request, pid, type):
     except:
         raise myException(u'该会议已被删除')
     if type == "all":
-        clientparty_list = PartiesClients.objects.filter(party = party).order_by('apply_status')
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('apply_status')
     elif type == 'applied':
-        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"apply")
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"apply")
     elif type == 'refused':
-        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"reject")
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"reject")
     elif type == 'donothing':
-        clientparty_list = PartiesClients.objects.filter(party = party, apply_status = u"noanswer")
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"noanswer")
     clientList = []
     for clientparty in clientparty_list:
         if not clientparty.client.phone:
             cValue = clientparty.client.email
         else:
             cValue = clientparty.client.phone
-        if type == 'all':
-            dic = {
-                   'cName':clientparty.client.name,
-                   'cValue':cValue,
-                   'backendID':clientparty.id,
-                   'status':clientparty.apply_status
-                   }
+        if not clientparty.is_check:
+            clientparty.is_check = True
+            clientparty.save()
+            is_checked = False
         else:
-            dic = {
-                   'cName':clientparty.client.name,
-                   'cValue':cValue,
-                   'backendID':clientparty.id,
-                   }
+            is_checked = True
+        dic = {
+               'cName':clientparty.client.name,
+               'cValue':cValue,
+               'isCheck':is_checked,
+               'backendID':clientparty.id,
+               'status':clientparty.apply_status
+               }
         clientList.append(dic)
     return {
             'clientList':clientList,
@@ -345,6 +397,6 @@ def resendMsg(request):
             with transaction.commit_on_success():
                 if addressArray:
                     addressString = ','.join(addressArray)
-                    Outbox.objects.create(address=addressString, base_message=msg)
+                    Outbox.objects.create(address = addressString, base_message = msg)
         
         return {'partyId':party.id}
