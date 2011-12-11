@@ -76,8 +76,10 @@
 }  
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{  
-    NSLog(@"deviceToken: %@", deviceToken);
-    NSString *data = [[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding];
+    NSString *data = [[[deviceToken description] 
+                       stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] 
+                      stringByReplacingOccurrencesOfString:@" " withString:@""];
+    NSLog(@"deviceToken: %@", data);
     [DeviceTokenService saveDeviceToken:data];
 }  
 
@@ -110,7 +112,7 @@
     application.applicationIconBadgeNumber = [badge intValue];
     NSString *operation = [userInfo objectForKey:@"operation"];
     NSLog(@"operation:%@",operation);
-    if ([operation isEqualToString:@"unread"]) {
+    if ([operation isEqualToString:@"enroll"]) {
         
         NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:badge,@"badge",nil]];
         [[NSNotificationCenter defaultCenter] postNotification:notification];
