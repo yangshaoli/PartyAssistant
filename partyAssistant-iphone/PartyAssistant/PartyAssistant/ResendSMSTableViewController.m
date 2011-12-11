@@ -66,6 +66,7 @@
         [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
         [receiverCell addSubview:addBTN];
     }
+    self.title=@"再次邀请";
 }
 
 - (void)viewDidUnload

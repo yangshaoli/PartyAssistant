@@ -306,6 +306,10 @@
           [self sendCreateRequest];
       }  
   }
+    //完成后清空所有内容
+    self.contentTextView.text=nil;
+    self.receiverArray=nil;
+ 
     
 }
 - (void)sendCreateRequest{

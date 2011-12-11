@@ -69,7 +69,7 @@
     CGRect lFrame = CGRectMake(FIRST_LABEL_X, FIRST_LABEL_Y, FIRST_LABEL_WIDTH, FIRST_LABEL_HEIGHT);
     for (int i=0; i<[self.receiverArray count]; i++) {
         ReceiverLabel *receiverLb = [[ReceiverLabel alloc] initWithReceiverObject:[self.receiverArray objectAtIndex:i] lbFrame:lFrame];
-        receiverLb.font=[UIFont systemFontOfSize:25];
+        receiverLb.font=[UIFont systemFontOfSize:15];
         lFrame = receiverLb.frame;
         if (lFrame.origin.x + lFrame.size.width > SCROLL_VIEW_WIDTH) {
             receiverLb.frame = CGRectMake(FIRST_LABEL_X, lFrame.origin.y + FIRST_LABEL_HEIGHT + LABEL_Y_DISTANCE, lFrame.size.width, FIRST_LABEL_HEIGHT);
