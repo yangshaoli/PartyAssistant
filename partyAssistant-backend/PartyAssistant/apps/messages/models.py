@@ -15,7 +15,7 @@ class BaseMessage(models.Model):
     createtime = models.DateTimeField(auto_now_add = True)
     party = models.ForeignKey(Party)
     is_apply_tips = models.BooleanField(default = True)
-    is_send_by_self = models.BooleanField(default = True)
+    is_send_by_self = models.BooleanField(default = False)
     last_modified_time = models.DateTimeField(auto_now=True)
     
     def get_subclass_type(self):
@@ -42,6 +42,9 @@ class Outbox(models.Model):
     base_message = models.ForeignKey(BaseMessage)
     
 def thread_send_message(sender=None, instance=None, **kwargs):
+    if instance.base_message.get_subclass_obj().is_send_by_self:
+        return
+    
     message = instance.base_message.get_subclass_obj()
     party = message.party
     

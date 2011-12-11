@@ -21,8 +21,11 @@
     UITableView *_tableView;
     
     UITableViewCell *_userNameTableCell;
-    
     UITextField *_userNameTextField;
+    
+    UITableViewCell *_emailInfoTableCell;
+    UITextField *_emailInfoTextField;
+
     
     id<PartyUserNameInputDelegate> delegate;
 }
@@ -30,6 +33,9 @@
 @property (nonatomic, retain) IBOutlet UITableView  *tableView;
 @property (nonatomic, retain) IBOutlet UITableViewCell *userNameTableCell;
 @property (nonatomic, retain) IBOutlet UITextField *userNameTextField;
+
+@property (nonatomic, retain) IBOutlet UITableViewCell *emailInfoTableCell;
+@property (nonatomic, retain) IBOutlet UITextField *emailInfoTextField;
 @property (nonatomic, retain) id<PartyUserNameInputDelegate> delegate;
 
 - (IBAction)cancleInput;

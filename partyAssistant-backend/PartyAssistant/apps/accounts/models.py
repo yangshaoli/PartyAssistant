@@ -1,6 +1,7 @@
 #coding=utf-8
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import signals
 
 ACCOUNT_TYPE_CHOICES = (
                (u'管理员', u'管理员'),
@@ -39,3 +40,10 @@ class TempActivateNote(models.Model):
     
     def __unicode__(self):
         return self.email
+
+    
+def crerate_user_profile(sender=None, instance=None, created=False, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+   
+signals.post_save.connect(crerate_user_profile, sender = User)

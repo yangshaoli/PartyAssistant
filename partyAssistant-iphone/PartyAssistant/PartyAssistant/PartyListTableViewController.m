@@ -14,6 +14,7 @@
 
 @implementation PartyListTableViewController
 @synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex,_currentDeletePartyID,_currentDeletePartyCellIndex;
+@synthesize countNumber;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -37,7 +38,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -57,6 +60,7 @@
     }
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AfterCreatedDone) name:CREATE_PARTY_SUCCESS object:nil];
+    NSLog(@"viewDidLoad中self.partyList.count>>>>>%d",self.partyList.count);
 }
 
 - (void)viewDidUnload
@@ -131,6 +135,10 @@
     }else{
         cell.textLabel.text = baseinfo.description;
     }
+    
+    UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
+    imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
+    [cell addSubview:imgV];
     
     UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(130, 44, 150, 16)];
     timeLabel.textAlignment = UITextAlignmentRight;
@@ -245,6 +253,7 @@
                 biObj.partyId = [party objectForKey:@"partyId"];
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
+                
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
@@ -260,6 +269,16 @@
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
+    //wxz
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.countNumber=self.partyList.count;
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    [defaults setInteger:self.countNumber  forKey:keyString];    //wxz
+    
+    NSLog(@"count:%d",self.partyList.count);
+    NSLog(@"打印数组%@",self.partyList);
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
@@ -312,7 +331,11 @@
 
 - (void)sharePartyAtID:(NSInteger)pIndex
 {
-
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    BaseInfoObject *b = [self.partyList objectAtIndex:pIndex];
+    rootVC.baseinfo = b;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -372,5 +395,11 @@
 - (void)AfterCreatedDone{
     [self.navigationController popToRootViewControllerAnimated:YES];
     [self refreshBtnAction];
+}
+
+- (void)AddBadgeToTabbar:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+    tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }
 @end

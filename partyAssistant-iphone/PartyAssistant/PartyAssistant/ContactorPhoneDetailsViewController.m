@@ -9,7 +9,7 @@
 #import "ContactorPhoneDetailsViewController.h"
 
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phone,card;
+@synthesize contactorID,phone,card,phoneDetailDelegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -208,10 +208,11 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    
     NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
     NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:valStr,@"val",[NSNumber numberWithInteger:contactorID],@"id", nil];
-    NSNotification *notification = [NSNotification notificationWithName:SELECT_CONTACT_MANNER object:self.navigationController.topViewController userInfo:userinfo];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    [phoneDetailDelegate contactDetailSelectedWithUserInfo:userinfo];
+   
     [self.navigationController popViewControllerAnimated:YES];
 }
 

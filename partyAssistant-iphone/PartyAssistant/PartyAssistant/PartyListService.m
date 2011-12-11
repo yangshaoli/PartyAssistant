@@ -23,9 +23,10 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     return self;
 }
 
-- (NSArray *)getPartyList
+- (NSMutableArray *)getPartyList
 {
     if (partyList) {
+        NSLog(@"partyList1:%@",partyList);
         return partyList;
     }
     
@@ -42,7 +43,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     } else {
         self.partyList = [[NSMutableArray alloc] initWithCapacity:0];
     }
-    
     return self.partyList;
 }
 - (void)savePartyList
@@ -63,12 +63,15 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     
     NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:PARTYLISTFILE];
     [theData writeToFile:fullPathToFile atomically:YES];
+     NSLog(@"savePartyList....self.partyList.count在方法中打印%d",self.partyList.count);
 }
 
 - (NSArray *)addPartyList:(BaseInfoObject *)baseinfo
 {
     [self.partyList addObject:baseinfo];
+   
     return partyList;
+    
 }
 - (void)clearPartyList
 {

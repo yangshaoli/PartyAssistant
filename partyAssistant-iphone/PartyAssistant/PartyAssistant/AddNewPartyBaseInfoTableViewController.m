@@ -178,6 +178,7 @@
                 self.descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 200, 100)];
             }
             descriptionTextView.text = self.baseInfoObject.description;
+            descriptionTextView.font = [UIFont systemFontOfSize:15];
             descriptionTextView.backgroundColor = [UIColor clearColor];
             //descriptionTextView.text = baseInfoObject.description;
             [cell addSubview:descriptionTextView];
@@ -270,6 +271,7 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+         
     [self saveInfo];
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
@@ -308,7 +310,7 @@
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
+{    
     if (actionSheet.tag == 0) {
         self.baseInfoObject.starttimeDate = [datePicker date];
         [self.baseInfoObject formatDateToString];
@@ -324,9 +326,15 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
+    
+    [locationTextField resignFirstResponder];//wxz
     [textField resignFirstResponder];
     self.baseInfoObject.location = textField.text;
     return NO;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    [descriptionTextView  resignFirstResponder];
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
@@ -344,25 +352,46 @@
 #pragma mark -- SMS & Email BTN
 
 - (void)goToSMS
-{
-    [self saveInfo];
-    SendSMSToClientsViewController *vc = [[SendSMSToClientsViewController alloc] initWithNibName:@"SendSMSToClientsViewController" bundle:[NSBundle mainBundle]];
-    SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
-    SMSObject *obj = [s getSMSObject];
-    if ([obj.smsContent isEqualToString:@""]) {
-        obj.smsContent = [self getDefaultContent:self.baseInfoObject];
-        [s saveSMSObject];
+{   
+    if(!self.descriptionTextView.text || [self.descriptionTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"描述内容不可以为空"
+                            message:@"描述为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        
+    }else{
+        [self saveInfo];
+        SendSMSToClientsViewController *vc = [[SendSMSToClientsViewController alloc] initWithNibName:@"SendSMSToClientsViewController" bundle:[NSBundle mainBundle]];
+        SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+        SMSObject *obj = [s getSMSObject];
+        if ([obj.smsContent isEqualToString:@""]) {
+            obj.smsContent = [self getDefaultContent:self.baseInfoObject];
+            [s saveSMSObject];
+        }
+        [self.navigationController pushViewController:vc animated:YES];
     }
     
-    
-    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)goToEmail
 {
-    [self saveInfo];
-    SendEmailToClientsViewController *vc = [[SendEmailToClientsViewController alloc] initWithNibName:@"SendEmailToClientsViewController" bundle:[NSBundle mainBundle]];
-    [self.navigationController pushViewController:vc animated:YES];
+    if(!self.descriptionTextView.text || [self.descriptionTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"描述内容不可以为空"
+                            message:@"描述为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        
+    }else{
+        [self saveInfo];
+        SendEmailToClientsViewController *vc = [[SendEmailToClientsViewController alloc] initWithNibName:@"SendEmailToClientsViewController" bundle:[NSBundle mainBundle]];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 - (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo{

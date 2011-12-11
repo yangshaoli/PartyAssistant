@@ -29,7 +29,6 @@ def register(request):
             
             # django bug, must authenticate before login
             user = authenticate(username=username, password=password)
-            UserProfile.objects.create(user=user)
             login(request, user)
             
             return redirect('profile')
@@ -48,27 +47,24 @@ def profile(request):
             true_name = form.cleaned_data['true_name']
             phone = form.cleaned_data['phone']
             email = form.cleaned_data['email']
-            tag = False
+            
+            profile_status = ''
             if userprofile.true_name != true_name:
                 userprofile.true_name = true_name
                 userprofile.save()
-                tag = True
+                profile_status = u'保存成功'
             if userprofile.phone != phone:
                 userprofile.phone = phone
                 userprofile.save()
-                tag = True
+                profile_status = u'保存成功'
             if user.email != email:
                 user.email = email
                 user.save()
-                tag = True
-            
-            profile_status = ''
-            if tag:
                 profile_status = u'保存成功'
             
-            sms_count = userprofile.available_sms_count
-            
-            return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
+            if profile_status:
+                request.session['profile_status'] = profile_status
+            return redirect('profile')
         else:
             user = request.user
             userprofile = UserProfile.objects.get(user=user)
@@ -77,7 +73,7 @@ def profile(request):
         
     else:    
         user = request.user
-        userprofile, created = UserProfile.objects.get_or_create(user=user)
+        userprofile = user.get_profile()
         
         email = user.email
         phone = userprofile.phone
@@ -88,7 +84,11 @@ def profile(request):
               'true_name':true_name                      
               }
         form = UserProfileForm(data)
-        return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count})
+        profile_status = ''
+        if 'profile_status' in request.session:
+            profile_status = request.session['profile_status']
+            del request.session['profile_status']
+        return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
 def change_password(request):

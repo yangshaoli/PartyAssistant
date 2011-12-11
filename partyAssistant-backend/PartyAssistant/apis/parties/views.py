@@ -38,12 +38,13 @@ def createParty(request):
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        startdate = None
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except Exception:
             startdate = None
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
@@ -110,12 +111,13 @@ def editParty(request):
         peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
+        startdate = None
         try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d')
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except:
             startdate = None               
         try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%H:%M:%S')
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
         if len(location) > 256:
@@ -128,11 +130,11 @@ def editParty(request):
             raise myException(u'您要编辑的会议已被删除')
         party.start_date = startdate
         party.start_time = starttime
-        party.descrption = description
+        party.description = description
         party.address = location
         party.limit_count = peopleMaximum
         party.save()
-
+        
 @csrf_exempt
 @commit_on_success
 @apis_json_response_decorator
@@ -153,7 +155,7 @@ def PartyList(request, uid, page = 1):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
     partylist = Party.objects.filter(creator = user).order_by('-created_time')  
-    GMT_FORMAT = '%Y-%m-%d %H:%M'
+    GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     partylist = process_paginator(partylist, page, LIST_MEETING_PAGE_SIZE).object_list
     for party in partylist:
         partyObject = {}
@@ -202,15 +204,7 @@ def GetPartyMsg(request, pid):
     else:
         subject = subObj.subject
         content = subObj.content
-    print {
-            'msgType':messageType,
-            'receiverArray':receivers,
-            'receiverType':'iphone',
-            'content':content,
-            'subject':subject,
-            '_isApplyTips':message.is_apply_tips,
-            '_isSendBySelf':message.is_send_by_self
-            }
+
     return {
             'msgType':messageType,
             'receiverArray':receivers,

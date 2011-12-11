@@ -7,16 +7,11 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
-
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
-    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
-    [_window addSubview:nav.view];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -58,4 +53,67 @@
      */
 }
 
+#pragma Push Notification
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
+    if(addressBook == nil) {
+        addressBook = ABAddressBookCreate();
+        ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
+    }
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
+    [_window addSubview:nav.view];
+    application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
+    return YES;  
+}  
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken{  
+    NSLog(@"deviceToken: %@", deviceToken);
+    NSString *data = [[NSString alloc] initWithData:deviceToken encoding:NSUTF8StringEncoding];
+    [DeviceTokenService saveDeviceToken:data];
+}  
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {  
+    NSLog(@"Error in registration. Error: %@", error);  
+}  
+
+-(void)sendRequestToSaveUserToken{
+    
+}
+
+//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo  
+//{  
+//    
+//    NSLog(@"收到推送消息 ：%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);  
+//    if ([[userInfo objectForKey:@"aps"] objectForKey:@"alert"]!=NULL) {  
+//        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"推送通知"   
+//                                                        message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]           
+//                                                       delegate:self          
+//                                              cancelButtonTitle:@"关闭"       
+//                                              otherButtonTitles:@"更新状态",nil];  
+//        [alert show];  
+//        [alert release];  
+//    }  
+//}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    NSLog(@"收到推送消息 ：%@",userInfo);
+    NSString *badge = [[userInfo objectForKey:@"aps"] objectForKey:@"badge"];
+    application.applicationIconBadgeNumber = [badge intValue];
+    NSString *operation = [userInfo objectForKey:@"operation"];
+    NSLog(@"operation:%@",operation);
+    if ([operation isEqualToString:@"unread"]) {
+        
+        NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:badge,@"badge",nil]];
+        [[NSNotificationCenter defaultCenter] postNotification:notification];
+    }
+}
+
+void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
+    //	DialerAppDelegate *dialerDelegate = context;
+    //	[dialerDelegate refreshServices];
+    //	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
+    //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
+}
 @end

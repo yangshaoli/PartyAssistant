@@ -5,6 +5,9 @@
 {% block script %}
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script>
+$(document).ready(function(){
+    $("#tips").delay(3000).fadeOut();    
+})
 
 	function deleteConfirm(url){
 	  if (confirm('删除不可恢复，是否确认删除？')){
@@ -38,8 +41,10 @@ iframe{
       </table>
  </div>
 </div>
-	{% if send_status %}
+    {% if send_status %}
+    <div id="tips" style="color:#fff; background:#f9e100; padding:5px; width:750px; border-radius:5px;text-align:center; margin:20px; position:absolute;">
     {{ send_status }}
+    </div>
     {% endif %}
  <div id="content">
   <div class="grid_a">
@@ -58,8 +63,8 @@ iframe{
     <div class="comment comment_odd"> <i class="corners"></i>
       <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|truncatestring:"60" }}</a></p>
       <div class="function_share clearfix">
-       <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important"><i class="icon_new"></i>{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
-       <p class="statistics"><a href="{% url invite_list party.id %}?apply=apply">爱热闹的：<strong class="important">{% if party.client.new_add_apply %}<i class="icon_new"></i>{% endif %}{{ party.client.count.apply }}</strong></a> <a href="{%url invite_list party.id %}?apply=noanswer">犹豫的：<strong class="important">{{ party.client.count.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不来的：<strong class="important">{% if party.client.new_add_reject %}<i class="icon_new"></i>{% endif %}{{ party.client.count.reject }}</strong></p></a>
+       <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important"><i class="icon_new"></i>{{ party.client_counts.noanswer }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client_counts.apply }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client_counts.reject }}</strong></p!-->
+       <p class="statistics"><a href="{% url invite_list party.id %}?apply=apply">爱热闹的：<strong class="important">{% if party.client_counts.new_add_apply %}<i class="icon_new"></i>{% endif %}{{ party.client_counts.apply }}</strong></a> <a href="{%url invite_list party.id %}?apply=noanswer">犹豫的：<strong class="important">{{ party.client_counts.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不来的：<strong class="important">{% if party.client_counts.new_add_reject %}<i class="icon_new"></i>{% endif %}{{ party.client_counts.reject }}</strong></p></a>
        <p class="share"><a href="#">分享到：</a><script type="text/javascript" charset="utf-8">     
 (function(){
   var _w = 72 , _h = 16;
@@ -91,7 +96,7 @@ iframe{
                     {% endif %}
             
                     <span class="current">
-                        当前页 {{ party_list.number }} ，共 {{ party_list.paginator.num_pages }}页.
+                        第{{ party_list.number }}页 ，共{{ party_list.paginator.num_pages }}页.
                     </span>
             
                     {% if party_list.has_next %}
