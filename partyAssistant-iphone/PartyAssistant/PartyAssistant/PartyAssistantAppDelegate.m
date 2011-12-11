@@ -7,6 +7,8 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
+#import "ECPurchase.h"
+
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -65,6 +67,11 @@
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
     [_window addSubview:nav.view];
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
+    
+    [[ECPurchase shared] setProductDelegate:self];
+    [[ECPurchase shared] setTransactionDelegate:self];
+    [[ECPurchase shared] setVerifyRecepitMode:ECVerifyRecepitModeServer];
+    
     return YES;  
 }  
 
@@ -116,4 +123,36 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     //	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
     //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
 }
+
+#pragma mark -
+#pragma Purchase Delegate
+-(void)didReceivedProducts:(NSArray *)products {
+    for(SKProduct *product in products){
+		NSLog(@"%@", [product description]);
+		NSLog(@"%@", [product productIdentifier]);
+	}
+    
+    [[ECPurchase shared] addPayment:[[products lastObject] productIdentifier]];
+}
+
+-(void)didFailedTransaction:(NSString *)proIdentifier {
+    
+}
+
+-(void)didRestoreTransaction:(NSString *)proIdentifier {
+    
+}
+
+-(void)didCompleteTransaction:(NSString *)proIdentifier {
+    
+}
+
+-(void)didCompleteTransactionAndVerifySucceed:(NSString *)proIdentifier {
+    NSLog(@"Success");
+}
+
+-(void)didCompleteTransactionAndVerifyFailed:(NSString *)proIdentifier withError:(NSString *)error {
+    
+}
+
 @end

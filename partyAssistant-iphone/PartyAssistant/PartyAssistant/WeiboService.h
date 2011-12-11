@@ -10,15 +10,18 @@
 #import "WeiboPersonalProfile.h"
 #import "WeiBo.h"
 #import "SynthesizeSingleton.h"
+#import "UserObject.h"
 #define WEIBOPERSONALPROFILEFILE @"WeiboPersonalProfileFile"
 #define WEIBOPERSONALPROFILEKEY @"UserObjectKey"
 
 @interface WeiboService : NSObject
 {
     WeiboPersonalProfile *weiboPersonalProfile;
+    UserObject *userObject;
 }
 
 @property(nonatomic,retain)WeiboPersonalProfile *weiboPersonalProfile;
+@property(nonatomic,retain)UserObject *userObject;
 
 + (WeiboService *)sharedWeiboService;
 - (WeiboPersonalProfile *)getWeiboPersonalProfile;
