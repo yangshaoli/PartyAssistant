@@ -37,9 +37,9 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 	  withAppSecret:(NSString*)app_secret
 {
 	if (self = [super init]) {
-		_appKey		= [[NSString alloc] initWithString:app_key];
-		_appSecret	= [[NSString alloc] initWithString:app_secret];
-        
+		_appKey		= [[NSString alloc]initWithString:app_key];
+		_appSecret	= [[NSString alloc]initWithString:app_secret];
+		
 		
 		//When object is created, the user info stored in the KeyChain will be readed out firstly.
 		NSString* serviceName = [[self urlSchemeString] stringByAppendingString:kKeyChainServiceNameForWeiBo];
@@ -78,19 +78,22 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 			[_delegate weiboDidLogin];
 		return;
 	}
+	
 	if( _authorize )
 	{
 		[_authorize release];
 		_authorize = nil;
 	}
+	
 	//Then we should listen whether the user authorizes correctly when the app is reactive.
 	[[NSNotificationCenter defaultCenter]addObserver:self
 											selector:@selector(applicationLauched:)
 												name:UIApplicationDidBecomeActiveNotification
 											  object:nil];
+
 	//Finally, an object of WBAuthorize is created and started.
 	_authorize = [[WBAuthorize alloc]initWithAppKey:_appKey withAppSecret:_appSecret withWeiBoInstance:self];
-    [_authorize startAuthorize];
+	[_authorize startAuthorize];
 	_authorize.delegate = self;
 }
 

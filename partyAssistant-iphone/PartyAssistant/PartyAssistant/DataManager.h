@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DeviceTokenService.h"
 
 typedef enum {
     NetworkConnectionInvalidate,

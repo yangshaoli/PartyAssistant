@@ -267,9 +267,13 @@
     UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:nil tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:nil tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:nil tag:3];
+    UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
+    UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
+    UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
+    
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:listBarImage tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:addPageBarImage tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
     addPageNav.tabBarItem = addPageBarItem;
@@ -283,7 +287,7 @@
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
     tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, nil];
     [self.navigationController pushViewController:tab animated:YES];
-    
+
     [listNav release];
     [addPageNav release];
     [settingNav release];
