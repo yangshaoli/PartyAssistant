@@ -64,7 +64,7 @@
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
     [_window addSubview:nav.view];
-    application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
+//    application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     return YES;  
 }  
 
@@ -106,7 +106,6 @@
     NSString *operation = [userInfo objectForKey:@"operation"];
     NSLog(@"operation:%@",operation);
     if ([operation isEqualToString:@"enroll"]) {
-        
         NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:badge,@"badge",nil]];
         [[NSNotificationCenter defaultCenter] postNotification:notification];
     }

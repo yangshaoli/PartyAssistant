@@ -34,7 +34,10 @@ def accountLogin(request):
             print device_token
             if device_token:
 #                if request.POST['device_type'] == 'iphone':
-                UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+                usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+                if usertoken.user != user:
+                    usertoken.user = user
+                    usertoken.save()
             return {
                     'uid':user.id,
                     'name':user.userprofile.true_name,
