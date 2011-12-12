@@ -71,7 +71,9 @@ function ajaxGetClients(applystatus){
                 var leave_messages = clients[i].leave_message.split(",");
                 var leave_message = ''
                 for ( k in leave_messages){
-                    leave_message = leave_message +'<br/>' + leave_messages[k];
+                    if (leave_messages[k].replace(/^\s+|\s+$/g, "") != ""){
+                    	leave_message = leave_message +'<br/>' + leave_messages[k];
+                    	}
                 }
                 leave_message_tag = '';
                 if( leave_message.replace(/^\s+|\s+$/g, "") != ""){
