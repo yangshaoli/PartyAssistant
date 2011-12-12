@@ -27,6 +27,7 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    _isRefreshing = NO;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     return self;
 }
@@ -64,6 +65,9 @@
     }
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AfterCreatedDone) name:CREATE_PARTY_SUCCESS object:nil];
+    if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
+        [self refreshBtnAction];
+    }
 }
 
 - (void)viewDidUnload
@@ -220,12 +224,14 @@
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self._isRefreshing = YES;
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
     self.navigationItem.rightBarButtonItem.customView = acv;
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
+    self._isRefreshing = NO;
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
@@ -283,12 +289,11 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     [defaults setInteger:self.countNumber  forKey:keyString];    //wxz
     
-    NSLog(@"count:%d",self.partyList.count);
-    NSLog(@"打印数组%@",self.partyList);
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    self._isRefreshing = NO;
     self.navigationItem.rightBarButtonItem.customView = nil;
 	NSError *error = [request error];
 	[self dismissWaiting];
@@ -300,7 +305,6 @@
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"复制",@"删除",@"分享", nil];
 //    UITableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
     sheet.tag = indexPath.row;
-    NSLog(@"row:%d",indexPath.row);
     [sheet showInView:self.tabBarController.view];
 }
 
@@ -331,7 +335,6 @@
     BaseInfoObject *b = [self.partyList objectAtIndex:pIndex];
     self._currentDeletePartyID = [b.partyId integerValue];
     self._currentDeletePartyCellIndex = pIndex;
-    NSLog(@"pIndex:%d",pIndex);
     [alertV show];
 }
 
@@ -375,7 +378,6 @@
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
             NSIndexPath *index = [NSIndexPath indexPathForRow:self._currentDeletePartyCellIndex inSection:0];
-            NSLog(@"index:%@",index);
             NSArray *indexPathArray = [NSArray arrayWithObject:index];
             [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
             [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];

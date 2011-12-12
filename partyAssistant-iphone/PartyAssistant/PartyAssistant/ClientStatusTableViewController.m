@@ -63,6 +63,7 @@
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
                 tbi.badgeValue = nil;
             }else{

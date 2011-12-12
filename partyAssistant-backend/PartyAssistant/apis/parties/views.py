@@ -321,7 +321,8 @@ def GetPartyClientSeperatedList(request, pid, type):
                'status':clientparty.apply_status
                }
         clientList.append(dic)
-    unreadCount = PartiesClients.objects.filter(party = party, is_check = False).count()
+    party_list = Party.objects.filter(creator = party.creator)
+    unreadCount = PartiesClients.objects.filter(party__in = party_list, is_check = False).count()
     return {
             'clientList':clientList,
             'unreadCount':unreadCount,

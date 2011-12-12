@@ -1,6 +1,6 @@
 #coding=utf-8
 from apps.accounts.models import UserDeviceTokenBase, UserIPhoneToken, UserAndroidToken
-from apps.parties.models import PartiesClients
+from apps.parties.models import PartiesClients, Party
 from settings import PROJECT_ROOT
 from APNSWrapper import *
 import binascii
@@ -12,7 +12,8 @@ def push_notification_when_enroll(party_client, operation):
 
 def push_notification_when_enroll_thread(party_client, operation):
     if isinstance(party_client, PartiesClients):
-        badge = PartiesClients.objects.filter(party = party_client.party, is_check = False).count()
+        party_list = Party.objects.filter(creator = party_client.party.creator)
+        badge = PartiesClients.objects.filter(party__in = party_list, is_check = False).count()
         if party_client.client.name:
             client_name = party_client.client.name
         else:
@@ -24,7 +25,6 @@ def push_notification_when_enroll_thread(party_client, operation):
         msg = msg.encode("UTF-8")
         user = party_client.party.creator
         user_device_list = UserDeviceTokenBase.objects.filter(user = user)
-        print user_device_list
         for user_device in user_device_list:
             if user_device.get_subclass_type() == 'iPhone':
                 push_notification_to_apple('enroll', badge, user_device.device_token, msg)

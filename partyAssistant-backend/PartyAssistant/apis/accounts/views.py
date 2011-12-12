@@ -12,6 +12,7 @@ from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
  
 from apps.accounts.models import UserIPhoneToken
+from apps.parties.models import PartiesClients, Party
 
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
@@ -83,3 +84,14 @@ def accountRegist(request):
 @commit_on_success
 def accountLogout(request):
     pass
+
+@csrf_exempt
+@apis_json_response_decorator
+@commit_on_success
+def getBadgeNum(request):
+    if 'id' in request.GET:
+        id = request.GET['id']
+        party_list = Party.objects.filter(creator = User.objects.get(pk = id))
+        return {'badgeNum':PartiesClients.objects.filter(party__in = party_list, is_check = False).count()}
+    else:
+        return {'badgeNum':0}
