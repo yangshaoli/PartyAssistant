@@ -1,27 +1,20 @@
 //
-//  SettingsListTableViewController.m
+//  PurchaseListViewController.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-11-22.
-//  Copyright 2011年 __MyCompanyName__. All rights reserved.
+//  Created by Wang Jun on 12/11/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "SettingsListTableViewController.h"
-#import "NicknameManageTableViewController.h"
 #import "PurchaseListViewController.h"
-#define NAVIGATION_CONTROLLER_TITLE @"个人设置"
+#import "ECPurchase.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
 
-@implementation SettingsListTableViewController
+#define kMyFeatureIdentifier @"com.aragoncg.AiReNaoTest.TestProduct1"
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
+@implementation PurchaseListViewController
+@synthesize tableView;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -35,14 +28,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    self.navigationItem.title = @"购买列表";
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
 }
 
 - (void)viewDidUnload
@@ -82,40 +73,26 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
-    return 6;
+    return 1;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     // Configure the cell...
-    if (indexPath.row == 0) {
-        cell.textLabel.text = @"更改个人信息";
-    }else if(indexPath.row == 1){
-        cell.textLabel.text = @"变更密码";
-    }else if(indexPath.row == 2){
-        cell.textLabel.text = @"微博管理";
-    }else if(indexPath.row == 3){
-        cell.textLabel.text = @"帮我们评分";
-    }else if(indexPath.row == 4){
-        cell.textLabel.text = @"登出";
-    }else if(indexPath.row == 5){
-        cell.textLabel.text = @"购买";
-    }
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.textLabel.text = @"Purchase Test Item1";
+    
     return cell;
 }
 
@@ -160,7 +137,7 @@
 
 #pragma mark - Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)aTableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Navigation logic may go here. Create and push another view controller.
     /*
@@ -169,20 +146,40 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
-//    WeiboService *s = [WeiboService sharedWeiboService];
-//    [s WeiboLogin];
-    if(indexPath.row == 0){
-        NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
-        [self.navigationController pushViewController:nickChangeVc animated:YES];
+    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+    NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
+
+    NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
+    BOOL isExist = [[ECPurchase shared] isSameReceiptNotVerifyWithServerWithUserInfo:purchaseInfo];
+    if (isExist) {
+        //action 
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"上一次购买的物品还没有提交到服务器！点击确认以进行此物品的提交！" delegate:self cancelButtonTitle:@"确认" otherButtonTitles: nil];
+        [alert show];
+        
+        return;
     }
-    if(indexPath.row == 2){
-        WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
-        [self.navigationController pushViewController:vc animated:YES];
+    
+    [aTableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if ([SKPaymentQueue canMakePayments]) {
+        [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifier, nil]];
+    } else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"出错啦" message:@"程序没有被设置允许购买" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        alert.tag = 110;
+        [alert show];
     }
-    if(indexPath.row == 5){
-        PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
-        [self.navigationController pushViewController:purchaseListVC animated:YES];
-    }
+    
 }
 
+#pragma mark -
+#pragma alert delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+        NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
+        
+        NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
+        [[ECPurchase shared] verifyProductReceiptUserPurchasedBefore:purchaseInfo];
+    }
+}
 @end
