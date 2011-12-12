@@ -11,9 +11,10 @@ import urllib
 def verify_receipt(request):
     url = 'https://sandbox.itunes.apple.com/verifyReceipt'
     data = {
-        'receipt-data': request.POST['receipt-data'], 
+        'receipt-data': request.POST['receipt-data']
     }
-    conn = urllib.urlopen(url, urllib.urlencode(data))
+    
+    conn = urllib.urlopen(url, json.dumps(data))
     resp = conn.read()
     
     return json.loads(resp)
