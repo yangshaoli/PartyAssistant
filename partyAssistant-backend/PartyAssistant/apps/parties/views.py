@@ -16,16 +16,15 @@ from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponse
-from django.shortcuts import redirect, get_object_or_404, render_to_response
-from django.template.context import RequestContext
+from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 from forms import CreatePartyForm
 from models import Party
-from settings import DOMAIN_NAME, SYS_EMAIL_ADDRESS
-from utils.tools.email_tool import send_emails
+from settings import DOMAIN_NAME
 import datetime
 import logging
+import time
 BASIC_MESSAGE_LENGTH = 65
 SHORT_LINK_LENGTH = 21
 logger = logging.getLogger('airenao')
@@ -441,23 +440,40 @@ def _public_enroll(request, party_id):
                 email = form.cleaned_data['phone_or_email']
             else:
                 phone = form.cleaned_data['phone_or_email']
-                    
-            if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).exclude(email='').count() == 0 \
-                and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).exclude(phone='').count() == 0:
-                if party.limit_count != 0:#有人数限制
-                    if len(PartiesClients.objects.filter(party=party, apply_status='apply')) >= party.limit_count:
-                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
-                client = Client.objects.create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
-                PartiesClients.objects.create(client = client, party = party, apply_status = u'apply', is_check=False, leave_message = form.cleaned_data['leave_message'])
-                if request.META['PATH_INFO'][0:3] == '/m/':
-                    return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功'})
-                else:	
-                    return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+             
+            BOOL_EMAIL_NONE = Client.objects.filter(creator = creator).filter(email = email).exclude(email='').count() == 0 #Email 方式，查无此人    
+            BOOL_PHONE_NONE = Client.objects.filter(creator = creator).filter(phone = phone).exclude(phone='').count() == 0 #Phone 方式，查无此人        
+            client = None
+            create = False
+            if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
+                client, create = Client.objects.get_or_create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
+            elif BOOL_EMAIL_NONE and ( not BOOL_PHONE_NONE ) : #存在 phone 记录 ，但无 Email 记录
+                client = get_object_or_404(Client, phone = phone)  
+            elif ( not BOOL_EMAIL_NONE ) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
+                client = get_object_or_404(Client, email = email)
             else:
-                if request.META['PATH_INFO'][0:3] == '/m/':
-                    return TemplateResponse(request, 'm/message.html', {'title':u'报名失败','message': u'您已经报名了'})
-                else:
-                    return TemplateResponse(request, 'message.html', {'message':u'您已经报名了'})
+                logger.exception('public enroll exception!')
+            #有人数限制
+            if party.limit_count != 0 :
+                if PartiesClients.objects.filter(party=party, apply_status='apply').count() >= party.limit_count:
+                    return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
+                    
+            if create:
+                client.save()
+            client.name = name 
+            client.save()    
+            partyclient, create = PartiesClients.objects.get_or_create(client = client, party = party, apply_status = u'apply')
+            leave_message = form.cleaned_data['leave_message']
+            if leave_message:
+                partyclient.leave_message = partyclient.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) 
+            partyclient.is_check = False    
+            partyclient.save()
+               
+            if request.META['PATH_INFO'][0:3] == '/m/':
+                return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功'})
+            else:    
+                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+            
         else:
             data = {
             'party': party,

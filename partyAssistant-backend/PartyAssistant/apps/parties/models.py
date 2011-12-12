@@ -47,7 +47,7 @@ class PartiesClients(models.Model):
     apply_status = models.CharField(max_length=16, choices=APPLY_STATUS, default='noanswer')
     is_check = models.BooleanField(default=True)
     invite_key = models.CharField(max_length=32)
-    leave_message = models.CharField(max_length=100, blank=True)
+    leave_message = models.TextField(blank=True)
 
 def update_invite_key(sender=None, instance=None, **kwargs):
     party = instance.party
