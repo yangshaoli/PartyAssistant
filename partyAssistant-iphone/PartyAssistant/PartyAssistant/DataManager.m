@@ -113,7 +113,6 @@ static DataManager *sharedDataManager = nil;
                                     [NSURL URLWithString:ACCOUNT_REGIST]];
     [request setPostValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
     [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"];
-    NSLog(@"token Login:%@",[DeviceTokenService getDeviceToken]);
     [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     NSError *error = [request error];
@@ -199,6 +198,11 @@ static DataManager *sharedDataManager = nil;
 - (NetworkConnectionStatus)setEmailInfo:(NSString *)emailInfo {
     NSInteger currentUserID = [self getCurrentUserID];
     return [self setEmailInfoForUserWithUID:currentUserID withNewEmailInfo:emailInfo];
+}
+
+- (NetworkConnectionStatus)setPhoneNum:(NSString *)phoneNum {
+    NSInteger currentUserID = [self getCurrentUserID];
+    return [self setPhoneNumForUserWithUID:currentUserID withNewPhoneNum:phoneNum];
 }
 
 

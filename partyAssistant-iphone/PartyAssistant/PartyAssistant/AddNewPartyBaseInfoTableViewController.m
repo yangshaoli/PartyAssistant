@@ -365,9 +365,9 @@
     return NO;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    [descriptionTextView  resignFirstResponder];
-}
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+//    [descriptionTextView  resignFirstResponder];
+//}
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
     return 3;
@@ -412,7 +412,7 @@
 //wxz
 - (void)clearAddNewPartyBaseInfo{
     [self.baseInfoObject  clearObject];
-    NSLog(@"执行delegate方法");
+
 }
 
 

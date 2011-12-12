@@ -147,6 +147,7 @@
     [cell addSubview:timeLabel];
     cell.tag = [baseinfo.partyId intValue];
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+    NSLog(@"list cell init");
     return cell;
 }
 
