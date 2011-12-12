@@ -10,12 +10,14 @@ from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
 from apps.parties.models import Party, PartiesClients
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
+from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from utils.settings.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
 from utils.tools.paginator_tool import process_paginator
+from settings import DOMAIN_NAME
 import datetime
 import re
 from django.db import transaction
@@ -101,7 +103,10 @@ def createParty(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
 
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -404,4 +409,7 @@ def resendMsg(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
         
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }

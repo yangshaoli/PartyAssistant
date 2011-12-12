@@ -133,21 +133,25 @@
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     
     // Configure the cell...
+    UILabel *descriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, 300, 40)];
     BaseInfoObject *baseinfo = [partyList objectAtIndex:indexPath.row];
-    if (baseinfo.description.length > 16) {
+    if (baseinfo.description.length > 10) {
         NSRange range;
-        range.location = 16;
-        range.length = baseinfo.description.length - 16;
-        cell.textLabel.text = [baseinfo.description stringByReplacingCharactersInRange:range withString:@"..."];
+        range.location = 10;
+        range.length = baseinfo.description.length - 10;
+        descriptionLabel.text = [baseinfo.description stringByReplacingCharactersInRange:range withString:@"..."];
     }else{
-        cell.textLabel.text = baseinfo.description;
+        descriptionLabel.text = baseinfo.description;
     }
+    descriptionLabel.font = [UIFont systemFontOfSize:22];
+    descriptionLabel.backgroundColor = [UIColor clearColor];
+    [cell addSubview:descriptionLabel];
     
 //    UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
 //    imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
 //    [cell addSubview:imgV];
     
-    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(130, 44, 150, 16)];
+    UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 44, 180, 16)];
     timeLabel.textAlignment = UITextAlignmentRight;
     timeLabel.text = baseinfo.starttimeStr;
     timeLabel.textColor = [UIColor lightGrayColor];
