@@ -1,0 +1,69 @@
+{% extends "login_base.html" %}
+
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script>
+$(document).ready(function(){
+ 
+});
+
+function cal_price(v){
+    v = (v/1 * 0.1).toFixed(2);
+    $('#price_num').text(v)
+    $('input[name="price"]').val(v)
+}
+</script>
+{% endblock %}
+
+{% block style %}
+<style>
+.plenty_table { 
+	border-width:3px; border-style:solid; border-color:gray; background-color:#fff5ee;border-collapse:collapse;
+}
+.plenty_table th {
+	border-width:1px; border-style:dotted;padding:15px 3px 3px 3px;background-color:white;
+}
+.plenty_table td {
+	border-width:1px; border-style:dotted;padding:5px;
+}
+.paid {
+	background-color:#ccccff;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content">
+  <div class="grid_a">
+   <h2 class="title">购买短信</h2>
+   <div class="tips">
+       如果要使用短信通知功能就得购买短信，目前价格是 <span style="color:#e20000">0.1元/条</span>
+    <ul style="margin:10px 30px;">
+        <li>1. 填入需要购买的短信数量。</li>
+        <li>2. 点购买按钮，来到支付宝页面，确定价格，支付。</li>
+        <li>3. 充值成功！</li>
+    </ul>   
+   </div>
+<form method='post' action='{% url alipay %}'  class="creat_exercise">
+    {% csrf_token %}
+    <fieldset>
+        <div class="field">
+        <label for="true_name">短信数量</label>
+         <input type="number" name="sms_count" onkeyup="cal_price(this.value)" />
+         </div>
+         
+         <div class="field">价格：<span id="price_num">0</span> 元&nbsp;
+         
+        </fieldset>	
+	<input type="hidden" name="subject" value="支付宝Django集成测试"/>
+	<input type="hidden" name="body" value="支付宝Django集成测试"/>
+	<input type="hidden" name="out_trade_no" value="{{out_trade_no}}"/>
+	<input type="hidden" name="notify_url" value="http://{{domain}}/accounts/profile"/>
+	<input type="hidden" name="payment_type" value="2"/>
+    <input type="hidden" name="price" value=""/>
+    <input type='submit' value='购买'></input>
+    </form>
+  </div>
+ </div>
+
+{% endblock %}

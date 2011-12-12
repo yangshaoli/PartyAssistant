@@ -18,6 +18,7 @@
     NSNumber *peopleMaximum;
     UserObject *userObject;
     NSNumber *partyId;
+    NSDictionary *peopleCountDict;
 }
 
 @property(nonatomic, retain)NSString *starttimeStr;
@@ -27,6 +28,7 @@
 @property(nonatomic, retain)NSNumber *peopleMaximum;
 @property(nonatomic, retain)UserObject *userObject;
 @property(nonatomic, retain)NSNumber *partyId;
+@property(nonatomic, retain)NSDictionary *peopleCountDict;
 
 
 - (void)clearObject;

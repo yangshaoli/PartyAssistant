@@ -112,6 +112,7 @@
 		8947F0231458011300017ED1 /* SMSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0221458011300017ED1 /* SMSObject.m */; };
 		8947F0261458018100017ED1 /* ClientObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0251458018100017ED1 /* ClientObject.m */; };
 		8947F02D1458044400017ED1 /* BaseInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F02C1458044400017ED1 /* BaseInfoService.m */; };
+		895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */ = {isa = PBXBuildFile; fileRef = 895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */; };
 		8966754F147B3568007CEAF3 /* SettingsListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */; };
 		89667550147B3568007CEAF3 /* SettingsListTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */; };
 		899B03001484632B0056EEFD /* WeiboNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899B02FE1484632B0056EEFD /* WeiboNavigationController.m */; };
@@ -368,6 +369,8 @@
 		8947F0251458018100017ED1 /* ClientObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientObject.m; sourceTree = "<group>"; };
 		8947F02B1458044400017ED1 /* BaseInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoService.h; sourceTree = "<group>"; };
 		8947F02C1458044400017ED1 /* BaseInfoService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseInfoService.m; sourceTree = "<group>"; };
+		895315BB1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleCountInPartyListCellSubView.h; sourceTree = "<group>"; };
+		895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleCountInPartyListCellSubView.m; sourceTree = "<group>"; };
 		8966754C147B3568007CEAF3 /* SettingsListTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsListTableViewController.h; sourceTree = "<group>"; };
 		8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsListTableViewController.m; sourceTree = "<group>"; };
 		8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsListTableViewController.xib; sourceTree = "<group>"; };
@@ -771,6 +774,8 @@
 				899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */,
 				89CC34621491F27C0074E898 /* NumberLabel.h */,
 				89CC34631491F27C0074E898 /* NumberLabel.m */,
+				895315BB1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.h */,
+				895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */,
 			);
 			name = CustomClass;
 			sourceTree = "<group>";
@@ -1283,6 +1288,7 @@
 				CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */,
 				89C709C114908E0D00699AE0 /* DeviceTokenService.m in Sources */,
 				89CC34641491F27C0074E898 /* NumberLabel.m in Sources */,
+				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

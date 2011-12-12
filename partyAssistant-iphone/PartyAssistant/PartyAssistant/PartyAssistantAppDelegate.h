@@ -12,6 +12,12 @@
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "DeviceTokenService.h"
 #import "NotificationSettings.h"
+#import "HTTPRequestErrorMSG.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
 #import <AddressBook/AddressBook.h>
 
 ABAddressBookRef addressBook;
