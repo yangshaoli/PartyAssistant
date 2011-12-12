@@ -92,7 +92,7 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"failedTransaction" object:self userInfo:userInfoDictionary];
 	if (transaction.error.code != SKErrorPaymentCancelled)
     {
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"iap" message:transaction.error.localizedFailureReason
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"购买取消！"
 													   delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
 		[alert show];
 		[alert release];

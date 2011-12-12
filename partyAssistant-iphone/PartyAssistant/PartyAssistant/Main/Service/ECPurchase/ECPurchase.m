@@ -177,10 +177,10 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 	NSDictionary* data = [NSDictionary dictionaryWithObjectsAndKeys:recepit, @"receipt-data", nil];
     //NSLog(@"%@",data);
 	SBJsonWriter *writer = [SBJsonWriter new];
-    NSLog(@"%@",[writer stringWithObject:data]);
-    NSLog(@"%@",[NSString stringWithFormat:@"{%@=%@}",@"receipt-data",recepit]);
-    [request appendPostData: [[NSString stringWithFormat:@"%@=%@",@"receipt-data",recepit] dataUsingEncoding: NSUTF8StringEncoding]];
-	//[request appendPostData: [[[writer stringWithObject:data] stringByReplacingOccurrencesOfString:@"\"" withString:@""] dataUsingEncoding: NSUTF8StringEncoding]];
+//    NSLog(@"%@",[writer stringWithObject:data]);
+//    NSLog(@"%@",[NSString stringWithFormat:@"{%@=%@}",@"receipt-data",recepit]);
+//    [request appendPostData: [[NSString stringWithFormat:@"%@=%@",@"receipt-data",recepit] dataUsingEncoding: NSUTF8StringEncoding]];
+	[request appendPostData: [[writer stringWithObject:data] dataUsingEncoding: NSUTF8StringEncoding]];
 	[writer release];
 	[_networkQueue addOperation: request];
 	[_networkQueue go];
@@ -194,12 +194,13 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 
 -(void)didFinishVerify:(ECPurchaseHTTPRequest *)request
 {
-	UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-    NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
-    [self removeReceiptWithUserID:userID andIdentifier:request.productIdentifier];
+	//UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+    //NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
+    //[self removeReceiptWithUserID:userID andIdentifier:request.productIdentifier];
     NSString *response = [request responseString];
 	SBJsonParser *parser = [SBJsonParser new];
 	NSDictionary* jsonData = [parser objectWithString: response];
+    NSLog(@"%@",jsonData);
 	[parser release];
 //	NSString *status = [jsonData objectForKey: @"status"];
 //	if ([status intValue] == 0) {
@@ -220,8 +221,11 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 	NSURL *verifyURL = [NSURL URLWithString:VAILDATING_RECEIPTS_URL];
     NSLog(@"%@",VAILDATING_RECEIPTS_URL);
     
+    NSString *userID = [productInfo objectForKey:@"userID"];
+    
 	ECPurchaseHTTPRequest *request = [[ECPurchaseHTTPRequest alloc] initWithURL:verifyURL];
-	[request setProductIdentifier:[productInfo objectForKey:@"identifier"]];
+	request.userID = userID;
+    [request setProductIdentifier:[productInfo objectForKey:@"identifier"]];
 	[request setRequestMethod: @"POST"];
 	[request setDelegate:self];
 	[request setDidFinishSelector:@selector(didFinishVerifyReceiptBefore:)];
@@ -329,9 +333,17 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
     NSMutableDictionary *localStoredReceipt = [self getLocalStoredReceipt];
-    
+    NSLog(@"local receipt:%@",localStoredReceipt);
+    NSLog(@"User Id is:%@",userID);
     NSMutableDictionary *theUserReceipts = [[localStoredReceipt objectForKey:userID] mutableCopy];
     [theUserReceipts removeObjectForKey:identifier];
+    NSLog(@"theUserReceipt:%@",theUserReceipts);
+    if (!theUserReceipts) {
+        [localStoredReceipt removeObjectForKey:userID];
+        [theUserReceipts release];
+        [pool release];
+        return;
+    }
     
     [localStoredReceipt setObject:theUserReceipts forKey:userID];
     

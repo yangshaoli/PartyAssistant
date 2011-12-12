@@ -19,6 +19,7 @@
 #import "UserObjectService.h"
 #import "WeiboLoginViewController.h"
 #import "WeiboNavigationController.h"
+#import "PeopleCountInPartyListCellSubView.h"
 
 @interface PartyListTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate, UIAlertViewDelegate>{
     NSMutableArray *partyList;

@@ -14,6 +14,7 @@
 @synthesize window = _window;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
+    NSLog(@"Luanch");
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -30,10 +31,12 @@
      Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
      If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
      */
+    NSLog(@"Background");
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+    NSLog(@"Foreground");
     /*
      Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
      */
@@ -45,6 +48,12 @@
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
      */
+    NSLog(@"BecomeActive");
+    UserObjectService *s = [UserObjectService sharedUserObjectService];
+    UserObject *u = [s getUserObject];
+    if (application.applicationIconBadgeNumber > 0 && u.uID>0) {
+        [self performSelectorOnMainThread:@selector(getBadgeNumber:) withObject:[NSNumber numberWithInt:u.uID] waitUntilDone:NO];
+    }
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -54,10 +63,12 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
+    NSLog(@"WillTerminate");
 }
 
 #pragma Push Notification
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
+    NSLog(@"Luanch Option");
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
     if(addressBook == nil) {
         addressBook = ABAddressBookCreate();
@@ -67,6 +78,7 @@
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
     [_window addSubview:nav.view];
+
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     
     [[ECPurchase shared] addTransactionObserver];
@@ -115,7 +127,6 @@
     NSString *operation = [userInfo objectForKey:@"operation"];
     NSLog(@"operation:%@",operation);
     if ([operation isEqualToString:@"enroll"]) {
-        
         NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:badge,@"badge",nil]];
         [[NSNotificationCenter defaultCenter] postNotification:notification];
     }
@@ -201,5 +212,37 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     [_HUD removeFromSuperview];
     [_HUD release];
     _HUD = nil;
+}
+
+- (void)getBadgeNumber:(id)uid
+{
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?id=%@",GET_USER_BADGE_NUM,uid]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
+	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
+    //	[self dismissWaiting];
+    if([request responseStatusCode] == 200){
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:[dataSource objectForKey:@"badgeNum"],@"badge",nil]];
+            [[NSNotificationCenter defaultCenter] postNotification:notification];
+        }
+    }
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+
 }
 @end
