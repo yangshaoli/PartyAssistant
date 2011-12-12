@@ -447,7 +447,7 @@ def _public_enroll(request, party_id):
             client = None
             create = False
             if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
-                client, create = Client.objects.get_or_create(name = name, creator=creator, email = email, phone = phone, invite_type = 'public')
+                client, create = Client.objects.get_or_create(name = name, creator=creator, email = email, phone = phone)
             elif BOOL_EMAIL_NONE and ( not BOOL_PHONE_NONE ) : #存在 phone 记录 ，但无 Email 记录
                 client = get_object_or_404(Client, phone = phone)  
             elif ( not BOOL_EMAIL_NONE ) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
@@ -460,13 +460,17 @@ def _public_enroll(request, party_id):
                     return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
                     
             if create:
+                client.invite_type = 'public'
                 client.save()
             client.name = name 
             client.save()    
-            partyclient, create = PartiesClients.objects.get_or_create(client = client, party = party, apply_status = u'apply')
+            
+            partyclient, create = PartiesClients.objects.get_or_create(client = client, party = party)            
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
-                partyclient.leave_message = partyclient.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) 
+                partyclient.leave_message = partyclient.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                 
+            partyclient.apply_status = 'apply'
             partyclient.is_check = False    
             partyclient.save()
                
