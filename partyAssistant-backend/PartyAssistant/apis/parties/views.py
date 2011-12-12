@@ -378,7 +378,9 @@ def resendMsg(request):
                 PartiesClients.objects.get_or_create(
                                                   party = party,
                                                   client = client,
-                                                  apply_status = u'noanswer'
+                                                  defaults = {
+                                                              apply_status:'noanswer'
+                                                              }
                                                   ) 
                 addressArray.append(receiver['cValue'])
     
