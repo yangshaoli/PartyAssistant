@@ -23,6 +23,7 @@ from forms import CreatePartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
+from utils.tools.push_notification_to_apple_tool import push_notification_when_enroll
 import datetime
 import logging
 import time
