@@ -22,6 +22,7 @@
     UIPickerView *peoplemaxiumPicker;
     UITextField *locationTextField;
     UITextView *descriptionTextView;
+    UILabel *starttimeLabel2;
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseInfoObject;
@@ -29,5 +30,5 @@
 @property(nonatomic, retain)UIPickerView *peoplemaxiumPicker;
 @property(nonatomic, retain)UITextField *locationTextField;
 @property(nonatomic, retain)UITextView *descriptionTextView;
-
+@property(nonatomic, retain)UILabel *starttimeLabel2;
 @end

@@ -8,7 +8,7 @@
    <h2 class="title">操作成功</h2>
     <h2>{{message}}</h2>
 <br />
-<button onclick="javascript:history.back(-1)">返回上个页面</button>
+<button onclick="self.location='{{request.META.path_info}}'">返回上个页面</button>
   </div>
  </div>
 

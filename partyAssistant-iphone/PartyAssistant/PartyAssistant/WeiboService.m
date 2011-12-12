@@ -34,40 +34,31 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
     
     NSString* documentsDirectory = [paths objectAtIndex:0];
     
-    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:USEROBJECTFILE];
+    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:WEIBOPERSONALPROFILEFILE];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fullPathToFile];
     if (fileExists) {
         NSData *theData = [NSData dataWithContentsOfFile:fullPathToFile];
         NSKeyedUnarchiver *decoder = [[NSKeyedUnarchiver alloc] initForReadingWithData:theData];
-        self.userObject = [decoder decodeObjectForKey:USEROBJECTKEY];
+        self.weiboPersonalProfile = [decoder decodeObjectForKey:WEIBOPERSONALPROFILEKEY];
     } else {
-        self.userObject = [[UserObject alloc] init];
+        self.weiboPersonalProfile = [[WeiboPersonalProfile alloc] init];
     }
     
-    return self.userObject;
+    return self.weiboPersonalProfile;
 }
-- (void)saveUserObject
-{
-    if (!self.userObject) {
+
+- (void)saveNickName:(NSString *)nickName{
+    if (!self.weiboPersonalProfile) {
         return;
     }
-    
-    NSMutableData *theData = [NSMutableData data];
-    NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
-    
-    [encoder encodeObject:self.userObject forKey:USEROBJECTKEY];
-    [encoder finishEncoding];
-    
-    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    
-    NSString* documentsDirectory = [paths objectAtIndex:0];
-    
-    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:USEROBJECTFILE];
-    [theData writeToFile:fullPathToFile atomically:YES];
+    self.weiboPersonalProfile.nickname = nickName;
+    [self saveWeiboPersonalProfile];
 }
-- (void)clearUserObject
+
+- (void)clearWeiboPersonalProfile
 {
-    [self.userObject clearObject];
+    [self.weiboPersonalProfile clearObject];
 }
+
 
 @end

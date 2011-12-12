@@ -9,7 +9,7 @@
 #import "BaseInfoObject.h"
 
 @implementation BaseInfoObject
-@synthesize starttimeStr, starttimeDate, location, description, peopleMaximum, userObject, partyId;
+@synthesize starttimeStr, starttimeDate, location, description, peopleMaximum, userObject, partyId,peopleCountDict;
 
 - (id)init
 {
@@ -23,6 +23,7 @@
         self.peopleMaximum = [NSNumber numberWithInt:0];
         self.userObject = [[UserObjectService sharedUserObjectService] getUserObject];
         self.partyId = [NSNumber numberWithInt:-1];
+//        self.peopleCountDict = [NSDictionary dictionaryWithObjectsAndKeys:@"appliedClientcount",0,@"newAppliedClientcount",0,@"donothingClientcount",0,@"refusedClientcount",0,@"newRefusedClientcount",0, nil];
     }
     
     return self;
@@ -36,6 +37,7 @@
 	[encoder encodeObject: self.peopleMaximum forKey:@"peopleMaximum"];
     [encoder encodeObject: self.userObject forKey:@"userObject"];
     [encoder encodeObject: self.partyId forKey:@"partyId"];
+    [encoder encodeObject: self.peopleCountDict forKey:@"peopleCountDict"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -46,6 +48,7 @@
 	self.peopleMaximum = [decoder decodeObjectForKey:@"peopleMaximum"];
     self.userObject = [decoder decodeObjectForKey:@"userObject"];
     self.partyId = [decoder decodeObjectForKey:@"partyId"];
+    self.peopleCountDict = [decoder decodeObjectForKey:@"peopleCountDict"];
 	return self;
 }
 
@@ -57,6 +60,7 @@
     self.peopleMaximum = [NSNumber numberWithInt:0];
     self.userObject = [[UserObjectService sharedUserObjectService] getUserObject];
     self.partyId = [NSNumber numberWithInt:-1];
+//    self.peopleCountDict = [NSDictionary dictionaryWithObjectsAndKeys:@"appliedClientcount",0,@"newAppliedClientcount",0,@"donothingClientcount",0,@"refusedClientcount",0,@"newRefusedClientcount",0, nil];
 }
 
 - (void)formatDateToString{

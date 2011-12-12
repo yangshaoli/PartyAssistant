@@ -9,7 +9,7 @@
 #import "ContactorEmailDetailsViewController.h"
 
 @implementation ContactorEmailDetailsViewController
-@synthesize contactorID,email,card;
+@synthesize contactorID,email,card,EmailDetailDelegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -209,8 +209,9 @@
     
     NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.email, indexPath.row);
     NSDictionary *userinfo = [NSDictionary dictionaryWithObjectsAndKeys:valStr,@"val",[NSNumber numberWithInteger:contactorID],@"id", nil];
-    NSNotification *notification = [NSNotification notificationWithName:SELECT_CONTACT_MANNER object:self.navigationController.topViewController userInfo:userinfo];
-    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    [EmailDetailDelegate contactDetailSelectedWithUserInfo:userinfo];
+//    NSNotification *notification = [NSNotification notificationWithName:SELECT_CONTACT_MANNER object:self.navigationController.topViewController userInfo:userinfo];
+//    [[NSNotificationCenter defaultCenter] postNotification:notification];
     [self.navigationController popViewControllerAnimated:YES];
 }
 

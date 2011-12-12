@@ -27,6 +27,10 @@
 @synthesize tableView = _tableView;
 @synthesize userNameTableCell = _userNameTableCell;
 @synthesize userNameTextField = _userNameTextField;
+//wxz
+@synthesize emailInfoTableCell = _emailInfoTableCell;
+@synthesize emailInfoTextField = _emailInfoTextField;
+
 @synthesize delegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -74,7 +78,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -83,7 +87,9 @@
     if (indexPath.row == 0) {
         return _userNameTableCell;
     }
-    
+    if (indexPath.row == 1) {
+        return _emailInfoTableCell;
+    }
     return nil;
 }
 
@@ -102,15 +108,22 @@
     //check username textField
     BOOL isEmpty = (!_userNameTextField.text 
                     || [_userNameTextField.text isEqualToString:@""]);
-    if (isEmpty) {
+        
+    //wxz
+    BOOL isEmailEmpty = (!_emailInfoTextField.text 
+                    || [_emailInfoTextField.text isEqualToString:@""]);
+    
+    if (isEmailEmpty || isEmpty) {
         [self showNotLegalInput];
         return;
     }
+    
     [self cleanKeyBoard];
     [delegate saveInputDidBegin];
     NetworkConnectionStatus status = [[DataManager sharedDataManager] 
                                        setNickName:_userNameTextField.text];
-    if (status == NetWorkConnectionCheckPass) {
+    NetworkConnectionStatus emailStatus = [[DataManager sharedDataManager] setEmailInfo:_emailInfoTextField.text];
+    if (status == NetWorkConnectionCheckPass && emailStatus == NetWorkConnectionCheckPass) {
         [delegate saveInputFinished];
     } else {
         [self showNotPassChekAlert];
@@ -122,6 +135,9 @@
     if ([_userNameTextField isFirstResponder]) {
         [_userNameTextField resignFirstResponder];
     } 
+    if([_emailInfoTextField isFirstResponder]){
+        [_emailInfoTextField resignFirstResponder];
+    }
 }
 
 - (void)showAlertWithMessage:(NSString *)message  

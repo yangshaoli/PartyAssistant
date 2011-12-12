@@ -9,7 +9,7 @@
 #import "EditPartyTableViewController.h"
 
 @implementation EditPartyTableViewController
-@synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
+@synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView,starttimeLabel2;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -41,6 +41,15 @@
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.rightBarButtonItem = doneBtn;
     self.navigationItem.leftBarButtonItem.title = @"取消";
+    //wxz
+    NSString *titleString;
+    if (baseInfoObject.description.length>3) {
+        titleString=[[NSString alloc]initWithFormat:@"%@...",[baseInfoObject.description substringToIndex:3]];
+    }else{
+        titleString = baseInfoObject.description;
+    }
+    
+    self.title=titleString;
 }
 
 - (void)viewDidUnload
@@ -116,9 +125,11 @@
         UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
         starttimeLabel.textAlignment = UITextAlignmentRight;
         starttimeLabel.backgroundColor = [UIColor clearColor];
+       
         starttimeLabel.text = baseInfoObject.starttimeStr;
-        //            starttimeLabel.text = @"2011-11-11 11:00";
         [cell addSubview:starttimeLabel];
+        //            starttimeLabel.text = @"2011-11-11 11:00";
+       
     }else if(indexPath.row == 1){
         cell.textLabel.text = @"地点:";
         if (!locationTextField) {
@@ -156,7 +167,7 @@
     }
     return cell;
 }
-
+//
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -217,7 +228,7 @@
     [self saveInfo];
     if (indexPath.row == 0) {
         NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:@"时间待定" destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
         actionSheet.tag = 0;
         if (!self.datePicker) {
             self.datePicker = [[UIDatePicker alloc] init];
@@ -229,6 +240,8 @@
         }
         [actionSheet addSubview:datePicker];
         [actionSheet showInView:self.tabBarController.view];
+               
+        
     }else if(indexPath.row == 2){
         NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
         UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
@@ -250,10 +263,11 @@
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
+{   
     if (actionSheet.tag == 0) {
         self.baseInfoObject.starttimeDate = [datePicker date];
         [self.baseInfoObject formatDateToString];
+        NSLog(@"%d",buttonIndex);
     }else{
         NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
         NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];

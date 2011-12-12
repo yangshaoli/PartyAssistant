@@ -24,7 +24,7 @@ static NSString* oauthUserAuthorizeURL		= @"http://api.t.sina.com.cn/oauth/autho
 static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/access_token";
 
 
-@interface WBAuthorize (Private)
+@interface WBAuthorize (Private)<UIWebViewDelegate>
 + (NSString*)stringFromDictionaryForOAuthRequestHeadField:(NSDictionary *)info;
 + (NSString*)stringFromDictionary:(NSDictionary*)info;
 + (NSString*)getSignatureBaseStringWithHttpMethod:(NSString*)httpMethod withURL:(NSString*)URL withHeadInfo:(NSDictionary*)headInfo;
@@ -187,7 +187,6 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 			}
 			_requestToken = [[info objectForKey:@"oauth_token"]retain];
 			[self openUserAuthorizePage];
-			
 			if( _requestSecret )
 			{
 				[_requestSecret release];
@@ -205,13 +204,36 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 	NSString* urlString = [WBRequest serializeURL:oauthUserAuthorizeURL 
 										   params:[NSDictionary dictionaryWithObjectsAndKeys:_requestToken,@"oauth_token",[NSString stringWithFormat:@"%@://%@",[_weibo urlSchemeString],WeiBoAuthorizeCallBack],@"oauth_callback",nil] 
 									   httpMethod:@"GET"];
-	
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+    NSNotification *notification = [NSNotification notificationWithName:@"testNotification" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:urlString,@"url", nil]];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getAccessTokenWithVerifier:) name:@"testNotification1" object:nil];
+	/** 
+     验证应用之后，我们不在Safari中打开授权Page，而是直接在WebView中打开！
+     */
+//    UIWebView *webV = [[UIWebView alloc] initWithFrame:CGRectMake(50, 20, 220, 400)];
+//    webV.delegate = self;
+//    
+//    [webV loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]]];
+//	UIWindow* window = [UIApplication sharedApplication].keyWindow;
+//	if (!window) {
+//		window = [[UIApplication sharedApplication].windows objectAtIndex:0];
+//	}
+//    UIViewController *vc = [[UIViewController alloc] init];
+//    UINavigationBar *bar = [[UINavigationBar alloc] init];
+//    [vc.view addSubview:bar];
+//    [window.rootViewController presentModalViewController:vc animated:YES];
+////    [window ];
+//    [window release];
+//    [bar release];
+//    [vc release];
+//    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
 }
 
+- (void)getAccessTokenWithVerifier:(NSNotification *)notification
 
-- (void)getAccessTokenWithVerifier:(NSString*)verifier
-{	
+{
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"testNotification1" object:nil];
+    NSString *verifier =[[notification userInfo] objectForKey:@"verifier"];
 	_waitingUserAuthorize = FALSE;
 	NSMutableDictionary* headInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									 _appKey,@"oauth_consumer_key",
@@ -320,6 +342,7 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 								accessToken:(NSString*)token 
 							   accessSecret:(NSString*)secret
 {
+    NSLog(@"url:%@",url);
 	NSMutableDictionary* headInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									 appkey,@"oauth_consumer_key",
 									 [NSString GUIDString],@"oauth_nonce",
@@ -327,7 +350,7 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 									 token,@"oauth_token",
 									 [NSString stringWithFormat:@"%.0f",[[NSDate date]timeIntervalSince1970]],@"oauth_timestamp",
 									 @"1.0",@"oauth_version",nil];
-	
+	NSLog(@"headinfo:%@",headInfo);
 	NSMutableDictionary* infoForSignture = [NSMutableDictionary dictionaryWithDictionary:headInfo];
 	for (id key in [params keyEnumerator]) 
 	{
@@ -339,13 +362,17 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 	}
 	
 	NSString* baseString = [WBAuthorize getSignatureBaseStringWithHttpMethod:httpMethod withURL:url withHeadInfo:infoForSignture];
+    NSLog(@"baseString:%@",baseString);
 	NSString* keyString = [NSString stringWithFormat:@"%@&%@",[appSecret URLEncodedString],[secret URLEncodedString]];
 	NSString* signatureString = [[baseString HMACSHA1EncodedDataWithKey:keyString]base64EncodedString];
 	[headInfo setObject:signatureString forKey:@"oauth_signature"];
-	
+	NSLog(@"signatureString:%@",signatureString);
 	NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObject:[WBAuthorize stringFromDictionaryForOAuthRequestHeadField:headInfo] forKey:@"Authorization"];
 	[dictionary addEntriesFromDictionary:headerFieldsInfo];
-	
+	NSLog(@"authorization:%@",dictionary);
+    NSLog(@"params:%@",params);
+    NSLog(@"url:%@",url);
+    NSLog(@"HTTP Method:%@",httpMethod);
 	return [WBRequest getRequestWithParams:params
 								httpMethod:httpMethod 
 							  postDataType:postDataType 

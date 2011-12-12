@@ -10,9 +10,23 @@
 #import "PartyLoginViewController.h"
 #import "PartyListTableViewController.h"
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "DeviceTokenService.h"
+#import "NotificationSettings.h"
+#import "HTTPRequestErrorMSG.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+#import <AddressBook/AddressBook.h>
 
+ABAddressBookRef addressBook;
 @interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+
+void addressBookChanged (ABAddressBookRef addressBook,
+                         CFDictionaryRef info,
+                         void *context);
 
 @end

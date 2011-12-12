@@ -17,16 +17,26 @@ function changetoAble(o){
     欢迎你, {{user.username}}<br/><br/>
 <br />
 <a href="{% url change_password %}">修改密码</a><br/>
-<form method='post' action='{% url profile %}'>
-姓&nbsp;&nbsp;&nbsp;&nbsp;名：<input type='text' name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}' placeholder='姓名' ></input>{{ form.true_name.errors.0 }}
-<br/>
-电子邮件:<input type='text' name='email' id='id_email' value='{{ form.email.value|default:'' }}' placeholder='邮件' ></input>{{ form.email.errors.0 }}
-<br/>
-手&nbsp;&nbsp;&nbsp;&nbsp;机：<input type='text' name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}' placeholder='手机' ></input>{{ form.phone.errors.0 }}
-<br/>
-剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="#">充值</a>
-<br><input type='submit' value='保存'></input>
-</form>
+<form method='post' action='{% url profile %}'  class="creat_exercise">
+    {% csrf_token %}
+    <fieldset>
+        <div class="field">
+        <label for="true_name">姓名</label>
+         {{ form.true_name }}{{ form.true_name.errors.0 }}
+         </div>
+         <div class="field">
+         <label for="email">电子邮件</label>
+         {{ form.email }}{{ form.email.errors.0 }}
+         </div>
+         <div class="field">
+         <label for="phone">手机</label>
+         {{ form.confirm_password }}{{ form.phone }}{{ form.phone.errors.0 }}
+         <font color="red">{{ form.confirm_password.errors.0 }}</font>
+         </div>
+         <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>
+          <input type='submit' value='保存'></input>
+        </fieldset>	
+    </form>
 {% if profile_status %}
 {{ profile_status }}
 {% endif%}

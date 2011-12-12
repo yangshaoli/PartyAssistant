@@ -9,5 +9,5 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('apis.accounts.urls')),
 #    url(r'^clients/', include('apis.clients.urls')),
     url(r'^parties/', include('apis.parties.urls')),
- 
+    url(r'^receipt/', include('apis.receipt.urls')), 
 )
