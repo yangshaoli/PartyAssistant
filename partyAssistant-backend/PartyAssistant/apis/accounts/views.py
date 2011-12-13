@@ -95,3 +95,14 @@ def getBadgeNum(request):
         return {'badgeNum':PartiesClients.objects.filter(party__in = party_list, is_check = False).count()}
     else:
         return {'badgeNum':0}
+
+@csrf_exempt
+@apis_json_response_decorator
+@commit_on_success
+def profilePage(request, uid):
+    user = User.objects.get(pk = id)
+    if request.method == 'POST':
+#        nickname = 
+        pass
+    else:
+        pass

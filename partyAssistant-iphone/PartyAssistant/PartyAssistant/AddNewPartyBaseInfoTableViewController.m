@@ -334,7 +334,7 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    [descriptionTextView  resignFirstResponder];
+//    [descriptionTextView  resignFirstResponder];
 }
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{

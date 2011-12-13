@@ -66,6 +66,21 @@ class TempActivateNote(models.Model):
     def __unicode__(self):
         return self.email
 
+#class UserReceiptBase(models.Model):
+#    user = models.ForeignKey(User)
+#    receipt = models.TextField()
+#    buy_time = models.DatetimeField()
+#    create_time = models.DatetimeField(auto_add = True)
+#    pay_money = models.CharField(max_length = 8)
+#    pay_money_type = models.CharField(max_length = 8)
+#    pre_sms_count = models.IntegerField()
+#    added_sms_count = models.IntegerField()
+#
+#class UserIPhoneReceipt(UserReceiptBase):
+#    device = models.CharField(max_length = 16,default = 'iPhone')
+#    account_name = models.EmailField()
+
+
     
 def crerate_user_profile(sender = None, instance = None, created = False, **kwargs):
     if created:

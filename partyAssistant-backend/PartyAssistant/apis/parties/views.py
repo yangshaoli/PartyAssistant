@@ -161,10 +161,12 @@ def deleteParty(request):
 def PartyList(request, uid, start_id = 0):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
-    if start_id == 0:
+    print start_id
+    if str(start_id) == "0":
         partylist = Party.objects.filter(creator = user).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     else:
-        partylist = Party.objects.filter(creator = user, pk__gt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+        partylist = Party.objects.filter(creator = user, pk__lt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+    print partylist
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
@@ -203,12 +205,12 @@ def PartyList(request, uid, start_id = 0):
         PartyObjectArray.append(partyObject)
     if partylist:
         return {
-                'page':partylist[partylist.count() - 1].id,
+                'lastID':partylist[partylist.count() - 1].id,
                 'partyList':PartyObjectArray
                 }
     else:
         return {
-                'page':start_id,
+                'lastID':start_id,
                 'partyList':[]
                 }
 
@@ -233,9 +235,7 @@ def GetPartyMsg(request, pid):
         dict['cName'] = partiesclients.client.name
         dict['backendID'] = partiesclients.id
         receivers.append(dict)
-    print 1
     subObj = message.get_subclass_obj()
-    print 2
     if messageType == 'SMS':
         subject = ''
         content = subObj.content
