@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039151495E4260025B10A /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039181495E4260025B10A /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -193,6 +195,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7A3039141495E4260025B10A /* BottomRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BottomRefreshTableView.h; path = RefreshTableView/BottomRefreshTableView.h; sourceTree = "<group>"; };
+		7A3039151495E4260025B10A /* BottomRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BottomRefreshTableView.m; path = RefreshTableView/BottomRefreshTableView.m; sourceTree = "<group>"; };
+		7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefreshTableViewProtocol.h; path = RefreshTableView/RefreshTableViewProtocol.h; sourceTree = "<group>"; };
+		7A3039171495E4260025B10A /* TopRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopRefreshTableView.h; path = RefreshTableView/TopRefreshTableView.h; sourceTree = "<group>"; };
+		7A3039181495E4260025B10A /* TopRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopRefreshTableView.m; path = RefreshTableView/TopRefreshTableView.m; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -513,6 +520,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7A3039121495E3F10025B10A /* RefreshTableView */ = {
+			isa = PBXGroup;
+			children = (
+				7A3039141495E4260025B10A /* BottomRefreshTableView.h */,
+				7A3039151495E4260025B10A /* BottomRefreshTableView.m */,
+				7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */,
+				7A3039171495E4260025B10A /* TopRefreshTableView.h */,
+				7A3039181495E4260025B10A /* TopRefreshTableView.m */,
+			);
+			name = RefreshTableView;
+			sourceTree = "<group>";
+		};
 		891A4D7114579B3B00A2CF47 = {
 			isa = PBXGroup;
 			children = (
@@ -656,6 +675,7 @@
 		891A4DC41457B17500A2CF47 /* PartyList */ = {
 			isa = PBXGroup;
 			children = (
+				7A3039121495E3F10025B10A /* RefreshTableView */,
 				89277DF614662E1600B05020 /* PartyListTableViewController.h */,
 				89277DF714662E1600B05020 /* PartyListTableViewController.m */,
 				89277DF814662E1600B05020 /* PartyListTableViewController.xib */,
@@ -1076,7 +1096,7 @@
 		891A4D7314579B3B00A2CF47 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 891A4D7614579B3B00A2CF47 /* Build configuration list for PBXProject "PartyAssistant" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1289,6 +1309,8 @@
 				89C709C114908E0D00699AE0 /* DeviceTokenService.m in Sources */,
 				89CC34641491F27C0074E898 /* NumberLabel.m in Sources */,
 				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
+				7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */,
+				7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

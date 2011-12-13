@@ -13,7 +13,7 @@
 
 
 @implementation PartyListTableViewController
-@synthesize partyList, _isNeedRefresh, _isRefreshing, pageIndex,_currentDeletePartyID,_currentDeletePartyCellIndex;
+@synthesize partyList, _isNeedRefresh, _isRefreshing, lastID,_currentDeletePartyID,_currentDeletePartyCellIndex, topRefreshView, bottomRefreshView;
 @synthesize countNumber;
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -68,6 +68,36 @@
     if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
         [self refreshBtnAction];
     }
+    
+    minBottomRefreshViewY = 366.0;
+	//setup refresh tool
+    if (bottomRefreshView == nil) {
+		
+        CGFloat bottomRefreshViewY = MAX(minBottomRefreshViewY, self.tableView.contentSize.height);
+		BottomRefreshTableView *view = [[BottomRefreshTableView alloc] initWithFrame: CGRectMake(0.0f, bottomRefreshViewY, 320, 650)];
+		view.delegate = self;
+		[self.tableView addSubview:view];
+		self.bottomRefreshView = view;
+		
+		if (minBottomRefreshViewY > self.tableView.contentSize.height) {
+            view.deltaHeight = minBottomRefreshViewY - self.tableView.contentSize.height;
+        } else {
+            view.deltaHeight = 0.0f;
+        }
+		
+	}
+    if (topRefreshView == nil) {
+		
+		TopRefreshTableView *topView = [[TopRefreshTableView alloc] initWithFrame: CGRectMake(0.0f, -250.0f, 320, 250)];
+		topView.delegate = self;
+		[self.tableView addSubview:topView];
+		self.topRefreshView = topView;
+		
+	}
+    
+	//  update the last update date
+	[bottomRefreshView refreshLastUpdatedDate];
+    [topRefreshView refreshLastUpdatedDate];
 }
 
 - (void)viewDidUnload
@@ -219,20 +249,31 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
-- (void)refreshBtnAction{
+- (void)requestDataWithLastID:(NSInteger)aLastID {
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    int page = 1;
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,page]];
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
+    
+    if (aLastID > 0) {
+        _isAppend = YES;
+    } else {
+        _isAppend = NO;
+    }
     [request startAsynchronous];
     self._isRefreshing = YES;
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
     self.navigationItem.rightBarButtonItem.customView = acv;
+}
+
+- (void)refreshBtnAction{
+    int aLastID = 0;
+    [self requestDataWithLastID:aLastID];
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -247,14 +288,15 @@
     if([request responseStatusCode] == 200){
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
-            self.pageIndex = [[dataSource objectForKey:@"page"] intValue];
-            
-            if (pageIndex == 0) {
-                pageIndex = 1;
+            self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
+            if (lastID < 0) {
+                lastID = 0;
             }
             
             NSArray *allDatas = [dataSource objectForKey:@"partyList"];
-            [self.partyList removeAllObjects];
+            if (!_isAppend) {
+                [self.partyList removeAllObjects];
+            }
             for(int i=0;i<[allDatas count];i++){
                 NSDictionary *party = [allDatas objectAtIndex:i];
                 BaseInfoObject *biObj = [[BaseInfoObject alloc] init];
@@ -274,6 +316,7 @@
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
+            [self setBottomRefreshViewYandDeltaHeight];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
             self.navigationItem.rightBarButtonItem.customView = nil;
@@ -386,6 +429,7 @@
             NSArray *indexPathArray = [NSArray arrayWithObject:index];
             [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
             [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];
+            [self setBottomRefreshViewYandDeltaHeight];
         }else{
             [self showAlertRequestFailed:description];		
         }
@@ -416,4 +460,96 @@
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }
+
+#pragma mark -
+#pragma mark Data Source Loading / Reloading Methods
+
+- (void)reloadTableViewDataSource{
+	
+	//  should be calling your tableviews data source model to reload
+	//  put here just for demo
+    _reloading = YES;
+    [self requestDataWithLastID:0];
+	[self doneLoadingTopRefreshTableViewData];
+}
+
+- (void)loadNextPageTableViewDataSource{
+	
+	//  should be calling your tableviews data source model to reload
+	//  put here just for demo
+    _reloading = YES;
+    [self requestDataWithLastID:lastID];
+	[self doneLoadingBottomRefreshTableViewData];
+}
+
+- (void)doneLoadingTopRefreshTableViewData{
+	
+	//  model should call this when its done loading
+    _reloading = NO;
+    [self.tableView reloadData];
+    
+	[topRefreshView performSelector:@selector(refreshScrollViewDataSourceDidFinishedLoading:) withObject:self.tableView afterDelay:1.0f];
+}
+
+- (void)doneLoadingBottomRefreshTableViewData{
+	
+	//  model should call this when its done loading
+	_reloading = NO;
+    [self.tableView reloadData];
+    
+    [bottomRefreshView performSelector:@selector(refreshScrollViewDataSourceDidFinishedLoading:) withObject:self.tableView afterDelay:1.0f];
+}
+
+#pragma mark -
+#pragma mark UIScrollViewDelegate Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{	
+    [topRefreshView refreshScrollViewDidScroll:scrollView];
+	[bottomRefreshView refreshScrollViewDidScroll:scrollView];
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+	[topRefreshView refreshScrollViewDidEndDragging:scrollView];
+	[bottomRefreshView refreshScrollViewDidEndDragging:scrollView];
+}
+
+- (void)refreshTopTableHeaderDidTriggerRefresh:(id<RefreshTableViewProtocol>)view{
+	[self reloadTableViewDataSource];
+}
+
+- (void)refreshBottomTableHeaderDidTriggerRefresh:(id<RefreshTableViewProtocol>)view{
+	[self loadNextPageTableViewDataSource];
+}
+
+- (BOOL)refreshTableHeaderDataSourceIsLoading:(id<RefreshTableViewProtocol>)view{
+	
+	return _reloading; // should return if data source model is reloading
+	
+}
+
+- (NSDate*)refreshTableHeaderDataSourceLastUpdated:(id<RefreshTableViewProtocol>)view{
+	
+	return [NSDate date]; // should return date data source was last changed
+}
+
+- (void)setBottomRefreshViewYandDeltaHeight {
+    CGFloat bottomRefreshViewY = MAX(minBottomRefreshViewY, self.tableView.contentSize.height);
+    
+    CGRect frame = bottomRefreshView.frame;
+    frame.origin.y = bottomRefreshViewY;
+    bottomRefreshView.frame = frame;
+    
+    if (minBottomRefreshViewY > self.tableView.contentSize.height) {
+        bottomRefreshView.deltaHeight = minBottomRefreshViewY - self.tableView.contentSize.height;
+    } else {
+        bottomRefreshView.deltaHeight = 0.0f;
+    }
+    
+}
+
+- (CGFloat)getTableHeadViewHeight {
+	return 0.0f;
+}
+
 @end
