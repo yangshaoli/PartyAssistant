@@ -2,6 +2,12 @@
 
 {% block title %}报名页面 - 爱热闹{% endblock %}
 
+{% block style %}
+<style>
+input[type="image"] { border:0px;height:45px;}
+</style>
+{% endblock %}
+
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script>
@@ -22,12 +28,34 @@ function ajaxGetClients(applystatus){
     
     $.ajax({
         type : 'GET',
-        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
+        url: '/parties/ajax_get_client_list/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
             clients = JSON.parse(response);
             for (i in clients){
-                row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td></td></tr>"
+                name = clients[i].name;
+                address = clients[i].address;
+                a_at = clients[i].address.indexOf('@');
+                if(a_at == -1){
+                	address = address.substring(0,3)+'****'+address.substring(7,11);
+                	if (name == clients[i].address){
+                		name = address;
+                	}
+                }else{
+                	if (a_at > 3){
+                		address = address.substring(0,3)+'****'+address.substring(a_at);
+                	}else{
+                		address = address.substring(0,a_at)+'****'+address.substring(a_at);
+                	}
+                	if (name == clients[i].address){
+                		name = address;
+                	}
+                }
+                if(clients[i].client_id == '{{ client.id }}'){
+                	row = "<tr><td></td><th>"+'{{ client.name }}'+"</th><td>"+clients[i].address+"</td><td></td></tr>"
+                }else{
+                	row = "<tr><td></td><th>"+name+"</th><td>"+address+"</td><td></td></tr>"
+                }
                 $('.accordion_content table tbody').append(row);    
             }
             
@@ -61,8 +89,8 @@ function ajaxChangeStatus(id, applystatus){
    <h2 class="title">活动报名</h2>
    <div class="apply_details">
     <p>{{party.creator.username}} <span class="minor">邀请</span>  {% if client %}{{client.name}}{%else%}您{%endif%}：</p>
-    <p>{{party.start_time}}</p>
-    <p class="paragraph">{{party.address}} <span class="minor">参加活动</span></p>
+    <p>{{ party.start_date|date:"m月d日"}}  {{ party.start_time|time:"H:i"|default:"时间待定" }} </p>
+    <p class="paragraph">{{ party.address|default:"地点待定" }}<span class="minor">参加活动</span></p>
     <p class="paragraph">{{party.description}}</p>
     
     
@@ -72,29 +100,50 @@ function ajaxChangeStatus(id, applystatus){
         {% if client.name == client.email %}
         <div class="field">
              <label for="client_email_list">姓名</label>
+                 <input type="hidden" name="address" value="{{client.email}}"/>
                  <input type="text" name="name" id="id_name"/>
              </div>
         <div class="field">
         {% endif %}
+        {% if client.name == client.phone %}
+        <div class="field">
+             <label for="client_email_list">姓名</label>
+                 <input type="hidden" name="address" value="{{client.phone}}"/>
+                 <input type="text" name="name" id="id_name"/>
+             </div>
+        <div class="field">
+        {% endif %}
+        <div class="field">
+        <label for="client_leave_message">我要留言</label>
+        <textarea name='leave_message' id='id_leave_message' cols='25' rows='4'>{{ form.leave_message.value|default:'' }}</textarea>
+        <font color='red'>{{ form.leave_message.errors.0 }}</font>
+        </div> 
      <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
      <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
      <input id="id_action" type="hidden" name="action" value="" />
        
          {% else %}
          <!--公共报名页面 -->
-        <form action="{% url enroll party.id %}" method="get" class="creat_exercise">{% csrf_token %}
+        <form action="{% url enroll party.id %}" method="POST" class="creat_exercise">{% csrf_token %}
             <div class="field">
-             <label for="client_email_list">姓名</label>
-                 <input type="text" name="name" id="id_name"/>
+             <label for="client_email_list">姓名<font color='red'>*</font></label>
+             <input type='text' name='name' id='id_name' value='{{ form.name.value.value|default:'' }}'></input>
+             <font color='red'>{{ form.name.errors.0 }}<font>
              </div>
             <div class="field">
-             <label for="client_email_list">Email</label>
-                 <input type="text" name="email" id="id_email"/>
+             <label for="client_email_list">联系方式<font color='red'>*</font></label>
+             <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' placeholder='手机号码或者邮箱地址'></input>
+             <font color='red'>{{ form.phone_or_email.errors.0 }}</font>
+             <br/>
+             {% if invite_message %}
+             {{ invite_message }}
+             {% endif %}
              </div>
-             <div class="field">
-             <label for="client_email_list">手机号码</label>
-                 <input type="text" name="phone" id="id_phone"/>
-             </div>
+            <div class="field">
+             <label for="client_email_list">我要留言</label>
+             <textarea name='leave_message' id='id_leave_message' cols='25' rows='4'>{{ form.leave_message.value|default:'' }}</textarea>
+             <font color='red'>{{ form.leave_message.errors.0 }}</font>
+             </div> 
          <input type="image" src="/static/images/btn_join.png" />
          {% endif %}
     </form>

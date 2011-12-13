@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "WeiboService.h"
+#import "WeiboManagerTableViewController.h"
 
 @interface SettingsListTableViewController : UITableViewController
 

@@ -17,6 +17,7 @@
 #import "EditPartyTableViewController.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "NumberLabel.h"
 
 
 @interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{

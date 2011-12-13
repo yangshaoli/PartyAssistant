@@ -1,6 +1,7 @@
 #coding=utf-8
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import signals
 
 ACCOUNT_TYPE_CHOICES = (
                (u'管理员', u'管理员'),
@@ -16,23 +17,58 @@ ACTION_CHOICES = (
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    password = models.CharField(max_length=16, blank=True)
+    password = models.CharField(max_length = 16, blank = True)
+    true_name = models.CharField(max_length = 16, blank = True)
     #自己注册的为管理员
-    account_type = models.CharField(max_length=16, choices=ACCOUNT_TYPE_CHOICES)
-    first_login = models.BooleanField(default=True)
-    phone = models.IntegerField(null=True, blank=True)
+    account_type = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)
+    first_login = models.BooleanField(default = True)
+    phone = models.IntegerField(null = True, blank = True)
+    used_sms_count = models.IntegerField(default = 0)
+    available_sms_count = models.IntegerField(default = 30)
+    
+    def __unicode__(self):
+        return self.user.username
+
+class UserDeviceTokenBase(models.Model):
+    user = models.ForeignKey(User)
+    device_token = models.CharField(max_length = 32)
     
     def __unicode__(self):
         return self.user.username
     
+    def get_subclass_type(self):
+        if hasattr(self, "useriphonetoken"):
+            return 'iPhone'
+        else:
+            return 'Android'
+
+    def get_subclass_obj(self, *args):
+        if hasattr(self, "useriphonetoken"):
+            return self.useriphonetoken
+        else:
+            return self.userandroidtoken
+    
+class UserIPhoneToken(UserDeviceTokenBase):
+    device_type = models.CharField(max_length = 16, default = 'iPhone')
+
+class UserAndroidToken(UserDeviceTokenBase):
+    device_type = models.CharField(max_length = 16, default = 'Android')
+    
 class TempActivateNote(models.Model):
-    random_str = models.CharField(max_length=16, blank=True)
+    random_str = models.CharField(max_length = 16, blank = True)
     email = models.EmailField()
-    action = models.CharField(max_length=16, choices=ACTION_CHOICES, blank=True)
-    password = models.CharField(max_length=16, blank=True)
+    action = models.CharField(max_length = 16, choices = ACTION_CHOICES, blank = True)
+    password = models.CharField(max_length = 16, blank = True)
     #待定内容
-    aim_limit = models.CharField(max_length=16, choices=ACCOUNT_TYPE_CHOICES)
-    userprofile = models.ForeignKey(UserProfile, null=True, blank=True)
+    aim_limit = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)
+    userprofile = models.ForeignKey(UserProfile, null = True, blank = True)
     
     def __unicode__(self):
         return self.email
+
+    
+def crerate_user_profile(sender = None, instance = None, created = False, **kwargs):
+    if created:
+        UserProfile.objects.create(user = instance)
+   
+signals.post_save.connect(crerate_user_profile, sender = User)

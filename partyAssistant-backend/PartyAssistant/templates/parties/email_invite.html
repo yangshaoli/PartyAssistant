@@ -16,6 +16,10 @@
      */ * html .ui-autocomplete {
         height: 100px;
     }
+    a {
+    color: #2319FD;
+    text-decoration :underline;  
+      }
 </style>
 {% endblock %}
 {% block script %}
@@ -33,7 +37,7 @@
                 count = count + 1;
             }
         }
-        $('#id_send_email_count').html("发件人人数统计： " + count);
+        $('#id_send_email_count').html("收件人人数统计： " + count);
     }
     
     var availableTags = eval({{client_data|safe}});
@@ -80,6 +84,19 @@
             }
         });
     });
+    $(document).ready(function(){
+ 	$('#id_is_apply_tips').change(function(){
+		if(!this.checked){
+		   if (window.confirm("关闭报名提示后，在发送给邀请人的邮件中将不包含报名链接，确定吗?")){
+		   	  this.checked=false;
+		   }else{
+		      this.checked=true;
+		   }
+		}
+		return;
+	});
+});
+
 </script>
 {% endblock %}
 {% block content %}
@@ -94,10 +111,60 @@
             {% csrf_token %}
             <div class="field">
                 <label for="client_email_list">
-                    收件人
+                    收件人<font color='red'>*</font>
                 </label>
-                {{ form.client_email_list.errors }}
-                <textarea id="id_client_email_list" rows="4" cols="70" name="client_email_list">{{ form.client_email_list.value }}</textarea>
+                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
+                &nbsp;<font color='red'>{{ form.client_email_list.errors.0 }}</font>
+                {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
+                <script>
+                  var reject = '{{ quickadd_client.reject_client }}';
+                  var apply = '{{ quickadd_client.apply_client }}';
+                  var noanswer = '{{ quickadd_client.noanswer_client }}';
+                  function quickadd(o){
+                  	var temp = ''
+                  	if(o=='all'){
+		              	if(reject!=''){
+		                  temp += reject+','; 
+		             	 }
+		             	if(apply!=''){
+		                  temp += apply+','; 
+		             	 }
+		             	if(noanswer!=''){
+		                 temp += noanswer+','; 
+		             	} 
+			        }
+			        if(o=='apply'){
+		             	if(apply!=''){
+		                  temp += apply+','; 
+		             	 }
+			        }
+			        if(o=='reject'){
+		             	if(reject!=''){
+		                  temp += reject+','; 
+		             	 }
+			        }
+			        if(o=='noanswer'){
+		             	if(noanswer!=''){
+		                  temp += noanswer+','; 
+		             	 }
+			        }   
+			        if(temp!=''){  	
+	                 	var content = $('#id_client_email_list').val();
+	                 	if(content.replace(/^\s+|,|\s+$/g, "")!=""){
+	                 	  if(content.charAt(content.length-1)==","){
+	                 	  	$('#id_client_email_list').val(content+temp);
+	                 	  }else{
+	                 	    $('#id_client_email_list').val(content+","+temp);
+	                 	  }
+	                 	}else{
+	                 	    $('#id_client_email_list').val(temp)
+	                 	}
+	                } 	
+                  }
+                
+                </script>
+                <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">已报名</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">犹豫的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
+                {% endif %}
             </div>
             <div class="field">
                 <label for="id_send_email_count">
@@ -109,28 +176,27 @@
             </div>
             <div class="field">
                 <label for="id_content">
-                    邮件内容
+                    邮件内容<font color='red'>*</font>
                 </label>
-                <textarea id="id_content" rows="15" cols="70" name="content">admin邀请你参加：Test,时间、地点，另行通知。</textarea>
+                <font color='red'>{{ form.content.errors.0 }}</font>
+                <textarea name='content' id='id_content' cols='70' rows='15'>{{ form.content.value|default:'' }}</textarea>
             </div>
             <div class="field">
                 <label for="id_is_apply_tips">
                     &nbsp;
                 </label>
                 <p>
-                    {{ form.is_apply_tips }}带报名链接
+                <input type='checkbox' name='is_apply_tips' id='id_is_apply_tips' {% if form.is_apply_tips.value %}checked='checked'{% endif %}></input>带报名链接
                 </p>
             </div>
             <div class="field">
                 <label>
                     &nbsp;
                 </label>
-                <input id="id_email_invite_submit" type="submit" value="发送" />
-                <button id="id_back_to_list" onclick="location.href={% url list_party %}; return false;">
-                    返回列表
-                </button>
+                <input id="id_email_invite_submit" type="submit" value="发送" />               
             </div>
         </form>
+         <button id="id_back_to_list" onclick="(function(){window.location.href='{% url list_party %}';})() ;return false;"> 返回活动列表</button>
     </div>
 </div>
 {% endblock %}

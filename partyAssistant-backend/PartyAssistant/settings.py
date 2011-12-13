@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'admin@aimeeting.com'),
+    ('AIMeeting', 'airenao@cn-acg.com'),
 )
 
 DATABASES = {
@@ -106,9 +106,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'urls'
 
-CLIENT_SOLR_PORT = 'http://localhost:8984/solr'
-MEETING_SOLR_PORT = 'http://localhost:8983/solr'
-
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
@@ -134,7 +131,6 @@ INSTALLED_APPS = (
     'apps.messages', 
     'apps.common', 
 )
-
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -193,9 +189,15 @@ LOGGING = {
     }
 }
 
-SYS_EMAIL_ADDRESS = 'admin@aimeeting.com'
-DOMAIN_NAME = 'http://127.0.0.1:8000'
+SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
+DOMAIN_NAME = 'airenao.com'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
-SMS_ISP_USERNAME = 's1002020649'
-SMS_ISP_PASSWORD = '13488891003'
+EMAIL_HOST = '127.0.0.1'
+EMAIL_PORT = 25
+
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+ALIPAY_PARTNER='2088701462122036'
+ALIPAY_KEY='jut7uqx5fodoajps5jomwwz03rs0516y'
+ALIPAY_SELLER_EMAIL='payment@orilong.com'

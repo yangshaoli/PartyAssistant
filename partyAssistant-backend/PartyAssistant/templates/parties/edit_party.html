@@ -67,31 +67,31 @@ $(document).ready(function(){
      <label for="id_start_date">
      何时
      </label>
-     <input name='start_date' id='id_start_date'  placeholder='选填，格式如2008-08-08' class='input-txt3 mys' value="{{ party.start_date|default:''|date:'Y-m-d' }}" ></input>
-     {{ form.start_date.errors }}
-     <input name='start_time' id='id_start_time'  placeholder='选填，格式如08:08' class='input-txt3 mys TimePker' autocomplete='off' value="{{ party.start_time|default:''|time:'H:i' }}"></input>
-     {{ form.start_time.errors }}
+	 <input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|date:'Y-m-d'|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
+	 <input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|time:'H:i'|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
+     <font color='red'>{{ form.start_date.errors }}
+     {{ form.start_time.errors }}<font>
      </div>
      <div class="field">
      <label for="id_address">
      去哪
      </label>
-     <input name='address' id='id_address' placeholder='可选填，主要作用是进行地图定位' style="width: 223px;" value="{{party.address|default:''}}"></input>
-     {{ form.address.errors }}
+     <input name='address' id='id_address' type='text' value='{{ form.address.value|default:'' }}' placeholder='选填'></input>
+     <font color='red'>{{ form.address.errors.0 }}</font>
      </div>
      <div class="field">
      <label for="id_description">
      玩啥<span style="color:red">*</span>
      </label>
-     {{ form.description.errors }}
-     <textarea name='description' id='id_description' placeholder='必填项' style="width: 223px; height: 120px;" >{{party.description|default:''}}</textarea>
+     <font color='red'>{{ form.description.errors }}</font>
+     <textarea name='description' id='id_description'  cols='70' rows='13'>{{ form.description.value|default:'' }}</textarea>
      </div>
      <div class="field">
      <label for="id_limit_count">
      最多几个人
      </label>
-     <input name='limit_count' id='id_limit_count' placeholder='无限制' value="{{party.limit_count|default:''}}"></input>
-     {{ form.limit_count.errors }}
+     <input type='text' name='limit_count' id='id_limit_count' value='{{ form.limit_count.value|default:'' }}' placeholder='无限制'>
+     <font color='red'>{{ form.limit_count.errors.0 }}</font>
      </div>
      <div class="submit_field">
      <input type='submit' value='保存'></input>
@@ -99,8 +99,8 @@ $(document).ready(function(){
      <input type='submit' name='save_send' value='保存并发送'></input>
      {% endif  %}
      {% if not party.invite_type %}
-     <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信邀请" alt="sms"/>
-     <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件邀请" alt="sms"/>
+     <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信" alt="sms"/>
+     <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件" alt="sms"/>
      {% endif %}
      </div>
     </fieldset>

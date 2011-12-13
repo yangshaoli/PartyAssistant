@@ -20,7 +20,7 @@
 @property(nonatomic, retain)NSMutableArray *partyList;
 
 + (PartyListService *)sharedPartyListService;
-- (NSArray *)getPartyList;
+- (NSMutableArray *)getPartyList;
 - (void)savePartyList;
 - (NSArray *)addPartyList:(BaseInfoObject *)baseinfo;
 - (void)clearPartyList;

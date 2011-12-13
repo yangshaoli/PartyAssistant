@@ -57,7 +57,8 @@ static DataManager *sharedDataManager = nil;
     //2.post name and pwd
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_LOGIN]];
     [request setPostValue:name forKey:@"username"];
-    [request setPostValue:pwd forKey:@"password"]; 
+    [request setPostValue:pwd forKey:@"password"];
+    [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     
     NSError *error = [request error];
@@ -112,6 +113,8 @@ static DataManager *sharedDataManager = nil;
                                     [NSURL URLWithString:ACCOUNT_REGIST]];
     [request setPostValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
     [request setPostValue:[usrInfo objectForKey:@"password"] forKey:@"password"];
+    NSLog(@"token Login:%@",[DeviceTokenService getDeviceToken]);
+    [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     NSError *error = [request error];
     //3.get result
@@ -141,6 +144,7 @@ static DataManager *sharedDataManager = nil;
 - (BOOL)checkIfUserNameSaved {
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
+    NSLog(@"--->nickname:%@",userData.nickName);
     if ([userData.nickName isEqualToString:@""] || !userData.nickName) {
         return NO;
     }
@@ -192,6 +196,12 @@ static DataManager *sharedDataManager = nil;
     return [self setNickNameForUserWithUID:currentUserID withNewNickName:nickName];
 }
 
+- (NetworkConnectionStatus)setEmailInfo:(NSString *)emailInfo {
+    NSInteger currentUserID = [self getCurrentUserID];
+    return [self setEmailInfoForUserWithUID:currentUserID withNewEmailInfo:emailInfo];
+}
+
+
 - (NetworkConnectionStatus)setNickNameForUserWithUID:(NSInteger)uid 
                                      withNewNickName:(NSString *)nickName{
     NSAssert(uid > 0, @"非法的输入uid值：%d", uid);
@@ -206,8 +216,8 @@ static DataManager *sharedDataManager = nil;
     }
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
-                                   [NSURL URLWithString:ACCOUNT_SET_NICKNAME]];
-    [request setPostValue:userID forKey:@"uid"];
+                                   [NSURL URLWithString:ACCOUNT_SET_CHANGEINFO]];
+    [request setPostValue:userID forKey:@"uId"];
     [request setPostValue:nickName forKey:@"nickName"];
     [request startSynchronous];
     NSError *error = [request error];
@@ -234,4 +244,91 @@ static DataManager *sharedDataManager = nil;
         return NetWorkConnectionCheckDeny;
     }
 }
+- (NetworkConnectionStatus)setPhoneNumForUserWithUID:(NSInteger)uid 
+                                     withNewPhoneNum:(NSString *)phoneNum{
+    NSAssert(uid > 0, @"非法的输入uid值：%d", uid);
+    NSAssert(phoneNum, @"phoneNum不能为空！");
+    
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSString *userID = [NSString stringWithFormat:@"%d",uid];
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
+        return NetworkConnectionInvalidate;
+    }
+    //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                   [NSURL URLWithString:ACCOUNT_SET_CHANGEINFO]];
+    [request setPostValue:userID forKey:@"uId"];
+    [request setPostValue:phoneNum forKey:@"phoneNum"];
+    [request startSynchronous];
+    NSError *error = [request error];
+    //3.get result
+    if (!error) {
+        // add method to save user data, like uid and sth else.
+        //[self saveUsrData:(NSDic *)jsonValue]
+        if ([request responseStatusCode] == 200) {
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
+            if ([description isEqualToString:@"ok"]) {
+                [self saveUsrData:dic];
+                [pool release];
+                return NetWorkConnectionCheckPass;
+            } else {
+                
+            }
+        } 
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    } else {
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    }
+}
+
+- (NetworkConnectionStatus)setEmailInfoForUserWithUID:(NSInteger)uid 
+                                     withNewEmailInfo:(NSString *)emailInfo{
+    NSAssert(uid > 0, @"非法的输入uid值：%d", uid);
+    NSAssert(emailInfo, @"emailInfo不能为空！");
+    
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSString *userID = [NSString stringWithFormat:@"%d",uid];
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
+        return NetworkConnectionInvalidate;
+    }
+    //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                   [NSURL URLWithString:ACCOUNT_SET_CHANGEINFO]];
+    [request setPostValue:userID forKey:@"uId"];
+    [request setPostValue:emailInfo forKey:@"emailInfo"];
+    [request startSynchronous];
+    NSError *error = [request error];
+    //3.get result
+    if (!error) {
+        // add method to save user data, like uid and sth else.
+        //[self saveUsrData:(NSDic *)jsonValue]
+        if ([request responseStatusCode] == 200) {
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
+            if ([description isEqualToString:@"ok"]) {
+                [self saveUsrData:dic];
+                [pool release];
+                return NetWorkConnectionCheckPass;
+            } else {
+                
+            }
+        } 
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    } else {
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    }
+}
+
+
 @end

@@ -10,14 +10,10 @@
 
 @interface WeiboPersonalProfile : NSObject
 {
-    NSString *username;
-    NSString *password;
-    BOOL _isLogin;
+    NSString *nickname;
 }
 
-@property(nonatomic, retain)NSString *username;
-@property(nonatomic, retain)NSString *password;
-@property(nonatomic, assign)BOOL _isLogin;
+@property(nonatomic, retain)NSString *nickname;
 
 - (void)clearObject;
 
