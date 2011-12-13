@@ -190,7 +190,7 @@ LOGGING = {
 }
 
 SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
-DOMAIN_NAME = 'http://192.168.1.15:43401'
+DOMAIN_NAME = 'http://airenao.com'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
 EMAIL_HOST = '127.0.0.1'
@@ -198,6 +198,6 @@ EMAIL_PORT = 25
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
-ALIPAY_PARTNER='20815478215'
-ALIPAY_KEY='5e4d8z5f4z8f5g1z8e6f1z5a8s5d2z5g'
+ALIPAY_PARTNER='2088701462122036'
+ALIPAY_KEY='jut7uqx5fodoajps5jomwwz03rs0516y'
 ALIPAY_SELLER_EMAIL='payment@orilong.com'

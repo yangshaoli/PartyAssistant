@@ -119,3 +119,11 @@ def buy_sms(request):
         'out_trade_no':out_trade_no,
         'domain':DOMAIN_NAME
         }, context_instance=RequestContext(request))
+
+def bought_success(request):
+    total_fee = request.POST.get('total_fee',0)
+    print total_fee
+    user = request.user
+    userprofile = UserProfile.objects.get(user=user)
+    userprofile.available_sms_count = userprofile.available_sms_count + total_fee * 10
+    return HttpResponse("", mimetype="text/html")

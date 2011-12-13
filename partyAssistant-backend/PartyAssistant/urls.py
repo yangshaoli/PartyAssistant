@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-
+from django.http import HttpResponse
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -25,4 +25,5 @@ urlpatterns = patterns('',
     url(r'^m/', include('apps.m.urls')), 
     
     url(r'^alipay/$', 'utils.tools.alipay.pay', name='alipay'),
+    url(r'^alipay/success/$', lambda r: HttpResponse("", mimetype="text/html"))
 )
