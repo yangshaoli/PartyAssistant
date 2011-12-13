@@ -121,9 +121,12 @@ def buy_sms(request):
         }, context_instance=RequestContext(request))
 
 def bought_success(request):
-    total_fee = request.POST.get('total_fee',0)
-    print total_fee
-    user = request.user
-    userprofile = UserProfile.objects.get(user=user)
-    userprofile.available_sms_count = userprofile.available_sms_count + total_fee * 10
-    return HttpResponse("", mimetype="text/html")
+    if request.method == 'POST':
+        total_fee = request.POST.get('total_fee',0)
+        print total_fee
+        user = request.user
+        userprofile = UserProfile.objects.get(user=user)
+        userprofile.available_sms_count = userprofile.available_sms_count + total_fee * 10
+        return HttpResponse("success", mimetype="text/html")
+    else:
+        return HttpResponse("", mimetype="text/html")
