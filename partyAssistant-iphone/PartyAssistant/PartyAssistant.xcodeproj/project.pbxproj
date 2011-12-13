@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		75C02939149459FE00067730 /* ECPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02936149459FE00067730 /* ECPurchase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02938149459FE00067730 /* ECStoreObserver.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
+		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
+		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -112,6 +117,7 @@
 		8947F0231458011300017ED1 /* SMSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0221458011300017ED1 /* SMSObject.m */; };
 		8947F0261458018100017ED1 /* ClientObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0251458018100017ED1 /* ClientObject.m */; };
 		8947F02D1458044400017ED1 /* BaseInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F02C1458044400017ED1 /* BaseInfoService.m */; };
+		895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */ = {isa = PBXBuildFile; fileRef = 895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */; };
 		8966754F147B3568007CEAF3 /* SettingsListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */; };
 		89667550147B3568007CEAF3 /* SettingsListTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */; };
 		899B03001484632B0056EEFD /* WeiboNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899B02FE1484632B0056EEFD /* WeiboNavigationController.m */; };
@@ -192,6 +198,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		75C02935149459FE00067730 /* ECPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECPurchase.h; path = Main/Service/ECPurchase/ECPurchase.h; sourceTree = "<group>"; };
+		75C02936149459FE00067730 /* ECPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ECPurchase.m; path = Main/Service/ECPurchase/ECPurchase.m; sourceTree = "<group>"; };
+		75C02937149459FE00067730 /* ECStoreObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECStoreObserver.h; path = Main/Service/ECPurchase/ECStoreObserver.h; sourceTree = "<group>"; };
+		75C02938149459FE00067730 /* ECStoreObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ECStoreObserver.m; path = Main/Service/ECPurchase/ECStoreObserver.m; sourceTree = "<group>"; };
+		75C0293F14948F2000067730 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
+		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
+		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -368,6 +382,8 @@
 		8947F0251458018100017ED1 /* ClientObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientObject.m; sourceTree = "<group>"; };
 		8947F02B1458044400017ED1 /* BaseInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoService.h; sourceTree = "<group>"; };
 		8947F02C1458044400017ED1 /* BaseInfoService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseInfoService.m; sourceTree = "<group>"; };
+		895315BB1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleCountInPartyListCellSubView.h; sourceTree = "<group>"; };
+		895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleCountInPartyListCellSubView.m; sourceTree = "<group>"; };
 		8966754C147B3568007CEAF3 /* SettingsListTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsListTableViewController.h; sourceTree = "<group>"; };
 		8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsListTableViewController.m; sourceTree = "<group>"; };
 		8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsListTableViewController.xib; sourceTree = "<group>"; };
@@ -480,6 +496,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75C0294014948F2000067730 /* StoreKit.framework in Frameworks */,
 				893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */,
 				8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */,
 				8932652B145E6C37006E827D /* AddressBookUI.framework in Frameworks */,
@@ -510,6 +527,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		75C02933149459D000067730 /* Purchase */ = {
+			isa = PBXGroup;
+			children = (
+				75C02935149459FE00067730 /* ECPurchase.h */,
+				75C02936149459FE00067730 /* ECPurchase.m */,
+				75C02937149459FE00067730 /* ECStoreObserver.h */,
+				75C02938149459FE00067730 /* ECStoreObserver.m */,
+			);
+			name = Purchase;
+			sourceTree = "<group>";
+		};
 		891A4D7114579B3B00A2CF47 = {
 			isa = PBXGroup;
 			children = (
@@ -532,6 +560,7 @@
 		891A4D7F14579B3C00A2CF47 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				75C0293F14948F2000067730 /* StoreKit.framework */,
 				893C2220146162AE00966B11 /* QuartzCore.framework */,
 				89391BB514593CB200721F90 /* libz.dylib */,
 				89391BC114593F2500721F90 /* libxml2.dylib */,
@@ -696,6 +725,9 @@
 				8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */,
 				8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */,
 				8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */,
+				75C029421494913600067730 /* PurchaseListViewController.h */,
+				75C029431494913600067730 /* PurchaseListViewController.m */,
+				75C029441494913600067730 /* PurchaseListViewController.xib */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -771,6 +803,8 @@
 				899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */,
 				89CC34621491F27C0074E898 /* NumberLabel.h */,
 				89CC34631491F27C0074E898 /* NumberLabel.m */,
+				895315BB1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.h */,
+				895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */,
 			);
 			name = CustomClass;
 			sourceTree = "<group>";
@@ -961,6 +995,7 @@
 		8947F027145803CE00017ED1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				75C02933149459D000067730 /* Purchase */,
 				899D8C6B146B6DB000B48698 /* DataManager.h */,
 				899D8C6C146B6DB000B48698 /* DataManager.m */,
 				89391AB914592F3900721F90 /* SynthesizeSingleton.h */,
@@ -1151,6 +1186,7 @@
 				89C709F31490A5BC00699AE0 /* setting_icon.png in Resources */,
 				89C10A801491E23200BCE0CD /* new_tips.png in Resources */,
 				89C10A811491E23200BCE0CD /* new_tips@2x.png in Resources */,
+				75C029461494913600067730 /* PurchaseListViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1283,6 +1319,10 @@
 				CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */,
 				89C709C114908E0D00699AE0 /* DeviceTokenService.m in Sources */,
 				89CC34641491F27C0074E898 /* NumberLabel.m in Sources */,
+				75C02939149459FE00067730 /* ECPurchase.m in Sources */,
+				75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */,
+				75C029451494913600067730 /* PurchaseListViewController.m in Sources */,
+				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1414,7 +1454,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				WRAPPER_EXTENSION = app;
@@ -1431,7 +1471,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				WRAPPER_EXTENSION = app;
