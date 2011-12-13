@@ -198,6 +198,6 @@ EMAIL_PORT = 25
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
-ALIPAY_PARTNER='2088701462122036'
-ALIPAY_KEY='jut7uqx5fodoajps5jomwwz03rs0516y'
-ALIPAY_SELLER_EMAIL='payment@orilong.com'
+ALIPAY_PARTNER = '2088701462122036'
+ALIPAY_KEY = 'jut7uqx5fodoajps5jomwwz03rs0516y'
+ALIPAY_SELLER_EMAIL = 'payment@orilong.com'
