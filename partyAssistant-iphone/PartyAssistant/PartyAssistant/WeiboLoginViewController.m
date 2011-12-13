@@ -80,6 +80,7 @@
 
 - (void)showLoginPage:(NSNotification *)notification{
     NSString *urlStr = [[notification userInfo] objectForKey:@"url"];
+    NSLog(@"url微博%@",urlStr);
     NSURL *url = [NSURL URLWithString:urlStr];
     [self.childView loadRequest:[NSURLRequest requestWithURL:url]];
 }

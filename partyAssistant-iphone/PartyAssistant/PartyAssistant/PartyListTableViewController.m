@@ -130,7 +130,7 @@
     static NSString *CellIdentifier = @"Cell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     
     // Configure the cell...
     UILabel *descriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 5, 300, 40)];
@@ -160,6 +160,7 @@
     PeopleCountInPartyListCellSubView *v = [[PeopleCountInPartyListCellSubView alloc] initWithPeopleCount:baseinfo.peopleCountDict];
     [cell addSubview:v];
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+    NSLog(@"list cell init");
     return cell;
 }
 

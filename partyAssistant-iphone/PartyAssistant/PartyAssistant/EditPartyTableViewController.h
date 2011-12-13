@@ -22,7 +22,8 @@
     UIPickerView *peoplemaxiumPicker;
     UITextField *locationTextField;
     UITextView *descriptionTextView;
-    UILabel *starttimeLabel2;
+    NSInteger buttonIndexInteger;//控制时间
+    NSInteger peoplebuttonIndex;//控制人数
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseInfoObject;
@@ -30,5 +31,4 @@
 @property(nonatomic, retain)UIPickerView *peoplemaxiumPicker;
 @property(nonatomic, retain)UITextField *locationTextField;
 @property(nonatomic, retain)UITextView *descriptionTextView;
-@property(nonatomic, retain)UILabel *starttimeLabel2;
 @end

@@ -36,13 +36,44 @@
 {
     [super viewDidLoad];
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
+    
+    
+//     UIButton *keyButton= [[UIButton alloc] initWithFrame:CGRectMake(100, 200, 50, 44)];
+//    keyButton.titleLabel.text=@"haha";
+    //[self.locationTextField.inputView addSubview:keyButton];
+  //  [self.view  addSubview:keyButton];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
-
+- (void)keyboardWillShow:(NSNotification *)note {
+    // create custom button
+    UIButton *doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    doneButton.frame = CGRectMake(0,200, 50, 53);
+    doneButton.titleLabel.text=@"button";
+    doneButton.titleLabel.textColor=[UIColor  redColor];
+//    doneButton.adjustsImageWhenHighlighted = NO;
+    [doneButton setImage:[UIImage imageNamed:@"close.png"] forState:UIControlStateNormal];
+//    [doneButton setImage:[UIImage imageNamed:@"DoneDown.png"] forState:UIControlStateHighlighted];
+    [doneButton addTarget:self action:@selector(doneButton:) forControlEvents:UIControlEventTouchUpInside];
+    
+    // locate keyboard view
+    UIWindow* tempWindow = [[[UIApplication sharedApplication] windows] objectAtIndex:1];
+    UIView* keyboard;
+    for(int i=0; i<[tempWindow.subviews count]; i++) {
+        keyboard = [tempWindow.subviews objectAtIndex:i];
+        // keyboard view found; add the custom button to it
+        if([[keyboard description] hasPrefix:@"<UIKeyboard"] == YES)
+            [keyboard addSubview:doneButton];
+    }
+}
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -56,6 +87,7 @@
     BaseInfoService *s = [BaseInfoService sharedBaseInfoService];
     self.baseInfoObject = [s getBaseInfo];
     [self.tableView reloadData];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -333,9 +365,9 @@
     return NO;
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
 //    [descriptionTextView  resignFirstResponder];
-}
+//}
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
     return 3;
@@ -365,6 +397,7 @@
     }else{
         [self saveInfo];
         SendSMSToClientsViewController *vc = [[SendSMSToClientsViewController alloc] initWithNibName:@"SendSMSToClientsViewController" bundle:[NSBundle mainBundle]];
+        vc.delegate=self;//必不可少
         SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
         SMSObject *obj = [s getSMSObject];
         if ([obj.smsContent isEqualToString:@""]) {
@@ -375,6 +408,13 @@
     }
     
 }
+
+//wxz
+- (void)clearAddNewPartyBaseInfo{
+    [self.baseInfoObject  clearObject];
+
+}
+
 
 - (void)goToEmail
 {
