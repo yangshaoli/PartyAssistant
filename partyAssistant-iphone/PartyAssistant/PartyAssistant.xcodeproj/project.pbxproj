@@ -675,7 +675,6 @@
 		891A4DC41457B17500A2CF47 /* PartyList */ = {
 			isa = PBXGroup;
 			children = (
-				7A3039121495E3F10025B10A /* RefreshTableView */,
 				89277DF614662E1600B05020 /* PartyListTableViewController.h */,
 				89277DF714662E1600B05020 /* PartyListTableViewController.m */,
 				89277DF814662E1600B05020 /* PartyListTableViewController.xib */,
@@ -748,6 +747,7 @@
 		89326531145E7440006E827D /* CustomClass */ = {
 			isa = PBXGroup;
 			children = (
+				7A3039121495E3F10025B10A /* RefreshTableView */,
 				CE81DA4514847B5800E5BFA7 /* SearchIndex */,
 				899D8C6E146B6DD300B48698 /* MBProgressHUD.h */,
 				899D8C6F146B6DD300B48698 /* MBProgressHUD.m */,
