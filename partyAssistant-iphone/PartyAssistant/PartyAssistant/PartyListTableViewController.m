@@ -241,6 +241,7 @@
      */
     PartyDetailTableViewController *vc = [[PartyDetailTableViewController alloc] initWithNibName:@"PartyDetailTableViewController" bundle:[NSBundle mainBundle]];
     vc.baseinfo = [self.partyList objectAtIndex:indexPath.row];
+    vc.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:vc animated:YES];
 }
 
