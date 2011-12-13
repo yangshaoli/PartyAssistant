@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
 #import "PartyUserNameInputViewController.h"
-
+#import "PartyUserRegisterViewController.h"
 @class GlossyButton;
 
-@interface PartyLoginViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MBProgressHUDDelegate,PartyUserNameInputDelegate>{
+@interface PartyLoginViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MBProgressHUDDelegate,PartyUserNameInputDelegate,PartyUserRegisterDelegate>{
     UITableView *_tableView;
     GlossyButton    *_loginButton;
     

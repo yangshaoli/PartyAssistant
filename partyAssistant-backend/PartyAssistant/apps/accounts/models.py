@@ -15,6 +15,11 @@ ACTION_CHOICES = (
                   (u'密码找回', u'密码找回'),
                   )
 
+PAYMENT_TYPE = (
+                (u'人民币', u'人民币'),
+                (u'美元', u'美元'),
+                )
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     password = models.CharField(max_length = 16, blank = True)
@@ -65,6 +70,52 @@ class TempActivateNote(models.Model):
     
     def __unicode__(self):
         return self.email
+
+class ProductionInfo(models.Model):
+    production_apple_id = models.CharField(max_length = 128, blank = True)
+    pay_money = models.CharField(max_length = 8)
+    pay_money_type = models.CharField(max_length = 8)
+    items_count = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.production_apple_id
+
+
+class UserReceiptBase(models.Model):
+    user = models.ForeignKey(User)
+    buy_time = models.DatetimeField()
+    create_time = models.DatetimeField(auto_add = True)
+
+    pre_sms_count = models.IntegerField()
+    final_sms_count = models.IntegerField()
+    
+    def __unicode__(self):
+        return self.user
+
+class UserAppleReceipt(UserReceiptBase):
+    apple_production = models.ForeignKey(ProductionInfo)
+    device = models.CharField(max_length = 16, default = 'iPhone')
+    receipt = models.TextField()
+    premium = models.ForeignKey(Premium)
+    
+    def __unicode__(self):
+        return self.user
+
+class UserAliReceipt(UserReceiptBase):
+    receipt = models.TextField()
+    payment = models.CharField(max_length = 16)
+    items_count = models.IntegerField()
+    premium = models.ForeignKey(Premium)
+    
+    def __unicode__(self):
+        return self.user
+
+class Premium(models.Model):
+    description = models.TextField()
+    
+    def __unicode__(self):
+        return self.description
+
 
     
 def crerate_user_profile(sender = None, instance = None, created = False, **kwargs):

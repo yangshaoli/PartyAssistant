@@ -8,6 +8,7 @@
 
 #import "DataManager.h"
 #import "PartyUserRegisterViewController.h"
+#import "PartyLoginViewController.h"
 
 #define NullTextFieldTag            100
 #define UserNameTextFieldTag        101
@@ -47,8 +48,7 @@
 @synthesize pwdTextField = _pwdTextField;
 @synthesize pwdCheckTextField = _pwdCheckTextField;
 @synthesize nickNameTextField = _nickNameTextField;
-
-
+@synthesize delegate;
 - (void)dealloc {
     [super dealloc];
     
@@ -228,7 +228,10 @@
 - (void)showRegistSuccessfulAlert {
     [self showAlertWithMessage:@"注册成功！" buttonTitle:@"OK" tag:SuccessfulTag];
 }
-
+- (IBAction)autoLogin{
+    [delegate autoLogin];
+    
+}
 - (void)showNotLegalInput {
     [self showAlertWithMessage:@"注册内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
 }
@@ -319,7 +322,12 @@
 #pragma mark Alert Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == SuccessfulTag) {
-        [self.navigationController popViewControllerAnimated:YES];
+       //[self.navigationController popViewControllerAnimated:YES];
+        [delegate  autoLogin];
+        NSLog(@"%@",self.userNameTextField.text);
+        NSLog(@"%@",self.pwdTextField.text);
+        
+         
     } else {
        
     }
