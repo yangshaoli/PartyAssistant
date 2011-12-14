@@ -150,6 +150,9 @@
     NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
 
     NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
+    
+    [aTableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     BOOL isExist = [[ECPurchase shared] isSameReceiptNotVerifyWithServerWithUserInfo:purchaseInfo];
     if (isExist) {
         //action 
@@ -158,8 +161,6 @@
         
         return;
     }
-    
-    [aTableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if ([SKPaymentQueue canMakePayments]) {
         [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifier, nil]];
