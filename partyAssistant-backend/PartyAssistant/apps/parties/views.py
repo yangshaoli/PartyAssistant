@@ -330,7 +330,7 @@ def sms_invite(request, party_id):
                                'apply_client':apply_client,
                                'reject_client':reject_client
                                }                    
-            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
+            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
@@ -386,7 +386,7 @@ def sms_invite(request, party_id):
                            'apply_client':apply_client,
                            'reject_client':reject_client
                            }        
-        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
+        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
 
 @login_required
 def list_party(request):
