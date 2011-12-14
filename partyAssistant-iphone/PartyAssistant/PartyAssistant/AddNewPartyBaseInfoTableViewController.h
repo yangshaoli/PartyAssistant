@@ -11,7 +11,10 @@
 #import "BaseInfoService.h"
 #import "SendSMSToClientsViewController.h"
 #import "SendEmailToClientsViewController.h"
-@interface AddNewPartyBaseInfoTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate,UIPickerViewDelegate,UITextViewDelegate,UIScrollViewDelegate>{
+
+
+
+@interface AddNewPartyBaseInfoTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate,UIPickerViewDelegate,UITextViewDelegate,UIScrollViewDelegate,SendSMSToClientsDelegate>{
     BaseInfoObject *baseInfoObject;
     UIDatePicker *datePicker;
     UIPickerView *peoplemaxiumPicker;

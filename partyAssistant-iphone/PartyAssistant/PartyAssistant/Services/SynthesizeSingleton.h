@@ -14,7 +14,7 @@ static classname *shared##classname = nil; \
     { \
         if (shared##classname == nil) \
         { \
-            [[self alloc] init]; \
+            return [[self alloc] init]; \
         } \
     } \
     \

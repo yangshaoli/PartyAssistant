@@ -10,12 +10,14 @@ from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
 from apps.parties.models import Party, PartiesClients
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
+from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from utils.settings.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
 from utils.tools.paginator_tool import process_paginator
+from settings import DOMAIN_NAME
 import datetime
 import re
 from django.db import transaction
@@ -101,7 +103,10 @@ def createParty(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
 
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -156,10 +161,12 @@ def deleteParty(request):
 def PartyList(request, uid, start_id = 0):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
-    if start_id == 0:
+    print start_id
+    if str(start_id) == "0":
         partylist = Party.objects.filter(creator = user).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     else:
-        partylist = Party.objects.filter(creator = user, pk__gt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+        partylist = Party.objects.filter(creator = user, pk__lt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+    print partylist
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
@@ -198,12 +205,12 @@ def PartyList(request, uid, start_id = 0):
         PartyObjectArray.append(partyObject)
     if partylist:
         return {
-                'page':partylist[partylist.count() - 1].id,
+                'lastID':partylist[partylist.count() - 1].id,
                 'partyList':PartyObjectArray
                 }
     else:
         return {
-                'page':start_id,
+                'lastID':start_id,
                 'partyList':[]
                 }
 
@@ -228,9 +235,7 @@ def GetPartyMsg(request, pid):
         dict['cName'] = partiesclients.client.name
         dict['backendID'] = partiesclients.id
         receivers.append(dict)
-    print 1
     subObj = message.get_subclass_obj()
-    print 2
     if messageType == 'SMS':
         subject = ''
         content = subObj.content
@@ -378,7 +383,9 @@ def resendMsg(request):
                 PartiesClients.objects.get_or_create(
                                                   party = party,
                                                   client = client,
-                                                  apply_status = u'noanswer'
+                                                  defaults = {
+                                                              apply_status:'noanswer'
+                                                              }
                                                   ) 
                 addressArray.append(receiver['cValue'])
     
@@ -402,4 +409,7 @@ def resendMsg(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
         
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }

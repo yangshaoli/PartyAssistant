@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039151495E4260025B10A /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039181495E4260025B10A /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75C02939149459FE00067730 /* ECPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02936149459FE00067730 /* ECPurchase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02938149459FE00067730 /* ECStoreObserver.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -199,6 +201,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7A3039141495E4260025B10A /* BottomRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BottomRefreshTableView.h; path = RefreshTableView/BottomRefreshTableView.h; sourceTree = "<group>"; };
+		7A3039151495E4260025B10A /* BottomRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BottomRefreshTableView.m; path = RefreshTableView/BottomRefreshTableView.m; sourceTree = "<group>"; };
+		7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefreshTableViewProtocol.h; path = RefreshTableView/RefreshTableViewProtocol.h; sourceTree = "<group>"; };
+		7A3039171495E4260025B10A /* TopRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopRefreshTableView.h; path = RefreshTableView/TopRefreshTableView.h; sourceTree = "<group>"; };
+		7A3039181495E4260025B10A /* TopRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopRefreshTableView.m; path = RefreshTableView/TopRefreshTableView.m; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75C02935149459FE00067730 /* ECPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECPurchase.h; path = Main/Service/ECPurchase/ECPurchase.h; sourceTree = "<group>"; };
@@ -530,6 +537,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7A3039121495E3F10025B10A /* RefreshTableView */ = {
+			isa = PBXGroup;
+			children = (
+				7A3039141495E4260025B10A /* BottomRefreshTableView.h */,
+				7A3039151495E4260025B10A /* BottomRefreshTableView.m */,
+				7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */,
+				7A3039171495E4260025B10A /* TopRefreshTableView.h */,
+				7A3039181495E4260025B10A /* TopRefreshTableView.m */,
+			);
+			name = RefreshTableView;
 		75BC083514987DE3007B39CB /* DeviceDetection */ = {
 			isa = PBXGroup;
 			children = (
@@ -695,6 +712,7 @@
 		891A4DC41457B17500A2CF47 /* PartyList */ = {
 			isa = PBXGroup;
 			children = (
+				7A3039121495E3F10025B10A /* RefreshTableView */,
 				89277DF614662E1600B05020 /* PartyListTableViewController.h */,
 				89277DF714662E1600B05020 /* PartyListTableViewController.m */,
 				89277DF814662E1600B05020 /* PartyListTableViewController.xib */,
@@ -1120,7 +1138,7 @@
 		891A4D7314579B3B00A2CF47 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = 891A4D7614579B3B00A2CF47 /* Build configuration list for PBXProject "PartyAssistant" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1337,6 +1355,8 @@
 				75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */,
 				75C029451494913600067730 /* PurchaseListViewController.m in Sources */,
 				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
+				7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */,
+				7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */,
 				75BC083914987E20007B39CB /* DeviceDetection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

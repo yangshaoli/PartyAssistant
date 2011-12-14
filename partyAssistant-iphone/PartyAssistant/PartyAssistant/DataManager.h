@@ -23,6 +23,7 @@ typedef enum {
 - (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
 - (NetworkConnectionStatus)setNickName:(NSString *)nickName;
 - (NetworkConnectionStatus)setEmailInfo:(NSString *)emailInfo;
+- (NetworkConnectionStatus)setPhoneNum:(NSString *)phoneNum;
 - (NetworkConnectionStatus)setNickNameForUserWithUID:(NSInteger)uid 
                                      withNewNickName:(NSString *)nickName;
 - (NetworkConnectionStatus)setPhoneNumForUserWithUID:(NSInteger)uid 

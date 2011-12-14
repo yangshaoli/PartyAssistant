@@ -25,5 +25,4 @@ urlpatterns = patterns('',
     url(r'^m/', include('apps.m.urls')), 
     
     url(r'^alipay/$', 'utils.tools.alipay.pay', name='alipay'),
-    url(r'^alipay/success/$', lambda r: HttpResponse("", mimetype="text/html"))
 )

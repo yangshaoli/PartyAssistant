@@ -306,6 +306,10 @@
           [self sendCreateRequest];
       }  
   }
+    //完成后清空所有内容
+    self.contentTextView.text=nil;
+    self.receiverArray=nil;
+ 
     
 }
 - (void)sendCreateRequest{
@@ -418,8 +422,8 @@
 	// Notifies users about errors associated with the interface
 	switch (result) {
 		case MFMailComposeResultCancelled:{
-            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请邮件" delegate:self cancelButtonTitle:@"继续编辑邮件" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
-            [sh showInView:self.tabBarController.view];
+//            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请邮件" delegate:self cancelButtonTitle:@"继续编辑邮件" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
+//            [sh showInView:self.tabBarController.view];
             break;
         }
 		case MFMailComposeResultSent:
