@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039151495E4260025B10A /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039181495E4260025B10A /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75C02939149459FE00067730 /* ECPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02936149459FE00067730 /* ECPurchase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02938149459FE00067730 /* ECStoreObserver.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
@@ -205,6 +206,8 @@
 		7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefreshTableViewProtocol.h; path = RefreshTableView/RefreshTableViewProtocol.h; sourceTree = "<group>"; };
 		7A3039171495E4260025B10A /* TopRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopRefreshTableView.h; path = RefreshTableView/TopRefreshTableView.h; sourceTree = "<group>"; };
 		7A3039181495E4260025B10A /* TopRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopRefreshTableView.m; path = RefreshTableView/TopRefreshTableView.m; sourceTree = "<group>"; };
+		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
+		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75C02935149459FE00067730 /* ECPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECPurchase.h; path = Main/Service/ECPurchase/ECPurchase.h; sourceTree = "<group>"; };
 		75C02936149459FE00067730 /* ECPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ECPurchase.m; path = Main/Service/ECPurchase/ECPurchase.m; sourceTree = "<group>"; };
 		75C02937149459FE00067730 /* ECStoreObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECStoreObserver.h; path = Main/Service/ECPurchase/ECStoreObserver.h; sourceTree = "<group>"; };
@@ -544,6 +547,16 @@
 				7A3039181495E4260025B10A /* TopRefreshTableView.m */,
 			);
 			name = RefreshTableView;
+		75BC083514987DE3007B39CB /* DeviceDetection */ = {
+			isa = PBXGroup;
+			children = (
+				75BC083714987E20007B39CB /* DeviceDetection.h */,
+				75BC083814987E20007B39CB /* DeviceDetection.m */,
+			);
+			name = DeviceDetection;
+			path = Main/Service/DeviceDetection;
+			sourceTree = "<group>";
+		};
 		75C02933149459D000067730 /* Purchase */ = {
 			isa = PBXGroup;
 			children = (
@@ -1013,6 +1026,7 @@
 		8947F027145803CE00017ED1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				75BC083514987DE3007B39CB /* DeviceDetection */,
 				75C02933149459D000067730 /* Purchase */,
 				899D8C6B146B6DB000B48698 /* DataManager.h */,
 				899D8C6C146B6DB000B48698 /* DataManager.m */,
@@ -1343,6 +1357,7 @@
 				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
 				7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */,
 				7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */,
+				75BC083914987E20007B39CB /* DeviceDetection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
