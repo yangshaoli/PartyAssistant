@@ -132,7 +132,6 @@
         }else{
             starttimeLabel.text =@"待定";
         }
-        NSLog(@"调用cell");
         [cell addSubview:starttimeLabel];
         //            starttimeLabel.text = @"2011-11-11 11:00";
        
@@ -174,6 +173,7 @@
         }
         descriptionTextView.text = baseInfoObject.description;
         descriptionTextView.backgroundColor = [UIColor clearColor];
+        descriptionTextView.font=[UIFont systemFontOfSize:15];
         //descriptionTextView.text = baseInfoObject.description;
         [cell addSubview:descriptionTextView];
     }
@@ -221,9 +221,9 @@
 #pragma mark - Save the Info
 
 - (void)saveInfo{
-    self.baseInfoObject.description = self.descriptionTextView.text;
-    self.baseInfoObject.location = self.locationTextField.text;
-    [self.baseInfoObject formatDateToString];
+        self.baseInfoObject.description = self.descriptionTextView.text;
+        self.baseInfoObject.location = self.locationTextField.text;
+        [self.baseInfoObject formatDateToString];
 }
 
 #pragma mark - Table view delegate
@@ -282,8 +282,6 @@
             [self.baseInfoObject formatDateToString];
             buttonIndexInteger=0;
         }else{
-            NSLog(@"调用actionsheet");
-            NSLog(@"%d",buttonIndex);
             buttonIndexInteger=1;
         }
     }else{
@@ -324,6 +322,18 @@
 
 
 - (void)doneBtnAction{
+  if(!self.descriptionTextView.text || [self.descriptionTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"描述内容不可以为空"
+                            message:@"描述为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+      return;
+        
+ }else{
+
     [self saveInfo];
     [self showWaiting];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -341,7 +351,7 @@
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
-
+ }
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{

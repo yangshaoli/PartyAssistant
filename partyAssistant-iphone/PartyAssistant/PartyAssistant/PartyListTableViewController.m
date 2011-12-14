@@ -73,6 +73,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.tableView  reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -203,6 +204,7 @@
      */
     PartyDetailTableViewController *vc = [[PartyDetailTableViewController alloc] initWithNibName:@"PartyDetailTableViewController" bundle:[NSBundle mainBundle]];
     vc.baseinfo = [self.partyList objectAtIndex:indexPath.row];
+    NSLog(@"list-partyId::%d",vc.baseinfo.partyId);
     [self.navigationController pushViewController:vc animated:YES];
 }
 

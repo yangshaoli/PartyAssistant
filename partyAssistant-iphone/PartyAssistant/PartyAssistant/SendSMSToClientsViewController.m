@@ -149,9 +149,10 @@
             contentTextView.text = self.smsObject.smsContent;
             NSLog(@"调用cell");
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
             
-            cell.textLabel.text  = @"短信内容";
+            cell.textLabel.text  = @"短信内容:";
         }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];

@@ -51,6 +51,7 @@
     if (!peopleCountArray) {
         self.peopleCountArray = [[NSArray alloc] initWithObjects:@"...",@"...",@"...",@"...", nil];
     }
+    NSLog(@"detail-partyId::%d",self.baseinfo.partyId);
 }
 
 - (void)viewDidUnload
@@ -162,6 +163,7 @@
             UITextView *descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 190, 100)];
             descriptionTextView.text = self.baseinfo.description;
             descriptionTextView.backgroundColor = [UIColor clearColor];
+            descriptionTextView.font=[UIFont systemFontOfSize:15];
             descriptionTextView.editable = NO;
             [cell addSubview:descriptionTextView];
         }
