@@ -140,6 +140,49 @@ static DataManager *sharedDataManager = nil;
     }
 }
 
+- (NetworkConnectionStatus)logoutUser {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
+        return NetworkConnectionInvalidate;
+    }
+    //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                   [NSURL URLWithString:ACCOUNT_LOGOUT]];
+    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
+    
+    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
+    [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
+    [request startSynchronous];
+    NSError *error = [request error];
+    //3.get result
+    if (!error) {
+        // add method to save user data, like uid and sth else.
+        //[self saveUsrData:(NSDic *)jsonValue]
+        if ([request responseStatusCode] == 200) {
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
+            if ([description isEqualToString:@"ok"]) {
+                UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+                UserObject *userData = [userObjectService getUserObject];
+                [userData clearObject];
+                [userObjectService saveUserObject];
+                [pool release];
+                return NetWorkConnectionCheckPass;
+            } else {
+                
+            }
+        } 
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    } else {
+        [pool release];
+        return NetWorkConnectionCheckDeny;
+    }
+}
+
 - (BOOL)checkIfUserNameSaved {
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
