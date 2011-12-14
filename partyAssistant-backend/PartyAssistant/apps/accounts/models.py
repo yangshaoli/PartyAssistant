@@ -104,7 +104,7 @@ class UserAppleReceipt(UserReceiptBase):
     premium = models.ForeignKey(Premium)
     
     def __unicode__(self):
-        return self.user
+        return self.user.username
 
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
@@ -113,7 +113,7 @@ class UserAliReceipt(UserReceiptBase):
     premium = models.ForeignKey(Premium)
     
     def __unicode__(self):
-        return self.user
+        return self.user.username
 
 
 

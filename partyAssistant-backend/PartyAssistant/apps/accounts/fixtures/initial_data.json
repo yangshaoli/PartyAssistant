@@ -8,7 +8,7 @@
 	  "pay_money_type":"美元",
 	  "items_count":"50"
     }
-  }
+  },
   {
     "model": "accounts.ProductionInfo",
     "pk": 2,
@@ -18,7 +18,7 @@
       "pay_money_type":"美元",
       "items_count":"100"
     }
-  }
+  },
   {
     "model": "accounts.ProductionInfo",
     "pk": 3,
@@ -28,7 +28,7 @@
       "pay_money_type":"人民币",
       "items_count":"50"
     }
-  }
+  },
   {
     "model": "accounts.ProductionInfo",
     "pk": 4,
@@ -37,6 +37,13 @@
       "pay_money": "12",
       "pay_money_type":"人民币",
       "items_count":"100"
+    }
+  },
+  {
+    "model": "accounts.Premium",
+    "pk": 1,
+    "fields": {
+      "description": "无"
     }
   }
 ]
