@@ -69,7 +69,7 @@ iframe{
 (function(){
   var _w = 72 , _h = 16;
   var uu = '{{ party.enroll_url }}';
-  var _title = '{{ party.description|escapejs|truncatestring:"140" }}';
+  var _title = '{{ party.description|escapejs }}';
   var param = {
     url:uu,
     type:'3',

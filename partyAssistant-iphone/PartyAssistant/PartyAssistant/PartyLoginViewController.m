@@ -114,7 +114,7 @@
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
 //    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
-   NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
+ //  NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
 //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
 //    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
    // [keyString release]; 
@@ -252,6 +252,7 @@
 - (void)registerUser {
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
+    registerVC.delegate=self;
     [self.navigationController pushViewController:registerVC animated:YES];
     [registerVC release];
 }
@@ -297,9 +298,8 @@
     [settings release];
     
      //add suggest user input name page here?
-//    [self checkIfUserNameSaved];
-    
-    
+    [self checkIfUserNameSaved];
+        
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
@@ -307,7 +307,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
-    
+    NSLog(@"uid:%d",user.uID);
     if(getDefaultCountNumber!=0){  
         NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
         tab.selectedIndex=1;
@@ -319,7 +319,11 @@
     }
     [keyString release];
 }
+//wxz
+- (void)autoLogin{
+    [self pushToContentVC];
 
+}
 #pragma mark -
 #pragma tableViewDelegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
