@@ -11,7 +11,7 @@
 @implementation WeiboService
 
 @synthesize weiboPersonalProfile;
-
+@synthesize userObject;
 SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
 
 - (id)init
