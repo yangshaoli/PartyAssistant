@@ -11,6 +11,7 @@
 #import "GTMBase64.h"
 #import "UserObjectService.h"
 #import "UserObject.h"
+#import "DeviceDetection.h"
 /******************************
  SKProduct extend
  *****************************/
@@ -25,6 +26,15 @@
     [numberFormatter release];
     return formattedString;
 }
+
+@end
+
+/***********************************
+ ECPurchaseFormDataRequest
+ ***********************************/
+@implementation ECPurchaseFormDataRequest
+@synthesize productIdentifier = _productIdentifier;
+@synthesize userID = _userID;
 
 @end
 
@@ -114,6 +124,7 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 -(void)completeTransaction:(NSNotification *)note{
 	SKPaymentTransaction *trans = [[note userInfo] objectForKey:@"transaction"];
 	
+    NSLog(@"%@",trans.transactionIdentifier);
     UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
     NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
     NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID",
@@ -152,67 +163,66 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 
 -(void)verifyReceipt:(SKPaymentTransaction *)transaction
 {
-	
     _networkQueue = [ASINetworkQueue queue];
 	[_networkQueue retain];
 	NSURL *verifyURL = [NSURL URLWithString:VAILDATING_RECEIPTS_URL];
-    NSLog(@"%@",VAILDATING_RECEIPTS_URL);
 
-	ECPurchaseHTTPRequest *request = [[ECPurchaseHTTPRequest alloc] initWithURL:verifyURL];
+	ECPurchaseFormDataRequest *request = [[ECPurchaseFormDataRequest alloc] initWithURL:verifyURL];
 	[request setProductIdentifier:transaction.payment.productIdentifier];
 	[request setRequestMethod: @"POST"];
 	[request setDelegate:self];
 	[request setDidFinishSelector:@selector(didFinishVerify:)];
-	//[request setShouldRedirect: NO];
+    [request setDidFailSelector:@selector(didFailedVerify:)];
 	[request addRequestHeader: @"Content-Type" value: @"application/json"];
-	//NSString *recepit = [[NSString alloc] initWithData:transaction.transactionReceipt encoding:NSUTF8StringEncoding];
+	
 	NSString *recepit = [GTMBase64 stringByEncodingData:transaction.transactionReceipt];
-	//NSString * encodedString = (NSString *)CFURLCreateStringByAddingPercentEscapes(
-//																				   NULL,
-//																				   (CFStringRef)recepit,
-//																				   NULL,
-//																				   (CFStringRef)@"!*'();:@&=+$,/?%#[]",
-//																				   kCFStringEncodingUTF8 );
-//	NSString * encodedString =  [recepit stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"];  
-	NSDictionary* data = [NSDictionary dictionaryWithObjectsAndKeys:recepit, @"receipt-data", nil];
-    //NSLog(@"%@",data);
-	SBJsonWriter *writer = [SBJsonWriter new];
-//    NSLog(@"%@",[writer stringWithObject:data]);
-//    NSLog(@"%@",[NSString stringWithFormat:@"{%@=%@}",@"receipt-data",recepit]);
-//    [request appendPostData: [[NSString stringWithFormat:@"%@=%@",@"receipt-data",recepit] dataUsingEncoding: NSUTF8StringEncoding]];
-	[request appendPostData: [[writer stringWithObject:data] dataUsingEncoding: NSUTF8StringEncoding]];
-	[writer release];
-	[_networkQueue addOperation: request];
+	
+    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+    NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
+    NSString *platform = [DeviceDetection platform];
+    
+    [request setUserID:userID];
+	[request setPostValue:recepit forKey:@"receipt-data"];
+    [request setPostValue:userID forKey:@"user-ID"];
+    [request setPostValue:platform forKey:@"device-platform"];
+	
+    [_networkQueue addOperation: request];
 	[_networkQueue go];
-
-//    ECPurchaseHTTPRequest *request = [[ECPurchaseHTTPRequest alloc] initWithURL:verifyURL];
-//    [request setPostValue:[GTMBase64 stringByEncodingData:transaction.transactionReceipt] forKey:@"receipt"];
-//    [request setDidFinishSelector:@selector(didFinishVerify:)];
-//    [_networkQueue addOperation: request];
-//	[_networkQueue go];
 }
 
--(void)didFinishVerify:(ECPurchaseHTTPRequest *)request
+-(void)didFinishVerify:(ECPurchaseFormDataRequest *)request
 {
-	//UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-    //NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
-    //[self removeReceiptWithUserID:userID andIdentifier:request.productIdentifier];
     NSString *response = [request responseString];
-	SBJsonParser *parser = [SBJsonParser new];
+    SBJsonParser *parser = [SBJsonParser new];
+	NSDictionary* jsonData = [parser objectWithString: response];
+    NSDictionary* datasource = [jsonData objectForKey:@"datasource"];
+	[parser release];
+    NSString *ourServerStatus = [jsonData objectForKey: @"status"];
+    if ([ourServerStatus intValue] == 200) {
+        NSString *status = [datasource objectForKey: @"status"];
+        if ([status intValue] == 0) {
+            NSDictionary *receipt = [datasource objectForKey: @"receipt"];
+            NSString *productIdentifier = [receipt objectForKey: @"product_id"];
+            [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
+            [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+        }
+        else {
+            NSString *exception = [datasource objectForKey: @"exception"];
+            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
+        }
+
+    } else {
+        NSString *exception = [datasource objectForKey: @"exception"];
+        [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
+    }
+}
+-(void)didFailedVerify:(ECPurchaseFormDataRequest *)request {
+    NSString *response = [request responseString];
+	NSLog(@"%@",response);
+    SBJsonParser *parser = [SBJsonParser new];
 	NSDictionary* jsonData = [parser objectWithString: response];
     NSLog(@"%@",jsonData);
 	[parser release];
-//	NSString *status = [jsonData objectForKey: @"status"];
-//	if ([status intValue] == 0) {
-//		NSDictionary *receipt = [jsonData objectForKey: @"receipt"];
-//		NSString *productIdentifier = [receipt objectForKey: @"product_id"];
-//		[_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
-//	}
-//	else {
-//		NSString *exception = [jsonData objectForKey: @"exception"];
-//		[_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
-//	}
-
 }
 
 -(void)verifyReceipt:(NSData *)receipt ForUserProduct:(NSDictionary *)productInfo{
@@ -223,7 +233,7 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     
     NSString *userID = [productInfo objectForKey:@"userID"];
     
-	ECPurchaseHTTPRequest *request = [[ECPurchaseHTTPRequest alloc] initWithURL:verifyURL];
+	ECPurchaseFormDataRequest *request = [[ECPurchaseFormDataRequest alloc] initWithURL:verifyURL];
 	request.userID = userID;
     [request setProductIdentifier:[productInfo objectForKey:@"identifier"]];
 	[request setRequestMethod: @"POST"];
@@ -233,22 +243,48 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 	[request addRequestHeader: @"Content-Type" value: @"application/json"];
 	
 	NSString *recepit = [GTMBase64 stringByEncodingData:receipt];
-	  
-	NSDictionary* data = [NSDictionary dictionaryWithObjectsAndKeys:recepit, @"receipt-data", nil];
-    //NSLog(@"%@",data);
-	SBJsonWriter *writer = [SBJsonWriter new];
-    NSLog(@"%@",[writer stringWithObject:data]);
-    NSLog(@"%@",[NSString stringWithFormat:@"{%@=%@}",@"receipt-data",recepit]);
-    [request appendPostData: [[NSString stringWithFormat:@"%@=%@",@"receipt-data",recepit] dataUsingEncoding: NSUTF8StringEncoding]];
-	//[request appendPostData: [[[writer stringWithObject:data] stringByReplacingOccurrencesOfString:@"\"" withString:@""] dataUsingEncoding: NSUTF8StringEncoding]];
-	[writer release];
-	[_networkQueue addOperation: request];
+    
+    NSString *platform = [DeviceDetection platform];
+    
+	[request setPostValue:recepit forKey:@"receipt-data"];
+    [request setPostValue:userID forKey:@"user-ID"];
+    [request setPostValue:platform forKey:@"device-platform"];
+	
+    [_networkQueue addOperation: request];
 	[_networkQueue go];
 }
 
--(void)didFinishVerifyReceiptBefore:(ECPurchaseHTTPRequest *)request{
+-(void)didFinishVerifyReceiptBefore:(ECPurchaseFormDataRequest *)request{
+    NSString *response = [request responseString];
+    SBJsonParser *parser = [SBJsonParser new];
+	NSDictionary* jsonData = [parser objectWithString: response];
+    NSDictionary* datasource = [jsonData objectForKey:@"datasource"];
+	[parser release];
+    NSString *ourServerStatus = [jsonData objectForKey: @"status"];
+    if ([ourServerStatus intValue] == 200) {
+        NSString *status = [datasource objectForKey: @"status"];
+        if ([status intValue] == 0) {
+            NSDictionary *receipt = [datasource objectForKey: @"receipt"];
+            NSString *productIdentifier = [receipt objectForKey: @"product_id"];
+            [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
+            [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+        }
+        else {
+            NSString *exception = [datasource objectForKey: @"exception"];
+            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
+        }
+        
+    } else {
+        NSString *exception = [datasource objectForKey: @"exception"];
+        [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
+    }
     [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
 }
+
+-(void)didFailedVerifyReceiptBefore:(ECPurchaseFormDataRequest *)request{
+    
+}
+
 #pragma mark -
 #pragma mark Get Property From ECStoreObserver
 -(NSMutableArray *)getCompleteTrans{
