@@ -88,6 +88,8 @@ def edit_party(request, party_id):
 @transaction.commit_on_success
 def email_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id)
+    #取得最近20个活动，用来从中获取好友
+    recent_parties = Party.objects.filter(invite_type='email').exclude(id=party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
@@ -168,7 +170,7 @@ def email_invite(request, party_id):
                                'reject_client':reject_client
                                }
                       
-            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
+            return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
@@ -224,13 +226,14 @@ def email_invite(request, party_id):
                            'apply_client':apply_client,
                            'reject_client':reject_client
                            }
-                            
-        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
+        return TemplateResponse(request, 'parties/email_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
 
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id)
+    #取得最近20个活动，用来从中获取好友
+    recent_parties = Party.objects.filter(invite_type='phone').exclude(id=party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
@@ -327,7 +330,7 @@ def sms_invite(request, party_id):
                                'apply_client':apply_client,
                                'reject_client':reject_client
                                }                    
-            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
+            return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
@@ -383,7 +386,7 @@ def sms_invite(request, party_id):
                            'apply_client':apply_client,
                            'reject_client':reject_client
                            }        
-        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client})
+        return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
 
 @login_required
 def list_party(request):
