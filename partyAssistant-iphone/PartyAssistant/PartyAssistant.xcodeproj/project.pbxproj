@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039151495E4260025B10A /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039181495E4260025B10A /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7A77F7E41498811200C9CA7B /* AddressBookDBService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A77F7E31498811100C9CA7B /* AddressBookDBService.m */; };
+		7A77F7EA149982CE00C9CA7B /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A77F7E9149982CD00C9CA7B /* libsqlite3.dylib */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -200,6 +202,10 @@
 		7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefreshTableViewProtocol.h; path = RefreshTableView/RefreshTableViewProtocol.h; sourceTree = "<group>"; };
 		7A3039171495E4260025B10A /* TopRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopRefreshTableView.h; path = RefreshTableView/TopRefreshTableView.h; sourceTree = "<group>"; };
 		7A3039181495E4260025B10A /* TopRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopRefreshTableView.m; path = RefreshTableView/TopRefreshTableView.m; sourceTree = "<group>"; };
+		7A77F7E21498811100C9CA7B /* AddressBookDBService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDBService.h; sourceTree = "<group>"; };
+		7A77F7E31498811100C9CA7B /* AddressBookDBService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDBService.m; sourceTree = "<group>"; };
+		7A77F7E9149982CD00C9CA7B /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		7A77F7EB1499837500C9CA7B /* DBSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBSettings.h; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -490,6 +496,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A77F7EA149982CE00C9CA7B /* libsqlite3.dylib in Frameworks */,
 				893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */,
 				8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */,
 				8932652B145E6C37006E827D /* AddressBookUI.framework in Frameworks */,
@@ -557,6 +564,7 @@
 				893C2220146162AE00966B11 /* QuartzCore.framework */,
 				89391BB514593CB200721F90 /* libz.dylib */,
 				89391BC114593F2500721F90 /* libxml2.dylib */,
+				7A77F7E9149982CD00C9CA7B /* libsqlite3.dylib */,
 				8932653C145E88F6006E827D /* AddressBook.framework */,
 				8932652A145E6C37006E827D /* AddressBookUI.framework */,
 				899BE859145A9431000BAFEC /* MessageUI.framework */,
@@ -591,6 +599,7 @@
 				891A4D9214579B3C00A2CF47 /* MainStoryboard.storyboard */,
 				891A4D8714579B3C00A2CF47 /* Supporting Files */,
 				893C221A14611A6200966B11 /* NotificationSettings.h */,
+				7A77F7EB1499837500C9CA7B /* DBSettings.h */,
 				89BEFA5A147F7D7E00B3408F /* WeiboSettings.h */,
 				89E7D935146373480059ADF4 /* URLSettings.h */,
 				898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */,
@@ -1003,6 +1012,8 @@
 				89395916147DEC7D003A883C /* WeiboService.m */,
 				89C709BF14908E0D00699AE0 /* DeviceTokenService.h */,
 				89C709C014908E0D00699AE0 /* DeviceTokenService.m */,
+				7A77F7E21498811100C9CA7B /* AddressBookDBService.h */,
+				7A77F7E31498811100C9CA7B /* AddressBookDBService.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -1311,6 +1322,7 @@
 				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
 				7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */,
 				7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */,
+				7A77F7E41498811200C9CA7B /* AddressBookDBService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

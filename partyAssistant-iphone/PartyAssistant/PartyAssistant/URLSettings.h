@@ -6,8 +6,8 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#define DOMAIN_NAME @"http://192.168.3.151:8000"
-//#define DOMAIN_NAME @"http://www.airenao.com"
+//#define DOMAIN_NAME @"http://192.168.3.151:8000"
+#define DOMAIN_NAME @"http://www.airenao.com"
 //#define DOMAIN_NAME @"http://127.0.0.1"
 
 //#define DOMAIN_NAME @"http://192.168.1.15:43401"
@@ -23,6 +23,7 @@
 #define RESEND_MSG_TO_CLIENT [NSString stringWithFormat:@"%@/a/parties/resendmsg/",DOMAIN_NAME]
 #define CLIENT_APPLY_URL [NSString stringWithFormat:@"%@/clients/public_enroll/",DOMAIN_NAME]
 #define ACCOUNT_LOGIN [NSString stringWithFormat:@"%@/a/accounts/login/",DOMAIN_NAME]
+#define ACCOUNT_LOGOUT [NSString stringWithFormat:@"%@/a/accounts/logout/",DOMAIN_NAME]
 #define ACCOUNT_REGIST [NSString stringWithFormat:@"%@/a/accounts/regist/",DOMAIN_NAME]
 //wxz
 #define ACCOUNT_SET_NICKNAME [NSString stringWithFormat:@"%@/a/accounts/nickname/",DOMAIN_NAME]
