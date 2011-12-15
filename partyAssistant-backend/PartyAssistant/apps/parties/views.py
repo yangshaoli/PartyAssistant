@@ -89,7 +89,7 @@ def edit_party(request, party_id):
 def email_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type='email').exclude(id=party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type='email').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
@@ -233,7 +233,7 @@ def email_invite(request, party_id):
 def sms_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type='phone').exclude(id=party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type='phone').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)

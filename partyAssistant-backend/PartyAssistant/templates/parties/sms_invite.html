@@ -1,4 +1,5 @@
 {% extends 'login_base.html' %}
+{% load string_filter %}
 {% block style %}
 <link href="/static/libs/jquery-ui-1/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
 <style>
@@ -230,11 +231,11 @@ function getRecentPartiesAddressee(v){
         {% endif %}
      </div>
      <div class="field">
-        <label for="id_recent_parties">快速添加</label>
+        <label for="id_recent_parties">最近联系人</label>
         <select id="id_recent_parties" onchange="getRecentPartiesAddressee(this.value)">
             <option value="0">未选择</option>
             {% for party in recent_parties %}
-            <option value="{{party.id}}">{{party.description}}</option>
+            <option value="{{party.id}}">{{party.description|truncatestring:"60"}}</option>
             {% endfor %}
         </select>
      </div>
