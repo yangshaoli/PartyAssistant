@@ -11,6 +11,10 @@
 		7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039181495E4260025B10A /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A77F7E41498811200C9CA7B /* AddressBookDBService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A77F7E31498811100C9CA7B /* AddressBookDBService.m */; };
 		7A77F7EA149982CE00C9CA7B /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A77F7E9149982CD00C9CA7B /* libsqlite3.dylib */; };
+		7A77F7FA1499EF5C00C9CA7B /* del_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A77F7F61499EF5C00C9CA7B /* del_word.png */; };
+		7A77F7FB1499EF5C00C9CA7B /* edit_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A77F7F71499EF5C00C9CA7B /* edit_word.png */; };
+		7A77F7FC1499EF5C00C9CA7B /* refresh_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A77F7F81499EF5C00C9CA7B /* refresh_word.png */; };
+		7A77F7FD1499EF5C00C9CA7B /* share_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A77F7F91499EF5C00C9CA7B /* share_word.png */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -206,6 +210,10 @@
 		7A77F7E31498811100C9CA7B /* AddressBookDBService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDBService.m; sourceTree = "<group>"; };
 		7A77F7E9149982CD00C9CA7B /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		7A77F7EB1499837500C9CA7B /* DBSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBSettings.h; sourceTree = "<group>"; };
+		7A77F7F61499EF5C00C9CA7B /* del_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = del_word.png; sourceTree = "<group>"; };
+		7A77F7F71499EF5C00C9CA7B /* edit_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = edit_word.png; sourceTree = "<group>"; };
+		7A77F7F81499EF5C00C9CA7B /* refresh_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh_word.png; sourceTree = "<group>"; };
+		7A77F7F91499EF5C00C9CA7B /* share_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share_word.png; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -539,6 +547,17 @@
 			name = RefreshTableView;
 			sourceTree = "<group>";
 		};
+		7A77F7F51499EF1F00C9CA7B /* toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				7A77F7F61499EF5C00C9CA7B /* del_word.png */,
+				7A77F7F71499EF5C00C9CA7B /* edit_word.png */,
+				7A77F7F81499EF5C00C9CA7B /* refresh_word.png */,
+				7A77F7F91499EF5C00C9CA7B /* share_word.png */,
+			);
+			name = toolbar;
+			sourceTree = "<group>";
+		};
 		891A4D7114579B3B00A2CF47 = {
 			isa = PBXGroup;
 			children = (
@@ -648,6 +667,7 @@
 		891A4DC21457A83100A2CF47 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				7A77F7F51499EF1F00C9CA7B /* toolbar */,
 				89C10A7E1491E23200BCE0CD /* new_tips.png */,
 				89C10A7F1491E23200BCE0CD /* new_tips@2x.png */,
 				89C709EE1490A5BC00699AE0 /* list_icon.png */,
@@ -1187,6 +1207,10 @@
 				89C709F31490A5BC00699AE0 /* setting_icon.png in Resources */,
 				89C10A801491E23200BCE0CD /* new_tips.png in Resources */,
 				89C10A811491E23200BCE0CD /* new_tips@2x.png in Resources */,
+				7A77F7FA1499EF5C00C9CA7B /* del_word.png in Resources */,
+				7A77F7FB1499EF5C00C9CA7B /* edit_word.png in Resources */,
+				7A77F7FC1499EF5C00C9CA7B /* refresh_word.png in Resources */,
+				7A77F7FD1499EF5C00C9CA7B /* share_word.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

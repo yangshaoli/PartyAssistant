@@ -59,24 +59,28 @@
     if (!self.myToolbarItems) {
         UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
         self.myToolbarItems = [NSArray arrayWithObjects:
-                            flexButton,  
-                            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction 
-                                                                               target:self
-                                                                               action:@selector(shareAction)], 
-                            flexButton, 
-                            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh 
-                                                                               target:self
-                                                                               action:@selector(refreshItem:)],
-                            flexButton, 
-                            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash 
-                                                                             target:self
-                                                                             action:@selector(deleteParty)],
-                            flexButton, 
-                            [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose 
-                                                                             target:self
-                                                                             action:@selector(editBtnAction)],
-                            flexButton, 
-                                 nil];
+                               flexButton,  
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(shareAction)], 
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"refresh_word"]
+                                                                style:UIBarButtonItemStylePlain 
+                                                               target:self
+                                                               action:@selector(refreshItem:)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"del_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(deleteParty)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(editBtnAction)],
+                               flexButton, 
+                               nil];
         
         [self setToolbarItems:myToolbarItems animated:YES];
     }
