@@ -307,7 +307,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
-    NSLog(@"uid:%d",user.uID);
+    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
     if(getDefaultCountNumber!=0){  
         NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
         tab.selectedIndex=1;

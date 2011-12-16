@@ -326,9 +326,9 @@
         [self sendCreateRequest];
     }
   }
-    //清空AddNewPartyBaseInfoVc
-    [self clearAddNewPartyBaseInfo];
-    NSLog(@"调用done");
+//    //清空AddNewPartyBaseInfoVc
+//    [self clearAddNewPartyBaseInfo];
+//    NSLog(@"调用done");
 }
 - (void)sendCreateRequest{
     [self showWaiting];

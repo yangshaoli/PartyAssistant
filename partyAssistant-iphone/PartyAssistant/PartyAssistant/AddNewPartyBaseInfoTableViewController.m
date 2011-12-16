@@ -357,21 +357,6 @@
         }
     }
 }
-//多余
-//- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-//{    
-//    if (actionSheet.tag == 0) {
-//        self.baseInfoObject.starttimeDate = [datePicker date];
-//        [self.baseInfoObject formatDateToString];
-//    }else{
-//        NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
-//        NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
-//        NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
-//        self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
-//    }
-//    [self saveInfo];
-//    [self.tableView reloadData];
-//}
 
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
