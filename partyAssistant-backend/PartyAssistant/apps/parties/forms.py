@@ -11,7 +11,7 @@ class CreatePartyForm(forms.ModelForm):
     description = forms.CharField(error_messages={'required':u'这个字段是必填的'}, required=True)
     class Meta:
         model = Party
-        fields = ('start_date', 'start_time', 'address', 'description')
+        fields = ('start_date', 'start_time', 'address', 'description', 'limit_count')
 
     def clean_limit_count(self):
         if self.cleaned_data['limit_count'] == None :

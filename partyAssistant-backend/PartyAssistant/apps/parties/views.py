@@ -485,14 +485,14 @@ def _public_enroll(request, party_id):
             client.name = name 
             client.save()    
             
-            partyclient, create = PartiesClients.objects.get_or_create(client = client, party = party)            
+            party_client, create = PartiesClients.objects.get_or_create(client = client, party = party)            
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
-                partyclient.leave_message = partyclient.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                  
-            partyclient.apply_status = 'apply'
-            partyclient.is_check = False    
-            partyclient.save()
+            party_client.apply_status = 'apply'
+            party_client.is_check = False    
+            party_client.save()
             push_notification_when_enroll(party_client, 'apply') 
             if request.META['PATH_INFO'][0:3] == '/m/':
                 return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功'})
