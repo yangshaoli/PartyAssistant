@@ -8,9 +8,17 @@ function changetoAble(o){
    $(document.getElementById(o)).removeAttr('readonly');
    
 }
+$(document).ready(function(){
+    $("#tips").delay(3000).fadeOut();    
+})
 </script>
 {% endblock %}
 {% block content %}
+{% ifequal profile_status 'success' %}
+<div id="tips" style="color:#fff; background:#f9e100; padding:5px; width:750px; border-radius:5px;text-align:center; margin:20px; position:absolute;">
+ 保存成功 
+</div>
+{% endifequal %}
 <div id="content">
   <div class="grid_a">
    <h2 class="title">用户信息</h2>
@@ -37,9 +45,6 @@ function changetoAble(o){
           <input type='submit' value='保存'></input>
         </fieldset>	
     </form>
-{% if profile_status %}
-{{ profile_status }}
-{% endif%}
   </div>
  </div>
 

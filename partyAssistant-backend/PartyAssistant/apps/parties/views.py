@@ -137,11 +137,11 @@ def email_invite(request, party_id):
                             client = client_temp
                         )
             
-            send_status = u'邮件发送失败'
+            send_status = 'email_fail'
             with transaction.commit_on_success():
                 send_message = Outbox(address = form.cleaned_data['client_email_list'], base_message = email_message)
                 send_message.save()
-                send_status = u'邮件发送成功'
+                send_status = 'email_success'
              
             request.session['send_status'] = send_status    
             return redirect('list_party')
@@ -282,8 +282,8 @@ def sms_invite(request, party_id):
                             client = client_temp
                         )
 
-            send_status = u'短信发送失败'
-            sms_tip = ''
+            send_status = 'sms_fail'
+            sms_count = ''
             with transaction.commit_on_success():
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 client_phone_list_len = len(client_phone_list)
@@ -302,9 +302,10 @@ def sms_invite(request, party_id):
                 client_phone_list = ','.join(client_phone_list)  
                 send_message = Outbox(address = client_phone_list, base_message = sms_message)
                 send_message.save()
-                send_status = u'短信发送成功'
-                sms_tip = u'你的当前可用短信数量为：' + str(userprofile.available_sms_count) + ' ' + u'是否需要充值?'
-            request.session['send_status'] = send_status + ' ' + sms_tip
+                send_status = 'sms_success'
+                sms_count = str(userprofile.available_sms_count)
+            request.session['sms_count'] = sms_count    
+            request.session['send_status'] = send_status 
             return redirect('list_party')
         else:
             client_data = []
@@ -421,14 +422,18 @@ def list_party(request):
     send_status = ''    
     if 'send_status' in request.session:
         send_status = request.session['send_status']
-        del request.session['send_status']        
+        del request.session['send_status']  
+    sms_count =''    
+    if 'sms_count' in request.session:
+        sms_count = request.session['sms_count']
+        del request.session['sms_count']          
     #分页
     paginator = Paginator(party_list, 10)
     page = request.GET.get('page', 1)
 
     party_list = paginator.page(page)
     
-    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status})
+    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
 
 def _public_enroll(request, party_id):
     party = get_object_or_404(Party, id = party_id)
@@ -504,9 +509,9 @@ def _public_enroll(request, party_id):
         form = PublicEnrollForm()
         invite_message = ''
         if party.invite_type == 'email':
-            invite_message = u'请填写邮件，以免收不到活动的具体通知'
+            invite_message = 'email'
         else:
-            invite_message = u'请填写手机号码，以免收不到活动的具体通知'
+            invite_message = 'phone'
         userprofile = UserProfile.objects.get(user = party.creator)
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username    
         data = {

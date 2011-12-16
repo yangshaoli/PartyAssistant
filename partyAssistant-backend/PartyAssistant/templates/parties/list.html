@@ -43,7 +43,11 @@ iframe{
 </div>
     {% if send_status %}
     <div id="tips" style="color:#fff; background:#f9e100; padding:5px; width:750px; border-radius:5px;text-align:center; margin:20px; position:absolute;">
-    {{ send_status }}
+    {% ifequal send_status 'email_success'%} 邮件发送成功 {% endifequal %}
+    {% ifequal send_status 'email_fail'%} 邮件发送失败 {% endifequal %}
+    {% ifequal send_status 'sms_success'%} 短信发送成功 {% endifequal %}
+    {% ifequal send_status 'sms_fail'%} 短信发送成功 {% endifequal %}
+    {% if sms_count %} 你剩余的短信数量为：{{ sms_count }} ,是否需要<a href='{% url buy_sms %}'>充值</a>？ {% endif %}
     </div>
     {% endif %}
  <div id="content">

@@ -53,15 +53,15 @@ def profile(request):
             if userprofile.true_name != true_name:
                 userprofile.true_name = true_name
                 userprofile.save()
-                profile_status = u'保存成功'
+                profile_status = 'success'
             if userprofile.phone != phone:
                 userprofile.phone = phone
                 userprofile.save()
-                profile_status = u'保存成功'
+                profile_status = 'success'
             if user.email != email:
                 user.email = email
                 user.save()
-                profile_status = u'保存成功'
+                profile_status = 'success'
             
             if profile_status:
                 request.session['profile_status'] = profile_status
