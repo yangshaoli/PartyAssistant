@@ -28,7 +28,7 @@ class InviteForm(forms.Form):
             
 class PublicEnrollForm(forms.Form):
     name = forms.CharField(error_messages={'required':u'姓名必填'}, required=True)  
-    phone_or_email = forms.CharField(error_messages={'required':u'姓名必填'}, required=True)
+    phone_or_email = forms.CharField(error_messages={'required':u'联系方式必填'}, required=True)
     leave_message = forms.CharField(error_messages={'max_length':u'留言长度不能超过100字符'}, max_length=100, required=False)
     
     def clean_leave_message(self):
