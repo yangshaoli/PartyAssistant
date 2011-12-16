@@ -154,10 +154,8 @@ def bought_success(request):
         total_fee = request.POST.get('total_fee',0)
         out_trade_no = request.POST.get('out_trade_no', '')
         receipt = UserAliReceipt.objects.get(receipt=out_trade_no)
-        print receipt.pre_sms_count
         userprofile = UserProfile.objects.get(user=receipt.user)
-        userprofile.available_sms_count = userprofile.available_sms_count + total_fee * 10
-        print userprofile.available_sms_count
+        userprofile.available_sms_count = userprofile.available_sms_count + receipt.item_count
         userprofile.save()
         return HttpResponse("success", mimetype="text/html")
     else:
