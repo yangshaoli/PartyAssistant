@@ -136,7 +136,7 @@ function ajaxChangeStatus(id, applystatus){
    <div class="apply_details">
     <p>{{party.start_time|date:"y年m月d日"|default:""}}{{ party.start_time|date:"H:i"|default:"" }}</p>
     <p>{{party.address|default:""}} <span class="minor">参加活动</span></p>
-    <p>{{party.description}}</p>
+    <p>{{party.description|linebreaksbr}}</p>
    </div>
    <div class="accordionview">
     <div class="accordion_panel">

@@ -91,7 +91,7 @@ function ajaxChangeStatus(id, applystatus){
     <p>{{party.creator.username}} <span class="minor">邀请</span>  {% if client %}{{client.name}}{%else%}您{%endif%}：</p>
     <p>{{ party.start_date|date:"m月d日"}}  {{ party.start_time|time:"H:i"|default:"时间待定" }} </p>
     <p class="paragraph">{{ party.address|default:"地点待定" }}<span class="minor">参加活动</span></p>
-    <p class="paragraph">{{party.description}}</p>
+    <p class="paragraph">{{ party.description|linebreaksbr }}</p>
     
     
         {% if client %}
