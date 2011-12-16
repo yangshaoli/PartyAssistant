@@ -88,11 +88,11 @@ class Premium(models.Model):
 
 class UserReceiptBase(models.Model):
     user = models.ForeignKey(User)
-    buy_time = models.DateTimeField()
+    buy_time = models.DateTimeField(null=True, blank=True)
     create_time = models.DateTimeField(auto_now_add = True)
 
     pre_sms_count = models.IntegerField()
-    final_sms_count = models.IntegerField()
+    final_sms_count = models.IntegerField(null=True, blank=True)
     
     def __unicode__(self):
         return self.user
@@ -108,10 +108,10 @@ class UserAppleReceipt(UserReceiptBase):
 
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
-    payment = models.CharField(max_length = 16)
+    payment = models.CharField(max_length = 16,null=True, blank=True)
     items_count = models.IntegerField()
-    premium = models.ForeignKey(Premium)
-    
+    premium = models.ForeignKey(Premium, default=1)
+    totle_fee = models.DecimalField(max_digits=19, decimal_places=10, default=0)
     def __unicode__(self):
         return self.user.username
 
