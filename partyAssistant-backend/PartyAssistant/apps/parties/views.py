@@ -676,7 +676,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
     if start_date != None and start_time == None:
         content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间暂定'
     if start_date == None and start_time != None:
-        content += address_content + u'，' + u'日期暂定' + '，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
+        content += address_content + u'，' + u'日期暂定' + u'，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
     if start_date != None and start_time != None:
         content += address_content + u'，' + u'具体时间：' + datetime.date.strftime(start_date, '%Y-%m-%d') + ' ' + datetime.time.strftime(start_time, '%H:%M')        
     content += u'。'
