@@ -87,10 +87,11 @@ def edit_party(request, party_id):
             
             return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})       
     else:
+        if party.start_date:
+            party.start_date = datetime.date.strftime(party.start_date, '%Y-%m-%d')
+        if party.start_time:
+            party.start_time = datetime.time.strftime(party.start_time, '%H:%M')
         form = PartyForm(instance = party)
-        #回带start_time 和 start_date , 否则无法格式化回显
-        form.start_date = datetime.date.strftime(party.start_date, '%Y-%m-%d')
-        form.start_time = datetime.time.strftime(party.start_time, '%H:%M')
         
     return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
 
