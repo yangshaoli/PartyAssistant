@@ -157,8 +157,8 @@ function ajaxChangeStatus(id, applystatus){
    <div class="accordionview">
     <div class="accordion_panel">
      <h2 class="accordion_toggle accordion_toggle_active">
-     	<a id="tab_apply" href="#">爱热闹的 <strong>{% if not party_clients.apply.is_check %}<i class="icon_new"></i>{% endif %}({{party_clients.apply.client_count}}人)</strong></a>
-     	<a id="tab_noanswer" href="#">犹豫的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
+     	<a id="tab_apply" href="#">来的 <strong>{% if not party_clients.apply.is_check %}<i class="icon_new"></i>{% endif %}({{party_clients.apply.client_count}}人)</strong></a>
+     	<a id="tab_noanswer" href="#">待定的<strong> ({{party_clients.noanswer.client_count}}人)</strong></a>
      	<a id="tab_reject" href="#">不来的 <strong>{% if not party_clients.reject.is_check %}<i class="icon_new"></i>{% endif %}({{party_clients.reject.client_count}}人)</strong></a>
      	<a href='#' onclick='invite_again();'><img src="/static/images/btn_please.png" width="62" height="23" alt="please" class="btn_please" /></a>
      </h2>
