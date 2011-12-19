@@ -47,6 +47,10 @@ def create_party(request):
                 return redirect('email_invite', party_id = party.id)
             else:
                 return redirect('list_party')
+        else:
+            
+            return TemplateResponse(request, 'parties/create_party.html', {'form': form})   
+                
     else:
         form = PartyForm()
     
@@ -79,9 +83,15 @@ def edit_party(request, party_id):
                     return redirect('email_invite', party_id = party.id)
                 else:
                     return redirect('list_party')
+        else:
+            
+            return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})       
     else:
         form = PartyForm(instance = party)
-    
+        #回带start_time 和 start_date , 否则无法格式化回显
+        form.start_date = datetime.date.strftime(party.start_date, '%Y-%m-%d')
+        form.start_time = datetime.time.strftime(party.start_time, '%H:%M')
+        
     return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
 
 @login_required

@@ -67,8 +67,8 @@ $(document).ready(function(){
      <label for="id_start_date">
      何时
      </label>
-	 <input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|date:'Y-m-d'|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
-	 <input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|time:'H:i'|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
+	 <input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
+	 <input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
      <font color='red'>{{ form.start_date.errors }}
      {{ form.start_time.errors }}<font>
      </div>
