@@ -19,7 +19,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
-from forms import CreatePartyForm
+from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
@@ -35,7 +35,7 @@ logger = logging.getLogger('airenao')
 @login_required
 def create_party(request):
     if request.method == 'POST':
-        form = CreatePartyForm(request.POST)
+        form = PartyForm(request.POST)
         if form.is_valid():
             party = form.save(commit = False)
             party.creator = request.user
@@ -48,7 +48,7 @@ def create_party(request):
             else:
                 return redirect('list_party')
     else:
-        form = CreatePartyForm()
+        form = PartyForm()
     
     return TemplateResponse(request, 'parties/create_party.html', {'form': form})
 
@@ -64,7 +64,7 @@ def edit_party(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     
     if request.method == 'POST':
-        form = CreatePartyForm(request.POST, instance = party)
+        form = PartyForm(request.POST, instance = party)
         if form.is_valid():
             party = form.save()
             if 'save_send' in request.POST:
@@ -80,7 +80,7 @@ def edit_party(request, party_id):
                 else:
                     return redirect('list_party')
     else:
-        form = CreatePartyForm(instance = party)
+        form = PartyForm(instance = party)
     
     return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
 

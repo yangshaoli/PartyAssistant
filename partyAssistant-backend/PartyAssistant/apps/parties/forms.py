@@ -5,7 +5,7 @@ from django import forms
 from django.core.validators import validate_email
 import re
 
-class CreatePartyForm(forms.ModelForm):
+class PartyForm(forms.ModelForm):
     limit_count = forms.IntegerField(required=False)
     address = forms.CharField(error_messages={'max_length':u'地址的最大长度不要超过256个字符'}, required=False, max_length=256)
     description = forms.CharField(error_messages={'required':u'这个字段是必填的'}, required=True)
