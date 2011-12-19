@@ -132,7 +132,7 @@ function ajaxChangeStatus(id, applystatus){
              </div>
             <div class="field">
              <label for="client_email_list">联系方式<font color='red'>*</font></label>
-             <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' placeholder='手机号码或者邮箱地址'></input>
+             <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' ></input>
              <font color='red'>{{ form.phone_or_email.errors.0 }}</font>
              <br/>
              {% ifequal invite_message 'email' %} 请填写邮件地址，以免收不到活动具体通知  {% endifequal %}      
