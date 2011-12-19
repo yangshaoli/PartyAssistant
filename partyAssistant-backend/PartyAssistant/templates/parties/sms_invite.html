@@ -36,7 +36,7 @@
 	            count = count+1;
 	        }
 	    }
-	    $('#id_send_phone_count').html("收件人人数统计： "+count);
+	    $('#id_send_phone_count').html("共 "+count+" 人");
 	}
     
 /**
@@ -133,10 +133,11 @@ function getRecentPartiesAddressee(v){
 		     //alert(message_count*count);
 		     //return false;
 		     if((count*message_count) > sms_count){
-		         if(window.confirm("您将要发送的短信数量大于您可使用的短信数量("+sms_count+"条),是否需要进行调整操作?")){
-		         	return false;
+		         if(window.confirm("您的剩余短信条数不足，需要至少充值"+ ((count*message_count) - sms_count) +"条短信，才能完成本次发送。是否充值？")){
+					//跳转到充值界面
+					window.location = '{% url buy_sms %}';		         	
 		         }else{
-		         	document.id_form.submit();
+		         	//document.id_form.submit();
 		         }
 		     }else{
 		 	    document.id_form.submit();
@@ -160,6 +161,7 @@ function getRecentPartiesAddressee(v){
     		}
     		return;
     	});
+  
    	});
    
 </script>
@@ -174,7 +176,7 @@ function getRecentPartiesAddressee(v){
      <div class="field">
         <label for="client_email_list">
             收件人<font color='red'>*</font>
-        <p id="id_send_email_count">共 0 人</p>
+        <p id="id_send_phone_count">共 0 人</p>
         </label>
 	 <textarea id="id_client_phone_list" rows="4" cols="70" name="client_phone_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_phone_list.value }}</textarea>
      &nbsp;<font color='red'>{{ form.client_phone_list.errors.0 }}</font>
@@ -226,7 +228,7 @@ function getRecentPartiesAddressee(v){
           }
         
         </script>
-        <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">爱热闹的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">犹豫的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
+        <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">来的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">待定的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
         {% endif %}
      </div>
      <div class="field">
