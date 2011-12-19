@@ -466,7 +466,7 @@ def _public_enroll(request, party_id):
             #有人数限制
             if party.limit_count != 0 :
                 if PartiesClients.objects.filter(party = party, apply_status = 'apply').count() >= party.limit_count:
-                    return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
+                    return TemplateResponse(request, 'message.html', {'message': 'late'})
                     
 #            if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).exclude(email = '').count() == 0 \
 #                and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).exclude(phone = '').count() == 0:
@@ -495,9 +495,9 @@ def _public_enroll(request, party_id):
             party_client.save()
             push_notification_when_enroll(party_client, 'apply') 
             if request.META['PATH_INFO'][0:3] == '/m/':
-                return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功'})
+                return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': 'publicenrollsucess'})
             else:    
-                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+                return TemplateResponse(request, 'message.html', {'message': 'publicenroll'})
         else:
             data = {
             'party': party,
@@ -549,7 +549,7 @@ def _invite_enroll(request, party_id, invite_key):
             if request.POST['action'] == 'yes': #如果点击参加
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party = party, apply_status = 'apply')) >= party.limit_count:
-                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点来吧。'})
+                        return TemplateResponse(request, 'message.html', {'message': 'late'})
 
                 party_client.apply_status = u'apply'
                 party_client.leave_message = form.cleaned_data['leave_message']
@@ -558,7 +558,7 @@ def _invite_enroll(request, party_id, invite_key):
                 #向组织者的所有MoblieDevice发送推送
                 push_notification_when_enroll(party_client, 'apply')
                 
-                return TemplateResponse(request, 'message.html', {'message': u'报名成功，请记得按时参加活动。'})
+                return TemplateResponse(request, 'message.html', {'message': u'apply'})
             else:
                 party_client.apply_status = u'reject'
                 party_client.leave_message = form.cleaned_data['leave_message']
@@ -567,7 +567,7 @@ def _invite_enroll(request, party_id, invite_key):
                 #向组织者的所有MoblieDevice发送推送
                 push_notification_when_enroll(party_client, 'reject')
                 
-                return TemplateResponse(request, 'message.html', {'message': u'您已经选择不参加这个活动'})
+                return TemplateResponse(request, 'message.html', {'message': 'reject'})
         else:
             data = {
                 'client': client,
@@ -595,7 +595,7 @@ def enroll(request, party_id):
     try:
         get_object_or_404(Party, id = party_id)
     except :
-        return TemplateResponse(request, 'message.html', {'message':u'该会议已经删除'}) 
+        return TemplateResponse(request, 'message.html', {'message':u'partynotexist'}) 
     invite_key = request.GET.get('key', '')
     if invite_key:
         return _invite_enroll(request, party_id, invite_key)
