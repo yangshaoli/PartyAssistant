@@ -38,7 +38,7 @@ $(document).ready(function(){
          </div>
          <div class="field">
          <label for="phone">手机</label>
-         {{ form.confirm_password }}{{ form.phone }}{{ form.phone.errors.0 }}
+         {{ form.phone }}{{ form.phone.errors.0 }}
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>

@@ -84,3 +84,5 @@ class UserProfileForm(forms.Form):
     def clean_phone(self):
         if self.cleaned_data['phone'] == '' :
             return None
+        else :
+            return self.cleaned_data['phone']
