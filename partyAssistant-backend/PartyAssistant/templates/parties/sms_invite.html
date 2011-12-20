@@ -27,7 +27,45 @@
 <script src="/static/libs/jquery-ui-1/js/jquery-ui-1.8.16.custom.min.js">
 </script>
 <script type="text/javascript" >
+/**
+ *取出重复的联系人
+ *
+ */
+function distinct(){
+	 client_phone_list = $('#id_client_phone_list').val().split(',');
+     client_phone_list_length = client_phone_list.length;     
+	 array = new Array();
+	 array_length = 0;   
+     for (i = 0; i < client_phone_list_length; i++) {
+         client_phone = client_phone_list[i].replace(/^\s+|\s+$/g, ""); 
+         if (client_phone != "") {
+             array_length = array.length;
+             add = 1 ;
+             for(k=0;k<=array_length;k++){
+                 if(array[k] == client_phone){
+                 	add = 0;
+                 	break;
+                 }
+                 if(k == array_length){
+                    add = 1;
+                 }
+             }  
+             if(add==1){
+             	array.push(client_phone);
+             }  
+         }
+     }//endfor
+     client_phones = array.join(',');
+//     if(client_phones.length!=0){
+//	     if(client_phones.lastIndexOf(',')!=(client_phones.length-1)){
+//	        client_phones = client_phones+',';
+//	     }
+//     }
+     $('#id_client_phone_list').val(client_phones);
+}
+
 	function calculate_send_phone_count() {
+	    distinct();
 	    client_phone_list = $('#id_client_phone_list').val().split(',');
 	    client_phone_list_length = client_phone_list.length;     
 	    count = 0;
@@ -74,7 +112,10 @@ function getRecentPartiesAddressee(v){
             return split(term).pop();
         }
         $('#id_client_phone_list').bind("keyup", function(event){
-		calculate_send_phone_count();
+          if(event.keyCode==188){
+            return;
+          }
+		  calculate_send_phone_count();
 		});
         $("#id_client_phone_list") // don't navigate away from the field on tab when selecting an item
     .bind("keydown", function(event){
