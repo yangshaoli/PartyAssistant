@@ -25,13 +25,14 @@ input[type="image"] { border:0px;height:45px;}
 
 function ajaxGetClients(applystatus){
     $('.accordion_content table tbody').children().remove();
-    
     $.ajax({
         type : 'GET',
         url: '/parties/ajax_get_client_list/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
-            clients = JSON.parse(response);
+            data = JSON.parse(response);
+            client_count = data.client_count;
+            clients = data.party_clients_datas;
             for (i in clients){
                 name = clients[i].name;
                 address = clients[i].address;
@@ -56,10 +57,12 @@ function ajaxGetClients(applystatus){
                 }else{
                 	row = "<tr><td></td><th>"+name+"</th><td>"+address+"</td><td></td></tr>"
                 }
-                $('.accordion_content table tbody').append(row);    
-            }
-            
-            //修改[再次邀请]的url
+                $('.accordion_content table tbody').append(row);  
+            }//endfor
+            //改变标签上的人数 
+            $('#tab_apply').html('去的<strong> ('+ client_count.apply +'人)');
+            $('#tab_noanswer').html('待定的<strong> ('+ client_count.noanswer +'人)');
+            $('#tab_reject').html('不去的<strong> ('+ client_count.reject +'人)');
         },
         500: function(){ alert('没有获取到用户列表')}
         }

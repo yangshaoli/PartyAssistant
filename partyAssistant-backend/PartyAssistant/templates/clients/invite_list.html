@@ -29,7 +29,9 @@
             $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');//改变样式
          
             var applystatus = this.id.split('_')[1];
-            ajaxGetClients(applystatus);
+            var domain_name = location.href.split('/')[2];
+            location.href = 'http://'+domain_name + '/parties/{{party.id}}/invite_list/?apply=' + applystatus;
+            //ajaxGetClients(applystatus);
         })
     })
 
