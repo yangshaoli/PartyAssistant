@@ -22,9 +22,9 @@ $(document).ready(function(){
 <div id="content">
   <div class="grid_a">
    <h2 class="title">用户信息</h2>
-    欢迎你, {{user.username}}<br/><br/>
+    欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<a href="{% url change_password %}" style="font-size:9pt; color:#237237237; text-decoration:underline;">修改密码</a><br/><br/>
 <br />
-<a href="{% url change_password %}">修改密码</a><br/>
+
 <form method='post' action='{% url profile %}'  class="creat_exercise">
     {% csrf_token %}
     <fieldset>
