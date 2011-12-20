@@ -563,7 +563,10 @@ def _invite_enroll(request, party_id, invite_key):
                         return TemplateResponse(request, 'message.html', {'message': 'late'})
 
                 party_client.apply_status = u'apply'
-                party_client.leave_message = form.cleaned_data['leave_message']
+                leave_message = form.cleaned_data['leave_message']
+                if leave_message:
+                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                              
                 party_client.save()
                 
                 #向组织者的所有MoblieDevice发送推送
@@ -572,7 +575,10 @@ def _invite_enroll(request, party_id, invite_key):
                 return TemplateResponse(request, 'message.html', {'message': u'apply'})
             else:
                 party_client.apply_status = u'reject'
-                party_client.leave_message = form.cleaned_data['leave_message']
+                leave_message = form.cleaned_data['leave_message']
+                if leave_message:
+                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+              
                 party_client.save()
                 
                 #向组织者的所有MoblieDevice发送推送
@@ -693,6 +699,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
     content += u'。'
     return content
 
+@login_required
 def invite_list_ajax(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id)
     for party_client in party_clients_list:
@@ -703,9 +710,14 @@ def invite_list_ajax(request, party_id):
     return HttpResponse(simplejson.dumps(party_clients_datas))
 
 def ajax_get_client_list(request, party_id):
-    party_clients_datas , party_clients_list = _invite_list(request, party_id)  
-
-    return HttpResponse(simplejson.dumps(party_clients_datas))
+    party_clients_datas , party_clients_list = _invite_list(request, party_id) 
+    party = get_object_or_404(Party, id = party_id)
+    client_count = _get_client_count(party)
+    data = {
+            'party_clients_datas' : party_clients_datas,
+            'client_count' : client_count
+            }
+    return HttpResponse(simplejson.dumps(data))
 
 def _invite_list(request, party_id):
     apply_status = request.GET.get('apply', 'all')
