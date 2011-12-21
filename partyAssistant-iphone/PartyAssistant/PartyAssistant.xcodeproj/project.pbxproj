@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
+		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
 		75C02939149459FE00067730 /* ECPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02936149459FE00067730 /* ECPurchase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02938149459FE00067730 /* ECStoreObserver.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
@@ -201,6 +203,9 @@
 /* Begin PBXFileReference section */
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
+		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
+		75BC083C14989113007B39CB /* RegexKitLite.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegexKitLite.m; sourceTree = "<group>"; };
+		75BC083E1498916E007B39CB /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
 		75C02935149459FE00067730 /* ECPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECPurchase.h; path = Main/Service/ECPurchase/ECPurchase.h; sourceTree = "<group>"; };
 		75C02936149459FE00067730 /* ECPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ECPurchase.m; path = Main/Service/ECPurchase/ECPurchase.m; sourceTree = "<group>"; };
 		75C02937149459FE00067730 /* ECStoreObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECStoreObserver.h; path = Main/Service/ECPurchase/ECStoreObserver.h; sourceTree = "<group>"; };
@@ -499,6 +504,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */,
 				75C0294014948F2000067730 /* StoreKit.framework in Frameworks */,
 				893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */,
 				8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */,
@@ -540,6 +546,16 @@
 			path = Main/Service/DeviceDetection;
 			sourceTree = "<group>";
 		};
+		75BC083A14989113007B39CB /* RegexKit */ = {
+			isa = PBXGroup;
+			children = (
+				75BC083B14989113007B39CB /* RegexKitLite.h */,
+				75BC083C14989113007B39CB /* RegexKitLite.m */,
+			);
+			name = RegexKit;
+			path = Main/External/RegexKit;
+			sourceTree = "<group>";
+		};
 		75C02933149459D000067730 /* Purchase */ = {
 			isa = PBXGroup;
 			children = (
@@ -573,10 +589,11 @@
 		891A4D7F14579B3C00A2CF47 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				75C0293F14948F2000067730 /* StoreKit.framework */,
-				893C2220146162AE00966B11 /* QuartzCore.framework */,
 				89391BB514593CB200721F90 /* libz.dylib */,
 				89391BC114593F2500721F90 /* libxml2.dylib */,
+				75BC083E1498916E007B39CB /* libicucore.dylib */,
+				75C0293F14948F2000067730 /* StoreKit.framework */,
+				893C2220146162AE00966B11 /* QuartzCore.framework */,
 				8932653C145E88F6006E827D /* AddressBook.framework */,
 				8932652A145E6C37006E827D /* AddressBookUI.framework */,
 				899BE859145A9431000BAFEC /* MessageUI.framework */,
@@ -825,6 +842,7 @@
 		89391AA414592EDB00721F90 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				75BC083A14989113007B39CB /* RegexKit */,
 				89391B351459394400721F90 /* ASIHTTPRequest */,
 				89391AA614592EE500721F90 /* JsonFramework */,
 			);
@@ -1338,6 +1356,7 @@
 				75C029451494913600067730 /* PurchaseListViewController.m in Sources */,
 				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
 				75BC083914987E20007B39CB /* DeviceDetection.m in Sources */,
+				75BC083D14989113007B39CB /* RegexKitLite.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1471,7 +1490,7 @@
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1488,7 +1507,7 @@
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
