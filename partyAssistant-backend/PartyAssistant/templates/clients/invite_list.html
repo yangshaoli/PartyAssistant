@@ -1,4 +1,5 @@
 {% extends 'login_base.html' %}
+{% load string_filter %}
 {% block title %} 受邀联系人列表 {% endblock %}
 
 {% block script %}
@@ -154,7 +155,7 @@ function ajaxChangeStatus(id, applystatus){
    <div class="apply_details">
     <p>{{party.start_time|date:"y年m月d日"|default:""}}{{ party.start_time|date:"H:i"|default:"" }}</p>
     <p>{{party.address|default:""}} <span class="minor">参加活动</span></p>
-    <p>{{party.description|linebreaksbr}}</p>
+    <p>{{party.description|divstring:'70'|linebreaksbr}}</p>
    </div>
    <div class="accordionview">
     <div class="accordion_panel">
