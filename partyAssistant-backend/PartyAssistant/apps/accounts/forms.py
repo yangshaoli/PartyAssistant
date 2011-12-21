@@ -86,3 +86,12 @@ class UserProfileForm(forms.Form):
             return None
         else :
             return self.cleaned_data['phone']
+
+class BuySMSForm(forms.Form):
+    sms_count = forms.IntegerField()
+    
+    def clean_sms_count(self):
+        if self.cleaned_data['sms_count'] == None or self.cleaned_data['sms_count'] == 0:
+            self._errors['sms_count'] = ErrorList([u'购买信息数量至少为1条'])
+            
+        return self.cleaned_data['sms_count']

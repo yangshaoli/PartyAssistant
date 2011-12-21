@@ -1,25 +1,25 @@
 #-*- coding: utf-8 -*-
 
 from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
-    RegistrationForm, UserProfileForm
+    RegistrationForm, UserProfileForm, BuySMSForm
 from apps.accounts.models import UserProfile, TempActivateNote, UserAliReceipt
+from decimal import Decimal, InvalidOperation
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response, redirect, get_object_or_404, \
     HttpResponse
 from django.template.context import RequestContext
 from django.template.response import TemplateResponse
-from django.http import HttpResponseRedirect
+from django.utils import simplejson
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME, ALIPAY_SELLER_EMAIL
-from utils.tools.email_tool import send_emails
 from utils.tools.alipay import Alipay
+from utils.tools.email_tool import send_emails
+import datetime
 import logging
 import random
-import datetime
-from decimal import Decimal, InvalidOperation
-from django.utils import simplejson
 logger = logging.getLogger('airenao')
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
@@ -118,35 +118,47 @@ def get_availbale_sms_count_ajax(request):
 def buy_sms(request):
     request_url = '/accounts/profile'
     if request.method == 'POST':
-        seller_email = ALIPAY_SELLER_EMAIL;
-        subject = request.POST.get('subject', '')
-        body = request.POST.get('body', '')
-        out_trade_no = request.POST.get('out_trade_no', '')
-        price = request.POST.get('price', '')
-        sms_count = request.POST.get('sms_count', '')
-        notify_url = request.POST.get('notify_url', '')
-
-        payment_type = request.POST.get('payment_type', '')
-        try:
-            total_fee = Decimal(price)
-        except InvalidOperation:
-            total_fee = None
-        if seller_email and subject and out_trade_no and total_fee and notify_url and payment_type:
-            user = request.user
-            #存入UserAliReceipt表
-            userprofile = UserProfile.objects.get(user=user)
-            order = UserAliReceipt.objects.create(user=user, pre_sms_count=userprofile.available_sms_count,
-                                                  receipt=out_trade_no,totle_fee=total_fee, items_count=sms_count, 
-                                                  )
-            alipay = Alipay()
-            request_url = alipay.create_direct_pay_by_user_url(seller_email, subject, body, out_trade_no, total_fee, notify_url, payment_type)
-            return HttpResponseRedirect(request_url)
+        form = BuySMSForm(request.POST)
+        if form.is_valid():
+            seller_email = ALIPAY_SELLER_EMAIL;
+            subject = request.POST.get('subject', '')
+            body = request.POST.get('body', '')
+            out_trade_no = request.POST.get('out_trade_no', '')
+            price = request.POST.get('price', '')
+            sms_count = request.POST.get('sms_count', '')
+            notify_url = request.POST.get('notify_url', '')
+    
+            payment_type = request.POST.get('payment_type', '')
+            try:
+                total_fee = Decimal(price)
+            except InvalidOperation:
+                total_fee = None
+            if seller_email and subject and out_trade_no and total_fee and notify_url and payment_type:
+                user = request.user
+                #存入UserAliReceipt表
+                userprofile = UserProfile.objects.get(user=user)
+                order = UserAliReceipt.objects.create(user=user, pre_sms_count=userprofile.available_sms_count,
+                                                      receipt=out_trade_no,totle_fee=total_fee, items_count=sms_count, 
+                                                      )
+                alipay = Alipay()
+                request_url = alipay.create_direct_pay_by_user_url(seller_email, subject, body, out_trade_no, total_fee, notify_url, payment_type)
+                return HttpResponseRedirect(request_url)
+        else:
+            now = datetime.datetime.now()
+            out_trade_no = now.strftime('%Y%m%d%H%M%s')
+            return render_to_response('accounts/buy_sms.html', {
+                'out_trade_no':out_trade_no,
+                'domain':DOMAIN_NAME,
+                'form':form
+                }, context_instance=RequestContext(request))            
     else:
+        form = BuySMSForm()
         now = datetime.datetime.now()
         out_trade_no = now.strftime('%Y%m%d%H%M%s')
         return render_to_response('accounts/buy_sms.html', {
             'out_trade_no':out_trade_no,
-            'domain':DOMAIN_NAME
+            'domain':DOMAIN_NAME,
+            'form':form
             }, context_instance=RequestContext(request))
 
 def bought_success(request):
