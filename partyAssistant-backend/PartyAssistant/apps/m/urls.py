@@ -8,7 +8,7 @@ from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('',
     url(r'^$', 'apps.main.views.home'),
-    url(r'^(?P<short_link>[a-zA-Z]+)$', 'apps.common.views.short_link'),
+    url(r'^(?P<short_link>[a-zA-Z0-9]+)$', 'apps.common.views.short_link'),
 )
 
 urlpatterns += patterns('apps.accounts.views',
