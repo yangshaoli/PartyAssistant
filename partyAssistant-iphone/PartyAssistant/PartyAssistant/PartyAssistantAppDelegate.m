@@ -7,6 +7,8 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
+#import "ECPurchase.h"
+
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -42,6 +44,7 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    [[ECPurchase shared] verifyReceiptsStoredOnLocal];
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
      */
@@ -75,6 +78,14 @@
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
     [_window addSubview:nav.view];
+
+    application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
+    
+    [[ECPurchase shared] addTransactionObserver];
+    [[ECPurchase shared] setProductDelegate:self];
+    [[ECPurchase shared] setTransactionDelegate:self];
+    [[ECPurchase shared] setVerifyRecepitMode:ECVerifyRecepitModeServer];
+    
     return YES;  
 }  
 
@@ -128,6 +139,81 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
 }
 
+#pragma mark -
+#pragma Purchase Delegate
+-(void)didBeginProductsRequest {
+    _HUD = [[MBProgressHUD alloc] initWithView:self.window];
+	[self.window addSubview:_HUD];
+    _HUD.labelText = @"检查产品状态";
+    
+    _HUD.delegate = self;
+    
+    [_HUD show:YES];
+
+}
+
+-(void)didReceivedProducts:(NSArray *)products {
+    if (_HUD) {
+        _HUD.labelText = @"获取产品信息中...";
+    }
+    
+    NSLog(@"%@",[[products lastObject] productIdentifier]);
+    
+    [[ECPurchase shared] addPayment:[products lastObject]];
+}
+
+-(void)requestDidFail {
+    if (_HUD) {
+        [_HUD hide:YES];
+    }
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"产品提交失败" message:@"稍后再试" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+    [alert show];
+}
+
+-(void)didFailedTransaction:(NSString *)proIdentifier {
+    if (_HUD) {
+        _HUD.labelText = @"交易失败";
+        [_HUD hide:YES afterDelay:1.0f];
+    }
+    NSLog(@"Fail");
+}
+
+-(void)didRestoreTransaction:(NSString *)proIdentifier {
+    
+}
+
+-(void)didCompleteTransaction:(NSString *)proIdentifier {
+    if (_HUD) {
+        _HUD.labelText = @"交易完成";
+        [_HUD hide:YES afterDelay:1.0f];
+    }
+}
+
+-(void)didCompleteTransactionAndVerifySucceed:(NSString *)proIdentifier {
+    if (_HUD) {
+        _HUD.labelText = @"交易完成";
+        [_HUD hide:YES afterDelay:1.0f];
+    }
+    NSLog(@"Success");
+}
+
+-(void)didCompleteTransactionAndVerifyFailed:(NSString *)proIdentifier withError:(NSString *)error {
+    if (_HUD) {
+        _HUD.labelText = @"交易失败";
+        [_HUD hide:YES afterDelay:1.0f];
+    }
+    NSLog(@"Fail");
+}
+
+#pragma mark -
+#pragma HUD delegate
+- (void)HUDWasHidden:(MBProgressHUD *)hUD {
+    // Remove _HUD from screen when the _HUD was hidded
+    [_HUD removeFromSuperview];
+    [_HUD release];
+    _HUD = nil;
+}
+
 - (void)getBadgeNumber:(id)uid
 {
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?id=%@",GET_USER_BADGE_NUM,uid]];
@@ -157,5 +243,6 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+
 }
 @end

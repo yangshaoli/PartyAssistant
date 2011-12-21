@@ -80,11 +80,16 @@ class ProductionInfo(models.Model):
     def __unicode__(self):
         return self.production_apple_id
 
+class Premium(models.Model):
+    description = models.TextField()
+    
+    def __unicode__(self):
+        return self.description
 
 class UserReceiptBase(models.Model):
     user = models.ForeignKey(User)
-    buy_time = models.DatetimeField()
-    create_time = models.DatetimeField(auto_add = True)
+    buy_time = models.DateTimeField()
+    create_time = models.DateTimeField(auto_now_add = True)
 
     pre_sms_count = models.IntegerField()
     final_sms_count = models.IntegerField()
@@ -99,7 +104,7 @@ class UserAppleReceipt(UserReceiptBase):
     premium = models.ForeignKey(Premium)
     
     def __unicode__(self):
-        return self.user
+        return self.user.username
 
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
@@ -108,13 +113,9 @@ class UserAliReceipt(UserReceiptBase):
     premium = models.ForeignKey(Premium)
     
     def __unicode__(self):
-        return self.user
+        return self.user.username
 
-class Premium(models.Model):
-    description = models.TextField()
-    
-    def __unicode__(self):
-        return self.description
+
 
 
     

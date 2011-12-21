@@ -37,8 +37,32 @@
                 count = count + 1;
             }
         }
-        $('#id_send_email_count').html("收件人人数统计： " + count);
+        $('#id_send_email_count').html("共 " + count + " 人");
     }
+    
+/**
+ * 获得最近活动邀请的人
+ * @param int party.id
+ */
+function getRecentPartiesAddressee(v){
+    if (v != 0) {
+           $.ajax({
+            type : 'GET',
+            url: '/parties/invite_list_ajax/'+v+'/',
+            statusCode : {
+            200: function(response){
+                clients = JSON.parse(response);
+                client_list = [];
+                for (i in clients){
+                    client_list[i] = clients[i].address;
+                }
+                $("#id_client_email_list").val(client_list.join(','))
+            },
+            500: function(){ alert('没有获取到用户列表')}
+            }
+        });
+    }
+}
     
     var availableTags = eval({{client_data|safe}});
     $(function(){
@@ -112,6 +136,7 @@
             <div class="field">
                 <label for="client_email_list">
                     收件人<font color='red'>*</font>
+                <p id="id_send_email_count">共 0 人</p>
                 </label>
                 <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
                 &nbsp;<font color='red'>{{ form.client_email_list.errors.0 }}</font>
@@ -167,12 +192,13 @@
                 {% endif %}
             </div>
             <div class="field">
-                <label for="id_send_email_count">
-                    &nbsp;
-                </label>
-                <p id="id_send_email_count">
-                    收件人人数统计： 0
-                </p>
+                <label for="id_recent_parties">快速添加</label>
+                <select id="id_recent_parties" onchange="getRecentPartiesAddressee(this.value)">
+                    <option value="0">未选择</option>
+                    {% for party in recent_parties %}
+                    <option value="{{party.id}}">{{party.description}}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="field">
                 <label for="id_content">

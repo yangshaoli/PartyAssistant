@@ -19,11 +19,15 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import <AddressBook/AddressBook.h>
+#import "MBProgressHUD.h"
 
 ABAddressBookRef addressBook;
-@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate>
+@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate> {
+    MBProgressHUD *_HUD;
+}
 
 @property (strong, nonatomic) UIWindow *window;
+
 
 void addressBookChanged (ABAddressBookRef addressBook,
                          CFDictionaryRef info,
