@@ -258,6 +258,9 @@
 }
 
 - (void)pushToContentVC {
+    self.userNameTextField.text = @"";
+    self.pwdTextField.text = @"";
+    
     self.navigationController.navigationBarHidden = YES;
     
     PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];

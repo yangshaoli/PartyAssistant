@@ -23,9 +23,11 @@
 @interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{
     BaseInfoObject *baseinfo;
     NSArray *peopleCountArray;
+    NSArray* myToolbarItems;
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseinfo;
 @property(nonatomic, retain)NSArray *peopleCountArray;
+@property(nonatomic, retain)NSArray* myToolbarItems;
 
 @end

@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039151495E4260025B10A /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3039181495E4260025B10A /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
@@ -17,6 +15,14 @@
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
 		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
 		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
+		7A2CDD8B14A207C20054B723 /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8714A207C20054B723 /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7A2CDD8C14A207C20054B723 /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8A14A207C20054B723 /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7A2CDD9214A2080A0054B723 /* del_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8E14A2080A0054B723 /* del_word.png */; };
+		7A2CDD9314A2080A0054B723 /* edit_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8F14A2080A0054B723 /* edit_word.png */; };
+		7A2CDD9414A2080A0054B723 /* refresh_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9014A2080A0054B723 /* refresh_word.png */; };
+		7A2CDD9514A2080A0054B723 /* share_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9114A2080A0054B723 /* share_word.png */; };
+		7A2CDD9814A2082F0054B723 /* AddressBookDBService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */; };
+		7A2CDD9A14A208C60054B723 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A2CDD9914A208C60054B723 /* libsqlite3.dylib */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -203,11 +209,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		7A3039141495E4260025B10A /* BottomRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BottomRefreshTableView.h; path = RefreshTableView/BottomRefreshTableView.h; sourceTree = "<group>"; };
-		7A3039151495E4260025B10A /* BottomRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BottomRefreshTableView.m; path = RefreshTableView/BottomRefreshTableView.m; sourceTree = "<group>"; };
-		7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RefreshTableViewProtocol.h; path = RefreshTableView/RefreshTableViewProtocol.h; sourceTree = "<group>"; };
-		7A3039171495E4260025B10A /* TopRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopRefreshTableView.h; path = RefreshTableView/TopRefreshTableView.h; sourceTree = "<group>"; };
-		7A3039181495E4260025B10A /* TopRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopRefreshTableView.m; path = RefreshTableView/TopRefreshTableView.m; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
@@ -221,6 +222,19 @@
 		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
 		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
 		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
+		7A2CDD8314A207960054B723 /* DBSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBSettings.h; sourceTree = "<group>"; };
+		7A2CDD8614A207C20054B723 /* BottomRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BottomRefreshTableView.h; sourceTree = "<group>"; };
+		7A2CDD8714A207C20054B723 /* BottomRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomRefreshTableView.m; sourceTree = "<group>"; };
+		7A2CDD8814A207C20054B723 /* RefreshTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RefreshTableViewProtocol.h; sourceTree = "<group>"; };
+		7A2CDD8914A207C20054B723 /* TopRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TopRefreshTableView.h; sourceTree = "<group>"; };
+		7A2CDD8A14A207C20054B723 /* TopRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TopRefreshTableView.m; sourceTree = "<group>"; };
+		7A2CDD8E14A2080A0054B723 /* del_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = del_word.png; sourceTree = "<group>"; };
+		7A2CDD8F14A2080A0054B723 /* edit_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = edit_word.png; sourceTree = "<group>"; };
+		7A2CDD9014A2080A0054B723 /* refresh_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh_word.png; sourceTree = "<group>"; };
+		7A2CDD9114A2080A0054B723 /* share_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = share_word.png; sourceTree = "<group>"; };
+		7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDBService.h; sourceTree = "<group>"; };
+		7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDBService.m; sourceTree = "<group>"; };
+		7A2CDD9914A208C60054B723 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -512,6 +526,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */,
+				7A2CDD9A14A208C60054B723 /* libsqlite3.dylib in Frameworks */,
 				75C0294014948F2000067730 /* StoreKit.framework in Frameworks */,
 				893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */,
 				8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */,
@@ -543,16 +558,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7A3039121495E3F10025B10A /* RefreshTableView */ = {
-			isa = PBXGroup;
-			children = (
-				7A3039141495E4260025B10A /* BottomRefreshTableView.h */,
-				7A3039151495E4260025B10A /* BottomRefreshTableView.m */,
-				7A3039161495E4260025B10A /* RefreshTableViewProtocol.h */,
-				7A3039171495E4260025B10A /* TopRefreshTableView.h */,
-				7A3039181495E4260025B10A /* TopRefreshTableView.m */,
-			);
-			name = RefreshTableView;
 		75BC083514987DE3007B39CB /* DeviceDetection */ = {
 			isa = PBXGroup;
 			children = (
@@ -584,6 +589,29 @@
 			name = Purchase;
 			sourceTree = "<group>";
 		};
+		7A2CDD8514A207C20054B723 /* RefreshTableView */ = {
+			isa = PBXGroup;
+			children = (
+				7A2CDD8614A207C20054B723 /* BottomRefreshTableView.h */,
+				7A2CDD8714A207C20054B723 /* BottomRefreshTableView.m */,
+				7A2CDD8814A207C20054B723 /* RefreshTableViewProtocol.h */,
+				7A2CDD8914A207C20054B723 /* TopRefreshTableView.h */,
+				7A2CDD8A14A207C20054B723 /* TopRefreshTableView.m */,
+			);
+			path = RefreshTableView;
+			sourceTree = "<group>";
+		};
+		7A2CDD8D14A207D00054B723 /* toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				7A2CDD8E14A2080A0054B723 /* del_word.png */,
+				7A2CDD8F14A2080A0054B723 /* edit_word.png */,
+				7A2CDD9014A2080A0054B723 /* refresh_word.png */,
+				7A2CDD9114A2080A0054B723 /* share_word.png */,
+			);
+			name = toolbar;
+			sourceTree = "<group>";
+		};
 		891A4D7114579B3B00A2CF47 = {
 			isa = PBXGroup;
 			children = (
@@ -611,6 +639,7 @@
 				75BC083E1498916E007B39CB /* libicucore.dylib */,
 				75C0293F14948F2000067730 /* StoreKit.framework */,
 				893C2220146162AE00966B11 /* QuartzCore.framework */,
+				7A2CDD9914A208C60054B723 /* libsqlite3.dylib */,
 				8932653C145E88F6006E827D /* AddressBook.framework */,
 				8932652A145E6C37006E827D /* AddressBookUI.framework */,
 				899BE859145A9431000BAFEC /* MessageUI.framework */,
@@ -646,6 +675,7 @@
 				891A4D8714579B3C00A2CF47 /* Supporting Files */,
 				893C221A14611A6200966B11 /* NotificationSettings.h */,
 				89BEFA5A147F7D7E00B3408F /* WeiboSettings.h */,
+				7A2CDD8314A207960054B723 /* DBSettings.h */,
 				89E7D935146373480059ADF4 /* URLSettings.h */,
 				898A29F8146A6ED7009A526B /* HTTPRequestErrorMSG.h */,
 			);
@@ -693,6 +723,7 @@
 		891A4DC21457A83100A2CF47 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				7A2CDD8D14A207D00054B723 /* toolbar */,
 				89C10A7E1491E23200BCE0CD /* new_tips.png */,
 				89C10A7F1491E23200BCE0CD /* new_tips@2x.png */,
 				89C709EE1490A5BC00699AE0 /* list_icon.png */,
@@ -729,7 +760,6 @@
 		891A4DC41457B17500A2CF47 /* PartyList */ = {
 			isa = PBXGroup;
 			children = (
-				7A3039121495E3F10025B10A /* RefreshTableView */,
 				89277DF614662E1600B05020 /* PartyListTableViewController.h */,
 				89277DF714662E1600B05020 /* PartyListTableViewController.m */,
 				89277DF814662E1600B05020 /* PartyListTableViewController.xib */,
@@ -805,6 +835,7 @@
 		89326531145E7440006E827D /* CustomClass */ = {
 			isa = PBXGroup;
 			children = (
+				7A2CDD8514A207C20054B723 /* RefreshTableView */,
 				CE81DA4514847B5800E5BFA7 /* SearchIndex */,
 				899D8C6E146B6DD300B48698 /* MBProgressHUD.h */,
 				899D8C6F146B6DD300B48698 /* MBProgressHUD.m */,
@@ -1063,6 +1094,8 @@
 				89395916147DEC7D003A883C /* WeiboService.m */,
 				89C709BF14908E0D00699AE0 /* DeviceTokenService.h */,
 				89C709C014908E0D00699AE0 /* DeviceTokenService.m */,
+				7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */,
+				7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -1156,7 +1189,7 @@
 		891A4D7314579B3B00A2CF47 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0420;
 			};
 			buildConfigurationList = 891A4D7614579B3B00A2CF47 /* Build configuration list for PBXProject "PartyAssistant" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -1237,6 +1270,10 @@
 				89C10A801491E23200BCE0CD /* new_tips.png in Resources */,
 				89C10A811491E23200BCE0CD /* new_tips@2x.png in Resources */,
 				75C029461494913600067730 /* PurchaseListViewController.xib in Resources */,
+				7A2CDD9214A2080A0054B723 /* del_word.png in Resources */,
+				7A2CDD9314A2080A0054B723 /* edit_word.png in Resources */,
+				7A2CDD9414A2080A0054B723 /* refresh_word.png in Resources */,
+				7A2CDD9514A2080A0054B723 /* share_word.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1373,10 +1410,11 @@
 				75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */,
 				75C029451494913600067730 /* PurchaseListViewController.m in Sources */,
 				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
-				7A3039191495E4260025B10A /* BottomRefreshTableView.m in Sources */,
-				7A30391A1495E4260025B10A /* TopRefreshTableView.m in Sources */,
 				75BC083914987E20007B39CB /* DeviceDetection.m in Sources */,
 				75BC083D14989113007B39CB /* RegexKitLite.m in Sources */,
+				7A2CDD8B14A207C20054B723 /* BottomRefreshTableView.m in Sources */,
+				7A2CDD8C14A207C20054B723 /* TopRefreshTableView.m in Sources */,
+				7A2CDD9814A2082F0054B723 /* AddressBookDBService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1508,7 +1546,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;
@@ -1525,7 +1563,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;

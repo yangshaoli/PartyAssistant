@@ -11,7 +11,7 @@
 #define NAVIGATION_TITILE @"活动详情"
 
 @implementation PartyDetailTableViewController
-@synthesize baseinfo, peopleCountArray;
+@synthesize baseinfo, peopleCountArray, myToolbarItems;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -36,6 +36,10 @@
 {
     [super viewDidLoad];
 
+    self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
+    [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];
+    [self.navigationController.toolbar sizeToFit];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -51,6 +55,36 @@
     if (!peopleCountArray) {
         self.peopleCountArray = [[NSArray alloc] initWithObjects:@"...",@"...",@"...",@"...", nil];
     }
+    
+    if (!self.myToolbarItems) {
+        UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        self.myToolbarItems = [NSArray arrayWithObjects:
+                               flexButton,  
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(shareAction)], 
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"refresh_word"]
+                                                                style:UIBarButtonItemStylePlain 
+                                                               target:self
+                                                               action:@selector(refreshItem:)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"del_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(deleteParty)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(editBtnAction)],
+                               flexButton, 
+                               nil];
+        
+        [self setToolbarItems:myToolbarItems animated:YES];
+    }
+    
 }
 
 - (void)viewDidUnload
@@ -63,6 +97,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    self.navigationController.toolbarHidden = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -73,6 +109,8 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -319,6 +357,14 @@
 //	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)shareAction
+{
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    rootVC.baseinfo = baseinfo;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
 }
 
 - (void)editBtnAction{
