@@ -6,7 +6,10 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script>
 $(document).ready(function(){
-    $("#tips").delay(3000).fadeOut();    
+    $("#tips").delay(3000).fadeOut();
+    $('.icon_new').each(function(){
+     // alert($(this).parent().css('left'));
+    });    
 })
 
 	function deleteConfirm(url){
@@ -14,12 +17,20 @@ $(document).ready(function(){
 	     window.location=url;
 	  }
 	}
+ 
 </script>
 {% endblock %}
 {% block style %}
 <style>
 iframe{
  width:18px;
+}
+.icon_new {
+    height: 13px;
+    left: auto;
+    top: 48%;
+    width: 30px;
+    margin-left:-40px;
 }
 </style>
 {% endblock %}
