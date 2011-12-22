@@ -6,7 +6,7 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 #import "ContactData.h"
 #import "PartyListTableVC.h"
-#import "PatryDetailTableVC.h"
+#import "PartyDetailTableVC.h"
 #import "PartyListService.h"
 
 @implementation PartyListTableVC
@@ -226,7 +226,7 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     
-    PatryDetailTableVC *partyDetailTableVC = [[PatryDetailTableVC alloc] initWithNibName:@"PatryDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+    PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PatryDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
     partyDetailTableVC.title=[[self.partyList  objectAtIndex:[indexPath row]] contentString];    //partyDetailTableVC.title=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "UITableViewControllerExtra.h"
 
-@interface PatryDetailTableVC : UIViewController<UITableViewDelegate>{
+@interface PartyDetailTableVC : UIViewController<UITableViewDelegate>{
    NSArray* myToolbarItems;
 }
 

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PatryDetailTableVC.h"
+#import "PartyDetailTableVC.h"
 @interface StatusTableVC : UITableViewController{
     NSMutableArray  *participantsArray;
 }

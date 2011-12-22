@@ -6,7 +6,7 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 #import "StatusTableVC.h"
-#import "PatryDetailTableVC.h"
+#import "PartyDetailTableVC.h"
 #import "NotificationSettings.h"
 #import "URLSettings.h"
 #import "JSON.h"
@@ -18,7 +18,7 @@
 
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
-@implementation PatryDetailTableVC
+@implementation PartyDetailTableVC
 @synthesize myToolbarItems;
 
 - (void)didReceiveMemoryWarning

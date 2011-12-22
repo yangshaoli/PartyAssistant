@@ -193,8 +193,8 @@
 		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
 		CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */; };
 		CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */; };
-		CEB072C8149EDE9A0056F7B5 /* PatryDetailTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072C6149EDE9A0056F7B5 /* PatryDetailTableVC.m */; };
-		CEB072C9149EDE9A0056F7B5 /* PatryDetailTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072C7149EDE9A0056F7B5 /* PatryDetailTableVC.xib */; };
+		CEB072C8149EDE9A0056F7B5 /* PartyDetailTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */; };
+		CEB072C9149EDE9A0056F7B5 /* PartyDetailTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */; };
 		CEB072CE149F140F0056F7B5 /* StatusTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072CC149F140F0056F7B5 /* StatusTableVC.m */; };
 		CEB072CF149F140F0056F7B5 /* StatusTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */; };
 		CEB072D4149F2E150056F7B5 /* PartyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072D3149F2E150056F7B5 /* PartyModel.m */; };
@@ -518,9 +518,9 @@
 		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
 		CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListTableVC.m; path = ../PartyListTableVC.m; sourceTree = "<group>"; };
 		CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyListTableVC.xib; path = ../PartyListTableVC.xib; sourceTree = "<group>"; };
-		CEB072C5149EDE9A0056F7B5 /* PatryDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PatryDetailTableVC.h; path = ../PatryDetailTableVC.h; sourceTree = "<group>"; };
-		CEB072C6149EDE9A0056F7B5 /* PatryDetailTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PatryDetailTableVC.m; path = ../PatryDetailTableVC.m; sourceTree = "<group>"; };
-		CEB072C7149EDE9A0056F7B5 /* PatryDetailTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PatryDetailTableVC.xib; path = ../PatryDetailTableVC.xib; sourceTree = "<group>"; };
+		CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; name = PartyDetailTableVC.h; path = ../PartyDetailTableVC.h; sourceTree = "<group>"; };
+		CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyDetailTableVC.m; path = ../PartyDetailTableVC.m; sourceTree = "<group>"; };
+		CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyDetailTableVC.xib; path = ../PartyDetailTableVC.xib; sourceTree = "<group>"; };
 		CEB072CB149F140F0056F7B5 /* StatusTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StatusTableVC.h; path = ../StatusTableVC.h; sourceTree = "<group>"; };
 		CEB072CC149F140F0056F7B5 /* StatusTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StatusTableVC.m; path = ../StatusTableVC.m; sourceTree = "<group>"; };
 		CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StatusTableVC.xib; path = ../StatusTableVC.xib; sourceTree = "<group>"; };
@@ -1142,9 +1142,9 @@
 				CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */,
 				CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */,
 				CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */,
-				CEB072C5149EDE9A0056F7B5 /* PatryDetailTableVC.h */,
-				CEB072C6149EDE9A0056F7B5 /* PatryDetailTableVC.m */,
-				CEB072C7149EDE9A0056F7B5 /* PatryDetailTableVC.xib */,
+				CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */,
+				CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */,
+				CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */,
 				CEB072CB149F140F0056F7B5 /* StatusTableVC.h */,
 				CEB072CC149F140F0056F7B5 /* StatusTableVC.m */,
 				CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */,
@@ -1330,7 +1330,7 @@
 				7A2CDD9414A2080A0054B723 /* refresh_word.png in Resources */,
 				7A2CDD9514A2080A0054B723 /* share_word.png in Resources */,
 				CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */,
-				CEB072C9149EDE9A0056F7B5 /* PatryDetailTableVC.xib in Resources */,
+				CEB072C9149EDE9A0056F7B5 /* PartyDetailTableVC.xib in Resources */,
 				CEB072CF149F140F0056F7B5 /* StatusTableVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1473,7 +1473,7 @@
 				7A2CDD8C14A207C20054B723 /* TopRefreshTableView.m in Sources */,
 				7A2CDD9814A2082F0054B723 /* AddressBookDBService.m in Sources */,
 				CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */,
-				CEB072C8149EDE9A0056F7B5 /* PatryDetailTableVC.m in Sources */,
+				CEB072C8149EDE9A0056F7B5 /* PartyDetailTableVC.m in Sources */,
 				CEB072CE149F140F0056F7B5 /* StatusTableVC.m in Sources */,
 				CEB072D4149F2E150056F7B5 /* PartyModel.m in Sources */,
 				8980AB6014A33C1600C3C63B /* PartyListService.m in Sources */,
