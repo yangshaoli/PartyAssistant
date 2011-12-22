@@ -31,28 +31,37 @@ def createParty(request):
     if request.method == 'POST' :
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
-        subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips'] == '1'
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
         _issendbyself = request.POST['_issendbyself'] == '1'
-        msgType = request.POST['msgType']
-        starttime = request.POST['starttime']
-        location = request.POST['location']
-        description = request.POST['description']
-        peopleMaximum = request.POST['peopleMaximum']
+#        msgType = request.POST['msgType']
+#        starttime = request.POST['starttime']
+#        location = request.POST['location']
+#        description = request.POST['description']
+#        peopleMaximum = request.POST['peopleMaximum']
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
         startdate = None
-        try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
-        except Exception:
-            startdate = None
-        try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
-        except Exception:
-            starttime = None
-        if len(location) > 256:
-            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
+        starttime = ''
+        location = ""
+        description = content
+        peopleMaximum = 0
+        
+#        try:
+#            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
+#        except Exception:
+#            startdate = None
+#        try:
+#            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
+#        except Exception:
+#            starttime = None
+#        if len(location) > 256:
+#            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         
         with transaction.commit_on_success():
             #创建活动
@@ -113,12 +122,16 @@ def createParty(request):
 def editParty(request):
     if request.method == 'POST':
         partyID = request.POST['partyID']
-        location = request.POST['location']
-        starttime = request.POST['starttime']
-        peopleMaximum = request.POST['peopleMaximum']
+#        location = request.POST['location']
+#        starttime = request.POST['starttime']
+#        peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
         startdate = None
+        
+        location = ''
+        starttime = ''
+        peopleMaximum = 0
         try:
             startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except:
@@ -135,11 +148,11 @@ def editParty(request):
             party = Party.objects.get(pk = partyID, creator = user)
         except Exception:
             raise myException(u'您要编辑的会议已被删除')
-        party.start_date = startdate
-        party.start_time = starttime
+#        party.start_date = startdate
+#        party.start_time = starttime
         party.description = description
-        party.address = location
-        party.limit_count = peopleMaximum
+#        party.address = location
+#        party.limit_count = peopleMaximum
         party.save()
         
 @csrf_exempt
@@ -351,14 +364,18 @@ def resendMsg(request):
     if request.method == "POST":
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
-        subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips'] == '1'
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
         _issendbyself = request.POST['_issendbyself'] == '1'
-        msgType = request.POST['msgType']
+#        msgType = request.POST['msgType']
         partyID = request.POST['partyID']
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
         
         try:
             party = Party.objects.get(pk = partyID, creator = user)

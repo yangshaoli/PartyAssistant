@@ -19,7 +19,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
-from forms import CreatePartyForm
+from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
@@ -35,7 +35,7 @@ logger = logging.getLogger('airenao')
 @login_required
 def create_party(request):
     if request.method == 'POST':
-        form = CreatePartyForm(request.POST)
+        form = PartyForm(request.POST)
         if form.is_valid():
             party = form.save(commit = False)
             party.creator = request.user
@@ -47,8 +47,12 @@ def create_party(request):
                 return redirect('email_invite', party_id = party.id)
             else:
                 return redirect('list_party')
+        else:
+            
+            return TemplateResponse(request, 'parties/create_party.html', {'form': form})   
+                
     else:
-        form = CreatePartyForm()
+        form = PartyForm()
     
     return TemplateResponse(request, 'parties/create_party.html', {'form': form})
 
@@ -64,7 +68,7 @@ def edit_party(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     
     if request.method == 'POST':
-        form = CreatePartyForm(request.POST, instance = party)
+        form = PartyForm(request.POST, instance = party)
         if form.is_valid():
             party = form.save()
             if 'save_send' in request.POST:
@@ -79,9 +83,16 @@ def edit_party(request, party_id):
                     return redirect('email_invite', party_id = party.id)
                 else:
                     return redirect('list_party')
+        else:
+            
+            return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})       
     else:
-        form = CreatePartyForm(instance = party)
-    
+        if party.start_date:
+            party.start_date = datetime.date.strftime(party.start_date, '%Y-%m-%d')
+        if party.start_time:
+            party.start_time = datetime.time.strftime(party.start_time, '%H:%M')
+        form = PartyForm(instance = party)
+        
     return TemplateResponse(request, 'parties/edit_party.html', {'form': form, 'party': party})
 
 @login_required
@@ -89,7 +100,7 @@ def edit_party(request, party_id):
 def email_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type = 'email').exclude(id = party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type='email').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
@@ -137,11 +148,11 @@ def email_invite(request, party_id):
                             client = client_temp
                         )
             
-            send_status = u'邮件发送失败'
+            send_status = 'email_fail'
             with transaction.commit_on_success():
                 send_message = Outbox(address = form.cleaned_data['client_email_list'], base_message = email_message)
                 send_message.save()
-                send_status = u'邮件发送成功'
+                send_status = 'email_success'
              
             request.session['send_status'] = send_status    
             return redirect('list_party')
@@ -233,7 +244,7 @@ def email_invite(request, party_id):
 def sms_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type = 'phone').exclude(id = party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type='phone').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
@@ -282,8 +293,8 @@ def sms_invite(request, party_id):
                             client = client_temp
                         )
 
-            send_status = u'短信发送失败'
-            sms_tip = ''
+            send_status = 'sms_fail'
+            sms_count = ''
             with transaction.commit_on_success():
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 client_phone_list_len = len(client_phone_list)
@@ -302,9 +313,10 @@ def sms_invite(request, party_id):
                 client_phone_list = ','.join(client_phone_list)  
                 send_message = Outbox(address = client_phone_list, base_message = sms_message)
                 send_message.save()
-                send_status = u'短信发送成功'
-                sms_tip = u'你的当前可用短信数量为：' + str(userprofile.available_sms_count) + ' ' + u'是否需要充值?'
-            request.session['send_status'] = send_status + ' ' + sms_tip
+                send_status = 'sms_success'
+                sms_count = str(userprofile.available_sms_count)
+            request.session['sms_count'] = sms_count    
+            request.session['send_status'] = send_status 
             return redirect('list_party')
         else:
             client_data = []
@@ -421,14 +433,18 @@ def list_party(request):
     send_status = ''    
     if 'send_status' in request.session:
         send_status = request.session['send_status']
-        del request.session['send_status']        
+        del request.session['send_status']  
+    sms_count =''    
+    if 'sms_count' in request.session:
+        sms_count = request.session['sms_count']
+        del request.session['sms_count']          
     #分页
     paginator = Paginator(party_list, 10)
     page = request.GET.get('page', 1)
 
     party_list = paginator.page(page)
     
-    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status})
+    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
 
 def _public_enroll(request, party_id):
     party = get_object_or_404(Party, id = party_id)
@@ -461,7 +477,7 @@ def _public_enroll(request, party_id):
             #有人数限制
             if party.limit_count != 0 :
                 if PartiesClients.objects.filter(party = party, apply_status = 'apply').count() >= party.limit_count:
-                    return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
+                    return TemplateResponse(request, 'message.html', {'message': 'late'})
                     
 #            if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).exclude(email = '').count() == 0 \
 #                and Client.objects.filter(creator = creator).filter(party = party).filter(phone = phone).exclude(phone = '').count() == 0:
@@ -480,19 +496,19 @@ def _public_enroll(request, party_id):
             client.name = name 
             client.save()    
             
-            partyclient, create = PartiesClients.objects.get_or_create(client = client, party = party)            
+            party_client, create = PartiesClients.objects.get_or_create(client = client, party = party)            
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
-                partyclient.leave_message = partyclient.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                  
-            partyclient.apply_status = 'apply'
-            partyclient.is_check = False    
-            partyclient.save()
+            party_client.apply_status = 'apply'
+            party_client.is_check = False    
+            party_client.save()
             push_notification_when_enroll(party_client, 'apply') 
             if request.META['PATH_INFO'][0:3] == '/m/':
-                return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': u'报名成功'})
+                return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': 'publicenrollsucess'})
             else:    
-                return TemplateResponse(request, 'message.html', {'message': u'报名成功'})
+                return TemplateResponse(request, 'message.html', {'message': 'publicenroll'})
         else:
             data = {
             'party': party,
@@ -504,9 +520,9 @@ def _public_enroll(request, party_id):
         form = PublicEnrollForm()
         invite_message = ''
         if party.invite_type == 'email':
-            invite_message = u'请填写邮件，以免收不到活动的具体通知'
+            invite_message = 'email'
         else:
-            invite_message = u'请填写手机号码，以免收不到活动的具体通知'
+            invite_message = 'phone'
         userprofile = UserProfile.objects.get(user = party.creator)
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username    
         data = {
@@ -544,25 +560,31 @@ def _invite_enroll(request, party_id, invite_key):
             if request.POST['action'] == 'yes': #如果点击参加
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party = party, apply_status = 'apply')) >= party.limit_count:
-                        return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点来吧。'})
+                        return TemplateResponse(request, 'message.html', {'message': 'late'})
 
                 party_client.apply_status = u'apply'
-                party_client.leave_message = form.cleaned_data['leave_message']
+                leave_message = form.cleaned_data['leave_message']
+                if leave_message:
+                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                              
                 party_client.save()
                 
                 #向组织者的所有MoblieDevice发送推送
                 push_notification_when_enroll(party_client, 'apply')
                 
-                return TemplateResponse(request, 'message.html', {'message': u'报名成功，请记得按时参加活动。'})
+                return TemplateResponse(request, 'message.html', {'message': u'apply'})
             else:
                 party_client.apply_status = u'reject'
-                party_client.leave_message = form.cleaned_data['leave_message']
+                leave_message = form.cleaned_data['leave_message']
+                if leave_message:
+                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+              
                 party_client.save()
                 
                 #向组织者的所有MoblieDevice发送推送
                 push_notification_when_enroll(party_client, 'reject')
                 
-                return TemplateResponse(request, 'message.html', {'message': u'您已经选择不参加这个活动'})
+                return TemplateResponse(request, 'message.html', {'message': 'reject'})
         else:
             data = {
                 'client': client,
@@ -590,7 +612,7 @@ def enroll(request, party_id):
     try:
         get_object_or_404(Party, id = party_id)
     except :
-        return TemplateResponse(request, 'message.html', {'message':u'该会议已经删除'}) 
+        return TemplateResponse(request, 'message.html', {'message':u'partynotexist'}) 
     invite_key = request.GET.get('key', '')
     if invite_key:
         return _invite_enroll(request, party_id, invite_key)
@@ -667,11 +689,11 @@ def _create_default_content(creator, start_date, start_time , address, descripti
         if address == "":
             content += u'，' + u'具体安排待定'
         else:
-            content += u'，' + address_content
+            content += address_content
     if start_date != None and start_time == None:
         content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间暂定'
     if start_date == None and start_time != None:
-        content += address_content + u'，' + u'日期暂定' + '，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
+        content += address_content + u'，' + u'日期暂定' + u'，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
     if start_date != None and start_time != None:
         content += address_content + u'，' + u'具体时间：' + datetime.date.strftime(start_date, '%Y-%m-%d') + ' ' + datetime.time.strftime(start_time, '%H:%M')        
     content += u'。'
@@ -688,9 +710,14 @@ def invite_list_ajax(request, party_id):
     return HttpResponse(simplejson.dumps(party_clients_datas))
 
 def ajax_get_client_list(request, party_id):
-    party_clients_datas , party_clients_list = _invite_list(request, party_id)  
-
-    return HttpResponse(simplejson.dumps(party_clients_datas))
+    party_clients_datas , party_clients_list = _invite_list(request, party_id) 
+    party = get_object_or_404(Party, id = party_id)
+    client_count = _get_client_count(party)
+    data = {
+            'party_clients_datas' : party_clients_datas,
+            'client_count' : client_count
+            }
+    return HttpResponse(simplejson.dumps(data))
 
 def _invite_list(request, party_id):
     apply_status = request.GET.get('apply', 'all')

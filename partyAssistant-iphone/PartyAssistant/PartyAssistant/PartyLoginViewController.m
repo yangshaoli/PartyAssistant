@@ -5,6 +5,8 @@
 //  Created by Wang Jun on 11/4/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
+#import "PartyListTableVC.h"
+
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "DataManager.h"
@@ -262,12 +264,14 @@
     self.pwdTextField.text = @"";
     
     self.navigationController.navigationBarHidden = YES;
+    PartyListTableVC  *pattyListTableVC=[[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
     
-    PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+    
+    //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
     AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
-    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
+    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
     UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
     
@@ -275,9 +279,9 @@
     UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
     UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:listBarImage tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:addPageBarImage tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:settingBarImage tag:3];
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:listBarImage tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:addPageBarImage tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
     addPageNav.tabBarItem = addPageBarItem;
@@ -296,21 +300,25 @@
     [addPageNav release];
     [settingNav release];
     
-    [list release];
+    //[list release];
+    [pattyListTableVC release];
     [addPage release];
     [settings release];
     
      //add suggest user input name page here?
     [self checkIfUserNameSaved];
         
+//    [self checkIfUserNameSaved];
+    
+    
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-    NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
-    NSLog(@"uid:%d",user.uID);
+   //NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
+    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
     if(getDefaultCountNumber!=0){  
         NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
         tab.selectedIndex=1;

@@ -11,7 +11,6 @@
 @implementation ClientObject
 
 @synthesize cID,cName,cVal,backendID;
-
 - (id)init
 {
     self = [super init];
@@ -98,5 +97,5 @@
         }
     }
 }
-
+//
 @end

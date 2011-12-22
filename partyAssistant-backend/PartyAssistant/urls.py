@@ -24,5 +24,4 @@ urlpatterns = patterns('',
     url(r'^a/',include('apis.urls')),
     url(r'^m/', include('apps.m.urls')), 
     
-    url(r'^alipay/$', 'utils.tools.alipay.pay', name='alipay'),
 )

@@ -5,13 +5,13 @@ from django import forms
 from django.core.validators import validate_email
 import re
 
-class CreatePartyForm(forms.ModelForm):
+class PartyForm(forms.ModelForm):
     limit_count = forms.IntegerField(required=False)
     address = forms.CharField(error_messages={'max_length':u'地址的最大长度不要超过256个字符'}, required=False, max_length=256)
     description = forms.CharField(error_messages={'required':u'这个字段是必填的'}, required=True)
     class Meta:
         model = Party
-        fields = ('start_date', 'start_time', 'address', 'description')
+        fields = ('start_date', 'start_time', 'address', 'description', 'limit_count')
 
     def clean_limit_count(self):
         if self.cleaned_data['limit_count'] == None :
@@ -27,8 +27,8 @@ class InviteForm(forms.Form):
     content = forms.CharField(widget=forms.TextInput(), required=True)   
             
 class PublicEnrollForm(forms.Form):
-    name = forms.CharField(error_messages={'required':u'姓名必填'}, required=True)  
-    phone_or_email = forms.CharField(error_messages={'required':u'姓名必填'}, required=True)
+    name = forms.CharField(error_messages={'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required=True, max_length='14')  
+    phone_or_email = forms.CharField(error_messages={'required':u'联系方式必填'}, required=True)
     leave_message = forms.CharField(error_messages={'max_length':u'留言长度不能超过100字符'}, max_length=100, required=False)
     
     def clean_leave_message(self):

@@ -189,9 +189,8 @@ LOGGING = {
     }
 }
 
-SYS_EMAIL_ADDRESS = 'airenao@orilong.com'
-DOMAIN_NAME = 'airenao.com'
-SHORT_DOMAIN_NAME = 'arn.bz'
+SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
+DOMAIN_NAME = 'http://airenao.com'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
 EMAIL_HOST = '127.0.0.1'
