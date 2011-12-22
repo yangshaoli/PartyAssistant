@@ -6,9 +6,8 @@ Created on 2011-11-17
 '''
  
 from apps.common.models import ShortLink
-from django.utils import simplejson
-from settings import DOMAIN_NAME
-from utils.tools.str_tool import next_key
+from settings import DOMAIN_NAME, SHORT_DOMAIN_NAME
+from utils.tools.str_tool import generate_key
 import hashlib
 import logging
 import urllib
@@ -71,19 +70,13 @@ def sms_modem_send_sms(outbox_message, message, party):
     try:
         phone_list = outbox_message.address.split(',')
         if message.is_apply_tips:
-            link_count = ShortLink.objects.all().count()
-            if link_count > 0:
-                last_key = ShortLink.objects.all().order_by('-id')[0].short_link
-            else:
-                last_key = 'airenao'
-            
             for phone in phone_list:
                 content = message.content
-                enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
-                last_key = next_key(last_key)
-                short_link = DOMAIN_NAME + '/' + last_key
-                content = content + u' 快来报名：%s' % short_link
-                ShortLink.objects.create(short_link=last_key, long_link=enroll_link)
+                enroll_link = 'http://' + DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
+                new_key = generate_key()
+                short_link = 'http://' + SHORT_DOMAIN_NAME + '/' + new_key
+                content = u'【爱热闹】' + content + u' 快来报名：%s' % short_link
+                ShortLink.objects.create(short_link=new_key, long_link=enroll_link)
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
