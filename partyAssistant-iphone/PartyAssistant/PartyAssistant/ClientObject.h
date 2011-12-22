@@ -23,7 +23,7 @@
 @property(nonatomic, retain)NSString *cVal;
 
 - (void)searchClientIDByPhone;
-- (void)searchClientIDByEmail;
+//- (void)searchClientIDByEmail;
 - (void)clearObject;
 
 @end

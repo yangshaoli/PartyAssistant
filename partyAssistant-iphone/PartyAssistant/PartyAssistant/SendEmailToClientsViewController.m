@@ -156,7 +156,7 @@
             contentTextView.backgroundColor = [UIColor clearColor];
             contentTextView.font = [UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"邮件内容";
+            cell.textLabel.text  = @"邮件内容:";
         }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
@@ -366,7 +366,8 @@
                   }
                   [vc setToRecipients:aArray];
                   vc.mailComposeDelegate = self;
-                  [self presentModalViewController:vc animated:YES];
+    
+                  [self.navigationController presentModalViewController:vc animated:YES];
                   EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
                   [se clearEmailObject];
                   SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
@@ -426,6 +427,12 @@
 //            [sh showInView:self.tabBarController.view];
             break;
         }
+        case MFMailComposeResultSaved:{
+            NSLog(@"保存。。。。。。。");
+            [self.navigationController dismissModalViewControllerAnimated:YES];
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            break;
+        }
 		case MFMailComposeResultSent:
 			[self createPartySuc];
 			break;
@@ -447,6 +454,7 @@
         [self createPartySuc];
     }else{
         [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
+        return;
     }
     
 }

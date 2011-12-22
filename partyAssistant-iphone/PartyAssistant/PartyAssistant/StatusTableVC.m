@@ -1,24 +1,29 @@
 //
-//  NicknameManageTableViewController.m
+//  StatusTableVC.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-12-5.
+//  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "NicknameManageTableViewController.h"
-#import "DataManager.h"
+#import "StatusTableVC.h"
+#import "ContactorPhoneDetailsViewController.h"
+@interface StatusTableVC()
 
-@implementation NicknameManageTableViewController
-@synthesize nicknameTextField,phoneNumberTextField,emailTextField;
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller;
+-(void) showTabBar:(UITabBarController*) tabbarcontroller;
 
+@end
+
+
+@implementation StatusTableVC
+@synthesize participantsArray;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
     }
-    
     return self;
 }
 
@@ -35,10 +40,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
-    self.navigationItem.rightBarButtonItem = doneBtn;
-    self.title=@"更改个人信息";
-
+    self.participantsArray=[[NSMutableArray alloc] initWithObjects:@"张三",@"李四",@"王五", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -56,6 +58,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self hideTabBar:self.tabBarController];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -83,14 +86,16 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 3;
+    return  [self.participantsArray count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -101,43 +106,9 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
+    cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     // Configure the cell...
-    UserObjectService *s = [UserObjectService sharedUserObjectService];
-    UserObject *user = [s getUserObject];
-    
-    if(indexPath.row==0){
-        cell.textLabel.text = @"昵称：";
-        if (!nicknameTextField) {
-            self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        nicknameTextField.text = user.nickName;
-        nicknameTextField.textAlignment = UITextAlignmentLeft;
-        nicknameTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:nicknameTextField];        
-    }
-    if(indexPath.row==1){
-        cell.textLabel.text = @"手机号：";
-        if (!phoneNumberTextField) {
-            self.phoneNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        phoneNumberTextField.text = user.phoneNum;
-        phoneNumberTextField.textAlignment = UITextAlignmentLeft;
-        phoneNumberTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:phoneNumberTextField];        
-    }
-    if(indexPath.row==2){
-        cell.textLabel.text = @"邮箱：";
-        if (!emailTextField) {
-            self.emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        emailTextField.text = user.emailInfo;
-        emailTextField.textAlignment = UITextAlignmentLeft;
-        emailTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:emailTextField];        
-    }
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.textLabel.text=[self.participantsArray  objectAtIndex:[indexPath row]];
     return cell;
 }
 
@@ -191,22 +162,56 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    
+     ContactorPhoneDetailsViewController *contactorPhoneDetailsViewController = [[ContactorPhoneDetailsViewController alloc] initWithNibName:@"ContactorPhoneDetailsViewController" bundle:[NSBundle mainBundle]];
+      contactorPhoneDetailsViewController.contactorID = 5;
+      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
+
+     [self.navigationController pushViewController:contactorPhoneDetailsViewController animated:YES];
 }
 
-- (void)doneBtnAction
-{
-    [self showWaiting];
+
+
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller {
     
-    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-//    NSNumber *userId = [NSNumber numberWithInt:user.uID];
-    DataManager *dataManager = [DataManager sharedDataManager];
-    NSString *nickName = self.nicknameTextField.text;
-    NetworkConnectionStatus status = [dataManager setNickNameForUserWithUID:user.uID withNewNickName:nickName];
-    NSString *phoneNum = self.phoneNumberTextField.text;
-    NetworkConnectionStatus  phoneStatus = [dataManager  setPhoneNumForUserWithUID:user.uID withNewPhoneNum:phoneNum];
-    NSString *emailInfo = self.emailTextField.text;
-    NetworkConnectionStatus  emailStatus = [dataManager setEmailInfoForUserWithUID:user.uID withNewEmailInfo:emailInfo];
     
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
+        }
+        else
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+        }
+        
+    }
+    
+    [UIView commitAnimations];
 }
+
+//-(void) showTabBar:(UITabBarController*) tabbarcontroller {
+//    
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5];
+//    [UIView commitAnimations];
+//    
+//    for(UIView*view in tabbarcontroller.view.subviews)
+//    {
+//        if([view isKindOfClass:[UITabBar class]])
+//        {
+//            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
+//        }
+//        else
+//        {
+//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+//        }
+//    }
+//    
+//}
+
 
 @end

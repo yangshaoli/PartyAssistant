@@ -1,24 +1,21 @@
 //
-//  NicknameManageTableViewController.m
+//  PartyListTableVC.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-12-5.
+//  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
-//
-
-#import "NicknameManageTableViewController.h"
-#import "DataManager.h"
-
-@implementation NicknameManageTableViewController
-@synthesize nicknameTextField,phoneNumberTextField,emailTextField;
-
+#import "ContactData.h"
+#import "PartyListTableVC.h"
+#import "PatryDetailTableVC.h"
+#import "PartyListService.h"
+@implementation PartyListTableVC
+@synthesize partyList;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
     }
-    
     return self;
 }
 
@@ -35,15 +32,52 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
-    self.navigationItem.rightBarButtonItem = doneBtn;
-    self.title=@"更改个人信息";
-
+    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
+    self.navigationItem.rightBarButtonItem = refreshBtn;
+   
+    PartyModel *partyObj2=[[PartyModel alloc] init];
+    //partyObj2.receiversArray=[[ContactData   contactsArray] mutableCopy];
+    partyObj2.contentString=@"唱歌嗨一把";
+    partyObj2.isSendByServer=NO;
+    partyObj2.partyId=2;
+   
+    NSLog(@"self.partyList打印出来：：%@",self.partyList);
+    self.title=@"活动列表";
+    
+    PartyModel *partyObj1=[[PartyModel alloc] init];
+    //partyObj1.receiversArray=[[ContactData   contactsArray] mutableCopy];
+    partyObj1.contentString=@"跳舞爽";
+    partyObj1.isSendByServer=NO;
+    partyObj1.partyId=1;
+    //self.partyList=[[PartyListService sharedPartyListService] addPartyList:partyObj2];
+    [PartyListService sharedPartyListService].partyList=[[NSMutableArray alloc] initWithObjects:partyObj2, nil];
+//    NSString *lastString2=[[NSString alloc] initWithString:@"最后吃饭"];
+   [[PartyListService sharedPartyListService].partyList  addObject:partyObj1];
+    [[PartyListService sharedPartyListService] savePartyList];
+    self.partyList=[[PartyListService sharedPartyListService] getPartyList];
+    
+    
+    //self.partyList=[[NSArray alloc] initWithObjects:@"踢球1",@"唱歌2",@"聚餐3", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+- (void)refreshBtnAction{
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//    int page = 1;
+//    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,page]];
+//    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+//    request.timeOutSeconds = 30;
+//    [request setDelegate:self];
+//    [request setShouldAttemptPersistentConnection:NO];
+//    [request startAsynchronous];
+//    self._isRefreshing = YES;
+    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [acv startAnimating];
+    self.navigationItem.rightBarButtonItem.customView = acv;
 }
 
 - (void)viewDidUnload
@@ -83,14 +117,16 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 1;
+    return  1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 3;
+    return self.partyList.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -101,43 +137,13 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    NSInteger row=[indexPath row];
+    cell.textLabel.text=[[self.partyList  objectAtIndex:row] contentString];
+    //cell.textLabel.text=[self.partyList  objectAtIndex:row];
+    cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
     // Configure the cell...
-    UserObjectService *s = [UserObjectService sharedUserObjectService];
-    UserObject *user = [s getUserObject];
     
-    if(indexPath.row==0){
-        cell.textLabel.text = @"昵称：";
-        if (!nicknameTextField) {
-            self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        nicknameTextField.text = user.nickName;
-        nicknameTextField.textAlignment = UITextAlignmentLeft;
-        nicknameTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:nicknameTextField];        
-    }
-    if(indexPath.row==1){
-        cell.textLabel.text = @"手机号：";
-        if (!phoneNumberTextField) {
-            self.phoneNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        phoneNumberTextField.text = user.phoneNum;
-        phoneNumberTextField.textAlignment = UITextAlignmentLeft;
-        phoneNumberTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:phoneNumberTextField];        
-    }
-    if(indexPath.row==2){
-        cell.textLabel.text = @"邮箱：";
-        if (!emailTextField) {
-            self.emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        emailTextField.text = user.emailInfo;
-        emailTextField.textAlignment = UITextAlignmentLeft;
-        emailTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:emailTextField];        
-    }
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -191,22 +197,10 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
-}
-
-- (void)doneBtnAction
-{
-    [self showWaiting];
     
-    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-//    NSNumber *userId = [NSNumber numberWithInt:user.uID];
-    DataManager *dataManager = [DataManager sharedDataManager];
-    NSString *nickName = self.nicknameTextField.text;
-    NetworkConnectionStatus status = [dataManager setNickNameForUserWithUID:user.uID withNewNickName:nickName];
-    NSString *phoneNum = self.phoneNumberTextField.text;
-    NetworkConnectionStatus  phoneStatus = [dataManager  setPhoneNumForUserWithUID:user.uID withNewPhoneNum:phoneNum];
-    NSString *emailInfo = self.emailTextField.text;
-    NetworkConnectionStatus  emailStatus = [dataManager setEmailInfoForUserWithUID:user.uID withNewEmailInfo:emailInfo];
-    
+    PatryDetailTableVC *partyDetailTableVC = [[PatryDetailTableVC alloc] initWithNibName:@"PatryDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+    partyDetailTableVC.title=[[self.partyList  objectAtIndex:[indexPath row]] contentString];    //partyDetailTableVC.title=[self.partyList  objectAtIndex:[indexPath row]];
+    [self.navigationController pushViewController:partyDetailTableVC animated:YES];
 }
 
 @end

@@ -1,26 +1,22 @@
 //
-//  NicknameManageTableViewController.m
+//  PatryDetailTableVC.m
 //  PartyAssistant
 //
-//  Created by 超 李 on 11-12-5.
+//  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
+#import "StatusTableVC.h"
+#import "PatryDetailTableVC.h"
 
-#import "NicknameManageTableViewController.h"
-#import "DataManager.h"
+@interface PatryDetailTableVC()
 
-@implementation NicknameManageTableViewController
-@synthesize nicknameTextField,phoneNumberTextField,emailTextField;
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller;
+-(void) showTabBar:(UITabBarController*) tabbarcontroller;
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    
-    return self;
-}
+@end
+
+@implementation PatryDetailTableVC
+@synthesize toolBar = _toolBar;
 
 - (void)didReceiveMemoryWarning
 {
@@ -35,10 +31,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
-    self.navigationItem.rightBarButtonItem = doneBtn;
-    self.title=@"更改个人信息";
-
+   
+    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,420, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];
+    [self.view addSubview:self.toolBar];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -56,6 +51,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self hideTabBar:self.tabBarController];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -66,6 +62,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    [self showTabBar:self.tabBarController];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -83,14 +80,30 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 3;
+    
+    if(section==1){
+        return 4;
+    }
+    return 1;
+}
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        return @"活动内容";
+    }else if(section ==1){
+        return @"人数统计";
+    }else{
+        return @"";
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -101,43 +114,26 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    if(indexPath.section==0){
+        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
+        [cell addSubview:contentTextField];
     
+    
+    }else{
+        if(indexPath.row==0){
+            cell.textLabel.text=@"已邀请";
+        }else if(indexPath.row==1){
+            cell.textLabel.text=@"已报名";
+        }else if(indexPath.row==2){
+            cell.textLabel.text=@"未响应";  
+        }else {
+            cell.textLabel.text=@"不参加";
+        }
+        cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
+    
+    }
     // Configure the cell...
-    UserObjectService *s = [UserObjectService sharedUserObjectService];
-    UserObject *user = [s getUserObject];
     
-    if(indexPath.row==0){
-        cell.textLabel.text = @"昵称：";
-        if (!nicknameTextField) {
-            self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        nicknameTextField.text = user.nickName;
-        nicknameTextField.textAlignment = UITextAlignmentLeft;
-        nicknameTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:nicknameTextField];        
-    }
-    if(indexPath.row==1){
-        cell.textLabel.text = @"手机号：";
-        if (!phoneNumberTextField) {
-            self.phoneNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        phoneNumberTextField.text = user.phoneNum;
-        phoneNumberTextField.textAlignment = UITextAlignmentLeft;
-        phoneNumberTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:phoneNumberTextField];        
-    }
-    if(indexPath.row==2){
-        cell.textLabel.text = @"邮箱：";
-        if (!emailTextField) {
-            self.emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
-        }
-        emailTextField.text = user.emailInfo;
-        emailTextField.textAlignment = UITextAlignmentLeft;
-        emailTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:emailTextField];        
-    }
-    
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -191,22 +187,73 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    if(indexPath.section==1){
+        StatusTableVC  *statusTableVC=[[StatusTableVC  alloc] initWithNibName:@"StatusTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+        
+        if(indexPath.row==0){
+            statusTableVC.title=@"已邀请";
+        }else if(indexPath.row==1){
+            statusTableVC.title=@"已报名";
+        }else if(indexPath.row==2){
+            statusTableVC.title=@"未响应";
+        }else {
+            statusTableVC.title=@"不参加";
+        }
+        [self.navigationController pushViewController:statusTableVC animated:YES];
+    }
 }
 
-- (void)doneBtnAction
-{
-    [self showWaiting];
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller {
     
-    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-//    NSNumber *userId = [NSNumber numberWithInt:user.uID];
-    DataManager *dataManager = [DataManager sharedDataManager];
-    NSString *nickName = self.nicknameTextField.text;
-    NetworkConnectionStatus status = [dataManager setNickNameForUserWithUID:user.uID withNewNickName:nickName];
-    NSString *phoneNum = self.phoneNumberTextField.text;
-    NetworkConnectionStatus  phoneStatus = [dataManager  setPhoneNumForUserWithUID:user.uID withNewPhoneNum:phoneNum];
-    NSString *emailInfo = self.emailTextField.text;
-    NetworkConnectionStatus  emailStatus = [dataManager setEmailInfoForUserWithUID:user.uID withNewEmailInfo:emailInfo];
     
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
+        }
+        else
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+        }
+        
+    }
+//    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,325, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];//改变325数值可调整toolbar高低
+    [UIView commitAnimations];
 }
 
+-(void) showTabBar:(UITabBarController*) tabbarcontroller {
+    
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+//    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,400, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];
+    [UIView commitAnimations];
+    
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
+        }
+        else
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+        }
+    }
+
+}
+
+- (IBAction)toolbarItemSelected:(id)sender {
+    NSInteger selectedIndex = [(UIButton *)sender tag];
+    switch (selectedIndex) {
+//        case <#constant#>:
+//            <#statements#>
+//            break;
+//            
+//        default:
+//            break;
+    }
+}
 @end

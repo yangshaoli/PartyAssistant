@@ -9,8 +9,8 @@
 #import "ReceiverLabel.h"
 
 #define MAX_LABLEL_WIDTH 140
-#define MIN_LABLEL_WIDTH 40
-#define MIN_LABLEL_HIGHT 20
+#define MIN_LABLEL_WIDTH 30
+#define MIN_LABLEL_HIGHT 15
 @implementation ReceiverLabel
 
 
