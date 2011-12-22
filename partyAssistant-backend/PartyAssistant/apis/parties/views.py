@@ -159,7 +159,7 @@ def PartyList(request, uid, start_id = 0):
     if start_id == 0:
         partylist = Party.objects.filter(creator = user).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     else:
-        partylist = Party.objects.filter(creator = user, pk__lt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+        partylist = Party.objects.filter(creator = user, pk__gt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
@@ -321,8 +321,11 @@ def GetPartyClientSeperatedList(request, pid, type):
                'status':clientparty.apply_status
                }
         clientList.append(dic)
+    party_list = Party.objects.filter(creator = party.creator)
+    unreadCount = PartiesClients.objects.filter(party__in = party_list, is_check = False).count()
     return {
             'clientList':clientList,
+            'unreadCount':unreadCount,
             }
 
 @csrf_exempt

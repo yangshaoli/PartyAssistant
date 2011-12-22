@@ -25,6 +25,13 @@
     return self;
 }
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    _isRefreshing = NO;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    return self;
+}
+
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -38,8 +45,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -60,7 +65,9 @@
     }
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AfterCreatedDone) name:CREATE_PARTY_SUCCESS object:nil];
-    NSLog(@"viewDidLoad中self.partyList.count>>>>>%d",self.partyList.count);
+    if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
+        [self refreshBtnAction];
+    }
 }
 
 - (void)viewDidUnload
@@ -137,9 +144,9 @@
         cell.textLabel.text = baseinfo.description;
     }
     
-    UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
-    imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
-    [cell addSubview:imgV];
+//    UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
+//    imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
+//    [cell addSubview:imgV];
     
     UILabel *timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(130, 44, 150, 16)];
     timeLabel.textAlignment = UITextAlignmentRight;
@@ -147,6 +154,8 @@
     timeLabel.textColor = [UIColor lightGrayColor];
     [cell addSubview:timeLabel];
     cell.tag = [baseinfo.partyId intValue];
+    PeopleCountInPartyListCellSubView *v = [[PeopleCountInPartyListCellSubView alloc] initWithPeopleCount:baseinfo.peopleCountDict];
+    [cell addSubview:v];
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
     NSLog(@"list cell init");
     return cell;
@@ -218,12 +227,14 @@
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self._isRefreshing = YES;
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
     self.navigationItem.rightBarButtonItem.customView = acv;
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
+    self._isRefreshing = NO;
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
@@ -254,6 +265,7 @@
                 biObj.peopleMaximum = [party objectForKey:@"peopleMaximum"];
                 biObj.location = [party objectForKey:@"location"];
                 biObj.partyId = [party objectForKey:@"partyId"];
+                biObj.peopleCountDict = [party objectForKey:@"clientsData"];
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
                 
@@ -280,12 +292,11 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     [defaults setInteger:self.countNumber  forKey:keyString];    //wxz
     
-    NSLog(@"count:%d",self.partyList.count);
-    NSLog(@"打印数组%@",self.partyList);
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    self._isRefreshing = NO;
     self.navigationItem.rightBarButtonItem.customView = nil;
 	NSError *error = [request error];
 	[self dismissWaiting];
@@ -297,7 +308,6 @@
     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"复制",@"删除",@"分享", nil];
 //    UITableViewCell *cell= [tableView cellForRowAtIndexPath:indexPath];
     sheet.tag = indexPath.row;
-    NSLog(@"row:%d",indexPath.row);
     [sheet showInView:self.tabBarController.view];
 }
 
@@ -328,7 +338,6 @@
     BaseInfoObject *b = [self.partyList objectAtIndex:pIndex];
     self._currentDeletePartyID = [b.partyId integerValue];
     self._currentDeletePartyCellIndex = pIndex;
-    NSLog(@"pIndex:%d",pIndex);
     [alertV show];
 }
 
@@ -372,7 +381,6 @@
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
             NSIndexPath *index = [NSIndexPath indexPathForRow:self._currentDeletePartyCellIndex inSection:0];
-            NSLog(@"index:%@",index);
             NSArray *indexPathArray = [NSArray arrayWithObject:index];
             [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
             [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];
@@ -402,6 +410,7 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
+    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }

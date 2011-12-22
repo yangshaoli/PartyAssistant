@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
+		75C02939149459FE00067730 /* ECPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02936149459FE00067730 /* ECPurchase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C02938149459FE00067730 /* ECStoreObserver.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
+		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
+		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -112,6 +118,7 @@
 		8947F0231458011300017ED1 /* SMSObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0221458011300017ED1 /* SMSObject.m */; };
 		8947F0261458018100017ED1 /* ClientObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F0251458018100017ED1 /* ClientObject.m */; };
 		8947F02D1458044400017ED1 /* BaseInfoService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F02C1458044400017ED1 /* BaseInfoService.m */; };
+		895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */ = {isa = PBXBuildFile; fileRef = 895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */; };
 		8966754F147B3568007CEAF3 /* SettingsListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */; };
 		89667550147B3568007CEAF3 /* SettingsListTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */; };
 		899B03001484632B0056EEFD /* WeiboNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899B02FE1484632B0056EEFD /* WeiboNavigationController.m */; };
@@ -174,6 +181,13 @@
 		89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */; };
 		89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */; };
 		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
+		CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */; };
+		CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */; };
+		CEB072C8149EDE9A0056F7B5 /* PatryDetailTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072C6149EDE9A0056F7B5 /* PatryDetailTableVC.m */; };
+		CEB072C9149EDE9A0056F7B5 /* PatryDetailTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072C7149EDE9A0056F7B5 /* PatryDetailTableVC.xib */; };
+		CEB072CE149F140F0056F7B5 /* StatusTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072CC149F140F0056F7B5 /* StatusTableVC.m */; };
+		CEB072CF149F140F0056F7B5 /* StatusTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */; };
+		CEB072D4149F2E150056F7B5 /* PartyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072D3149F2E150056F7B5 /* PartyModel.m */; };
 		CEB28899148E17A300B7E3B7 /* ABContact.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28890148E17A300B7E3B7 /* ABContact.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28894148E17A300B7E3B7 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -192,6 +206,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
+		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
+		75C02935149459FE00067730 /* ECPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECPurchase.h; path = Main/Service/ECPurchase/ECPurchase.h; sourceTree = "<group>"; };
+		75C02936149459FE00067730 /* ECPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ECPurchase.m; path = Main/Service/ECPurchase/ECPurchase.m; sourceTree = "<group>"; };
+		75C02937149459FE00067730 /* ECStoreObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ECStoreObserver.h; path = Main/Service/ECPurchase/ECStoreObserver.h; sourceTree = "<group>"; };
+		75C02938149459FE00067730 /* ECStoreObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ECStoreObserver.m; path = Main/Service/ECPurchase/ECStoreObserver.m; sourceTree = "<group>"; };
+		75C0293F14948F2000067730 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
+		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
+		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -223,8 +247,8 @@
 		89277DF614662E1600B05020 /* PartyListTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyListTableViewController.h; sourceTree = "<group>"; };
 		89277DF714662E1600B05020 /* PartyListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyListTableViewController.m; sourceTree = "<group>"; };
 		89277DF814662E1600B05020 /* PartyListTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyListTableViewController.xib; sourceTree = "<group>"; };
-		89277DFB14666C0700B05020 /* PartyListService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyListService.h; sourceTree = "<group>"; };
-		89277DFC14666C0700B05020 /* PartyListService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyListService.m; sourceTree = "<group>"; };
+		89277DFB14666C0700B05020 /* PartyListService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListService.h; path = ../../../PartyListService.h; sourceTree = "<group>"; };
+		89277DFC14666C0700B05020 /* PartyListService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListService.m; path = ../../../PartyListService.m; sourceTree = "<group>"; };
 		89277DFE146682E000B05020 /* PartyDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyDetailTableViewController.h; sourceTree = "<group>"; };
 		89277DFF146682E000B05020 /* PartyDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyDetailTableViewController.m; sourceTree = "<group>"; };
 		89277E00146682E000B05020 /* PartyDetailTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PartyDetailTableViewController.xib; sourceTree = "<group>"; };
@@ -247,7 +271,7 @@
 		89334CBF1474A7D6003A87DF /* ResendEmailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendEmailTableViewController.h; sourceTree = "<group>"; };
 		89334CC01474A7D6003A87DF /* ResendEmailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendEmailTableViewController.m; sourceTree = "<group>"; };
 		89334CC11474A7D6003A87DF /* ResendEmailTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ResendEmailTableViewController.xib; sourceTree = "<group>"; };
-		89391AB914592F3900721F90 /* SynthesizeSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SynthesizeSingleton.h; path = Services/SynthesizeSingleton.h; sourceTree = "<group>"; };
+		89391AB914592F3900721F90 /* SynthesizeSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SynthesizeSingleton.h; path = ../../../Services/SynthesizeSingleton.h; sourceTree = "<group>"; };
 		89391B371459395300721F90 /* ASIAuthenticationDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASIAuthenticationDialog.h; path = External/ASIHTTPRequest/ASIAuthenticationDialog.h; sourceTree = "<group>"; };
 		89391B381459395300721F90 /* ASIAuthenticationDialog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ASIAuthenticationDialog.m; path = External/ASIHTTPRequest/ASIAuthenticationDialog.m; sourceTree = "<group>"; };
 		89391B391459395300721F90 /* ASICacheDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASICacheDelegate.h; path = External/ASIHTTPRequest/ASICacheDelegate.h; sourceTree = "<group>"; };
@@ -364,10 +388,12 @@
 		8947F01F145800F400017ED1 /* BaseInfoObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseInfoObject.m; sourceTree = "<group>"; };
 		8947F0211458011300017ED1 /* SMSObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMSObject.h; sourceTree = "<group>"; };
 		8947F0221458011300017ED1 /* SMSObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMSObject.m; sourceTree = "<group>"; };
-		8947F0241458018100017ED1 /* ClientObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClientObject.h; sourceTree = "<group>"; };
-		8947F0251458018100017ED1 /* ClientObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ClientObject.m; sourceTree = "<group>"; };
+		8947F0241458018100017ED1 /* ClientObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientObject.h; path = ../../ClientObject.h; sourceTree = "<group>"; };
+		8947F0251458018100017ED1 /* ClientObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ClientObject.m; path = ../../ClientObject.m; sourceTree = "<group>"; };
 		8947F02B1458044400017ED1 /* BaseInfoService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseInfoService.h; sourceTree = "<group>"; };
 		8947F02C1458044400017ED1 /* BaseInfoService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseInfoService.m; sourceTree = "<group>"; };
+		895315BB1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleCountInPartyListCellSubView.h; sourceTree = "<group>"; };
+		895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleCountInPartyListCellSubView.m; sourceTree = "<group>"; };
 		8966754C147B3568007CEAF3 /* SettingsListTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsListTableViewController.h; sourceTree = "<group>"; };
 		8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsListTableViewController.m; sourceTree = "<group>"; };
 		8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SettingsListTableViewController.xib; sourceTree = "<group>"; };
@@ -391,9 +417,9 @@
 		899BE867145A9920000BAFEC /* SendSMSToClientsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendSMSToClientsViewController.h; sourceTree = "<group>"; };
 		899BE868145A9920000BAFEC /* SendSMSToClientsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendSMSToClientsViewController.m; sourceTree = "<group>"; };
 		899BE869145A9920000BAFEC /* SendSMSToClientsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SendSMSToClientsViewController.xib; sourceTree = "<group>"; };
-		899D62F1145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactorPhoneDetailsViewController.h; sourceTree = "<group>"; };
-		899D62F2145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactorPhoneDetailsViewController.m; sourceTree = "<group>"; };
-		899D62F3145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactorPhoneDetailsViewController.xib; sourceTree = "<group>"; };
+		899D62F1145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactorPhoneDetailsViewController.h; path = ../ContactorPhoneDetailsViewController.h; sourceTree = "<group>"; };
+		899D62F2145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactorPhoneDetailsViewController.m; path = ../ContactorPhoneDetailsViewController.m; sourceTree = "<group>"; };
+		899D62F3145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ContactorPhoneDetailsViewController.xib; path = ../ContactorPhoneDetailsViewController.xib; sourceTree = "<group>"; };
 		899D62F7145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactorEmailDetailsViewController.h; sourceTree = "<group>"; };
 		899D62F8145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactorEmailDetailsViewController.m; sourceTree = "<group>"; };
 		899D62F9145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactorEmailDetailsViewController.xib; sourceTree = "<group>"; };
@@ -454,8 +480,8 @@
 		89E7D93214628C670059ADF4 /* IndicatorMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IndicatorMessageView.h; sourceTree = "<group>"; };
 		89E7D93314628C680059ADF4 /* IndicatorMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IndicatorMessageView.m; sourceTree = "<group>"; };
 		89E7D935146373480059ADF4 /* URLSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLSettings.h; sourceTree = "<group>"; };
-		89E7D936146378150059ADF4 /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObject.h; sourceTree = "<group>"; };
-		89E7D937146378150059ADF4 /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObject.m; sourceTree = "<group>"; };
+		89E7D936146378150059ADF4 /* UserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserObject.h; path = ../../UserObject.h; sourceTree = "<group>"; };
+		89E7D937146378150059ADF4 /* UserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserObject.m; path = ../../UserObject.m; sourceTree = "<group>"; };
 		89E7D939146378CC0059ADF4 /* UserObjectService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserObjectService.h; sourceTree = "<group>"; };
 		89E7D93A146378CD0059ADF4 /* UserObjectService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserObjectService.m; sourceTree = "<group>"; };
 		89F05AE3146E028A00EBA2CB /* EditPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPartyTableViewController.h; sourceTree = "<group>"; };
@@ -463,6 +489,17 @@
 		89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditPartyTableViewController.xib; sourceTree = "<group>"; };
 		CE472E9D148DB53E00E24742 /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pinyin.c; path = PartyAssistant/pinyin.c; sourceTree = SOURCE_ROOT; };
 		CE472E9E148DB53E00E24742 /* pinyin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pinyin.h; path = PartyAssistant/pinyin.h; sourceTree = SOURCE_ROOT; };
+		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
+		CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListTableVC.m; path = ../PartyListTableVC.m; sourceTree = "<group>"; };
+		CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyListTableVC.xib; path = ../PartyListTableVC.xib; sourceTree = "<group>"; };
+		CEB072C5149EDE9A0056F7B5 /* PatryDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PatryDetailTableVC.h; path = ../PatryDetailTableVC.h; sourceTree = "<group>"; };
+		CEB072C6149EDE9A0056F7B5 /* PatryDetailTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PatryDetailTableVC.m; path = ../PatryDetailTableVC.m; sourceTree = "<group>"; };
+		CEB072C7149EDE9A0056F7B5 /* PatryDetailTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PatryDetailTableVC.xib; path = ../PatryDetailTableVC.xib; sourceTree = "<group>"; };
+		CEB072CB149F140F0056F7B5 /* StatusTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StatusTableVC.h; path = ../StatusTableVC.h; sourceTree = "<group>"; };
+		CEB072CC149F140F0056F7B5 /* StatusTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StatusTableVC.m; path = ../StatusTableVC.m; sourceTree = "<group>"; };
+		CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = StatusTableVC.xib; path = ../StatusTableVC.xib; sourceTree = "<group>"; };
+		CEB072D2149F2E150056F7B5 /* PartyModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PartyModel.h; sourceTree = "<group>"; };
+		CEB072D3149F2E150056F7B5 /* PartyModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PartyModel.m; sourceTree = "<group>"; };
 		CEB2888F148E17A300B7E3B7 /* ABContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABContact.h; sourceTree = "<group>"; };
 		CEB28890148E17A300B7E3B7 /* ABContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABContact.m; sourceTree = "<group>"; };
 		CEB28891148E17A300B7E3B7 /* ABContactsHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABContactsHelper.h; sourceTree = "<group>"; };
@@ -480,6 +517,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75C0294014948F2000067730 /* StoreKit.framework in Frameworks */,
 				893C2221146162AF00966B11 /* QuartzCore.framework in Frameworks */,
 				8932653D145E88F6006E827D /* AddressBook.framework in Frameworks */,
 				8932652B145E6C37006E827D /* AddressBookUI.framework in Frameworks */,
@@ -510,6 +548,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		75BC083514987DE3007B39CB /* DeviceDetection */ = {
+			isa = PBXGroup;
+			children = (
+				75BC083714987E20007B39CB /* DeviceDetection.h */,
+				75BC083814987E20007B39CB /* DeviceDetection.m */,
+			);
+			name = DeviceDetection;
+			path = Main/Service/DeviceDetection;
+			sourceTree = "<group>";
+		};
+		75C02933149459D000067730 /* Purchase */ = {
+			isa = PBXGroup;
+			children = (
+				75C02935149459FE00067730 /* ECPurchase.h */,
+				75C02936149459FE00067730 /* ECPurchase.m */,
+				75C02937149459FE00067730 /* ECStoreObserver.h */,
+				75C02938149459FE00067730 /* ECStoreObserver.m */,
+			);
+			name = Purchase;
+			sourceTree = "<group>";
+		};
 		891A4D7114579B3B00A2CF47 = {
 			isa = PBXGroup;
 			children = (
@@ -532,6 +591,7 @@
 		891A4D7F14579B3C00A2CF47 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				75C0293F14948F2000067730 /* StoreKit.framework */,
 				893C2220146162AE00966B11 /* QuartzCore.framework */,
 				89391BB514593CB200721F90 /* libz.dylib */,
 				89391BC114593F2500721F90 /* libxml2.dylib */,
@@ -563,6 +623,9 @@
 				891A4DC51457B18500A2CF47 /* Settings */,
 				891A4DC41457B17500A2CF47 /* PartyList */,
 				891A4DC31457B16200A2CF47 /* AddNewParty */,
+				CEB072D0149F2CE10056F7B5 /* Tab2 */,
+				CEB072D8149F38380056F7B5 /* ServiceNew */,
+				CEB072D1149F2DC20056F7B5 /* ModelsNew */,
 				891A4DC11457A80900A2CF47 /* Resources */,
 				891A4D8F14579B3C00A2CF47 /* PartyAssistantAppDelegate.h */,
 				891A4D9014579B3C00A2CF47 /* PartyAssistantAppDelegate.m */,
@@ -696,6 +759,9 @@
 				8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */,
 				8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */,
 				8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */,
+				75C029421494913600067730 /* PurchaseListViewController.h */,
+				75C029431494913600067730 /* PurchaseListViewController.m */,
+				75C029441494913600067730 /* PurchaseListViewController.xib */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -703,7 +769,6 @@
 		891A4DC61457B19700A2CF47 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				CEB2888E148E17A300B7E3B7 /* AddressBook */,
 				89395918147DECE2003A883C /* WeiboPersonalProfile.h */,
 				89395919147DECE3003A883C /* WeiboPersonalProfile.m */,
 				8947F01B145800E100017ED1 /* PartyObject.h */,
@@ -712,10 +777,6 @@
 				8947F01F145800F400017ED1 /* BaseInfoObject.m */,
 				8947F0211458011300017ED1 /* SMSObject.h */,
 				8947F0221458011300017ED1 /* SMSObject.m */,
-				8947F0241458018100017ED1 /* ClientObject.h */,
-				8947F0251458018100017ED1 /* ClientObject.m */,
-				89E7D936146378150059ADF4 /* UserObject.h */,
-				89E7D937146378150059ADF4 /* UserObject.m */,
 				89B17394147346C60066B58E /* EmailObject.h */,
 				89B17395147346C60066B58E /* EmailObject.m */,
 			);
@@ -735,9 +796,6 @@
 				89326543145E990E006E827D /* ContactListViewController.h */,
 				89326544145E990E006E827D /* ContactListViewController.m */,
 				89326545145E990E006E827D /* ContactListViewController.xib */,
-				899D62F1145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.h */,
-				899D62F2145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m */,
-				899D62F3145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib */,
 				899D62F7145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.h */,
 				899D62F8145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.m */,
 				899D62F9145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib */,
@@ -771,6 +829,8 @@
 				899B030A1484C4EE0056EEFD /* PostWeiboViewController.xib */,
 				89CC34621491F27C0074E898 /* NumberLabel.h */,
 				89CC34631491F27C0074E898 /* NumberLabel.m */,
+				895315BB1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.h */,
+				895315BC1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m */,
 			);
 			name = CustomClass;
 			sourceTree = "<group>";
@@ -961,17 +1021,16 @@
 		8947F027145803CE00017ED1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				75BC083514987DE3007B39CB /* DeviceDetection */,
+				75C02933149459D000067730 /* Purchase */,
 				899D8C6B146B6DB000B48698 /* DataManager.h */,
 				899D8C6C146B6DB000B48698 /* DataManager.m */,
-				89391AB914592F3900721F90 /* SynthesizeSingleton.h */,
 				8947F02B1458044400017ED1 /* BaseInfoService.h */,
 				8947F02C1458044400017ED1 /* BaseInfoService.m */,
 				89E7D924146280900059ADF4 /* SMSObjectService.h */,
 				89E7D925146280900059ADF4 /* SMSObjectService.m */,
 				89E7D939146378CC0059ADF4 /* UserObjectService.h */,
 				89E7D93A146378CD0059ADF4 /* UserObjectService.m */,
-				89277DFB14666C0700B05020 /* PartyListService.h */,
-				89277DFC14666C0700B05020 /* PartyListService.m */,
 				89B173901473469C0066B58E /* EmailObjectService.h */,
 				89B173911473469C0066B58E /* EmailObjectService.m */,
 				89395915147DEC7D003A883C /* WeiboService.h */,
@@ -1008,6 +1067,51 @@
 			path = ../../../../SearchIndex;
 			sourceTree = "<group>";
 		};
+		CEB072D0149F2CE10056F7B5 /* Tab2 */ = {
+			isa = PBXGroup;
+			children = (
+				CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */,
+				CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */,
+				CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */,
+				CEB072C5149EDE9A0056F7B5 /* PatryDetailTableVC.h */,
+				CEB072C6149EDE9A0056F7B5 /* PatryDetailTableVC.m */,
+				CEB072C7149EDE9A0056F7B5 /* PatryDetailTableVC.xib */,
+				CEB072CB149F140F0056F7B5 /* StatusTableVC.h */,
+				CEB072CC149F140F0056F7B5 /* StatusTableVC.m */,
+				CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */,
+				899D62F1145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.h */,
+				899D62F2145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m */,
+				899D62F3145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib */,
+			);
+			path = Tab2;
+			sourceTree = "<group>";
+		};
+		CEB072D1149F2DC20056F7B5 /* ModelsNew */ = {
+			isa = PBXGroup;
+			children = (
+				CEB2888E148E17A300B7E3B7 /* AddressBook */,
+				8947F0241458018100017ED1 /* ClientObject.h */,
+				8947F0251458018100017ED1 /* ClientObject.m */,
+				CEB072D2149F2E150056F7B5 /* PartyModel.h */,
+				CEB072D3149F2E150056F7B5 /* PartyModel.m */,
+				89E7D936146378150059ADF4 /* UserObject.h */,
+				89E7D937146378150059ADF4 /* UserObject.m */,
+			);
+			name = ModelsNew;
+			path = Tab2/ModelsNew;
+			sourceTree = "<group>";
+		};
+		CEB072D8149F38380056F7B5 /* ServiceNew */ = {
+			isa = PBXGroup;
+			children = (
+				89391AB914592F3900721F90 /* SynthesizeSingleton.h */,
+				89277DFB14666C0700B05020 /* PartyListService.h */,
+				89277DFC14666C0700B05020 /* PartyListService.m */,
+			);
+			name = ServiceNew;
+			path = Tab2/ModelsNew/ServiceNew;
+			sourceTree = "<group>";
+		};
 		CEB2888E148E17A300B7E3B7 /* AddressBook */ = {
 			isa = PBXGroup;
 			children = (
@@ -1023,7 +1127,7 @@
 				CEB28898148E17A300B7E3B7 /* ContactData.m */,
 			);
 			name = AddressBook;
-			path = Main/Model/AddressBook;
+			path = ../../Main/Model/AddressBook;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1151,6 +1255,10 @@
 				89C709F31490A5BC00699AE0 /* setting_icon.png in Resources */,
 				89C10A801491E23200BCE0CD /* new_tips.png in Resources */,
 				89C10A811491E23200BCE0CD /* new_tips@2x.png in Resources */,
+				75C029461494913600067730 /* PurchaseListViewController.xib in Resources */,
+				CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */,
+				CEB072C9149EDE9A0056F7B5 /* PatryDetailTableVC.xib in Resources */,
+				CEB072CF149F140F0056F7B5 /* StatusTableVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1283,6 +1391,15 @@
 				CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */,
 				89C709C114908E0D00699AE0 /* DeviceTokenService.m in Sources */,
 				89CC34641491F27C0074E898 /* NumberLabel.m in Sources */,
+				75C02939149459FE00067730 /* ECPurchase.m in Sources */,
+				75C0293A149459FE00067730 /* ECStoreObserver.m in Sources */,
+				75C029451494913600067730 /* PurchaseListViewController.m in Sources */,
+				895315BD1494A6EB0087BE36 /* PeopleCountInPartyListCellSubView.m in Sources */,
+				75BC083914987E20007B39CB /* DeviceDetection.m in Sources */,
+				CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */,
+				CEB072C8149EDE9A0056F7B5 /* PatryDetailTableVC.m in Sources */,
+				CEB072CE149F140F0056F7B5 /* StatusTableVC.m in Sources */,
+				CEB072D4149F2E150056F7B5 /* PartyModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1414,7 +1531,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				WRAPPER_EXTENSION = app;
@@ -1431,7 +1548,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "900DCBEC-9662-4F00-B037-6115A747F9C9";
 				WRAPPER_EXTENSION = app;

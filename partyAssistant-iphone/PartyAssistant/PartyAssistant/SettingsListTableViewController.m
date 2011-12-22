@@ -8,6 +8,7 @@
 
 #import "SettingsListTableViewController.h"
 #import "NicknameManageTableViewController.h"
+#import "PurchaseListViewController.h"
 #define NAVIGATION_CONTROLLER_TITLE @"个人设置"
 
 @implementation SettingsListTableViewController
@@ -88,7 +89,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 5;
+    return 6;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -111,6 +112,8 @@
         cell.textLabel.text = @"帮我们评分";
     }else if(indexPath.row == 4){
         cell.textLabel.text = @"登出";
+    }else if(indexPath.row == 5){
+        cell.textLabel.text = @"购买";
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -175,6 +178,10 @@
     if(indexPath.row == 2){
         WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
         [self.navigationController pushViewController:vc animated:YES];
+    }
+    if(indexPath.row == 5){
+        PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
+        [self.navigationController pushViewController:purchaseListVC animated:YES];
     }
 }
 
