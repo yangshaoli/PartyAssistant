@@ -73,29 +73,29 @@
     }
 }
 
-//- (void)searchClientIDByEmail{
-//    if (self.cID == -1) {    
-//        ABAddressBookRef addressBook = ABAddressBookCreate();
-//        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
-//                                                                    addressBook,
-//                                                                    (__bridge CFStringRef)self.cName
-//                                                                    );
-//        for (int i=0; i<CFArrayGetCount(searchResult); i++) {
-//            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
-//            ABMultiValueRef email = ABRecordCopyValue(card, kABPersonEmailProperty);
-//            for (int j=0; j<ABMultiValueGetCount(email); j++) {
-//                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(email, j);
-//                if ([valStr isEqualToString:self.cVal]) {
-//                    NSLog(@"isEqual");
-//                    self.cID = ABRecordGetRecordID(card);
-//                    break;
-//                }
-//                if (self.cID != -1) {
-//                    break;
-//                }
-//            }
-//        }
-//    }
-//}
+- (void)searchClientIDByEmail{
+    if (self.cID == -1) {    
+        ABAddressBookRef addressBook = ABAddressBookCreate();
+        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
+                                                                    addressBook,
+                                                                    (__bridge CFStringRef)self.cName
+                                                                    );
+        for (int i=0; i<CFArrayGetCount(searchResult); i++) {
+            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+            ABMultiValueRef email = ABRecordCopyValue(card, kABPersonEmailProperty);
+            for (int j=0; j<ABMultiValueGetCount(email); j++) {
+                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(email, j);
+                if ([valStr isEqualToString:self.cVal]) {
+                    NSLog(@"isEqual");
+                    self.cID = ABRecordGetRecordID(card);
+                    break;
+                }
+                if (self.cID != -1) {
+                    break;
+                }
+            }
+        }
+    }
+}
 //
 @end
