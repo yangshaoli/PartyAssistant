@@ -138,6 +138,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     NSInteger row=[indexPath row];
+    cell.textLabel.font=[UIFont systemFontOfSize:15];
     cell.textLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     //cell.textLabel.text=[self.partyList  objectAtIndex:row];
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;

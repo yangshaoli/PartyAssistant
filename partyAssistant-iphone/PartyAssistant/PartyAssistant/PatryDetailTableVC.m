@@ -7,7 +7,7 @@
 //
 #import "StatusTableVC.h"
 #import "PatryDetailTableVC.h"
-
+#import "ContentTableVC.h"
 @interface PatryDetailTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -115,10 +115,10 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     if(indexPath.section==0){
-        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
-        [cell addSubview:contentTextField];
-    
-    
+//        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
+//        [cell addSubview:contentTextField];
+        cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
+        cell.textLabel.text=@"将要编辑的内容";
     }else{
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
@@ -187,6 +187,11 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    if(indexPath.section==0){
+        ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
+        contentTableVC.title=@"编辑活动内容";
+        [self.navigationController pushViewController:contentTableVC animated:YES];
+    }
     if(indexPath.section==1){
         StatusTableVC  *statusTableVC=[[StatusTableVC  alloc] initWithNibName:@"StatusTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
         
@@ -206,8 +211,8 @@
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller {
     
     
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5];
     for(UIView*view in tabbarcontroller.view.subviews)
     {
         if([view isKindOfClass:[UITabBar class]])
@@ -221,15 +226,15 @@
         
     }
 //    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,325, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];//改变325数值可调整toolbar高低
-    [UIView commitAnimations];
+    //[UIView commitAnimations];
 }
 
 -(void) showTabBar:(UITabBarController*) tabbarcontroller {
     
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5];
 //    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,400, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];
-    [UIView commitAnimations];
+    //[UIView commitAnimations];
     
     for(UIView*view in tabbarcontroller.view.subviews)
     {
