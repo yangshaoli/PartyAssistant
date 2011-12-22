@@ -8,15 +8,23 @@ function changetoAble(o){
    $(document.getElementById(o)).removeAttr('readonly');
    
 }
+$(document).ready(function(){
+    $("#tips").delay(3000).fadeOut();    
+})
 </script>
 {% endblock %}
 {% block content %}
+{% ifequal profile_status 'success' %}
+<div id="tips" style="color:#fff; background:#f9e100; padding:5px; width:750px; border-radius:5px;text-align:center; margin:20px; position:absolute;">
+ 保存成功 
+</div>
+{% endifequal %}
 <div id="content">
   <div class="grid_a">
    <h2 class="title">用户信息</h2>
-    欢迎你, {{user.username}}<br/><br/>
+    欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<a href="{% url change_password %}" style="font-size:9pt; color:#237237237; text-decoration:underline;">修改密码</a><br/><br/>
 <br />
-<a href="{% url change_password %}">修改密码</a><br/>
+
 <form method='post' action='{% url profile %}'  class="creat_exercise">
     {% csrf_token %}
     <fieldset>
@@ -30,16 +38,13 @@ function changetoAble(o){
          </div>
          <div class="field">
          <label for="phone">手机</label>
-         {{ form.confirm_password }}{{ form.phone }}{{ form.phone.errors.0 }}
+         {{ form.phone }}{{ form.phone.errors.0 }}
          <font color="red">{{ form.confirm_password.errors.0 }}</font>
          </div>
          <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>
           <input type='submit' value='保存'></input>
         </fieldset>	
     </form>
-{% if profile_status %}
-{{ profile_status }}
-{% endif%}
   </div>
  </div>
 

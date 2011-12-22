@@ -260,6 +260,9 @@
 }
 
 - (void)pushToContentVC {
+    self.userNameTextField.text = @"";
+    self.pwdTextField.text = @"";
+    
     self.navigationController.navigationBarHidden = YES;
     PartyListTableVC  *pattyListTableVC=[[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
     

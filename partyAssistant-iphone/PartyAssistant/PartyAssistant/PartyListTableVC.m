@@ -6,10 +6,11 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 #import "ContactData.h"
 #import "PartyListTableVC.h"
-#import "PatryDetailTableVC.h"
+#import "PartyDetailTableVC.h"
 #import "PartyListService.h"
+
 @implementation PartyListTableVC
-@synthesize partyList;
+@synthesize partyList, topRefreshView, bottomRefreshView;;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -56,7 +57,35 @@
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
     
+    minBottomRefreshViewY = 366.0;
+	//setup refresh tool
+    if (bottomRefreshView == nil) {
+		
+        CGFloat bottomRefreshViewY = MAX(minBottomRefreshViewY, self.tableView.contentSize.height);
+		BottomRefreshTableView *bottomView = [[BottomRefreshTableView alloc] initWithFrame: CGRectMake(0.0f, bottomRefreshViewY, 320, 650)];
+		bottomView.delegate = self;
+		[self.tableView addSubview:bottomView];
+		self.bottomRefreshView = bottomView;
+		
+		if (minBottomRefreshViewY > self.tableView.contentSize.height) {
+            bottomView.deltaHeight = minBottomRefreshViewY - self.tableView.contentSize.height;
+        } else {
+            bottomView.deltaHeight = 0.0f;
+        }
+		
+	}
+    if (topRefreshView == nil) {
+		
+		TopRefreshTableView *topView = [[TopRefreshTableView alloc] initWithFrame: CGRectMake(0.0f, -250.0f, 320, 250)];
+		topView.delegate = self;
+		[self.tableView addSubview:topView];
+		self.topRefreshView = topView;
+		
+	}
     
+	//  update the last update date
+	[bottomRefreshView refreshLastUpdatedDate];
+    [topRefreshView refreshLastUpdatedDate];
     //self.partyList=[[NSArray alloc] initWithObjects:@"踢球1",@"唱歌2",@"聚餐3", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -90,6 +119,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self setBottomRefreshViewYandDeltaHeight];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -117,14 +147,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return  1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return self.partyList.count;
 }
@@ -199,9 +227,101 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     
-    PatryDetailTableVC *partyDetailTableVC = [[PatryDetailTableVC alloc] initWithNibName:@"PatryDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+    PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
     partyDetailTableVC.title=[[self.partyList  objectAtIndex:[indexPath row]] contentString];    //partyDetailTableVC.title=[self.partyList  objectAtIndex:[indexPath row]];
+    partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+}
+
+#pragma mark -
+#pragma mark Data Source Loading / Reloading Methods
+
+- (void)reloadTableViewDataSource{
+	
+	//  should be calling your tableviews data source model to reload
+	//  put here just for demo
+    _reloading = YES;
+//TODO:Not Implement     [self requestDataWithLastID:0];
+	[self doneLoadingTopRefreshTableViewData];
+}
+
+- (void)loadNextPageTableViewDataSource{
+	
+	//  should be calling your tableviews data source model to reload
+	//  put here just for demo
+    _reloading = YES;
+//TODO:Not Implement    [self requestDataWithLastID:lastID];
+	[self doneLoadingBottomRefreshTableViewData];
+}
+
+- (void)doneLoadingTopRefreshTableViewData{
+	
+	//  model should call this when its done loading
+    _reloading = NO;
+    [self.tableView reloadData];
+    
+	[topRefreshView performSelector:@selector(refreshScrollViewDataSourceDidFinishedLoading:) withObject:self.tableView afterDelay:1.0f];
+}
+
+- (void)doneLoadingBottomRefreshTableViewData{
+	
+	//  model should call this when its done loading
+	_reloading = NO;
+    [self.tableView reloadData];
+    
+    [bottomRefreshView performSelector:@selector(refreshScrollViewDataSourceDidFinishedLoading:) withObject:self.tableView afterDelay:1.0f];
+}
+
+#pragma mark -
+#pragma mark UIScrollViewDelegate Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{	
+    [topRefreshView refreshScrollViewDidScroll:scrollView];
+	[bottomRefreshView refreshScrollViewDidScroll:scrollView];
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+	[topRefreshView refreshScrollViewDidEndDragging:scrollView];
+	[bottomRefreshView refreshScrollViewDidEndDragging:scrollView];
+}
+
+- (void)refreshTopTableHeaderDidTriggerRefresh:(id<RefreshTableViewProtocol>)view{
+	[self reloadTableViewDataSource];
+}
+
+- (void)refreshBottomTableHeaderDidTriggerRefresh:(id<RefreshTableViewProtocol>)view{
+	[self loadNextPageTableViewDataSource];
+}
+
+- (BOOL)refreshTableHeaderDataSourceIsLoading:(id<RefreshTableViewProtocol>)view{
+	
+	return _reloading; // should return if data source model is reloading
+	
+}
+
+- (NSDate*)refreshTableHeaderDataSourceLastUpdated:(id<RefreshTableViewProtocol>)view{
+	
+	return [NSDate date]; // should return date data source was last changed
+}
+
+- (void)setBottomRefreshViewYandDeltaHeight {
+    CGFloat bottomRefreshViewY = MAX(minBottomRefreshViewY, self.tableView.contentSize.height);
+    
+    CGRect frame = bottomRefreshView.frame;
+    frame.origin.y = bottomRefreshViewY;
+    bottomRefreshView.frame = frame;
+    
+    if (minBottomRefreshViewY > self.tableView.contentSize.height) {
+        bottomRefreshView.deltaHeight = minBottomRefreshViewY - self.tableView.contentSize.height;
+    } else {
+        bottomRefreshView.deltaHeight = 0.0f;
+    }
+    
+}
+
+- (CGFloat)getTableHeadViewHeight {
+	return 0.0f;
 }
 
 @end

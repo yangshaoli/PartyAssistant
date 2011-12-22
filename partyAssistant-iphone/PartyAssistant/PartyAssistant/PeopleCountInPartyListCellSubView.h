@@ -19,5 +19,6 @@
 
 - (id)initWithPeopleCount:(NSDictionary *)peopleCount;
 - (id)initWithFrame:(CGRect)frame andWithPeopleCount:(NSDictionary *)peopleCount;
-- (UIView *)drawAppliedView;
+//- (UIView *)drawAppliedView;
+- (void)drawLabels;
 @end

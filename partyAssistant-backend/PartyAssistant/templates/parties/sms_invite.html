@@ -1,4 +1,5 @@
 {% extends 'login_base.html' %}
+{% load string_filter %}
 {% block style %}
 <link href="/static/libs/jquery-ui-1/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
 <style>
@@ -27,7 +28,45 @@
 <script src="/static/libs/jquery-ui-1/js/jquery-ui-1.8.16.custom.min.js">
 </script>
 <script type="text/javascript" >
+/**
+ *取出重复的联系人
+ *
+ */
+function distinct(){
+	 client_phone_list = $('#id_client_phone_list').val().split(',');
+     client_phone_list_length = client_phone_list.length;     
+	 array = new Array();
+	 array_length = 0;   
+     for (i = 0; i < client_phone_list_length; i++) {
+         client_phone = client_phone_list[i].replace(/^\s+|\s+$/g, ""); 
+         if (client_phone != "") {
+             array_length = array.length;
+             add = 1 ;
+             for(k=0;k<=array_length;k++){
+                 if(array[k] == client_phone){
+                 	add = 0;
+                 	break;
+                 }
+                 if(k == array_length){
+                    add = 1;
+                 }
+             }  
+             if(add==1){
+             	array.push(client_phone);
+             }  
+         }
+     }//endfor
+     client_phones = array.join(',');
+//     if(client_phones.length!=0){
+//	     if(client_phones.lastIndexOf(',')!=(client_phones.length-1)){
+//	        client_phones = client_phones+',';
+//	     }
+//     }
+     $('#id_client_phone_list').val(client_phones);
+}
+
 	function calculate_send_phone_count() {
+	    distinct();
 	    client_phone_list = $('#id_client_phone_list').val().split(',');
 	    client_phone_list_length = client_phone_list.length;     
 	    count = 0;
@@ -36,8 +75,33 @@
 	            count = count+1;
 	        }
 	    }
-	    $('#id_send_phone_count').html("收件人人数统计： "+count);
+	    $('#id_send_phone_count').html("共 "+count+" 人");
 	}
+    
+/**
+ * 获得最近活动邀请的人
+ * @param int party.id
+ */
+function getRecentPartiesAddressee(v){
+    if (v != 0) {
+           $.ajax({
+            type : 'GET',
+            url: '/parties/invite_list_ajax/'+v+'/',
+            statusCode : {
+            200: function(response){
+                clients = JSON.parse(response);
+                client_list = [];
+                for (i in clients){
+                    client_list[i] = clients[i].address;
+                }
+                $("#id_client_phone_list").val(client_list.join(','))
+            },
+            500: function(){ alert('没有获取到用户列表')}
+            }
+        });
+    }
+}
+    
 	var availableTags = eval({{client_data|safe}});
     $(function(){
 		calculate_send_phone_count();
@@ -49,7 +113,10 @@
             return split(term).pop();
         }
         $('#id_client_phone_list').bind("keyup", function(event){
-		calculate_send_phone_count();
+          if(event.keyCode==188){
+            return;
+          }
+		  calculate_send_phone_count();
 		});
         $("#id_client_phone_list") // don't navigate away from the field on tab when selecting an item
     .bind("keydown", function(event){
@@ -108,10 +175,11 @@
 		     //alert(message_count*count);
 		     //return false;
 		     if((count*message_count) > sms_count){
-		         if(window.confirm("您将要发送的短信数量大于您可使用的短信数量("+sms_count+"条),是否需要进行调整操作?")){
-		         	return false;
+		         if(window.confirm("您的剩余短信条数不足，需要至少充值"+ ((count*message_count) - sms_count) +"条短信，才能完成本次发送。是否充值？")){
+					//跳转到充值界面
+					window.location = '{% url buy_sms %}';		         	
 		         }else{
-		         	document.id_form.submit();
+		         	//document.id_form.submit();
 		         }
 		     }else{
 		 	    document.id_form.submit();
@@ -135,6 +203,7 @@
     		}
     		return;
     	});
+  
    	});
    
 </script>
@@ -147,9 +216,10 @@
 	<form action="{% url sms_invite party.id %}" method="post" id='id_form' class="creat_exercise">
 		{% csrf_token %}
      <div class="field">
-     <label for="client_email_list">
-     收件人<font color='red'>*</font>
-     </label>
+        <label for="client_email_list">
+            收件人<font color='red'>*</font>
+        <p id="id_send_phone_count">共 0 人</p>
+        </label>
 	 <textarea id="id_client_phone_list" rows="4" cols="70" name="client_phone_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_phone_list.value }}</textarea>
      &nbsp;<font color='red'>{{ form.client_phone_list.errors.0 }}</font>
      {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
@@ -200,14 +270,17 @@
           }
         
         </script>
-        <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">爱热闹的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">犹豫的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
+        <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">来的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">待定的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
         {% endif %}
      </div>
      <div class="field">
-     <label for="id_send_phone_count">
-     &nbsp;
-     </label>
-     <p id="id_send_phone_count">收件人人数统计： 0</p>
+        <label for="id_recent_parties">最近联系人</label>
+        <select id="id_recent_parties" onchange="getRecentPartiesAddressee(this.value)">
+            <option value="0">未选择</option>
+            {% for party in recent_parties %}
+            <option value="{{party.id}}">{{party.description|truncatestring:"60"}}</option>
+            {% endfor %}
+        </select>
      </div>
      <div class="field">
      <label for="id_content">
@@ -215,6 +288,7 @@
      </label>
     <font color='red'>{{ form.content.errors.0 }}</font>
     <textarea name='content' id='id_content' cols='70' rows='15'>{{ form.content.value|default:'' }}</textarea>
+    (每65字为一条短信，其中报名链接为21字)
      </div>
     	<div class="field">
     		<label for="id_is_apply_tips">&nbsp;</label>

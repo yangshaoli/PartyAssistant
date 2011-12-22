@@ -81,3 +81,17 @@ class UserProfileForm(forms.Form):
     phone = forms.RegexField(required = False, regex='1\d{10}', error_messages = {'invalid':u'手机号码不规范'})
     email = forms.EmailField(max_length=75, required = False, error_messages = {'max_length':u'邮箱地址不要超过75字符'})
     
+    def clean_phone(self):
+        if self.cleaned_data['phone'] == '' :
+            return None
+        else :
+            return self.cleaned_data['phone']
+
+class BuySMSForm(forms.Form):
+    sms_count = forms.IntegerField()
+    
+    def clean_sms_count(self):
+        if self.cleaned_data['sms_count'] == None or self.cleaned_data['sms_count'] == 0:
+            self._errors['sms_count'] = ErrorList([u'购买信息数量至少为1条'])
+            
+        return self.cleaned_data['sms_count']

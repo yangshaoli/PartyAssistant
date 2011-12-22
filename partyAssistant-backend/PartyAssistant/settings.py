@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'airenao@cn-acg.com'),
+    ('airenao', 'airenao@cn-acg.com'),
 )
 
 DATABASES = {
@@ -190,10 +190,14 @@ LOGGING = {
 }
 
 SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
-DOMAIN_NAME = 'http://192.168.1.15:43401'
+DOMAIN_NAME = 'http://airenao.com'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+ALIPAY_PARTNER = '2088701462122036'
+ALIPAY_KEY = 'jut7uqx5fodoajps5jomwwz03rs0516y'
+ALIPAY_SELLER_EMAIL = 'payment@orilong.com'

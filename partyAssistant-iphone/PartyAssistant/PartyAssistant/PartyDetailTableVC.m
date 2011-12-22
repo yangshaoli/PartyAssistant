@@ -1,22 +1,26 @@
 //
-//  PatryDetailTableVC.m
+//  PartyDetailTableVC.m
 //  PartyAssistant
 //
 //  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 #import "StatusTableVC.h"
-#import "PatryDetailTableVC.h"
 #import "ContentTableVC.h"
-@interface PatryDetailTableVC()
+#import "PartyDetailTableVC.h"
+#import "NotificationSettings.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "ClientStatusTableViewController.h"
+#import "EditPartyTableViewController.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
 
--(void) hideTabBar:(UITabBarController*) tabbarcontroller;
--(void) showTabBar:(UITabBarController*) tabbarcontroller;
+#define DELETE_PARTY_ALERT_VIEW_TAG 11
 
-@end
-
-@implementation PatryDetailTableVC
-@synthesize toolBar = _toolBar;
+@implementation PartyDetailTableVC
+@synthesize myToolbarItems;
 
 - (void)didReceiveMemoryWarning
 {
@@ -32,8 +36,38 @@
 {
     [super viewDidLoad];
    
-    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,420, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];
-    [self.view addSubview:self.toolBar];
+    self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
+    [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];
+    [self.navigationController.toolbar sizeToFit];
+    
+    if (!self.myToolbarItems) {
+        UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        self.myToolbarItems = [NSArray arrayWithObjects:
+                               flexButton,  
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(shareAction)], 
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"refresh_word"]
+                                                                style:UIBarButtonItemStylePlain 
+                                                               target:self
+                                                               action:@selector(refreshItem:)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"del_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(deleteParty)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(editBtnAction)],
+                               flexButton, 
+                               nil];
+        
+        [self setToolbarItems:myToolbarItems animated:YES];
+    }
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -51,7 +85,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self hideTabBar:self.tabBarController];
+    self.navigationController.toolbarHidden = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -62,7 +96,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self showTabBar:self.tabBarController];
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -80,14 +114,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     
     if(section==1){
@@ -208,57 +240,4 @@
     }
 }
 
--(void) hideTabBar:(UITabBarController*) tabbarcontroller {
-    
-    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-        }
-        
-    }
-//    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,325, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];//改变325数值可调整toolbar高低
-    //[UIView commitAnimations];
-}
-
--(void) showTabBar:(UITabBarController*) tabbarcontroller {
-    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [self.toolBar setFrame:CGRectMake(self.toolBar.frame.origin.x,400, self.toolBar.frame.size.width, self.toolBar.frame.size.height)];
-    //[UIView commitAnimations];
-    
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
-        }
-    }
-
-}
-
-- (IBAction)toolbarItemSelected:(id)sender {
-    NSInteger selectedIndex = [(UIButton *)sender tag];
-    switch (selectedIndex) {
-//        case <#constant#>:
-//            <#statements#>
-//            break;
-//            
-//        default:
-//            break;
-    }
-}
 @end

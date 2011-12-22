@@ -10,12 +10,14 @@ from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
 from apps.parties.models import Party, PartiesClients
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
+from django.core.urlresolvers import reverse
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from utils.settings.page_size_setting import LIST_MEETING_PAGE_SIZE
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
 from utils.tools.paginator_tool import process_paginator
+from settings import DOMAIN_NAME
 import datetime
 import re
 from django.db import transaction
@@ -29,28 +31,37 @@ def createParty(request):
     if request.method == 'POST' :
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
-        subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips'] == '1'
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
         _issendbyself = request.POST['_issendbyself'] == '1'
-        msgType = request.POST['msgType']
-        starttime = request.POST['starttime']
-        location = request.POST['location']
-        description = request.POST['description']
-        peopleMaximum = request.POST['peopleMaximum']
+#        msgType = request.POST['msgType']
+#        starttime = request.POST['starttime']
+#        location = request.POST['location']
+#        description = request.POST['description']
+#        peopleMaximum = request.POST['peopleMaximum']
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
         startdate = None
-        try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
-        except Exception:
-            startdate = None
-        try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
-        except Exception:
-            starttime = None
-        if len(location) > 256:
-            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
+        starttime = ''
+        location = ""
+        description = content
+        peopleMaximum = 0
+        
+#        try:
+#            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
+#        except Exception:
+#            startdate = None
+#        try:
+#            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
+#        except Exception:
+#            starttime = None
+#        if len(location) > 256:
+#            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         
         with transaction.commit_on_success():
             #创建活动
@@ -101,19 +112,26 @@ def createParty(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
 
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }
 
 @csrf_exempt
 @apis_json_response_decorator
 def editParty(request):
     if request.method == 'POST':
         partyID = request.POST['partyID']
-        location = request.POST['location']
-        starttime = request.POST['starttime']
-        peopleMaximum = request.POST['peopleMaximum']
+#        location = request.POST['location']
+#        starttime = request.POST['starttime']
+#        peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
         startdate = None
+        
+        location = ''
+        starttime = ''
+        peopleMaximum = 0
         try:
             startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except:
@@ -130,11 +148,11 @@ def editParty(request):
             party = Party.objects.get(pk = partyID, creator = user)
         except Exception:
             raise myException(u'您要编辑的会议已被删除')
-        party.start_date = startdate
-        party.start_time = starttime
+#        party.start_date = startdate
+#        party.start_time = starttime
         party.description = description
-        party.address = location
-        party.limit_count = peopleMaximum
+#        party.address = location
+#        party.limit_count = peopleMaximum
         party.save()
         
 @csrf_exempt
@@ -156,10 +174,12 @@ def deleteParty(request):
 def PartyList(request, uid, start_id = 0):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
-    if start_id == 0:
+    print start_id
+    if str(start_id) == "0":
         partylist = Party.objects.filter(creator = user).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     else:
-        partylist = Party.objects.filter(creator = user, pk__gt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+        partylist = Party.objects.filter(creator = user, pk__lt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+    print partylist
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
@@ -198,12 +218,12 @@ def PartyList(request, uid, start_id = 0):
         PartyObjectArray.append(partyObject)
     if partylist:
         return {
-                'page':partylist[partylist.count() - 1].id,
+                'lastID':partylist[partylist.count() - 1].id,
                 'partyList':PartyObjectArray
                 }
     else:
         return {
-                'page':start_id,
+                'lastID':start_id,
                 'partyList':[]
                 }
 
@@ -228,9 +248,7 @@ def GetPartyMsg(request, pid):
         dict['cName'] = partiesclients.client.name
         dict['backendID'] = partiesclients.id
         receivers.append(dict)
-    print 1
     subObj = message.get_subclass_obj()
-    print 2
     if messageType == 'SMS':
         subject = ''
         content = subObj.content
@@ -346,14 +364,18 @@ def resendMsg(request):
     if request.method == "POST":
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
-        subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips'] == '1'
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
         _issendbyself = request.POST['_issendbyself'] == '1'
-        msgType = request.POST['msgType']
+#        msgType = request.POST['msgType']
         partyID = request.POST['partyID']
         uID = request.POST['uID']
         addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
         
         try:
             party = Party.objects.get(pk = partyID, creator = user)
@@ -378,7 +400,9 @@ def resendMsg(request):
                 PartiesClients.objects.get_or_create(
                                                   party = party,
                                                   client = client,
-                                                  apply_status = u'noanswer'
+                                                  defaults = {
+                                                              apply_status:'noanswer'
+                                                              }
                                                   ) 
                 addressArray.append(receiver['cValue'])
     
@@ -402,4 +426,7 @@ def resendMsg(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
         
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }
