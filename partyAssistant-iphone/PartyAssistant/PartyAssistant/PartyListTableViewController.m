@@ -110,6 +110,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.tableView  reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -246,6 +247,7 @@
      */
     PartyDetailTableViewController *vc = [[PartyDetailTableViewController alloc] initWithNibName:@"PartyDetailTableViewController" bundle:[NSBundle mainBundle]];
     vc.baseinfo = [self.partyList objectAtIndex:indexPath.row];
+    vc.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

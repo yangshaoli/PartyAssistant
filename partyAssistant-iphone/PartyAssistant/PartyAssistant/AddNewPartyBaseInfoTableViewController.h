@@ -20,6 +20,10 @@
     UIPickerView *peoplemaxiumPicker;
     UITextField *locationTextField;
     UITextView *descriptionTextView;
+    NSInteger buttonIndexInteger;//控制时间
+    NSInteger peoplebuttonIndex;//控制人数
+
+    
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseInfoObject;

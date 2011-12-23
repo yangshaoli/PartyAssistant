@@ -12,6 +12,7 @@
 #import "UserObjectService.h"
 #import "UserObject.h"
 #import "DeviceDetection.h"
+#import "RegexKitLite.h"
 /******************************
  SKProduct extend
  *****************************/
@@ -179,13 +180,27 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 	
     UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
     NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
-    NSString *platform = [DeviceDetection platform];
     
     [request setUserID:userID];
 	[request setPostValue:recepit forKey:@"receipt-data"];
     [request setPostValue:userID forKey:@"user-ID"];
+    
+    NSString *platform = [DeviceDetection platform];
+    
     [request setPostValue:platform forKey:@"device-platform"];
-	
+    
+    NSString *regexString = @"([a-zA-Z]+)(\\d+),(\\d+)";
+    
+    if ([platform isMatchedByRegex:regexString]) {
+        NSString *deviceType = [platform stringByMatching:regexString capture:1L];
+        NSString *deviceVersion = [platform stringByMatching:regexString capture:2L];
+        NSString *deviceSubVersion = [platform stringByMatching:regexString capture:3L];
+    
+        if (deviceType) [request setPostValue:deviceType forKey:@"deviceType"];
+        if (deviceVersion) [request setPostValue:deviceVersion forKey:@"deviceVersion"];
+        if (deviceSubVersion) [request setPostValue:deviceSubVersion forKey:@"deviceSubVersion"];
+    }
+    
     [_networkQueue addOperation: request];
 	[_networkQueue go];
 }
@@ -208,12 +223,14 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
         }
         else {
             NSString *exception = [datasource objectForKey: @"exception"];
-            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
+            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
+                                                              withError:exception];
         }
 
     } else {
         NSString *exception = [datasource objectForKey: @"exception"];
-        [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
+        [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier
+                                                          withError:exception];
     }
 }
 -(void)didFailedVerify:(ECPurchaseFormDataRequest *)request {
@@ -273,7 +290,6 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
             NSString *exception = [datasource objectForKey: @"exception"];
             [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];
         }
-        
     } else {
         NSString *exception = [datasource objectForKey: @"exception"];
         [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier withError:exception];

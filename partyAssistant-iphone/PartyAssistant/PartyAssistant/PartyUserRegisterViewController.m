@@ -87,6 +87,22 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    UIToolbar *toolbar = [[[UIToolbar alloc] init] autorelease];
+    [toolbar setBarStyle:UIBarStyleBlackTranslucent];
+    [toolbar sizeToFit];
+    
+    UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    UIBarButtonItem *doneButton =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(resignKeyboard)];
+    
+    NSArray *itemsArray = [NSArray arrayWithObjects:flexButton, doneButton, nil];
+    
+    [flexButton release];
+    [doneButton release];
+    [toolbar setItems:itemsArray];
+    
+    [_userNameTextField setInputAccessoryView:toolbar];
+    
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"确定" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
@@ -137,6 +153,10 @@
     _HUD.delegate = self;
     
     [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
+}
+
+-(void)resignKeyboard {
+    [_userNameTextField resignFirstResponder];
 }
 
 - (void)cleanKeyBoard {

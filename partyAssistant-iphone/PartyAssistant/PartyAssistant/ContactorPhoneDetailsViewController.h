@@ -16,7 +16,7 @@
 
 @end
 
-@interface ContactorPhoneDetailsViewController : UITableViewController<UITableViewDelegate>
+@interface ContactorPhoneDetailsViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>
 {
     ABRecordID contactorID;
     ABMultiValueRef phone;

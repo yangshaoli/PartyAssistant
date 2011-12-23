@@ -109,30 +109,30 @@
     if(indexPath.row==0){
         cell.textLabel.text = @"昵称：";
         if (!nicknameTextField) {
-            self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+            self.nicknameTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
         }
         nicknameTextField.text = user.nickName;
-        nicknameTextField.textAlignment = UITextAlignmentRight;
+        nicknameTextField.textAlignment = UITextAlignmentLeft;
         nicknameTextField.backgroundColor = [UIColor clearColor];
         [cell addSubview:nicknameTextField];        
     }
     if(indexPath.row==1){
         cell.textLabel.text = @"手机号：";
         if (!phoneNumberTextField) {
-            self.phoneNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+            self.phoneNumberTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
         }
         phoneNumberTextField.text = user.phoneNum;
-        phoneNumberTextField.textAlignment = UITextAlignmentRight;
+        phoneNumberTextField.textAlignment = UITextAlignmentLeft;
         phoneNumberTextField.backgroundColor = [UIColor clearColor];
         [cell addSubview:phoneNumberTextField];        
     }
     if(indexPath.row==2){
         cell.textLabel.text = @"邮箱：";
         if (!emailTextField) {
-            self.emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 280, 44)];
+            self.emailTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 44)];
         }
         emailTextField.text = user.emailInfo;
-        emailTextField.textAlignment = UITextAlignmentRight;
+        emailTextField.textAlignment = UITextAlignmentLeft;
         emailTextField.backgroundColor = [UIColor clearColor];
         [cell addSubview:emailTextField];        
     }
