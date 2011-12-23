@@ -6,13 +6,14 @@ Created on 2011-11-17
 '''
  
 from apps.common.models import ShortLink
-from django.utils import simplejson
-from settings import DOMAIN_NAME
+from settings import DOMAIN_NAME, SHORT_DOMAIN_NAME
 from utils.tools.str_tool import next_key
 import hashlib
 import logging
 import urllib
 import urllib2
+BASIC_MESSAGE_LENGTH = 65
+SHORT_LINK_LENGTH = 21
 
 logger = logging.getLogger('airenao')
 SMS_SERVER_NAME = 'http://u.wangxun360.com'
@@ -68,6 +69,7 @@ def _post_api_request_sendSMS(params={}):
  
  
 def sms_modem_send_sms(outbox_message, message, party):
+    number_of_message = (len(message.content) + (SHORT_LINK_LENGTH if message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
     try:
         phone_list = outbox_message.address.split(',')
         if message.is_apply_tips:
@@ -79,10 +81,10 @@ def sms_modem_send_sms(outbox_message, message, party):
             
             for phone in phone_list:
                 content = message.content
-                enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
+                enroll_link = 'http://' + DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
                 last_key = next_key(last_key)
-                short_link = DOMAIN_NAME + '/' + last_key
-                content = content + u' 快来报名：%s' % short_link
+                short_link = 'http://' + SHORT_DOMAIN_NAME + '/' + last_key
+                content = content + u' 快来报名：%s ' % short_link
                 ShortLink.objects.create(short_link=last_key, long_link=enroll_link)
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
@@ -90,6 +92,11 @@ def sms_modem_send_sms(outbox_message, message, party):
                     if res != '1':
                         logger.error(res)
                 except:
+                    userprofile = party.creator.get_profile()
+                    userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+                    userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+                    userprofile.save()
+                    logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
         else:
             for phone in phone_list:
@@ -100,6 +107,11 @@ def sms_modem_send_sms(outbox_message, message, party):
                     if res != '1':
                         logger.error(res)
                 except:
+                    userprofile = party.creator.get_profile()
+                    userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+                    userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+                    userprofile.save()
+                    logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
     except:
         logger.exception('send sms error!')
