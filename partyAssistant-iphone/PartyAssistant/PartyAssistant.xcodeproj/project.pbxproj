@@ -190,6 +190,8 @@
 		89E7D93B146378CD0059ADF4 /* UserObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D93A146378CD0059ADF4 /* UserObjectService.m */; };
 		89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */; };
 		89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */; };
+		CE295D4814A3492F00C73505 /* ContentTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CE295D4614A3492E00C73505 /* ContentTableVC.m */; };
+		CE295D4914A3492F00C73505 /* ContentTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE295D4714A3492E00C73505 /* ContentTableVC.xib */; };
 		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
 		CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */; };
 		CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */; };
@@ -513,6 +515,9 @@
 		89F05AE3146E028A00EBA2CB /* EditPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPartyTableViewController.h; sourceTree = "<group>"; };
 		89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPartyTableViewController.m; sourceTree = "<group>"; };
 		89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditPartyTableViewController.xib; sourceTree = "<group>"; };
+		CE295D4514A3492E00C73505 /* ContentTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTableVC.h; sourceTree = "<group>"; };
+		CE295D4614A3492E00C73505 /* ContentTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentTableVC.m; sourceTree = "<group>"; };
+		CE295D4714A3492E00C73505 /* ContentTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentTableVC.xib; sourceTree = "<group>"; };
 		CE472E9D148DB53E00E24742 /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pinyin.c; path = PartyAssistant/pinyin.c; sourceTree = SOURCE_ROOT; };
 		CE472E9E148DB53E00E24742 /* pinyin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pinyin.h; path = PartyAssistant/pinyin.h; sourceTree = SOURCE_ROOT; };
 		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
@@ -1142,6 +1147,9 @@
 				CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */,
 				CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */,
 				CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */,
+				CE295D4514A3492E00C73505 /* ContentTableVC.h */,
+				CE295D4614A3492E00C73505 /* ContentTableVC.m */,
+				CE295D4714A3492E00C73505 /* ContentTableVC.xib */,
 				CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */,
 				CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */,
 				CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */,
@@ -1332,6 +1340,7 @@
 				CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */,
 				CEB072C9149EDE9A0056F7B5 /* PartyDetailTableVC.xib in Resources */,
 				CEB072CF149F140F0056F7B5 /* StatusTableVC.xib in Resources */,
+				CE295D4914A3492F00C73505 /* ContentTableVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1476,6 +1485,7 @@
 				CEB072C8149EDE9A0056F7B5 /* PartyDetailTableVC.m in Sources */,
 				CEB072CE149F140F0056F7B5 /* StatusTableVC.m in Sources */,
 				CEB072D4149F2E150056F7B5 /* PartyModel.m in Sources */,
+				CE295D4814A3492F00C73505 /* ContentTableVC.m in Sources */,
 				8980AB6014A33C1600C3C63B /* PartyListService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

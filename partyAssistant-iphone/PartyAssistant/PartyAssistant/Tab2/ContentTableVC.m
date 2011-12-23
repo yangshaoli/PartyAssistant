@@ -1,23 +1,20 @@
 //
-//  StatusTableVC.m
+//  ContentTableVC.m
 //  PartyAssistant
 //
-//  Created by user on 11-12-19.
+//  Created by user on 11-12-22.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#import "StatusTableVC.h"
-#import "ContactorPhoneDetailsViewController.h"
-@interface StatusTableVC()
+#import "ContentTableVC.h"
+@interface ContentTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
 -(void) showTabBar:(UITabBarController*) tabbarcontroller;
 
 @end
-
-
-@implementation StatusTableVC
-@synthesize participantsArray;
+@implementation ContentTableVC
+@synthesize  contentTextView;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -40,7 +37,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.participantsArray=[[NSMutableArray alloc] initWithObjects:@"张三",@"李四",@"王五", nil];
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -56,7 +53,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated
-{
+{   
+    
     [super viewWillAppear:animated];
     [self hideTabBar:self.tabBarController];
 }
@@ -84,6 +82,13 @@
 
 #pragma mark - Table view data source
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        return 180;
+    }
+    return 44.0f;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
 #warning Potentially incomplete method implementation.
@@ -95,7 +100,7 @@
 {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return  [self.participantsArray count];
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -106,9 +111,15 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
+    if (!contentTextView) {
+        self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
+    }
+    contentTextView.backgroundColor = [UIColor clearColor];
+    [cell addSubview:contentTextView];
+    cell.textLabel.text  = @"活动内容";
+
     // Configure the cell...
-    cell.textLabel.text=[self.participantsArray  objectAtIndex:[indexPath row]];
+    
     return cell;
 }
 
@@ -162,12 +173,6 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
-    
-     ContactorPhoneDetailsViewController *contactorPhoneDetailsViewController = [[ContactorPhoneDetailsViewController alloc] initWithNibName:@"ContactorPhoneDetailsViewController" bundle:[NSBundle mainBundle]];
-      contactorPhoneDetailsViewController.contactorID = 5;
-      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
-
-     [self.navigationController pushViewController:contactorPhoneDetailsViewController animated:YES];
 }
 
 
@@ -175,8 +180,8 @@
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller {
     
     
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
+    //    [UIView beginAnimations:nil context:NULL];
+    //    [UIView setAnimationDuration:0.5];
     for(UIView*view in tabbarcontroller.view.subviews)
     {
         if([view isKindOfClass:[UITabBar class]])

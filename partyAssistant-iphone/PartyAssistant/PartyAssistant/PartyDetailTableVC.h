@@ -1,5 +1,5 @@
 //
-//  PatryDetailTableVC.h
+//  PartyDetailTableVC.h
 //  PartyAssistant
 //
 //  Created by user on 11-12-19.

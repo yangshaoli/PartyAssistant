@@ -166,6 +166,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     NSInteger row=[indexPath row];
+    cell.textLabel.font=[UIFont systemFontOfSize:15];
     cell.textLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     //cell.textLabel.text=[self.partyList  objectAtIndex:row];
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
@@ -226,7 +227,7 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     
-    PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PatryDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+    PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
     partyDetailTableVC.title=[[self.partyList  objectAtIndex:[indexPath row]] contentString];    //partyDetailTableVC.title=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
