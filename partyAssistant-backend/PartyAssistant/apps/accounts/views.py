@@ -57,10 +57,17 @@ def profile(request):
                 userprofile.true_name = true_name
                 userprofile.save()
                 profile_status = 'success'
-            if userprofile.phone != long(phone):
-                userprofile.phone = phone
-                userprofile.save()
-                profile_status = 'success'
+            if phone == None:
+                if userprofile.phone != phone:
+                    userprofile.phone = phone
+                    userprofile.save()
+                    profile_status = 'success'
+            else:           
+                if userprofile.phone != long(phone):
+                    userprofile.phone = phone
+                    userprofile.save()
+                    profile_status = 'success'
+                    
             if user.email != email:
                 user.email = email
                 user.save()
