@@ -234,10 +234,10 @@ function getRecentPartiesAddressee(v){
             </div>
             <div class="field">
                 <label for="id_recent_parties">最近联系人</label>
-                <select id="id_recent_parties" onchange="getRecentPartiesAddressee(this.value)">
+                <select id="id_recent_parties" onchange="getRecentPartiesAddressee(this.value)"  style="width:410px">
                     <option value="0">未选择</option>
                     {% for party in recent_parties %}
-                    <option value="{{party.id}}">{{party.description|truncatestring:"60"}}</option>
+                    <option value="{{party.id}}">{{party.description|truncatestring:"40"}}</option>
                     {% endfor %}
                 </select>
             </div>
