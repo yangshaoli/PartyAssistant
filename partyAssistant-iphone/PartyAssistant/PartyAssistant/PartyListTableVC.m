@@ -8,6 +8,12 @@
 #import "PartyListTableVC.h"
 #import "PartyDetailTableVC.h"
 #import "PartyListService.h"
+@interface PartyListTableVC()
+
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller;
+-(void) showTabBar:(UITabBarController*) tabbarcontroller;
+
+@end
 
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;;
@@ -40,8 +46,9 @@
     //partyObj2.receiversArray=[[ContactData   contactsArray] mutableCopy];
     partyObj2.contentString=@"唱歌嗨一把";
     partyObj2.isSendByServer=NO;
-    partyObj2.partyId=2;
-   
+    partyObj2.partyId=1;
+    partyObj2.userObject.uID=1;
+    //partyObj2.peopleCountDict=
     NSLog(@"self.partyList打印出来：：%@",self.partyList);
     self.title=@"活动列表";
     
@@ -120,6 +127,7 @@
 {
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
+    [self showTabBar:self.tabBarController];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -323,5 +331,49 @@
 - (CGFloat)getTableHeadViewHeight {
 	return 0.0f;
 }
+
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller {
+    
+    
+    //    [UIView beginAnimations:nil context:NULL];
+    //    [UIView setAnimationDuration:0.5];
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
+        }
+        else
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+        }
+        
+    }
+    
+    //[UIView commitAnimations];
+}
+
+-(void) showTabBar:(UITabBarController*) tabbarcontroller {
+    
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    [UIView commitAnimations];
+    
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
+        }
+        else
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+        }
+    }
+    
+}
+
+
+
 
 @end

@@ -523,7 +523,7 @@
 		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
 		CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListTableVC.m; path = ../PartyListTableVC.m; sourceTree = "<group>"; };
 		CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyListTableVC.xib; path = ../PartyListTableVC.xib; sourceTree = "<group>"; };
-		CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; name = PartyDetailTableVC.h; path = ../PartyDetailTableVC.h; sourceTree = "<group>"; };
+		CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyDetailTableVC.h; path = ../PartyDetailTableVC.h; sourceTree = "<group>"; };
 		CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyDetailTableVC.m; path = ../PartyDetailTableVC.m; sourceTree = "<group>"; };
 		CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyDetailTableVC.xib; path = ../PartyDetailTableVC.xib; sourceTree = "<group>"; };
 		CEB072CB149F140F0056F7B5 /* StatusTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StatusTableVC.h; path = ../StatusTableVC.h; sourceTree = "<group>"; };
@@ -1147,12 +1147,12 @@
 				CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */,
 				CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */,
 				CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */,
-				CE295D4514A3492E00C73505 /* ContentTableVC.h */,
-				CE295D4614A3492E00C73505 /* ContentTableVC.m */,
-				CE295D4714A3492E00C73505 /* ContentTableVC.xib */,
 				CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */,
 				CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */,
 				CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */,
+				CE295D4514A3492E00C73505 /* ContentTableVC.h */,
+				CE295D4614A3492E00C73505 /* ContentTableVC.m */,
+				CE295D4714A3492E00C73505 /* ContentTableVC.xib */,
 				CEB072CB149F140F0056F7B5 /* StatusTableVC.h */,
 				CEB072CC149F140F0056F7B5 /* StatusTableVC.m */,
 				CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */,

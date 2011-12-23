@@ -156,24 +156,28 @@
 
 - (void)loginCheck {
     //check usrname and pwd is not nil and legal( length > 3?)
-    if (!_userNameTextField.text || [_userNameTextField.text isEqualToString:@""]
-        || !_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
-        [self showNotLegalInput];
-        return;
-    }
-
-    [self cleanKeyBoard];
-
-    _HUD = [[MBProgressHUD alloc] initWithView:self.view];
-	[self.navigationController.view addSubview:_HUD];
-	
-    _HUD.labelText = @"Loading";
+  //为了调试暂时先注释掉  
+//    if (!_userNameTextField.text || [_userNameTextField.text isEqualToString:@""]
+//        || !_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
+//        [self showNotLegalInput];
+//        return;
+//    }
+//
+//    [self cleanKeyBoard];
+//
+//    _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+//	[self.navigationController.view addSubview:_HUD];
+//	
+//    _HUD.labelText = @"Loading";
+//    
+//    _HUD.delegate = self;
+//    
+//    [_HUD show:YES];
+//   
+//    [self tryConnectToServer];
     
-    _HUD.delegate = self;
+    [self gotoContentVC];//调试新加的无用语句
     
-    [_HUD show:YES];
-   
-    [self tryConnectToServer];
 }
 
 - (void)tryConnectToServer {
@@ -181,6 +185,7 @@
     NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
                                             validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
+
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
             [self showInvalidateNetworkalert];
