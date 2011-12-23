@@ -683,7 +683,7 @@ def invite_list(request, party_id):
 
 #生成默认内容
 def _create_default_content(creator, start_date, start_time , address, description):
-    content = creator + u'邀请你参加：' + description + u'活动'
+    content = creator + u'邀请你参加：' + description 
     address_content = u'，' + u'地点：' + (address if address != "" else u'待定') 
     if start_date == None and start_time == None:
         if address == "":
