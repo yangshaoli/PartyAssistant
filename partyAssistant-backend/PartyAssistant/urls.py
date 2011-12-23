@@ -19,7 +19,7 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('apps.accounts.urls')),
     url(r'^clients/', include('apps.clients.urls')),
     url(r'^parties/', include('apps.parties.urls')),
-    url(r'^(?P<short_link>[a-zA-Z]+)$', 'apps.common.views.short_link', name='short_link'), 
+    url(r'^(?P<short_link>[a-zA-Z0-9]+)$', 'apps.common.views.short_link', name='short_link'), 
         
     url(r'^a/',include('apis.urls')),
     url(r'^m/', include('apps.m.urls')), 

@@ -446,21 +446,21 @@ def _public_enroll(request, party_id):
             else:
                 phone = form.cleaned_data['phone_or_email']
              
-            BOOL_EMAIL_NONE = Client.objects.filter(creator = creator).filter(email = email).exclude(email='').count() == 0 #Email 方式，查无此人    
-            BOOL_PHONE_NONE = Client.objects.filter(creator = creator).filter(phone = phone).exclude(phone='').count() == 0 #Phone 方式，查无此人        
+            BOOL_EMAIL_NONE = Client.objects.filter(creator = creator).filter(email = email).exclude(email = '').count() == 0 #Email 方式，查无此人    
+            BOOL_PHONE_NONE = Client.objects.filter(creator = creator).filter(phone = phone).exclude(phone = '').count() == 0 #Phone 方式，查无此人        
             client = None
             create = False
             if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
-                client, create = Client.objects.get_or_create(name = name, creator=creator, email = email, phone = phone)
-            elif BOOL_EMAIL_NONE and ( not BOOL_PHONE_NONE ) : #存在 phone 记录 ，但无 Email 记录
+                client, create = Client.objects.get_or_create(name = name, creator = creator, email = email, phone = phone)
+            elif BOOL_EMAIL_NONE and (not BOOL_PHONE_NONE) : #存在 phone 记录 ，但无 Email 记录
                 client = get_object_or_404(Client, phone = phone)  
-            elif ( not BOOL_EMAIL_NONE ) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
+            elif (not BOOL_EMAIL_NONE) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
                 client = get_object_or_404(Client, email = email)
             else:
                 logger.exception('public enroll exception!')
             #有人数限制
             if party.limit_count != 0 :
-                if PartiesClients.objects.filter(party=party, apply_status='apply').count() >= party.limit_count:
+                if PartiesClients.objects.filter(party = party, apply_status = 'apply').count() >= party.limit_count:
                     return TemplateResponse(request, 'message.html', {'message': u'来晚了，下次早点吧'})
                     
 #            if Client.objects.filter(creator = creator).filter(party = party).filter(email = email).exclude(email = '').count() == 0 \
@@ -662,18 +662,18 @@ def invite_list(request, party_id):
 #生成默认内容
 def _create_default_content(creator, start_date, start_time , address, description):
     content = creator + u'邀请你参加：' + description + u'活动'
-    address_content = ',' + u'地点:' + (address if address != "" else u'待定') 
+    address_content = u'，' + u'地点：' + (address if address != "" else u'待定') 
     if start_date == None and start_time == None:
         if address == "":
-            content += ',' + u'具体安排待定'
+            content += u'，' + u'具体安排待定'
         else:
-            content += ',' + address_content
+            content += u'，' + address_content
     if start_date != None and start_time == None:
-        content += address_content + ',' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u',时间暂定'
+        content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间暂定'
     if start_date == None and start_time != None:
-        content += address_content + ',' + u'日期暂定' + ',' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
+        content += address_content + u'，' + u'日期暂定' + '，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
     if start_date != None and start_time != None:
-        content += address_content + ',' + u'具体时间：' + datetime.date.strftime(start_date, '%Y-%m-%d') + ' ' + datetime.time.strftime(start_time, '%H:%M')        
+        content += address_content + u'，' + u'具体时间：' + datetime.date.strftime(start_date, '%Y-%m-%d') + ' ' + datetime.time.strftime(start_time, '%H:%M')        
     content += u'。'
     return content
 

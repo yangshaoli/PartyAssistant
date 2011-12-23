@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'airenao@cn-acg.com'),
+    ('airenao', 'airenao@cn-acg.com'),
 )
 
 DATABASES = {
@@ -191,6 +191,7 @@ LOGGING = {
 
 SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
 DOMAIN_NAME = 'http://airenao.com'
+SHORT_DOMAIN_NAME = 'arn.bz'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
 EMAIL_HOST = '127.0.0.1'
