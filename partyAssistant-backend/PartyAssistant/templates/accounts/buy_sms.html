@@ -50,7 +50,7 @@ function cal_price(v){
     <fieldset>
         <div class="field">
         <label for="true_name">短信数量</label>
-         <input type="number" id='id_sms_count' name="sms_count" value='{{ form.sms_count.value }}' onkeyup="cal_price(this.value)" />
+         <input type="number" id='id_sms_count' name="sms_count" value='{{ form.sms_count.value|default:'' }}' onkeyup="cal_price(this.value)" />
          <font color='red'>{{ form.sms_count.errors.0 }}</font>
          </div>
          
