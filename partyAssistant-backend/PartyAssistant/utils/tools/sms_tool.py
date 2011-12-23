@@ -13,7 +13,7 @@ import logging
 import urllib
 import urllib2
 BASIC_MESSAGE_LENGTH = 65
-SHORT_LINK_LENGTH = 21
+SHORT_LINK_LENGTH = 18
 
 logger = logging.getLogger('airenao')
 SMS_SERVER_NAME = 'http://u.wangxun360.com'
