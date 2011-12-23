@@ -183,14 +183,7 @@ def PartyList(request, uid, start_id = 0):
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
-        try:
-            party.start_time = datetime.datetime.combine(party.start_date, party.start_time)
-            partyObject['starttime'] = party.start_time.strftime(GMT_FORMAT)
-        except Exception, e:
-            partyObject['starttime'] = None
         partyObject['description'] = party.description
-        partyObject['peopleMaximum'] = party.limit_count
-        partyObject['location'] = party.address
         partyObject['partyId'] = party.id
         
         #各个活动的人数情况
@@ -336,7 +329,8 @@ def GetPartyClientSeperatedList(request, pid, type):
                'cValue':cValue,
                'isCheck':is_checked,
                'backendID':clientparty.id,
-               'status':clientparty.apply_status
+               'status':clientparty.apply_status,
+               "msg":clientparty.leave_message
                }
         clientList.append(dic)
     party_list = Party.objects.filter(creator = party.creator)
