@@ -5,6 +5,8 @@
 //  Created by Wang Jun on 11/4/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
+#import "PartyListTableVC.h"
+
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "DataManager.h"
@@ -13,6 +15,9 @@
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
 #import "SettingsListTableViewController.h"
+#import "PartyListService.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
 
 #define NotLegalTag         1
 #define NotPassTag          2
@@ -102,9 +107,33 @@
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
+    
     [registerButton release];
     
     [tableFooterView release];
+   
+    //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+//    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+ //  NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+//    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
+   // [keyString release]; 
+    if(user){
+        NSLog(@"用户信息不空");
+        if(user.uID > 0){
+            NSLog(@"用户id不等于－1");
+            [self pushToContentVC];
+        }else{
+            return;
+        }    
+    }else{
+        NSLog(@"用户信息为空");
+        return;
+    }
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -185,6 +214,16 @@
 - (void)gotoContentVC {
     //use different work flow
     
+//    //登陆连接服务器成功后   保存用户信息到本地   登出时需要清空才可
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//   
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+//    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+//    [defaults setInteger:user.uID  forKey:keyString];    
+//    [keyString  release];
+    
+
     //1.modal
     
     //2.nav
@@ -194,6 +233,7 @@
         //2
         [self pushToContentVC];
     }
+    
 
 }
 
@@ -214,24 +254,34 @@
 - (void)registerUser {
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
+    registerVC.delegate=self;
     [self.navigationController pushViewController:registerVC animated:YES];
     [registerVC release];
 }
 
 - (void)pushToContentVC {
-    self.navigationController.navigationBarHidden = YES;
+    self.userNameTextField.text = @"";
+    self.pwdTextField.text = @"";
     
-    PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+    self.navigationController.navigationBarHidden = YES;
+    PartyListTableVC  *pattyListTableVC=[[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
+    
+    
+    //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
     AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
-    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
+    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
     UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:nil tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:nil tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:nil tag:3];
+    UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
+    UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
+    UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
+    
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:listBarImage tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:addPageBarImage tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
     addPageNav.tabBarItem = addPageBarItem;
@@ -242,21 +292,49 @@
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
-    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+//    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, nil];
     [self.navigationController pushViewController:tab animated:YES];
-    
+
     [listNav release];
     [addPageNav release];
     [settingNav release];
     
-    [list release];
+    //[list release];
+    [pattyListTableVC release];
     [addPage release];
     [settings release];
     
-    //add suggest user input name page here?
+     //add suggest user input name page here?
     [self checkIfUserNameSaved];
+        
+//    [self checkIfUserNameSaved];
+    
+    
+    //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+   //NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
+    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
+    if(getDefaultCountNumber!=0){  
+        NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
+        tab.selectedIndex=1;
+        NSLog(@"有趴列表");
+    }else{
+        tab.selectedIndex=0;
+        NSLog(@"无趴列表");
+        
+    }
+    [keyString release];
 }
+//wxz
+- (void)autoLogin{
+    [self pushToContentVC];
 
+}
 #pragma mark -
 #pragma tableViewDelegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -321,7 +399,21 @@
     vc.delegate = self;
     [self presentModalViewController:vc animated:YES];
     [vc release];
-}
+    
+//    //wxz判断   只在用户首次登陆才执行
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//    NSString *keyString1=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+//    NSUserDefaults *defaults1 = [NSUserDefaults standardUserDefaults];  
+//    NSInteger  getDefaulUserId=[defaults1 integerForKey:keyString1];
+//    if(-1==getDefaulUserId){
+//        PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//        vc.delegate = self;
+//        [self presentModalViewController:vc animated:YES];
+//        [vc release];
+//    }
+//    [keyString1 release];
+} 
 
 - (void)cancleInput {
     [self.navigationController dismissModalViewControllerAnimated:YES];

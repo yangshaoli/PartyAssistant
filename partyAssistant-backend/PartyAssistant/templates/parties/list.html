@@ -1,19 +1,36 @@
 {% extends 'login_base.html' %}
-
+{% load string_filter %}
 {% block title %} 我的活动 {% endblock %}
 
 {% block script %}
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script>
+$(document).ready(function(){
+    $("#tips").delay(1000).fadeOut(2000);
+})
 
 	function deleteConfirm(url){
 	  if (confirm('删除不可恢复，是否确认删除？')){
 	     window.location=url;
 	  }
 	}
+ 
 </script>
 {% endblock %}
-
+{% block style %}
+<style>
+iframe{
+ width:18px;
+}
+.icon_new {
+    height: 13px;
+    left: auto;
+    top: 48%;
+    width: 30px;
+    margin-left:-40px;
+}
+</style>
+{% endblock %}
 {% block content %}
 
  <!--START: content -->
@@ -21,23 +38,26 @@
 <div class="popup">
 	<div class="hd">
  	<h2></h2>
-  <a href="#" class="close">close</a>
+  <a href="#" onclick="closepopup();" class="close">close</a>
  </div>
  <div class="bd">
  	<table width="100%" border="0" cellspacing="0" class="table">
       <thead>
-       <tr>
-        <th width="19%" scope="col">姓名</th>
-        <th width="62%" scope="col">联系方式</th>
-        <th width="19%" scope="col" class="ta_r"><a href="#"><img src="/static/images/btn_please.png" width="62" height="23" alt="please" /></a></th>
-       </tr>
        </thead>
        <tbody>
        </tbody>
       </table>
  </div>
 </div>
-
+    {% if send_status %}
+    <div id="tips" style="color:#000; background:#ffff00; padding:5px; border-radius:5px;text-align:center; margin:20px; position:absolute; width:400px;   margin-left:150px;" >
+    {% ifequal send_status 'email_success'%} 邮件发送成功 {% endifequal %}
+    {% ifequal send_status 'email_fail'%} 邮件发送失败 {% endifequal %}
+    {% ifequal send_status 'sms_success'%} 短信发送成功 {% endifequal %}
+    {% ifequal send_status 'sms_fail'%} 短信发送成功 {% endifequal %}
+    {% if sms_count %} 你剩余的短信数量为：{{ sms_count }} ,是否需要<a href='{% url buy_sms %}'>充值</a>？ {% endif %}
+    </div>
+    {% endif %}
  <div id="content">
   <div class="grid_a">
    <h2 class="title" style="margin-top:30px;"><a href="{% url create_party %}"><img src="/static/images/btn_creat_active.png"/></a></h2>
@@ -47,20 +67,55 @@
     </ul>
     <div class="activity_content">
      <div class="sub_tab"><strong>全部</strong><span class="indicator"></span!--></div>
-     {% for party in party_list %}
+     {% for party in party_list.object_list %}
      {% if not forloop.first %}
      <div class="line"></div>
      {% endif %}
-     <p style="text-align:right;margin:10px 0px 20px 0px;"><strong class="important">{{ party.start_time|date:"y年m月d日"|default:"日期待定" }}</strong> {{ party.start_time|date:"H:i"|default:"时间待定" }}  在 <strong class="important">{{ party.address|default:"地点待定" }}</strong></p>
+     <p style="text-align:right;margin:10px 0px 20px 0px;"><strong class="important">{{ party.start_date|date:"m月d日"}}</strong> {{ party.start_time|time:"H:i"|default:"时间待定" }}  地点： <strong class="important">{{ party.address|default:"待定" }}</strong></p>
     <div class="comment comment_odd"> <i class="corners"></i>
-      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|ljust:"10" }}</a></p>
+      <p class="details"><a href="{%url invite_list party.id %}">{{ party.description|truncatestring:"60" }}</a></p>
       <div class="function_share clearfix">
-       <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important">{{ party.client.noanswer.count }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client.apply.count }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client.reject.count }}</strong></p!-->
-       <p class="statistics"><a href="{%url invite_list party.id %}?apply=noanswer">未响应：<strong class="important">{{ party.client.count.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=apply">已报名：<strong class="important">{{ party.client.count.apply }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不参加：<strong class="important">{{ party.client.count.reject }}</strong></p></a>
-       <p class="share"><a href="#">分享</a> | <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url edit_party party.id %}">编辑</a>
+       <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important"><i class="icon_new"></i>{{ party.client_counts.noanswer }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client_counts.apply }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client_counts.reject }}</strong></p!-->
+       <p class="statistics"><a href="{% url invite_list party.id %}?apply=apply">来的：<strong class="important">{% if party.client_counts.new_add_apply %}<i class="icon_new"></i>{% endif %}{{ party.client_counts.apply }}</strong></a> <a href="{%url invite_list party.id %}?apply=noanswer">待定的：<strong class="important">{{ party.client_counts.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不来的：<strong class="important">{% if party.client_counts.new_add_reject %}<i class="icon_new"></i>{% endif %}{{ party.client_counts.reject }}</strong></p></a>
+       <p class="share"><a href="#">分享到：</a><script type="text/javascript" charset="utf-8">     
+(function(){
+  var _w = 72 , _h = 16;
+  var uu = '{{ party.enroll_url }}';
+  var _title = '{{ party.description|escapejs }}';
+  var param = {
+    url:uu,
+    type:'3',
+    appkey:'999433557', /**您申请的应用appkey,显示分享来源(可选)*/
+    title:_title, /**分享的文字内容(可选，默认为所在页面的title)*/
+    pic:'', /**分享图片的路径(可选)*/
+    ralateUid:'', /**关联用户的UID，分享微博会@该用户(可选)*/
+	language:'zh_cn', /**设置语言，zh_cn|zh_tw(可选)*/
+    rnd:new Date().valueOf()
+  }
+  var temp = [];
+  for( var p in param ){
+    temp.push(p + '=' + encodeURIComponent( param[p] || '' ) )
+  }
+  document.write('<iframe allowTransparency="true" frameborder="0" scrolling="no" src="http://hits.sinajs.cn/A1/weiboshare.html?' + temp.join('&') + '" width="'+ _w+'" height="'+_h+'"></iframe>')
+})()</script>| <a href="#" onclick="deleteConfirm('{% url delete_party party.id %}')">删除</a> | <a href="{% url edit_party party.id %}">编辑</a>
       </div>
     </div>
     {% endfor %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if party_list.has_previous %}
+                        <a href="?page={{ party_list.previous_page_number }}">上一页</a>
+                    {% endif %}
+            
+                    <span class="current">
+                        第{{ party_list.number }}页 ，共{{ party_list.paginator.num_pages }}页.
+                    </span>
+            
+                    {% if party_list.has_next %}
+                        <a href="?page={{ party_list.next_page_number }}">下一页</a>
+                    {% endif %}
+                </span>
+            </div>
     </div>
   </div>
  </div>

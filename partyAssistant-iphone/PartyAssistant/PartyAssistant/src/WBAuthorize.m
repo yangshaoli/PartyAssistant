@@ -232,7 +232,7 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 - (void)getAccessTokenWithVerifier:(NSNotification *)notification
 
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"testNotification1" object:nil];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"testNotification1" object:nil];
     NSString *verifier =[[notification userInfo] objectForKey:@"verifier"];
 	_waitingUserAuthorize = FALSE;
 	NSMutableDictionary* headInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:

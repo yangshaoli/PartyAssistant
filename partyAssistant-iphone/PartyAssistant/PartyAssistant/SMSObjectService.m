@@ -13,13 +13,6 @@
 
 SYNTHESIZE_SINGLETON_FOR_CLASS(SMSObjectService)
 
-- (id)init
-{
-    self = [super init];
-    self.smsObject = [self getSMSObject];
-    return self;
-}
-
 -(SMSObject *)getSMSObject{
     if (smsObject) {
         return smsObject;

@@ -8,6 +8,7 @@
 
 #import "DataManager.h"
 #import "PartyUserRegisterViewController.h"
+#import "PartyLoginViewController.h"
 
 #define NullTextFieldTag            100
 #define UserNameTextFieldTag        101
@@ -47,8 +48,7 @@
 @synthesize pwdTextField = _pwdTextField;
 @synthesize pwdCheckTextField = _pwdCheckTextField;
 @synthesize nickNameTextField = _nickNameTextField;
-
-
+@synthesize delegate;
 - (void)dealloc {
     [super dealloc];
     
@@ -87,6 +87,22 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    UIToolbar *toolbar = [[[UIToolbar alloc] init] autorelease];
+    [toolbar setBarStyle:UIBarStyleBlackTranslucent];
+    [toolbar sizeToFit];
+    
+    UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+    UIBarButtonItem *doneButton =[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(resignKeyboard)];
+    
+    NSArray *itemsArray = [NSArray arrayWithObjects:flexButton, doneButton, nil];
+    
+    [flexButton release];
+    [doneButton release];
+    [toolbar setItems:itemsArray];
+    
+    [_userNameTextField setInputAccessoryView:toolbar];
+    
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"确定" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
     self.navigationItem.rightBarButtonItem = registerButton;
@@ -137,6 +153,10 @@
     _HUD.delegate = self;
     
     [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
+}
+
+-(void)resignKeyboard {
+    [_userNameTextField resignFirstResponder];
 }
 
 - (void)cleanKeyBoard {
@@ -208,7 +228,10 @@
 - (void)showRegistSuccessfulAlert {
     [self showAlertWithMessage:@"注册成功！" buttonTitle:@"OK" tag:SuccessfulTag];
 }
-
+- (IBAction)autoLogin{
+    [delegate autoLogin];
+    
+}
 - (void)showNotLegalInput {
     [self showAlertWithMessage:@"注册内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
 }
@@ -299,7 +322,12 @@
 #pragma mark Alert Delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == SuccessfulTag) {
-        [self.navigationController popViewControllerAnimated:YES];
+       //[self.navigationController popViewControllerAnimated:YES];
+        [delegate  autoLogin];
+        NSLog(@"%@",self.userNameTextField.text);
+        NSLog(@"%@",self.pwdTextField.text);
+        
+         
     } else {
        
     }

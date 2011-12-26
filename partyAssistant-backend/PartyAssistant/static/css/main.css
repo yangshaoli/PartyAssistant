@@ -184,6 +184,7 @@ body {
  margin-right:10px;
  height:28px;
  border:1px #ff5555 solid;
+ border-radius:3px;
 }
 .creat_exercise textarea{
   border:1px #ff5555 solid;

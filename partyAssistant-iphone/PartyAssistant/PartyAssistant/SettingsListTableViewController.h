@@ -9,7 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "WeiboService.h"
 #import "WeiboManagerTableViewController.h"
+#import "MBProgressHUD.h"
 
-@interface SettingsListTableViewController : UITableViewController
+@interface SettingsListTableViewController : UITableViewController<UIAlertViewDelegate, MBProgressHUDDelegate> {
+    MBProgressHUD *_HUD;
+}
 
 @end

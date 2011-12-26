@@ -80,6 +80,7 @@
 
 - (void)showLoginPage:(NSNotification *)notification{
     NSString *urlStr = [[notification userInfo] objectForKey:@"url"];
+    NSLog(@"url微博%@",urlStr);
     NSURL *url = [NSURL URLWithString:urlStr];
     [self.childView loadRequest:[NSURLRequest requestWithURL:url]];
 }
@@ -91,7 +92,8 @@
         NSString *queryStr = [[request URL] query];
         NSString *verifier = [queryStr substringFromIndex:(queryStr.length-6)];
         NSLog(@"verifier:%@",verifier);
-        NSNotification *notification = [NSNotification notificationWithName:@"testNotification1" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:verifier,@"verifier", nil]];
+        NSNotification *notification = [NSNotification notificationWithName:@"testNotification1" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:verifier,@"verifier", nil]];
+        NSLog(@"notification:%@",notification);
         [[NSNotificationCenter defaultCenter] postNotification:notification];
         return NO;
     }
@@ -114,6 +116,7 @@
         
     }else{
         PostWeiboViewController *vc = [[PostWeiboViewController alloc] initWithNibName:@"PostWeiboViewController" bundle:nil];
+        vc.baseinfo = baseinfo;
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

@@ -5,23 +5,22 @@
 <title>报名页面 - 爱热闹</title>
 <meta name="viewport" content="user-scalable=no, width=device-width" />
 <link rel="stylesheet" href="/static/css/airenao.min.css" />
-<link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc2/jquery.mobile.structure-1.0rc2.min.css" /> 
+<link rel="stylesheet" href="/static/css/jquery.mobile.structure-1.0rc2.min.css" /> 
 <script src="/static/js/jquery-1.6.4.min.js"></script>
 <script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
-
+<style type="text/css">
+#apply span , #noanswer span , #reject span{ color: #999; float: right;}
+</style>
 <script>
-    $(document).ready(function(){
-        
-        $('a[id^="tab_"]').bind('click', function(){
-            $("#"+this.id).siblings().attr('style','');
-            $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');//改变样式
-            
-            var applystatus = this.id.split('_')[1];
-            ajaxGetClients(applystatus);
-        })
-    })
+
+$(document).ready(function(){
+    ajaxGetClients('apply');
+    ajaxGetClients('noanswer');
+    ajaxGetClients('reject');
+});
+
 $(document).bind("mobileinit", function(){
-  $.mobile.foo = bar;
+    $.mobile.foo = bar;
 });
 
 function ajaxGetClients(applystatus){
@@ -29,13 +28,13 @@ function ajaxGetClients(applystatus){
     
     $.ajax({
         type : 'GET',
-        url: '/clients/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
+        url: '/m/parties/invite_list_ajax/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
             clients = JSON.parse(response);
             for (i in clients){
-                row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+clients[i].address+"</td><td></td></tr>"
-                $('.accordion_content table tbody').append(row);    
+                row = '<li class="ui-li ui-li-static ui-body-c">'+clients[i].name+"<span>"+clients[i].address+'</span></li>';
+                $('#'+applystatus+' ul').append(row);  
             }
             
             //修改[再次邀请]的url
@@ -53,9 +52,9 @@ function ajaxGetClients(applystatus){
 	    <h1><img src="/static/images/logo.png"></h1>
     </div> 
 	<div data-role="content">
-		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> 陈洋：</h2>
-		<h2>{{party.start_time}} </h2>
-		<h2>{{party.address}} <span style="color:#999">参加活动</span></h2>		
+		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %}{{client.name}}{%else%}您{%endif%}：</h2>
+		<h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
+		<h2>{{party.address|default:"地点待定" }} <span style="color:#999">参加活动</span></h2>		
 		<h2>{{party.description}}</h2>
         <form method="POST" url="{% url enroll party.id %}">
         {% if client %}
@@ -66,10 +65,8 @@ function ajaxGetClients(applystatus){
 
             <label for="basic">姓名:</label>
             <input type="text" name="name" id="id_name" value=""  />
-            <label for="basic">Email:</label>
-            <input type="text" name="email" id="id_email" value=""  />
-            <label for="basic">手机:</label>
-            <input type="text" name="phone" id="id_phone"/>
+            <label for="client_email_list">联系方式</label>
+            {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
     
             <div class="ui-block-a"><button type="submit" data-icon="check" data-theme="c">参加</button></div>
     
@@ -77,19 +74,51 @@ function ajaxGetClients(applystatus){
         </form>
 	</div>
 	<ul data-role="listview" data-inset="true" data-theme="a">
-		<li><a href="index.html">已报名 <span class="ui-li-count">{{client_count.apply}}</span></a></li>
-		<li><a href="index.html">未响应 <span class="ui-li-count">{{client_count.noanswer}}</span></a></li>
-		<li><a href="index.html">不参加 <span class="ui-li-count">{{client_count.reject}}</span></a></li>
+		<li><a href="#apply">已报名 <span class="ui-li-count">{{client_count.apply}}</span></a></li>
+		<li><a href="#noanswer">未响应 <span class="ui-li-count">{{client_count.noanswer}}</span></a></li>
+		<li><a href="#reject">不参加 <span class="ui-li-count">{{client_count.reject}}</span></a></li>
 	</ul>
-    <div data-role="navbar">
+    <!--div data-role="navbar">
 	<ul>
 		<li><a href="/" data-theme="b">首页</a></li>
 		<li><a href="{%url login %}" data-theme="b">登录</a></li>
         <li><a href="{%url register %}" data-theme="b">注册</a></li>
 	</ul>
-    </div>    
+    </div-->    
 </div> 
 
+<div data-role="page" id="apply">
+	<div data-role="header">
+        <a href="#home" data-icon="arrow-l">返回</a>
+		<h1>已报名人员列表</h1>
+	</div>
+	<div data-role="content">
+        <ul data-role="listview" data-inset="true">
+        </ul>
+	</div>
+</div>
+
+<div data-role="page" id="noanswer">
+	<div data-role="header">
+        <a href="#home" data-icon="arrow-l">返回</a>
+		<h1>未报名人员列表</h1>
+	</div>
+	<div data-role="content">
+        <ul data-role="listview" data-inset="true">
+        </ul>
+	</div>
+</div>
+
+<div data-role="page" id="reject">
+	<div data-role="header">
+        <a href="#home" data-icon="arrow-l">返回</a>
+		<h1>不参加人员列表</h1>
+	</div>
+	<div data-role="content">
+        <ul data-role="listview" data-inset="true">
+        </ul>
+	</div>
+</div>
 
 <div data-role="page" id="yes" data-theme="c">
 	<div data-role="header">

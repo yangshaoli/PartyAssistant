@@ -10,15 +10,23 @@
 #import <AddressBook/AddressBook.h>
 #import "NotificationSettings.h"
 
-@interface ContactorPhoneDetailsViewController : UITableViewController<UITableViewDelegate>
+@protocol ContactorPhoneDetailsViewControllerDelegate <NSObject>
+
+- (void)contactDetailSelectedWithUserInfo:(NSDictionary *)info;
+
+@end
+
+@interface ContactorPhoneDetailsViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>
 {
     ABRecordID contactorID;
     ABMultiValueRef phone;
     ABRecordRef card;
+    id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 }
 
 @property(nonatomic, assign)ABRecordID contactorID;
 @property(nonatomic, assign)ABMultiValueRef phone;
 @property(nonatomic, assign)ABRecordRef card;
+@property(nonatomic, strong)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 
 @end

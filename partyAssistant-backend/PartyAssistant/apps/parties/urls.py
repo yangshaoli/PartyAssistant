@@ -13,5 +13,6 @@ urlpatterns = patterns('apps.parties.views',
 urlpatterns += patterns('apps.parties.views',
     url(r'^change_apply_status/(?P<party_client_id>\d+)/(?P<applystatus>\w+)/$','change_apply_status',name='change_status'),
     url(r'^(?P<party_id>\d+)/invite_list/$','invite_list',name='invite_list'),
-    url(r'^(?P<party_id>\d+)/invite_list_ajax/$','invite_list_ajax',name='invite_list_ajax'),
+    url(r'^invite_list_ajax/(?P<party_id>\d+)/$','invite_list_ajax',name='invite_list_ajax'),
+    url(r'^ajax_get_client_list/(?P<party_id>\d+)/$','ajax_get_client_list',name='ajax_get_client_list'),
 )
