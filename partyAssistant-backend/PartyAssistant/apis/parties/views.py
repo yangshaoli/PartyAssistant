@@ -52,14 +52,14 @@ def createParty(request):
         description = content
         peopleMaximum = 0
         
-#        try:
-#            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
-#        except Exception:
-#            startdate = None
-#        try:
-#            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
-#        except Exception:
-#            starttime = None
+        try:
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
+        except Exception:
+            startdate = None
+        try:
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
+        except Exception:
+            starttime = None
 #        if len(location) > 256:
 #            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         
