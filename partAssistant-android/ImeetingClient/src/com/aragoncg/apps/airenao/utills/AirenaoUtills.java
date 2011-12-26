@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.activity.PhoneDisambigDialog;
 import com.aragoncg.apps.airenao.constans.Constants;
+import com.aragoncg.apps.airenao.model.MyPerson;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -25,6 +28,7 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
@@ -34,10 +38,9 @@ public class AirenaoUtills {
 	public static String regDigital = "([0-9])+";
 	/* 校验电子邮件 */
 	public static String regEmail = "^([\\w-\\.]+)@[\\w-.]+(\\.?[a-zA-Z]{2,4}$)";
-	/*校验电话号码*/					
+	/* 校验电话号码 */
 	public static String regPhoneNumber = "^(13|15|18)\\d{9}$";
-	
-	
+
 	public static List<Activity> activityList = new ArrayList<Activity>();
 
 	/**
@@ -58,9 +61,10 @@ public class AirenaoUtills {
 		boolean result = m.matches();
 		return result;
 	}
-	
+
 	/**
 	 * 检查网络是否连接
+	 * 
 	 * @param ctx
 	 * @return
 	 */
@@ -68,10 +72,12 @@ public class AirenaoUtills {
 		try {
 			ConnectivityManager conManager = (ConnectivityManager) ctx
 					.getSystemService(Context.CONNECTIVITY_SERVICE);
-			try{
+			try {
 				NetworkInfo netInfo = conManager.getActiveNetworkInfo();
-			}catch(Exception e){e.printStackTrace();}
-			
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 			if (conManager.getActiveNetworkInfo() == null
 					|| !conManager.getActiveNetworkInfo().isAvailable()) {
 				return false;
@@ -82,11 +88,12 @@ public class AirenaoUtills {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * 比较两个电话号码是否相同
+	 * 
 	 * @param phoneNumbers
 	 * @param phoneNumber
 	 * @return
@@ -120,9 +127,10 @@ public class AirenaoUtills {
 		}
 		return n;
 	}
-	
+
 	/**
 	 * 打开系统默认的dialer
+	 * 
 	 * @param ctx
 	 * @param number
 	 */
@@ -198,9 +206,10 @@ public class AirenaoUtills {
 		String regEx = "[a-zA-Z]";
 		return Character.toString(name.charAt(0)).matches(regEx);
 	}
-	
+
 	/**
 	 * 获得拼音
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -272,9 +281,10 @@ public class AirenaoUtills {
 			return "Z";
 		return result;
 	}
-	
+
 	/**
 	 * 检查后台的server是否运行，通过输入server name
+	 * 
 	 * @param context
 	 * @param className
 	 * @return
@@ -301,9 +311,10 @@ public class AirenaoUtills {
 		}
 		return isRunning;
 	}
-	
+
 	/**
 	 * 加载contacts的photos
+	 * 
 	 * @param context
 	 * @param contactId
 	 * @param options
@@ -424,18 +435,20 @@ public class AirenaoUtills {
 		return word;
 
 	}
-	
+
 	/**
-	 *  getMySharedPreferences
+	 * getMySharedPreferences
+	 * 
 	 * @param context
 	 * @return
 	 */
-	public static SharedPreferences getMySharedPreferences(Context context){
-		SharedPreferences mySharedPreferences = context.getSharedPreferences(Constants.AIRENAO_SHARED_DATA,Context.MODE_PRIVATE);
+	public static SharedPreferences getMySharedPreferences(Context context) {
+		SharedPreferences mySharedPreferences = context.getSharedPreferences(
+				Constants.AIRENAO_SHARED_DATA, Context.MODE_PRIVATE);
 		return mySharedPreferences;
 	}
-	
-	/**     * 退出客户端。     *      * @param context 上下文     */
+
+	/**      * 退出客户端。     *      * @param context 上下文      */
 	public static void exitClient(Context context) {
 		Log.d("tag", "----- exitClient -----");
 		// 关闭所有Activity
@@ -449,38 +462,69 @@ public class AirenaoUtills {
 		activityManager.restartPackage("com.aragoncg.apps.airenao");
 		System.exit(0);
 	}
-	
+
 	/**
 	 * 判定是否是电话号码
+	 * 
 	 * @param phoneNumber
 	 * @return
 	 */
-	public static boolean checkPhoneNumber(String phoneNumber){
-		if(phoneNumber.matches(regPhoneNumber)){
+	public static boolean checkPhoneNumber(String phoneNumber) {
+		if (phoneNumber.matches(regPhoneNumber)) {
 			return true;
 		}
 		return false;
 	}
+
 	/**
 	 * progressing dialog
+	 * 
 	 * @param context
 	 * @param title
 	 * @param message
 	 * @return
 	 */
-	public static ProgressDialog generateProgressingDialog(Context context, String title, String message){
+	public static ProgressDialog generateProgressingDialog(Context context,
+			String title, String message) {
 		ProgressDialog myDialog = new ProgressDialog(context);
 		myDialog.setTitle(title);
 		myDialog.setMessage(message);
 		return myDialog;
 	}
-	
-	public static String linkResult(String result){
-		return  "{"+"output"+":"+result+"}";
+
+	public static String linkResult(String result) {
+		return "{" + "output" + ":" + result + "}";
+	}
+
+	public static String linkSQL(String id) {
+
+		return "delete from " + DbHelper.ACTIVITY_TABLE_NAME + " where "
+				+ DbHelper.PARTY_ID + " = " + id;
+	}
+
+	public static Map<Integer, MyPerson> showDialog(Context mContext,
+			ArrayList<String> phones, Boolean isShow, Boolean sms,
+			int position, Map<Integer, MyPerson> positions,
+			Map<Integer, MyPerson> personMap, String name, Handler mHandler) {
+		SharedPreferences msp = AirenaoUtills.getMySharedPreferences(mContext);
+		if (!isShow) {
+			// Display dialog to choose a number to call.
+			PhoneDisambigDialog phoneDialog = new PhoneDisambigDialog(mContext,
+					null, sms, phones, position, positions, personMap, name,
+					mHandler);
+			isShow = false;
+			return phoneDialog.show();
+		}
+		return null;
+
 	}
 	
-	public static String linkSQL(String id){
-		
-		return "delete from "+DbHelper.ACTIVITY_TABLE_NAME+" where " + DbHelper.PARTY_ID +" = " + id;
+	//检查sdcard是否存在
+	public static boolean checkSDCard() {
+		if (android.os.Environment.getExternalStorageState().equals(
+				android.os.Environment.MEDIA_MOUNTED))
+			return true;
+		else
+			return false;
 	}
 }

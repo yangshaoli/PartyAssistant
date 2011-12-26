@@ -34,9 +34,18 @@ public class AirenaoActivity implements Serializable{
 	private int unJoin;
 	private String sendType;
 	private List<Map<String,Object>> peopleList;
+	private Map<String,String> clients;
 	
 	
 	
+	public Map<String, String> getClients() {
+		return clients;
+	}
+
+	public void setClients(Map<String, String> clients) {
+		this.clients = clients;
+	}
+
 	public String getSendType() {
 		return sendType;
 	}

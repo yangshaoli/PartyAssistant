@@ -1,8 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <resources>
 	<array name="deleteMenu">
- 	 <item>删除并提示客户</item>
- 	 <item>直接删除</item>  
-  	 <item>取消</item>
+ 	 	<item>直接删除</item>  
+  	 	<item>取消</item>
+	</array>
+	<array name="setMenu">
+ 	 	<item>绑定手机号</item>  
+  	 	<item>绑定微博</item>
+  	 	<item>反馈</item>
+  	 	<item>评分</item>
+  	 	<item>关于</item>
+	</array>
+	<array name="sendWay">
+		<item>用自己手机发送</item>
+		<item>用服务器发送   </item>
+	</array>
+	<array name="contactsSwitch">
+		<item>所有联系人</item>
+		<item>常用联系人</item>
 	</array>
 </resources>

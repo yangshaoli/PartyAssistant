@@ -300,6 +300,7 @@ public class HttpHelper {
 
 		try {
 			response = HttpHelper.client.execute(method, responseHandler);
+			
 		} catch (Exception e) {
 			// response = UNABLE_TO_RETRIEVE_INFO;
 			e.printStackTrace();

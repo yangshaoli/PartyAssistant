@@ -13,6 +13,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,8 +25,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -35,7 +40,7 @@ import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 
-public class PeopleInfoActivity extends Activity {
+public class PeopleInfoActivity extends Activity implements OnItemClickListener {
 
 	private final static int INVATED_PEOPLE = 0;
 	private final static int SIGNED_PEOPLE = 1;
@@ -50,7 +55,7 @@ public class PeopleInfoActivity extends Activity {
 	private final static String TYPE_DONOTHING = "donothing";
 
 	private List<Map<String, Object>> mData;
-	private Button btnBack;
+	private Button btnRefresh;
 	private Button reInvated;
 	private TextView myTitle;
 	private int peopleTag = -1;
@@ -64,6 +69,12 @@ public class PeopleInfoActivity extends Activity {
 	private String action;
 	private Handler myHandler;
 	private AirenaoActivity myAirenaoActivity;
+	private ListView dataListView;
+	String name;
+	String cValue;
+	String partyIdValue ;
+	Intent transIntent;
+	private TextView txtNoData;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,19 +83,21 @@ public class PeopleInfoActivity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		AirenaoUtills.activityList.add(this);
+		 
 		setContentView(R.layout.invated_people_info_layout);
 		Intent myIntent = getIntent();
 		getData(myIntent);
 		myAdapter = new MyAdapter(this);
-		ListView dataListView = (ListView) findViewById(R.id.people_infor_list);
+		dataListView = (ListView) findViewById(R.id.people_infor_list);
 		dataListView.setAdapter(myAdapter);
-
+		dataListView.setOnItemClickListener(this);
 		initView();
 	}
 
 	public void initView() {
 		reInvated = (Button) findViewById(R.id.btnResend);
 		myTitle = (TextView) findViewById(R.id.txtPeoPleInfo);
+		txtNoData = (TextView) findViewById(R.id.txtNoData);
 
 		if (peopleTag == INVATED_PEOPLE) {
 			myTitle.setText(R.string.invited_number);
@@ -103,7 +116,7 @@ public class PeopleInfoActivity extends Activity {
 		}
 		if (peopleTag == UNSIGNED_PEOPLE) {
 			myTitle.setText(R.string.unsiged_number);
-			reInvated.setVisibility(View.GONE);
+			reInvated.setVisibility(View.INVISIBLE);
 			if(mData.size()<=0){
 				reInvated.setClickable(false);
 			}
@@ -133,8 +146,15 @@ public class PeopleInfoActivity extends Activity {
 			}
 		});
 		
-		btnBack = (Button) findViewById(R.id.btnPeopleLableBack);
-		btnBack.setVisibility(View.GONE);
+		btnRefresh = (Button) findViewById(R.id.btnPeopleLableBack);
+		btnRefresh.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				getDataFromServer(); 
+				
+			}
+		});
 	}
 
 	/**
@@ -162,6 +182,10 @@ public class PeopleInfoActivity extends Activity {
 		mData.clear();
 		myAirenaoActivity = (AirenaoActivity) intent.getSerializableExtra(Constants.ONE_PARTY);
 		peopleTag = intent.getIntExtra(Constants.WHAT_PEOPLE_TAG, -1);
+		SharedPreferences spf = AirenaoUtills.getMySharedPreferences(PeopleInfoActivity.this);
+		Editor editor = spf.edit();
+		editor.putInt(Constants.PEOPLE_TAG, peopleTag);
+		editor.commit();
 		partyId = intent.getIntExtra(Constants.PARTY_ID, -1);
 		getPeopleInfoUrl = getString(R.string.getPeopleInfoUrl);
 		if (peopleTag == -1 || partyId == -1) {
@@ -169,30 +193,38 @@ public class PeopleInfoActivity extends Activity {
 					getString(R.string.systemMistakeTitle),
 					getString(R.string.systemMistake));
 		}
+		
+		getDataFromServer(); 
+
+	}
+	
+	public void getDataFromServer() {
 		if (peopleTag == INVATED_PEOPLE) {
-			
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_ALL);
+
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
+					TYPE_ALL);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == SIGNED_PEOPLE) {
 			// 获得已报名人的信息
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_APPLIED);
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
+					TYPE_APPLIED);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == UNSIGNED_PEOPLE) {
 			// 获得未报名人的信息
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_REFUSED);
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
+					TYPE_REFUSED);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == UNRESPONSED_PEOPLE) {
 			// 获得为参加人的信息
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId+"", TYPE_DONOTHING);
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
+					TYPE_DONOTHING);
 			asynTask.execute(getPeopleInfoUrl);
 		}
-		
-
 	}
-	
+
 	public Thread getThread(){
 		return new Thread(){
 
@@ -260,6 +292,12 @@ public class PeopleInfoActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String[] result) {
+			if(mData.size()==0){
+				txtNoData.setVisibility(View.VISIBLE);
+				dataListView.setVisibility(View.GONE);
+			}else{
+				txtNoData.setVisibility(View.GONE);
+			}
 			myAdapter.notifyDataSetChanged();
 			cancleProgressDialog();
 		}
@@ -275,6 +313,7 @@ public class PeopleInfoActivity extends Activity {
 				description = outPut.getString(Constants.DESCRIPTION);
 				datasource = outPut.getJSONObject(Constants.DATA_SOURCE);
 				if("ok".equals(status)){
+					mData.clear();
 					JSONArray jsonArray = datasource.getJSONArray("clientList");
 					if(TYPE_ALL.equals(type)){
 						for(int i = 0;i < jsonArray.length();i++){
@@ -443,6 +482,21 @@ public class PeopleInfoActivity extends Activity {
 
 				}
 			}
+		}
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			name = (String) mData.get(position).get(Constants.PEOPLE_NAME);
+			cValue = (String)mData.get(position).get(Constants.PEOPLE_CONTACTS);
+			partyIdValue = (String)mData.get(position).get(Constants.PARTY_ID);
+			transIntent = new Intent(PeopleInfoActivity.this,DetailPeopleInfo.class);
+			transIntent.putExtra(Constants.PEOPLE_NAME, name);
+			transIntent.putExtra(Constants.PEOPLE_CONTACTS, cValue);
+			transIntent.putExtra(Constants.PARTY_ID, name);
+			transIntent.putExtra(Constants.BACK_END_ID, backendID);
+			startActivity(transIntent);
+			
 		}
 
 }

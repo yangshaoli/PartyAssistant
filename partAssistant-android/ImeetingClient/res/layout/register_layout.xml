@@ -74,7 +74,8 @@
 			android:layout_height="wrap_content" android:text="@string/register_label_pass_insure"
 			android:textColor="#000000"
 			android:textSize="18sp" 
-			android:paddingBottom="10sp" />
+			android:paddingBottom="10sp" 
+			android:visibility="gone"/>
 
 		<EditText android:id="@+id/reg_pass2" 
 			android:hint="@string/register_lable_pass_tip"
@@ -82,6 +83,7 @@
 			android:layout_marginLeft="8dp"
 			android:layout_width="200sp"
 			android:layout_height="wrap_content"
+			android:visibility="gone"
 			></EditText>
 		</LinearLayout>
 		

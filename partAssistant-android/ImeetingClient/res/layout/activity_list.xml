@@ -7,7 +7,7 @@
 	android:layout_width="fill_parent"
 	android:layout_height="45sp"
 	android:orientation="horizontal"
-	android:background="@drawable/blue_button">
+	android:background="@drawable/red_button">
 		<TextView android:layout_width="wrap_content"
 		android:textColor="#FFFFFF" android:layout_height="37sp"
 		android:text="@string/meeting_list"
@@ -32,8 +32,8 @@
 	<ImageButton
 		android:id="@+id/btnAddOneActivity"
 		android:layout_width="fill_parent"
-		android:layout_height="40sp"
-		android:src="@android:drawable/ic_menu_add"
+		android:layout_height="64sp"
+		android:src="@drawable/add"
 		/>	
  <LinearLayout android:id="@+id/listLinearLayout" 
       android:layout_width="fill_parent"   
@@ -41,10 +41,11 @@
       android:orientation="vertical">    
   
   <ListView android:id="@+id/android:list"         
-      android:layout_width="fill_parent"  
-      android:layout_height="wrap_content" 
+      android:layout_width="fill_parent"
+      android:layout_weight="1"
+      android:layout_height="fill_parent" 
       android:drawSelectorOnTop="false"  
       android:fadeScrollbars="true"
-      android:scrollbars="vertical"/> <!--drawSelectorOnTop="false" 如果为true，那么选中时颜色会覆盖以上的文字  -->
+      android:scrollbars="none"/> <!--drawSelectorOnTop="false" 如果为true，那么选中时颜色会覆盖以上的文字  -->
  </LinearLayout>
 </LinearLayout> 

@@ -69,7 +69,8 @@ public class MeetingListActivity extends ListActivity implements
 	private Button btnRefresh;
 	private String userName="";
 	private String userId="";
-	private int page = 1;
+	private int startId = 79;
+	private int PAGE_COUNT = 2;
 	private String status;
 	private String description;
 	private JSONObject dataSource;
@@ -77,8 +78,12 @@ public class MeetingListActivity extends ListActivity implements
 	private Handler postHandler;
 	private boolean needRefresh;
 	private int tempCount;
+	private AlertDialog deleteDilog;
+	private int lastItem;
 	
-	public static final String PAGE = "page";
+	public static final String LAST_ID = "lastID";
+	private int lastID;
+	
 	public static final String PARTY_LIST = "partyList";
 	public static final String PARTY_ID = "partyId";
 	public static final String POEPLE_MAXMUM = "peopleMaximum";
@@ -87,6 +92,16 @@ public class MeetingListActivity extends ListActivity implements
 	public static final String PARTY_LOCATION = "location";
 	public static final int MSG_ID_DELETE = 2;
 	public static final int MSG_ID_SCROLL = 1;
+	public static final int MENU_SET = 0;
+	public static final int SHARE_SET = 3;
+	public static final int DELETE_SET = 4;
+	
+	private String appliedClientcount;
+	private String newAppliedClientcount;
+	private String donothingClientcount;
+	private String refusedClientcount;
+	private String newRefusedClientcount;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +121,7 @@ public class MeetingListActivity extends ListActivity implements
 		setListAdapter(myDaAdapter);
 		init();
 		myListView = getListView();
+		footerView = LayoutInflater.from(this).inflate(R.layout.load_layout, null);
 		myListView.addFooterView(footerView);
 		myListView.setOnScrollListener(this);
 		// get the ListView and add item on long press menu
@@ -134,7 +150,7 @@ public class MeetingListActivity extends ListActivity implements
 			public void onClick(View v) {
 
 				Intent mIntent = new Intent(MeetingListActivity.this,
-						CreateActivity.class);
+						SendAirenaoActivity.class);
 				startActivity(mIntent);
 			}
 		});
@@ -165,8 +181,9 @@ public class MeetingListActivity extends ListActivity implements
 	//对footerView的处理
 	private void init() {
 
-		layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		footerView = layoutInflater.inflate(R.layout.load_layout, null);
+		/*layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		footerView = layoutInflater.inflate(R.layout.load_layout, null);*/
+		
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -211,7 +228,7 @@ public class MeetingListActivity extends ListActivity implements
 		switch (menuItemId) {
 		case 0:// delete the data of "listItemId"
 
-			AlertDialog dilog = new AlertDialog.Builder(
+			 deleteDilog = new AlertDialog.Builder(
 					MeetingListActivity.this)
 					.setTitle(getString(R.string.deleteMenu))
 					.setIcon(android.R.drawable.ic_delete)
@@ -224,10 +241,10 @@ public class MeetingListActivity extends ListActivity implements
 							final String delteUrl = getString(R.string.deleteUrl);
 							//userId
 							switch(which){
-								case 0://删除并提醒
+								case 2://删除并提醒
 									
 								break;
-								case 1: //直接删除
+								case 0: //直接删除
 									Runnable remove = new Runnable() {
 										
 										@Override
@@ -252,8 +269,8 @@ public class MeetingListActivity extends ListActivity implements
 									remove.run();
 									
 								break;
-								case 2://取消
-									
+								case 1://取消
+									deleteDilog.cancel();
 								break;
 								
 							}
@@ -262,7 +279,7 @@ public class MeetingListActivity extends ListActivity implements
 					})
 					// .setView(view);
 					.create();
-			dilog.show();
+			 deleteDilog.show();
 			/*
 			 * 2、某活动右边的按钮: 点击后，弹出“复制"、"删除"、"分享”这三个选项，并选择“删除”按钮
 			 * 3、删除时，给出删除确认提示“删除不可恢复，是否确认删除？”， 并分别给出3个按钮“删除并提示客户”、“直接删除”、“取消”
@@ -301,6 +318,7 @@ public class MeetingListActivity extends ListActivity implements
 		return super.onContextItemSelected(item);
 
 	}
+	
 	
 	/**
 	 * 删除一个party
@@ -342,6 +360,10 @@ public class MeetingListActivity extends ListActivity implements
 			long id) {
 
 		super.onListItemClick(listView, v, position, id);
+		if(v==footerView){
+			loadRemnantListItem();
+            listView.setSelection(position - 1);
+		}
 		System.out.println("id = " + id);
 		System.out.println("position = " + position);
 
@@ -353,20 +375,8 @@ public class MeetingListActivity extends ListActivity implements
 				.get(Constants.PARTY_ID))));
 		airenaoData.setActivityName((String) dataHashMap
 				.get(Constants.ACTIVITY_NAME));
-		airenaoData.setActivityTime((String) dataHashMap
-				.get(Constants.ACTIVITY_TIME));
-		airenaoData.setActivityPosition((String) dataHashMap
-				.get(Constants.ACTIVITY_POSITION));
 		airenaoData.setActivityContent((String) dataHashMap
 				.get(Constants.ACTIVITY_CONTENT));
-		if("".equals(dataHashMap
-				.get(Constants.ACTIVITY_NUMBER))){
-			airenaoData.setPeopleLimitNum(100000);
-		}else{
-			airenaoData.setPeopleLimitNum(Integer.valueOf((String) dataHashMap
-					.get(Constants.ACTIVITY_NUMBER)));
-		}
-		
 		
 		/*
 		 * 点击活动列表中的一项，进入到活动详情当中 跳转到具体活动Activity 中
@@ -402,7 +412,11 @@ public class MeetingListActivity extends ListActivity implements
 										message).create();
 						aDig.show();
 				 }
+				 case Constants.POST_MESSAGE_SUCCESS:{
+					 myDaAdapter.notifyDataSetChanged();
+					}
 				}
+				
 				super.handleMessage(msg);
 			}
 			
@@ -442,7 +456,7 @@ public class MeetingListActivity extends ListActivity implements
 			public void run() {
 				// 配置url
 				partyListUrl = getString(R.string.partyListUrl);
-				partyListUrl = partyListUrl + userId + "/" + page + "/";
+				partyListUrl = partyListUrl + userId + "/" + lastID + "/";
 				HttpHelper myHttpHelper = new HttpHelper();
 				String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
 				dataResult = AirenaoUtills.linkResult(dataResult);
@@ -523,7 +537,11 @@ public class MeetingListActivity extends ListActivity implements
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-
+			
+			/*if(lastItem == position){
+				return footerView;
+			}*/
+			
 			ViewHolder holder = null;
 
 			if (convertView == null) {
@@ -574,46 +592,63 @@ public class MeetingListActivity extends ListActivity implements
 		myDaAdapter.notifyDataSetChanged();
 		myDaAdapter.notifyDataSetInvalidated();
 	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-	}
-
+	
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		if (firstVisibleItem + visibleItemCount == totalItemCount) {
-			// 开线程去下载网络数据
-			if (mThread == null || !mThread.isAlive()) {
-				mThread = new Thread() {
-					@Override
-					public void run() {
-						try {
-							if (myDaAdapter.getCount()> Constants.MAX_NUM_PER_PAGE && tempCount > 0) {
-								// 这里放你网络数据请求的方法，我在这里用线程休眠5秒方法来处理
-								page += 1;
-								partyListUrl = getString(R.string.partyListUrl) + userId + "/" + page +"/";
-								HttpHelper myHttpHelper = new HttpHelper();
-								String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
-								dataResult = AirenaoUtills.linkResult(dataResult);
-								analyzeJson(dataResult);
-							}
-							Thread.sleep(5000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						Message message = new Message();
-						message.what = 1;
-						handler.sendMessage(message);
-					}
-				};
-				mThread.start();
-				return;
-			}
-		}
+		
+			lastItem = firstVisibleItem + visibleItemCount;
 
 	}
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		
+		 if (lastItem == myDaAdapter.getCount() && scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+			 	Toast.makeText(MeetingListActivity.this, "d", 1000).show();
+	            loadRemnantListItem();
+	        }
+	}
+	/**
+	 *  加载更多的数据
+	 */
+	private void loadRemnantListItem() {//滚到加载余下的数据
+		// 开线程去下载网络数据
+					if (mThread == null || !mThread.isAlive()) {
+						mThread = new Thread() {
+							@Override
+							public void run() {
+								try {
+									if (tempCount > 0) {
+										// 这里放你网络数据请求的方法，我在这里用线程休眠5秒方法来处理
+										startId += PAGE_COUNT;
+										partyListUrl = getString(R.string.partyListUrl) + userId + "/" + startId +"/";
+										HttpHelper myHttpHelper = new HttpHelper();
+										String dataResult = myHttpHelper.performGet(partyListUrl, MeetingListActivity.this);
+										dataResult = AirenaoUtills.linkResult(dataResult);
+										analyzeJson(dataResult);
+									}
+									Thread.sleep(5000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+								Message message = new Message();
+								message.what = 1;
+								handler.sendMessage(message);
+							}
+						};
+						mThread.start();
+						return;
+					}
+		
+	    //动态的改变listAdapter.getCount()的返回值
+					if((mData.size()-myDaAdapter.count)/PAGE_COUNT==0)
+					{
+						myDaAdapter.count += ((mData.size()-myDaAdapter.count))%PAGE_COUNT;
+					}
+	    //使用Handler调用listAdapter.notifyDataSetChanged();更新数据
+	}
+	
+	
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -673,8 +708,15 @@ public class MeetingListActivity extends ListActivity implements
 			status = output.getString(Constants.STATUS);
 			description = output.getString(Constants.DESCRIPTION);
 		if("ok".equals(status)){
+			Message message = new Message();
+			message.what = Constants.POST_MESSAGE_SUCCESS;
+			Bundle bundle = new Bundle();
+			bundle.putString(Constants.HENDLER_MESSAGE, description);
+			message.setData(bundle);
+			postHandler.sendMessage(message);
+			
 			dataSource = output.getJSONObject(Constants.DATA_SOURCE);
-			page = Integer.valueOf(dataSource.getString(PAGE));
+			lastID = Integer.valueOf(dataSource.getString(LAST_ID));
 			myJsonArray = dataSource.getJSONArray(PARTY_LIST);
 			tempCount = myJsonArray.length();
 			if(tempCount>0){
@@ -716,18 +758,28 @@ public class MeetingListActivity extends ListActivity implements
 	 * @return
 	 */
 	public HashMap<String, Object> organizeMap(JSONObject data){
+		try {
+			JSONObject clientsData = data.getJSONObject(Constants.CLIENTS_DATA);
+			appliedClientcount = clientsData.getString(Constants.APPLIED_CLIENT_COUNT);
+			newAppliedClientcount = clientsData.getString(Constants.NEW_APPLIED_CLIENT_COUNT);
+			donothingClientcount = clientsData.getString(Constants.DONOTHING_CLIENT_COUNT);
+			refusedClientcount = clientsData.getString(Constants.REFUSED_CLIENT_COUNT);
+			newRefusedClientcount = clientsData.getString(Constants.NEW_REFUSED_CLIENT_COUNT);
+		} catch (JSONException e1) {
+			
+			e1.printStackTrace();
+		}
+		
 		HashMap<String, Object> map = new HashMap<String, Object>();
+		
 		try {
 			map.put(Constants.PARTY_ID, data.get(PARTY_ID)+"");
-			map.put(Constants.ACTIVITY_NAME, data.getString(PARTY_DESCRIPTION));
-			if(data.getString(PARTY_START_TIME)=="null" || "".equals(data.getString(PARTY_START_TIME))){
-				map.put(Constants.ACTIVITY_TIME, "时间待定");
-			}else{
-				map.put(Constants.ACTIVITY_TIME, data.getString(PARTY_START_TIME));
-			}
-			map.put(Constants.ACTIVITY_POSITION, data.getString(PARTY_LOCATION));//data.getString()
+			map.put(Constants.APPLIED_CLIENT_COUNT, appliedClientcount);
+			map.put(Constants.NEW_APPLIED_CLIENT_COUNT, newAppliedClientcount);
+			map.put(Constants.DONOTHING_CLIENT_COUNT, donothingClientcount);
+			map.put(Constants.REFUSED_CLIENT_COUNT, refusedClientcount);
+			map.put(Constants.NEW_REFUSED_CLIENT_COUNT, newRefusedClientcount);
 			map.put(Constants.ACTIVITY_CONTENT, data.getString(PARTY_DESCRIPTION));
-			map.put(Constants.ACTIVITY_NUMBER, data.getString(POEPLE_MAXMUM));
 		} catch (JSONException e) {
 			
 			e.printStackTrace();
@@ -744,17 +796,18 @@ public class MeetingListActivity extends ListActivity implements
 		AirenaoActivity myActivity = new AirenaoActivity();
 		try {
 			myActivity.setId(Integer.valueOf(data.getString(PARTY_ID)));
-			myActivity.setActivityName(data.getString(PARTY_DESCRIPTION));
-			String time = data.getString(PARTY_START_TIME);
-			if(time==null || time.equals("null")){
-				time = "时间待定";
+			String content = data.getString(PARTY_DESCRIPTION);
+			if(content.length() > 10){
+				myActivity.setActivityName(content.substring(0, 10));
+			}else{
+				myActivity.setActivityName(content);
 			}
-			myActivity.setActivityTime(time);
-			myActivity.setActivityPosition(data.getString(PARTY_LOCATION));//data.getString()
-			myActivity.setActivityContent(data.getString(PARTY_DESCRIPTION));
-			if(data.getString(POEPLE_MAXMUM)!= null && !"".equals(data.getString(POEPLE_MAXMUM))){
-				myActivity.setPeopleLimitNum(Integer.valueOf(data.getString(POEPLE_MAXMUM)));
-			}
+			
+			myActivity.setActivityTime("");
+			myActivity.setActivityPosition("");//data.getString()
+			myActivity.setActivityContent(content);
+			myActivity.setPeopleLimitNum(Integer.valueOf(0));
+			
 			
 		} catch (JSONException e) {
 			
@@ -763,4 +816,49 @@ public class MeetingListActivity extends ListActivity implements
 		
 		return myActivity;
 	}
+	
+	
+	/*@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		  menu.add(0, SHARE_SET, 0, getString(R.string.share)); 
+		  menu.add(0, DELETE_SET, 0, getString(R.string.delete)); 
+		  menu.add(0, MENU_SET, 0, getString(R.string.btn_setting)); 
+		    
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch(item.getItemId()){
+		 case SHARE_SET:
+			 break;
+		 case DELETE_SET:
+			 
+			 break;
+		 case MENU_SET:
+			 AlertDialog settingDialog = new AlertDialog.Builder(MeetingListActivity.this)
+		    	.setTitle(R.string.btn_setting)
+		    	.setIcon(R.drawable.settings)
+		    	.setItems(R.array.setMenu, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch(which){
+						 case 0:
+							 break;
+						 	 
+						 case 1:
+							 break;
+						}
+					}
+				})
+		    	.create();
+		    	settingDialog.show();
+			 break;
+		}
+		return super.onMenuItemSelected(featureId, item);
+	}*/
+	
+	
+	
 }

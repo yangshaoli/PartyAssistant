@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
@@ -57,6 +58,8 @@ public class RegisterActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		AirenaoUtills.activityList.add(this);
 		setContentView(R.layout.register_layout);
 		myContext = getBaseContext();
@@ -133,12 +136,14 @@ public class RegisterActivity extends Activity {
 					String description;
 					status = jsonObject.getString(Constants.STATUS);
 					description = jsonObject.getString(Constants.DESCRIPTION);
-					if ("ok".equals(status) && "ok".equals(description)) {
+					if ("ok".equals(status)) {
 						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
 						// 注册成功后，登陆
+						params.put("device_token", "");
 						String loginResult = new HttpHelper().performPost(
 								loginUrl, userNameReg, pass1Reg, null, params,
 								RegisterActivity.this);
+						
 						result = AirenaoUtills.linkResult(loginResult);
 						jsonObject = new JSONObject(result)
 								.getJSONObject("output");
@@ -170,7 +175,7 @@ public class RegisterActivity extends Activity {
 								if (tempActivity != null) {
 									Intent intent = new Intent(
 											RegisterActivity.this,
-											CreateActivity.class);
+											SendAirenaoActivity.class);
 									intent.putExtra(Constants.TRANSFER_DATA,
 											tempActivity);
 									startActivity(intent);
@@ -185,7 +190,7 @@ public class RegisterActivity extends Activity {
 									} else {
 										Intent intent = new Intent(
 												RegisterActivity.this,
-												CreateActivity.class);
+												SendAirenaoActivity.class);
 										startActivity(intent);
 									}
 								}
@@ -194,7 +199,7 @@ public class RegisterActivity extends Activity {
 							if (appFlag == Constants.APP_USED_FLAG_Z) {
 								Intent intent = new Intent(
 										RegisterActivity.this,
-										CreateActivity.class);
+										SendAirenaoActivity.class);
 								startActivity(intent);
 							}
 
@@ -279,7 +284,7 @@ public class RegisterActivity extends Activity {
 					return;
 				}
 				pass1Reg = pass1.getText().toString();
-				pass2Reg = pass2.getText().toString();
+				//pass2Reg = pass2.getText().toString();
 				if (pass1Reg.length() < 6) {
 					Toast.makeText(RegisterActivity.this, R.string.pass_tip1,
 							Toast.LENGTH_SHORT).show();
@@ -288,16 +293,6 @@ public class RegisterActivity extends Activity {
 				if ("".equals(pass1Reg)) {
 					Toast.makeText(RegisterActivity.this, R.string.pass_tip,
 							Toast.LENGTH_SHORT).show();
-					return;
-				}
-				if ("".equals(pass2Reg)) {
-					Toast.makeText(RegisterActivity.this, R.string.pass_tip2,
-							Toast.LENGTH_SHORT).show();
-					return;
-				}
-				if (!pass1Reg.equals(pass2Reg)) {
-					Toast.makeText(RegisterActivity.this, R.string.pass_tip3,
-							Toast.LENGTH_LONG).show();
 					return;
 				}
 

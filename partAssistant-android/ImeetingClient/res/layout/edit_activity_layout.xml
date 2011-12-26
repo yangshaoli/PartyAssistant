@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:weightSum="1"
+	android:background="@drawable/bj">
+	<RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="40sp"
+	android:orientation="horizontal"
+	android:paddingTop="0dip"
+	android:background="@drawable/red_button">
+	<LinearLayout
+	android:id="@+id/userChange"
+	android:layout_width="wrap_content"
+	android:layout_height="40sp"
+	android:padding="0dip"
+	android:orientation="horizontal"
+	android:clickable="true"
+	>
+	<ImageView
+	android:layout_width="wrap_content"
+	android:layout_height="37sp"
+	android:src="@drawable/user_icon"/>
+	<TextView
+	android:layout_width="wrap_content"
+	android:id="@+id/userTitle"
+	android:layout_height="37sp"
+	android:textStyle="bold"
+	android:layout_marginTop="9sp"
+	android:text="ad"/>
+	</LinearLayout>
+	<TextView android:layout_width="fill_parent"
+		android:textColor="#FFFFFF"
+		android:layout_height="37sp" android:text="编辑"
+		android:gravity="center|center_horizontal" />
+	</RelativeLayout>
+	
+	<TextView android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:textColor="@color/black"
+	
+	/>
+	<TextView android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:textColor="@color/black"
+	android:textSize="17sp"
+	android:layout_marginLeft="20dip"
+	android:text="@string/detailActivity"/>
+	<EditText
+	android:id="@+id/edtActivityDes"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:minHeight="240dip"
+	android:gravity="top"
+	android:layout_marginLeft="10dip"
+	android:layout_marginRight="10dip"
+	android:padding="5dip"
+	android:background="@drawable/edit_text_bg"/>
+	<Button
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:id="@+id/btn_ok_edit"
+	android:layout_marginTop="20dip"
+	android:layout_gravity="center_horizontal"
+	android:text="完成"/>
+</LinearLayout>

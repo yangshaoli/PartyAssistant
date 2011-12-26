@@ -5,6 +5,10 @@
         android:layout_height="fill_parent"
         android:orientation="vertical"
         >
+     <include layout="@layout/search_text_view" 
+     		  android:layout_height="89dip"
+     		  android:layout_alignParentTop="true"
+     />
 	 <RelativeLayout
 		android:layout_width="fill_parent"
 		android:layout_height="60dip"
@@ -33,6 +37,7 @@
             android:layout_height="fill_parent"
             android:fastScrollEnabled="true"
             android:layout_marginBottom="60dip"
+            android:layout_marginTop="85dip"
     />
 
     <ScrollView android:id="@android:id/empty"
@@ -41,9 +46,11 @@
         android:fillViewport="true"
     >
         <TextView android:id="@+id/emptyText"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="120dip"
             android:text="No Contacts"
+            android:layout_gravity="center"
             android:textSize="20sp"
             android:textColor="?android:attr/textColorSecondary"
             android:paddingLeft="10dip"

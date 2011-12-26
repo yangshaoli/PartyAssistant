@@ -60,6 +60,17 @@
     	android:text="@string/login_label_signin"
     	android:background="@drawable/blue_button"
     />
+    <!-- 注册button -->
+    <Button 
+    	android:id="@+id/register_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/password_edit"
+    	android:layout_toLeftOf="@id/signin_button"
+    	android:layout_marginRight="15dip"
+    	android:text="@string/login_register"
+    	android:background="@drawable/blue_button"
+    />
   </RelativeLayout>
   
   

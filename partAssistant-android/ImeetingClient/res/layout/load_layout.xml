@@ -1,22 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content" 
-    android:orientation="vertical">
-    <LinearLayout android:id="@+id/linearLayout1" 
-             android:layout_gravity="top|center_horizontal" 
-             android:layout_height="wrap_content" 
-             android:layout_width="wrap_content" 
-             android:layout_weight="1" 
-             android:baselineAligned="true">
-        <ProgressBar android:layout_height="wrap_content" 
-                android:id="@+id/progressBar1" 
-                android:layout_width="wrap_content" />
-        <TextView android:text="加载中.." 
-                android:layout_height="wrap_content" 
-                android:layout_width="wrap_content" 
-                android:layout_gravity="center_vertical"
-                android:id="@+id/textView1" />
-    </LinearLayout>
-</LinearLayout>
-
+<?xml version="1.0" encoding="UTF-8"?>  
+<LinearLayout android:layout_width="fill_parent"  
+    android:layout_height="wrap_content" android:minHeight="?android:listPreferredItemHeight"  
+    xmlns:android="http://schemas.android.com/apk/res/android">  
+  
+    <LinearLayout android:gravity="center"  
+        android:layout_gravity="center" android:orientation="horizontal"  
+        android:id="@+id/loading" android:layout_width="fill_parent"  
+        android:layout_height="fill_parent">  
+  
+        <ProgressBar android:layout_gravity="center_vertical"  
+            android:id="@+id/footprogress" android:layout_width="wrap_content"  
+            android:layout_height="wrap_content" android:indeterminateBehavior="repeat"  
+            style="?android:progressBarStyleSmallInverse" />  
+  
+        <TextView android:textColor="#ff000000" android:gravity="left|center"  
+            android:padding="3.0px" android:layout_width="wrap_content"  
+            android:layout_height="wrap_content" android:text="loading..." />  
+  
+    </LinearLayout>  
+  
+</LinearLayout>  

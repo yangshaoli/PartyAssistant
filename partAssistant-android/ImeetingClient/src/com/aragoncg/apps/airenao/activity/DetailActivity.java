@@ -11,17 +11,24 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -34,6 +41,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -61,7 +69,18 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private Handler myHandler;
 	private boolean loated = false;
 	private int partyId = -1;
+	private Runnable editSaveRun;
 	private static final int PROGRESS_GONE = 1;
+	private String userId;
+	private GridView gridView; 
+	
+	private static final int SUCCESS = 0;
+	private static final int FAIL = 3;
+	private static final int EXCEPTION = 2;
+	private static final int MENU_DELETE = 0;
+	private static final int MENU_REFRESH = 1;
+	private static final int MENU_SHARE = 2;
+	private static final int MENU_SETTINT = 3;
 	
 	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private List<Map<String, Object>> dataList;
@@ -80,30 +99,18 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		initMyHandler();
 		dataList = getData();
 		getComponentsCache();
+		
 		initFormData();
 		adapter = new MyAdapter(this);
 		
 		ListView dataListView = (ListView) findViewById(R.id.listDetailLable);
 		dataListView.setAdapter(adapter);
 		dataListView.setOnItemClickListener(this);
-		dataListView.setOnItemSelectedListener(new OnItemSelectedListener() {
-		
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
-
-			}
-		});
 		//计算列表需要的高度
 		Utility.setListViewHeightBasedOnChildren(dataListView);
 
 	}
+	
 	
 	public void initMyHandler(){
 		myHandler = new Handler(){
@@ -121,6 +128,17 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						}*/
 					 break;
 				 }
+				 case SUCCESS:
+					   
+					
+					 break;
+				 case FAIL:
+					 Toast.makeText(DetailActivity.this, "保存失败", Toast.LENGTH_SHORT);
+					 break;
+				 case EXCEPTION:
+					 Toast.makeText(DetailActivity.this, "出现异常", Toast.LENGTH_SHORT);
+					 break;
+				
 				}
 				
 				super.handleMessage(msg);
@@ -133,13 +151,18 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	 * @return
 	 */
 	private List<Map<String, Object>> getData() {
+		
+		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(DetailActivity.this);
+		//userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME, null);
+		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
+		
 		// 获得组件集合对象
 		myCache = new ComponentsCache();
 		// 获得menu data
 		resImageArry = new int[] { R.drawable.delete_detail,
-				R.drawable.copy_detail, R.drawable.share_detail };
+				R.drawable.btn_synchronize, R.drawable.share_detail , R.drawable.btn_setting};
 		resMenuNameArry = new String[] { getString(R.string.delete),
-				getString(R.string.copy), getString(R.string.share) };
+				getString(R.string.refresh), getString(R.string.share),getString(R.string.btn_setting) };
 
 		/**
 		 * 得到menu的样式属性
@@ -150,15 +173,20 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		// 这个menu是这个
 		View view = inflater.inflate(R.layout.menu_detail, null);
 		// 通过 生成的view 获得它的 GridView 组件
-		GridView grid1 = (GridView) view.findViewById(R.id.menuGridChange);
+		gridView = (GridView) view.findViewById(R.id.menuGridChange);
 		//
-		grid1.setAdapter(new ImageAdapter(this));
+		gridView.setAdapter(new ImageAdapter(this));
 
 		// 用Popupwindow弹出menu
 		pw = new PopupWindow(view, LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT);
-
-		// 获得list中穿过来的activity对象
+		pw.setFocusable(true);
+		pw.setBackgroundDrawable(new BitmapDrawable());
+		pw.setOutsideTouchable(false);
+		//为gridView设置点击事件
+		inintPopWindowListenner();
+		
+		// 获得list中pass过来的activity对象
 		Intent myIntent = getIntent();
 		myAirenaoActivity = (AirenaoActivity) myIntent
 				.getSerializableExtra(Constants.TO_DETAIL_ACTIVITY);
@@ -193,7 +221,75 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		return list;
 
 	}
+	
+	public void inintPopWindowListenner(){
+		pw.setTouchInterceptor(new OnTouchListener() {
 
+			@Override
+			public boolean onTouch(View arg0, MotionEvent arg1) {
+				DisplayMetrics  dm = new DisplayMetrics();
+				int screenHight = dm.heightPixels;
+				if (arg1.getY() < (screenHight - gridView.getHeight())) {
+
+					if (pw.isShowing())
+						pw.dismiss();
+				}
+				
+				return false;
+			}
+		});
+		gridView.setOnKeyListener(new OnKeyListener() {
+
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				// TODO Auto-generated method stub
+				
+				if (keyCode == KeyEvent.KEYCODE_MENU
+						&& event.getRepeatCount() == 0 && showFlag == true) {
+					if (pw.isShowing())
+						pw.dismiss();
+				}
+				showFlag = true;
+				return false;
+			}
+
+		});
+		gridView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				switch(position){
+				 case MENU_DELETE:
+					 if (pw.isShowing()){
+						 pw.dismiss();
+						 
+						 }
+					 break;
+				 case MENU_REFRESH:
+					 if (pw.isShowing()){
+						 pw.dismiss();
+						 
+						 }
+					 break;
+				 case MENU_SHARE:
+					 if (pw.isShowing()){
+						 pw.dismiss();
+						
+						 }
+					 break;
+				 case MENU_SETTINT:
+					 if (pw.isShowing()){
+						 pw.dismiss();
+						
+						 }
+					 break;
+				}
+				
+			}
+		});
+	}
+	
 	public  class ViewHolder {
 
 		public TextView peopleName;
@@ -279,26 +375,16 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		}
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		return super.onOptionsItemSelected(item);
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if (showFlag) {
 			// NND, 第一个参数， 必须找个View
 			pw.showAtLocation(findViewById(R.id.tv), Gravity.CENTER
 					| Gravity.BOTTOM, 0, 0);
 			showFlag = false;
-		} else {
-			showFlag = true;
-			pw.dismiss();
-		}
-
 		return false;
 	}
-
+	
 	public class ImageAdapter extends BaseAdapter {
 
 		private Context context;
@@ -326,24 +412,22 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		public View getView(int arg0, View arg1, ViewGroup arg2) {
 			// 动态的定义一个布局管理器，用来放置 图片信息 LinearLayout 也属于View
 			LinearLayout linear = new LinearLayout(context);
-			LinearLayout.LayoutParams params = new LayoutParams(
-					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 			linear.setOrientation(LinearLayout.VERTICAL);
 			// 定义一个ImageView
 			ImageView iv = new ImageView(context);
 			iv.setImageBitmap(((BitmapDrawable) context.getResources()
 					.getDrawable(resImageArry[arg0])).getBitmap());
-			LinearLayout.LayoutParams params2 = new LayoutParams(
+			LinearLayout.LayoutParams params0 = new LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			params2.gravity = Gravity.CENTER;
-			linear.addView(iv, params2);
+			params0.gravity = Gravity.CENTER;
+			linear.addView(iv, params0);
 			// 定义一个TextView
 			TextView tv = new TextView(context);
 			tv.setText(resMenuNameArry[arg0]);
-			LinearLayout.LayoutParams params3 = new LayoutParams(
+			LinearLayout.LayoutParams params1 = new LayoutParams(
 					LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-			params3.gravity = Gravity.CENTER;
-			linear.addView(tv, params3);
+			params1.gravity = Gravity.CENTER;
+			linear.addView(tv, params1);
 
 			return linear;
 		}
@@ -397,13 +481,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 			@Override
 			public void onClick(View v) {
+				 Intent intent = new Intent();
+					intent.setClass(DetailActivity.this, EditActivity.class);
 
-				Intent intent = new Intent();
-				intent.setClass(DetailActivity.this, CreateActivity.class);
-
-				intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
-				intent.putExtra(Constants.FROMDETAIL, true);
-				startActivity(intent);
+					intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
+					intent.putExtra(Constants.FROMDETAIL, true);
+					startActivity(intent);
 
 			}
 		});
@@ -541,4 +624,33 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		}
 		
 	}
+
+	@Override
+	protected void onRestart() {
+		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId+"");
+		asynTask.execute(getClientsCountUrl);
+		
+		Map<String, Object> map;
+		map = new HashMap<String, Object>();
+		map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
+		map.put(Constants.PEOPLE_NUM, "");
+		list.add(map);
+		map = new HashMap<String, Object>();
+		map.put(Constants.PEOPLE_NAME, getString(R.string.signed_number));
+		map.put(Constants.PEOPLE_NUM, "");
+		list.add(map);
+		map = new HashMap<String, Object>();
+		map.put(Constants.PEOPLE_NAME, getString(R.string.unsiged_number));
+		map.put(Constants.PEOPLE_NUM, "");
+		list.add(map);
+		map = new HashMap<String, Object>();
+		map.put(Constants.PEOPLE_NAME, getString(R.string.unjion));
+		map.put(Constants.PEOPLE_NUM, "");
+		list.add(map);
+		dataList = list;
+		adapter.notifyDataSetChanged();
+		super.onRestart();
+	}
+	
+	
 }

@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.SlidingDrawer;
 import android.widget.Toast;
 
@@ -36,12 +38,18 @@ public class SplashActivity extends Activity {
 	boolean isFinished = false;
 	private AirenaoActivity tempActivity;
 	private ArrayList<Map<String, Object>> activityList;
+	private boolean netLinking = true;
+	private boolean sdcardUse = true;
 
 	private static final int MSG_ID_CLOSE = 2;
 	private static final int MSG_ID_LOG = 1;
 	private static final int MSG_ID_LOG_CREATE = 3;
 	private static final int MSG_ID_LOG_LIST = 4;
 	private static final int MSG_ID_LOG_CREATE_NULL = 5;
+	private static final int MSG_ID_NET_DOWN = 6;
+	private static final int MSG_ID_SDCARD_DOWN = 7;
+	private static final int MSG_ID_NET_UP = 8;
+	
 	Handler mHandler = new Handler() {
 
 		@Override
@@ -87,12 +95,68 @@ public class SplashActivity extends Activity {
 				startActivity(intentTO);
 				break;
 			case MSG_ID_LOG_CREATE_NULL:
+				finish();
 				Intent intentTh = new Intent(SplashActivity.this,
 
-				CreateActivity.class);
+				SendAirenaoActivity.class);
 				startActivity(intentTh);
 				break;
-			default:
+			case MSG_ID_NET_DOWN:
+				//show dialog
+				AlertDialog netDig = new AlertDialog.Builder(
+						SplashActivity.this)
+				.setTitle(getString(R.string.netdown))
+				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent("android.settings.WIRELESS_SETTINGS");
+			            startActivity(intent);
+						finish();
+					}
+				})
+				.setMessage(
+								getString(R.string.netdownTip)).create();
+				
+				netDig.show();
+				break;
+			case MSG_ID_NET_UP:
+				//检测sdcard
+				sdcardUse = AirenaoUtills.checkSDCard();
+				if(!sdcardUse){
+					mHandler.sendEmptyMessageDelayed(MSG_ID_SDCARD_DOWN, 3000);
+				}else{
+
+					SharedPreferences mySharedPreferences = AirenaoUtills
+							.getMySharedPreferences(SplashActivity.this);
+					userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
+							null);
+					passWord = mySharedPreferences.getString(Constants.AIRENAO_PASSWORD,
+							null);
+					if ("".equals(userName) || userName == null || "".equals(passWord)
+							|| passWord == null) {
+						mHandler.sendEmptyMessageDelayed(MSG_ID_CLOSE, 3000);
+					} else {
+						//
+						login();
+					}
+				}
+				break;
+			case MSG_ID_SDCARD_DOWN:
+				//show dialog
+				AlertDialog sdcardDig = new AlertDialog.Builder(
+						SplashActivity.this)
+				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				})
+				.setMessage(
+								getString(R.string.chkSdcard)).create();
+				
+				sdcardDig.show();
 				break;
 
 			}
@@ -110,22 +174,31 @@ public class SplashActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.splash);
+		createDb();
 		AirenaoUtills.activityList.add(this);
-		SharedPreferences mySharedPreferences = AirenaoUtills
-				.getMySharedPreferences(SplashActivity.this);
-		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
-				null);
-		passWord = mySharedPreferences.getString(Constants.AIRENAO_PASSWORD,
-				null);
-		if ("".equals(userName) || userName == null || "".equals(passWord)
-				|| passWord == null) {
-			mHandler.sendEmptyMessageDelayed(MSG_ID_CLOSE, 3000);
-		} else {
-			//
-			login();
+		//检测网络
+		netLinking = AirenaoUtills.isNetWorkExist(SplashActivity.this);
+		if(!netLinking){
+			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_DOWN, 3000);
+		}else{
+			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_UP, 3000);
 		}
-
+		
+	}
+	
+	public void createDb(){
+		DbHelper.getInstance(SplashActivity.this);
+		
+	}
+	
+	@Override
+	protected void onStart() {
+		
+		super.onStart();
 	}
 
 	public void login() {
@@ -138,6 +211,7 @@ public class SplashActivity extends Activity {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("username", userName);
 				params.put("password", passWord);
+				params.put("device_token", "");
 				String loginResult = new HttpHelper().performPost(loginUrl,
 						userName, passWord, null, params, SplashActivity.this);
 				String result = "";
@@ -164,7 +238,7 @@ public class SplashActivity extends Activity {
 							bundle.putSerializable(Constants.ONE_PARTY,
 									tempActivity);
 							message.setData(bundle);
-							mHandler.sendMessageDelayed(message, 2000);
+							mHandler.sendMessageDelayed(message, 0);
 
 						} else {
 

@@ -39,6 +39,7 @@ public class LoginActivity extends Activity {
 	private EditText passWordText;
 	private Button loginBtn;
 	private Button findBackBtn;
+	private Button btnRegister;
 	private String userName;
 	private String passWord;
 	private Thread loginThread;
@@ -106,6 +107,75 @@ public class LoginActivity extends Activity {
 				}*/
 			
 				// 启动线程登录
+				loginThread = new Thread() {
+
+					@Override
+					public void run() {
+						Map<String, String> params = new HashMap<String, String>();
+						params.put("username", userName);
+						params.put("password", passWord);
+						params.put("device_token", "");
+						String loginResult = new HttpHelper().performPost(loginUrl,
+								userName, passWord, null, params, LoginActivity.this);
+						String result = "";
+						result = AirenaoUtills.linkResult(loginResult);
+						JSONObject jsonObject;
+						try {
+							jsonObject = new JSONObject(result).getJSONObject("output");
+							String status = jsonObject.getString("status");
+							String description = jsonObject.getString("description");
+							
+							if ("ok".equals(status)) {
+								String uId = jsonObject.getJSONObject("datasource").getString("uid");
+								Message message = new Message();
+								message.what = 2;
+								Bundle bundle = new Bundle();
+								bundle.putString(Constants.AIRENAO_USER_NAME, userName);
+								bundle.putString(Constants.AIRENAO_USER_ID, uId);
+								message.setData(bundle);
+								myHandler.sendMessage(message);
+								
+								SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+								tempActivity = DbHelper.select(db);
+								activityList = (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
+								if (tempActivity != null) {
+									Intent intent = new Intent(LoginActivity.this,
+											SendAirenaoActivity.class);
+									intent.putExtra(Constants.TRANSFER_DATA,
+											tempActivity);
+									startActivity(intent);
+
+								} else {
+									if(activityList.size()>0){
+										Intent intent = new Intent(LoginActivity.this,
+												MeetingListActivity.class);
+										startActivity(intent);
+									}else{
+										Intent intent = new Intent(LoginActivity.this,
+												SendAirenaoActivity.class);
+										startActivity(intent);
+									}
+									
+								}
+								
+								//myProgressDialog.cancel();
+							}else{
+								Message message = new Message();
+								message.what = 1;
+								Bundle bundle = new Bundle();
+								bundle.putString(Constants.HENDLER_MESSAGE, description);
+								message.setData(bundle);
+								myHandler.sendMessage(message);
+								//myProgressDialog.cancel();
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					}
+
+				};
 				loginThread.start();
 				return;
 			}
@@ -144,6 +214,17 @@ public class LoginActivity extends Activity {
 
 			}
 		});
+		btnRegister = (Button)findViewById(R.id.register_button);
+		btnRegister.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(LoginActivity.this, RegisterActivity.class);
+				startActivity(intent);
+				
+			}
+		});
 	}
 
 	public void initData() {
@@ -173,6 +254,7 @@ public class LoginActivity extends Activity {
 						editor.putString(Constants.AIRENAO_USER_NAME, userName);
 						editor.putString(Constants.AIRENAO_USER_ID, uId);
 						editor.commit();
+					    finish();
 				}
 				super.handleMessage(msg);
 			}
@@ -181,73 +263,6 @@ public class LoginActivity extends Activity {
 		
 		//初始化登录线程
 		loginUrl = getString(R.string.loginUrl);
-		loginThread = new Thread() {
-
-			@Override
-			public void run() {
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("username", userName);
-				params.put("password", passWord);
-				String loginResult = new HttpHelper().performPost(loginUrl,
-						userName, passWord, null, params, LoginActivity.this);
-				String result = "";
-				result = AirenaoUtills.linkResult(loginResult);
-				JSONObject jsonObject;
-				try {
-					jsonObject = new JSONObject(result).getJSONObject("output");
-					String status = jsonObject.getString("status");
-					String description = jsonObject.getString("description");
-					
-					if ("ok".equals(status)) {
-						String uId = jsonObject.getJSONObject("datasource").getString("uid");
-						Message message = new Message();
-						message.what = 2;
-						Bundle bundle = new Bundle();
-						bundle.putString(Constants.AIRENAO_USER_NAME, userName);
-						bundle.putString(Constants.AIRENAO_USER_ID, uId);
-						message.setData(bundle);
-						myHandler.sendMessage(message);
-						
-						SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-						tempActivity = DbHelper.select(db);
-						activityList = (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
-						if (tempActivity != null) {
-							Intent intent = new Intent(LoginActivity.this,
-									CreateActivity.class);
-							intent.putExtra(Constants.TRANSFER_DATA,
-									tempActivity);
-							startActivity(intent);
-
-						} else {
-							if(activityList.size()>0){
-								Intent intent = new Intent(LoginActivity.this,
-										MeetingListActivity.class);
-								startActivity(intent);
-							}else{
-								Intent intent = new Intent(LoginActivity.this,
-										CreateActivity.class);
-								startActivity(intent);
-							}
-							
-						}
-						
-						//myProgressDialog.cancel();
-					}else{
-						Message message = new Message();
-						message.what = 1;
-						Bundle bundle = new Bundle();
-						bundle.putString(Constants.HENDLER_MESSAGE, description);
-						message.setData(bundle);
-						myHandler.sendMessage(message);
-						//myProgressDialog.cancel();
-					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-			}
-
-		};
+		
 	}
 }

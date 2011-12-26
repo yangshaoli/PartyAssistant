@@ -33,6 +33,7 @@ public class Constants {
     public static final String TO_CREATE_ACTIVITY = "toCreateActivity";
     
     public static final String ACTIVITY_ID = "id";
+    public static final String CLIENTS_DATA = "clientsData";
     public static final String ACTIVITY_NAME = "activityName";	
     public static final String ACTIVITY_TIME = "activityTime";
     public static final String ACTIVITY_POSITION = "activityPosition";
@@ -90,6 +91,7 @@ public class Constants {
     
     public  static final int LOGIN_SUCCESS_CASE = 2;
     public  static final int POST_MESSAGE_CASE = 1;
+    public  static final int POST_MESSAGE_SUCCESS = 3;
 	
     public static final String  TRANSFER_DATA = "TransferData";
     
@@ -109,4 +111,14 @@ public class Constants {
     public static final String LOCATION = "location";
     public static final String POEPLE_MAXIMUM = "peopleMaximum";
     public static final String NEED_REFRESH = "refresh";
+    
+    public static final String IS_SUPER_PRIMARY = "isSuperPrimary";
+    public static final String PEOPLE_TAG = "peopleTag";
+    public static final String BACK_END_ID = "backendID";
+    
+    public static final String APPLIED_CLIENT_COUNT = "appliedClientcount";
+    public static final String NEW_APPLIED_CLIENT_COUNT = "newAppliedClientcount";
+    public static final String DONOTHING_CLIENT_COUNT = "donothingClientcount";
+    public static final String REFUSED_CLIENT_COUNT ="refusedClientcount";
+    public static final String NEW_REFUSED_CLIENT_COUNT = "newRefusedClientcount";
 }

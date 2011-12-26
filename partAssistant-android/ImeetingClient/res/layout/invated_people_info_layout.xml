@@ -7,13 +7,14 @@
 	android:layout_width="fill_parent"
 	android:layout_height="50sp"
 	android:orientation="horizontal"
-	android:background="@drawable/blue_button">
+	android:background="@drawable/red_button">
 	    <Button 
 	    android:id="@+id/btnPeopleLableBack"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentLeft="true"
-	    android:text="@string/btn_back"/>
+	    android:background="@drawable/button_red"
+	    android:text="刷新"/>
 		<TextView android:layout_width="wrap_content"
 		android:textColor="#FFFFFF" android:layout_height="37sp"
 		android:text="title"
@@ -41,4 +42,12 @@
 		android:layout_height="wrap_content"
 		android:background="@drawable/bj"
 		android:layout_weight="1.0" android:paddingTop="5dip" android:cacheColorHint="#00000000"/>
+	<TextView
+		android:layout_width="fill_parent"
+		android:id="@+id/txtNoData"
+		android:layout_height="fill_parent"
+		android:gravity="center"
+		android:text="没数据"
+		android:minHeight="80dip"
+		android:layout_gravity="center_vertical|center_horizontal"/>	
 </LinearLayout>

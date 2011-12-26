@@ -267,7 +267,7 @@ public class DbHelper {
 			database = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
 			return database;
 		} catch (Exception e) {
-			Log.d("", e.getMessage());
+			e.printStackTrace();
 		}
 		return database;
 	}

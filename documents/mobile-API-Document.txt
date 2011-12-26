@@ -188,4 +188,4 @@
                 		'partyId':Integer,
                 		'applyURL':String
                 		}
-		}
+	}

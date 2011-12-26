@@ -2,7 +2,12 @@ package com.aragoncg.apps.airenao.activity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,6 +18,8 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -38,6 +45,7 @@ import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
+import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class CreateActivity extends Activity implements OnClickListener {
 	public static final int startTimePicker = 0x7f050004;
@@ -70,6 +78,7 @@ public class CreateActivity extends Activity implements OnClickListener {
 	private List<AirenaoActivity> activitys;
 	private AirenaoActivity activityFromDetail;
 	private AirenaoActivity activityDb;
+	private HashMap<String, String> clientMap;
 	
 	private Button btnSendSMS;
 	private Button btnSendEmail;
@@ -82,8 +91,17 @@ public class CreateActivity extends Activity implements OnClickListener {
 	private AirenaoActivity theLastData;
 	private String userName;
 	private String passWord;
+	private Runnable editSaveRun;
+	private Runnable getClientRun;
+	private String userId;
+	private Handler myHandler;
+	private String msgType;
 	
-	
+	private static final int SUCCESS = 4;
+	private static final int FAIL = 3;
+	private static final int EXCEPTION = 2;
+	private static final int MSG_ID_SUCC = 5;
+	private static final int MSG_ID_FAIL = 6;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -111,9 +129,139 @@ public class CreateActivity extends Activity implements OnClickListener {
 		if(intent != null){
 			initData(intent);
 		}
-		setUserTitle();
+		reSetUI();
+		initMyHandler();
+		initRunable();
 	}
 	
+	
+	public void initRunable(){
+		editSaveRun = new Runnable() {
+			
+			@Override
+			public void run() {
+				HttpHelper httpHelper = new HttpHelper();
+				String url = getString(R.string.editUrl);
+				HashMap<String, String> params = new HashMap<String, String>();
+				params.put("partyID", activityFromDetail.getId()+"");
+				
+				String time = startTimeText.getText().toString();
+				if(time==null || "".equals(time)){
+					params.put(Constants.START_TIME, "");
+				}else{
+					params.put(Constants.START_TIME, time+":00");
+				}
+				
+				String positon = positionText.getText().toString();
+				if(positon==null || "".equals(positon)){
+					params.put(Constants.LOCATION, "");
+				}else{
+					params.put(Constants.LOCATION, positon);
+				}
+				
+				String myNumber = peopleLimitNum.getText().toString().trim();
+				if(myNumber.equals("")){
+					params.put(Constants.POEPLE_MAXIMUM, "0");
+				}
+				params.put(Constants.POEPLE_MAXIMUM, myNumber);
+				params.put(Constants.DESCRIPTION, activityDescText.getText().toString());
+				params.put("uID", userId);
+				//myAirenaoActivity
+				String result = httpHelper.performPost(url, params, CreateActivity.this);
+				result = AirenaoUtills.linkResult(result);
+				try {
+					JSONObject output = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+					String status = output.getString(Constants.STATUS);
+					String description = output.getString(Constants.DESCRIPTION);
+					if("ok".equals(status)){
+						Message message = new Message();
+						Bundle bundle = new Bundle();
+						bundle.putString(SUCCESS+"", description);
+						message.what = SUCCESS;
+						message.setData(bundle);
+						myHandler.sendMessage(message);
+					}
+					
+					if(!"ok".equals(status)){
+						Message message = new Message();
+						Bundle bundle = new Bundle();
+						bundle.putString(FAIL+"", description);
+						message.what = FAIL;
+						message.setData(bundle);
+						myHandler.sendMessage(message);
+					}
+				} catch (JSONException e) {
+					//result
+					Message message = new Message();
+					Bundle bundle = new Bundle();
+					bundle.putString(EXCEPTION+"", result);
+					message.what = EXCEPTION;
+					message.setData(bundle);
+					myHandler.sendMessage(message);
+				}
+			}
+		};
+		
+		getClientRun = new Runnable() {
+			
+			@Override
+			public void run() {
+				HttpHelper httpHelper = new HttpHelper();
+				String url = getString(R.string.getPartyMsg);
+				url = url+activityFromDetail.getId()+"/";
+				//myAirenaoActivity
+				String result = httpHelper.performGet(url, CreateActivity.this);
+				result = AirenaoUtills.linkResult(result);
+				
+				try {
+					JSONObject output = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+					String status = output.getString(Constants.STATUS);
+					String description = output.getString(Constants.DESCRIPTION);
+					if("ok".equals(status)){
+						
+						clientMap = new HashMap<String, String>();
+						JSONObject dataSource = output.getJSONObject("datasource");
+						//'_isApplyTips':BOOL,
+						//'_isSendBySelf':BOOL
+						msgType = dataSource.getString("msgType");
+						JSONArray receiverArray = dataSource.getJSONArray("receiverArray");
+						JSONObject client;
+						for(int i=0;i<receiverArray.length();i++){
+							client = receiverArray.getJSONObject(i);
+							clientMap.put(client.getString("cName"), client.getString("cVal"));
+						}
+						String receiverType = dataSource.getString("receiverType");
+						Message message = new Message();
+						Bundle bundle = new Bundle();
+						bundle.putString(MSG_ID_SUCC+"", description);
+						message.what = MSG_ID_SUCC;
+						message.setData(bundle);
+						myHandler.sendMessage(message);
+					}
+					
+					if(!"ok".equals(status)){
+						
+						Message message = new Message();
+						Bundle bundle = new Bundle();
+						bundle.putString(MSG_ID_FAIL+"", description);
+						message.what = MSG_ID_FAIL;
+						message.setData(bundle);
+						myHandler.sendMessage(message);
+					}
+				} catch (JSONException e) {
+					//result
+					Message message = new Message();
+					Bundle bundle = new Bundle();
+					bundle.putString(EXCEPTION+"", result);
+					message.what = EXCEPTION;
+					message.setData(bundle);
+					myHandler.sendMessage(message);
+				}
+			}
+				
+		};
+		
+	}
 	
 	@Override
 	protected void onResume() {
@@ -327,23 +475,7 @@ public class CreateActivity extends Activity implements OnClickListener {
 		btnSendSMS = (Button) findViewById(R.id.btnSendSMS);
 		btnSendEmail = (Button)findViewById(R.id.btnSendEmail);
 		
-		btnSendSMS.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				//-2 发送手机短信
-				packgeDataToSendAirenaoActivity(-2);
-			}
-		});
 		
-		btnSendEmail.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				//-1 是发送email
-				packgeDataToSendAirenaoActivity(-1);
-			}
-		});
 		
 		//默认软键盘为数字键
 		peopleLimitNum.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -546,10 +678,58 @@ public class CreateActivity extends Activity implements OnClickListener {
 			
 		};
 	}
+	
+	public void initMyHandler(){
+		myHandler = new Handler(){
+
+			@Override
+			public void handleMessage(Message msg) {
+				switch(msg.what){
+				 case SUCCESS:
+					   
+					
+					 break;
+				 case FAIL:
+					 Toast.makeText(CreateActivity.this, "保存失败", Toast.LENGTH_SHORT);
+					 break;
+				 case EXCEPTION:
+					 Toast.makeText(CreateActivity.this, "出现异常", Toast.LENGTH_SHORT);
+					 break;
+				 case MSG_ID_FAIL:
+					 
+					 Toast.makeText(CreateActivity.this, (String)msg.getData().get(MSG_ID_FAIL+""), Toast.LENGTH_SHORT);
+					 break;
+				 case MSG_ID_SUCC:
+					 if(msgType.equals("SMS")){
+						    Intent mIntent = new Intent(CreateActivity.this,SendAirenaoActivity.class);
+						    activityFromDetail.setClients(clientMap);
+							mIntent.putExtra("sendWithClients", activityFromDetail);
+							mIntent.putExtra("sendWithClientsTag", true);
+							mIntent.putExtra("mode", -2);//-2发送短信
+							startActivity(mIntent);
+					 }else{
+						 	Intent mIntent = new Intent(CreateActivity.this,SendAirenaoActivity.class);
+						 	activityFromDetail.setClients(clientMap);
+							mIntent.putExtra("sendWithClients", activityFromDetail);
+							mIntent.putExtra("sendWithClientsTag", true);
+							mIntent.putExtra("mode", -1);//-2发送Email
+							startActivity(mIntent);
+					 }
+					 break;
+				}
+				
+				super.handleMessage(msg);
+			}
+			
+		};
+	} 
+	
 	//如果数据是从活动明细转过来的那么就配置数据
 	public void initData(Intent intent){
 		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(CreateActivity.this);
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME, null);
+		
+		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
 		Editor editor = mySharedPreferences.edit();
 		editor.putInt(Constants.APP_USED_FLAG, Constants.APP_USED_FLAG_O);
 		editor.commit();
@@ -630,7 +810,58 @@ public class CreateActivity extends Activity implements OnClickListener {
 		startActivity(mIntent);
 	}
 	
-	public void setUserTitle(){
+	public void reSetUI(){
+		
+		
+		if(fromDetail){
+			btnSendSMS.setText("     保存       ");
+			btnSendEmail.setText("保存并发送");
+            btnSendSMS.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					//保存
+					myHandler.post(editSaveRun);
+					Intent intent = new Intent(
+							CreateActivity.this,
+							MeetingListActivity.class);
+					intent.putExtra(Constants.NEED_REFRESH, true);
+					startActivity(intent);
+				}
+			});
+			
+			btnSendEmail.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					//保存并发送
+					myHandler.post(editSaveRun);
+					myHandler.post(getClientRun);
+					
+				}
+			});
+			
+		}else{
+			btnSendSMS.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					//-2 发送手机短信
+					packgeDataToSendAirenaoActivity(-2);
+				}
+			});
+			
+			btnSendEmail.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					//-1 是发送email
+					packgeDataToSendAirenaoActivity(-1);
+				}
+			});
+		}
+		
+		
 		userTitle = (TextView)findViewById(R.id.userTitle);
 		userTitle.setText(userName);
 	}
@@ -649,7 +880,24 @@ public class CreateActivity extends Activity implements OnClickListener {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		  switch (item.getItemId()) { 
 		    case MENU_SET: 
-		        //newGame(); 
+		    	AlertDialog settingDialog = new AlertDialog.Builder(CreateActivity.this)
+		    	.setTitle(R.string.btn_setting)
+		    	.setIcon(R.drawable.settings)
+		    	.setItems(R.array.setMenu, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						switch(which){
+						 case 0:
+							 break;
+						 	 
+						 case 1:
+							 break;
+						}
+					}
+				})
+		    	.create();
+		    	settingDialog.show();
 		        return true; 
 		    case MENU_OFF: 
 		    	AlertDialog dialog = new AlertDialog.Builder(CreateActivity.this)

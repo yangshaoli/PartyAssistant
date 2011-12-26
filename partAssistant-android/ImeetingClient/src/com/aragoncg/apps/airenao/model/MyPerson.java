@@ -1,5 +1,7 @@
 package com.aragoncg.apps.airenao.model;
 
+import java.util.ArrayList;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -10,6 +12,33 @@ public  class MyPerson implements Parcelable{
 	private String phoneNumber;
 	private String email;
 	private boolean checked ;
+	private ArrayList<String> numbers;
+	
+	public MyPerson(){
+		
+	}
+	
+	
+	public MyPerson(String name,String email,String phoneNumber){
+		this.name = name;
+		this.email = email;
+	}
+	
+	public MyPerson(String name,String number){
+		this.name = name;
+		this.phoneNumber = number;
+	}
+	
+	
+	public ArrayList<String> getNumbers() {
+		return numbers;
+	}
+
+
+	public void setNumbers(ArrayList<String> numbers) {
+		this.numbers = numbers;
+	}
+
 
 	public String getName() {
 		return name;
