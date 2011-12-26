@@ -17,6 +17,15 @@ $(document).ready(function(){
     ajaxGetClients('apply');
     ajaxGetClients('noanswer');
     ajaxGetClients('reject');
+    //为带有key的action，拼加key
+    var href =window.location.href;
+    vales =  href.split('?');
+    var key = '';
+    if(vales.length>1){
+      key = vales[1];
+      form_action = $('form').attr('action');
+      $('form').attr('action',form_action+'?'+key)
+    }
 });
 
 $(document).bind("mobileinit", function(){
@@ -56,7 +65,7 @@ function ajaxGetClients(applystatus){
 		<h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
 		<h2>{{party.address|default:"地点待定" }} <span style="color:#999">参加活动</span></h2>		
 		<h2>{{party.description}}</h2>
-        <form method="POST" url="{% url enroll party.id %}">
+        <form method="POST" action="{% url enroll party.id %}" id='id_form'>
         {% if client %}
             <!-- 被邀请用户报名页面 -->
         	<div class="ui-block-a"><button type="submit" data-icon="check">参加</button></div>
