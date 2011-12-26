@@ -42,7 +42,7 @@ function cal_price(v){
         <li>1. 填入需要购买的短信数量。</li>
         <li>2. 点购买按钮，来到支付宝页面，确定价格，支付。</li>
         <li>3. 充值成功！</li>
-        <li>注：每条短信最多可含65字！</li>
+        <li>注：每条短信最多只含65字！</li>
     </ul>   
    </div>
 <form method='post' action='{% url buy_sms %}'  class="creat_exercise">
@@ -50,7 +50,7 @@ function cal_price(v){
     <fieldset>
         <div class="field">
         <label for="true_name">短信数量</label>
-         <input type="number" id='id_sms_count' name="sms_count" value='{{ form.sms_count.value }}' onkeyup="cal_price(this.value)" />
+         <input type="number" id='id_sms_count' name="sms_count" value='{{ form.sms_count.value|default:'' }}' onkeyup="cal_price(this.value)" />
          <font color='red'>{{ form.sms_count.errors.0 }}</font>
          </div>
          

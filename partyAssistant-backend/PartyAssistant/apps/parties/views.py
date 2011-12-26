@@ -23,12 +23,12 @@ from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
-from utils.tools.push_notification_to_apple_tool import push_notification_when_enroll
+from utils.tools.push_notification_to_apple_tool import \
+    push_notification_when_enroll
+from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH
 import datetime
 import logging
 import time
-BASIC_MESSAGE_LENGTH = 65
-SHORT_LINK_LENGTH = 21
 logger = logging.getLogger('airenao')
 
 
@@ -683,7 +683,7 @@ def invite_list(request, party_id):
 
 #生成默认内容
 def _create_default_content(creator, start_date, start_time , address, description):
-    content = creator + u'邀请你参加：' + description + u'活动'
+    content = creator + u'邀请你参加：' + description 
     address_content = u'，' + u'地点：' + (address if address != "" else u'待定') 
     if start_date == None and start_time == None:
         if address == "":

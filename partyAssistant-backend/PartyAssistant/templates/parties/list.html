@@ -6,7 +6,7 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.6.4.min.js"></script>
 <script>
 $(document).ready(function(){
-    $("#tips").delay(3000).fadeOut();
+    $("#tips").delay(1000).fadeOut(2000);
 })
 
 	function deleteConfirm(url){
@@ -50,7 +50,7 @@ iframe{
  </div>
 </div>
     {% if send_status %}
-    <div id="tips" style="color:#000; background:#f9e100; padding:5px; width:750px; border-radius:5px;text-align:center; margin:20px; position:absolute;">
+    <div id="tips" style="color:#000; background:#ffff00; padding:5px; border-radius:5px;text-align:center; margin:20px; position:absolute; width:400px;   margin-left:150px;" >
     {% ifequal send_status 'email_success'%} 邮件发送成功 {% endifequal %}
     {% ifequal send_status 'email_fail'%} 邮件发送失败 {% endifequal %}
     {% ifequal send_status 'sms_success'%} 短信发送成功 {% endifequal %}

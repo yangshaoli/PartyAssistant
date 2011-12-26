@@ -12,6 +12,8 @@ import hashlib
 import logging
 import urllib
 import urllib2
+BASIC_MESSAGE_LENGTH = 65
+SHORT_LINK_LENGTH = 18
 
 logger = logging.getLogger('airenao')
 SMS_SERVER_NAME = 'http://u.wangxun360.com'
@@ -67,6 +69,7 @@ def _post_api_request_sendSMS(params={}):
  
  
 def sms_modem_send_sms(outbox_message, message, party):
+    number_of_message = (len(message.content) + (SHORT_LINK_LENGTH if message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
     try:
         phone_list = outbox_message.address.split(',')
         if message.is_apply_tips:
@@ -83,6 +86,11 @@ def sms_modem_send_sms(outbox_message, message, party):
                     if res != '1':
                         logger.error(res)
                 except:
+                    userprofile = party.creator.get_profile()
+                    userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+                    userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+                    userprofile.save()
+                    logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
         else:
             for phone in phone_list:
@@ -93,6 +101,11 @@ def sms_modem_send_sms(outbox_message, message, party):
                     if res != '1':
                         logger.error(res)
                 except:
+                    userprofile = party.creator.get_profile()
+                    userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+                    userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+                    userprofile.save()
+                    logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
     except:
         logger.exception('send sms error!')
