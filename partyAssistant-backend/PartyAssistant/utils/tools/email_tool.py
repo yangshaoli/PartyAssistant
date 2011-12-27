@@ -32,7 +32,7 @@ def send_email(outbox_message, message, party):
         address_list = outbox_message.address.split(',')
         if message.is_apply_tips:
             for address in address_list:
-                enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, address)).hexdigest())
+                enroll_link = 'http://' + DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, address)).hexdigest())
                 content = message.content
                 content = content.replace('\n\r','<br />')
                 content = content + u'\r\n快来报名：<a href="%s">%s</a>' % (enroll_link, enroll_link)

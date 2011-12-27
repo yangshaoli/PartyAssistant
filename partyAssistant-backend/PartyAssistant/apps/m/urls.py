@@ -34,6 +34,7 @@ urlpatterns += patterns('apps.parties.views',
     url(r'^parties/invite_list_ajax/(?P<party_id>\d+)/$', 'invite_list_ajax'),
     url(r'^parties/(?P<party_id>\d+)/email_invite/$', 'email_invite'),
     url(r'^parties/(?P<party_id>\d+)/sms_invite/$', 'sms_invite'),
+    url(r'^parties/ajax_get_client_list/(?P<party_id>\d+)/$', 'ajax_get_client_list'),
     
     url(r'^parties/(?P<party_id>\d+)/enroll/$', 'enroll'),
     url(r'^parties/invite_list_ajax/(?P<party_id>\d+)/$', 'invite_list_ajax'),

@@ -732,6 +732,7 @@ def _invite_list(request, party_id):
     for party_client in party_clients_list:
         party_client_data = {
             'id' : party_client.id,
+            'client_id' : party_client.client.id,
             'name' : party_client.client.name,
             'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone,
             'is_check': party_client.is_check,
