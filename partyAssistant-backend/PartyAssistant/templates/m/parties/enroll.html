@@ -65,11 +65,12 @@ function ajaxGetClients(applystatus){
 		<h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
 		<h2>{{party.address|default:"地点待定" }} <span style="color:#999">参加活动</span></h2>		
 		<h2>{{party.description}}</h2>
-        <form method="POST" action="{% url enroll party.id %}" id='id_form'>
+        <form method="POST" action="/m{% url enroll party.id %}?key={{key}}" id='id_form'>
         {% if client %}
             <!-- 被邀请用户报名页面 -->
-        	<div class="ui-block-a"><button type="submit" data-icon="check">参加</button></div>
-        	<div class="ui-block-b"><button type="submit" data-icon="delete" data-theme="b">不参加</button></div>
+        	<div class="ui-block-a"><button type="submit" data-icon="check" name='yes' >参加</button></div>
+        	<div class="ui-block-b"><button type="submit" data-icon="delete" data-theme="b" name='no' >不参加</button></div>
+       		<input name='key' type='hidden' value='{{ key }}'></input>
         {% else %}
 
             <label for="basic">姓名:</label>
@@ -77,7 +78,7 @@ function ajaxGetClients(applystatus){
             <label for="client_email_list">联系方式</label>
             {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
     
-            <div class="ui-block-a"><button type="submit" data-icon="check" data-theme="c">参加</button></div>
+            <div class="ui-block-a"><button type="submit" data-icon="check" data-theme="c" name='yes'>参加</button></div>
     
         {% endif %}	
         </form>

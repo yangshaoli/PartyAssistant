@@ -557,7 +557,7 @@ def _invite_enroll(request, party_id, invite_key):
                         client.name = client.phone  
             client.save()
                
-            if request.POST['action'] == 'yes': #如果点击参加
+            if 'yes' in request.POST: #如果点击参加
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party = party, apply_status = 'apply')) >= party.limit_count:
                         return TemplateResponse(request, 'message.html', {'message': 'late'})
@@ -613,6 +613,8 @@ def enroll(request, party_id):
     except :
         return TemplateResponse(request, 'message.html', {'message':u'partynotexist'}) 
     invite_key = request.GET.get('key', '')
+    if not invite_key:
+        invite_key = request.POST.get('key', '')
     if invite_key:
         return _invite_enroll(request, party_id, invite_key)
     else:
