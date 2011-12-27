@@ -590,12 +590,10 @@ def _invite_enroll(request, party_id, invite_key):
                 'client': client,
                 'party': party,
                 'client_count': _get_client_count(party),
-                'form' : form
+                'form' : form,
+                'key' : request.GET.get('key','')
              }
-            if request.META['PATH_INFO'][0:3] == '/m/':
-                return TemplateResponse(request, 'm/enroll.html', data)
-            else:
-                return TemplateResponse(request, 'parties/enroll.html', data)
+            return TemplateResponse(request, 'parties/enroll.html', data)
     else:
         userprofile = UserProfile.objects.get(user = party.creator)
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
@@ -603,7 +601,8 @@ def _invite_enroll(request, party_id, invite_key):
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
-            'form' : EnrollForm()
+            'form' : EnrollForm(),
+            'key' : request.GET.get('key','')
         }
         
         return TemplateResponse(request, 'parties/enroll.html', data)
