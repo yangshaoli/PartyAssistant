@@ -94,7 +94,7 @@ def sms_modem_send_sms(outbox_message, message, party):
                     logger.exception('send sms error!')
         else:
             for phone in phone_list:
-                content = message.content
+                content = u'【爱热闹】' + message.content
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
