@@ -23,12 +23,12 @@ from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
-from utils.tools.push_notification_to_apple_tool import push_notification_when_enroll
+from utils.tools.push_notification_to_apple_tool import \
+    push_notification_when_enroll
+from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH
 import datetime
 import logging
 import time
-BASIC_MESSAGE_LENGTH = 65
-SHORT_LINK_LENGTH = 21
 logger = logging.getLogger('airenao')
 
 
@@ -557,7 +557,7 @@ def _invite_enroll(request, party_id, invite_key):
                         client.name = client.phone  
             client.save()
                
-            if request.POST['action'] == 'yes': #如果点击参加
+            if 'yes' in request.POST: #如果点击参加
                 if party.limit_count != 0:#有人数限制
                     if len(PartiesClients.objects.filter(party = party, apply_status = 'apply')) >= party.limit_count:
                         return TemplateResponse(request, 'message.html', {'message': 'late'})
@@ -590,12 +590,10 @@ def _invite_enroll(request, party_id, invite_key):
                 'client': client,
                 'party': party,
                 'client_count': _get_client_count(party),
-                'form' : form
+                'form' : form,
+                'key' : request.GET.get('key','')
              }
-            if request.META['PATH_INFO'][0:3] == '/m/':
-                return TemplateResponse(request, 'm/enroll.html', data)
-            else:
-                return TemplateResponse(request, 'parties/enroll.html', data)
+            return TemplateResponse(request, 'parties/enroll.html', data)
     else:
         userprofile = UserProfile.objects.get(user = party.creator)
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
@@ -603,7 +601,8 @@ def _invite_enroll(request, party_id, invite_key):
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
-            'form' : EnrollForm()
+            'form' : EnrollForm(),
+            'key' : request.GET.get('key','')
         }
         
         return TemplateResponse(request, 'parties/enroll.html', data)
@@ -614,6 +613,8 @@ def enroll(request, party_id):
     except :
         return TemplateResponse(request, 'message.html', {'message':u'partynotexist'}) 
     invite_key = request.GET.get('key', '')
+    if not invite_key:
+        invite_key = request.POST.get('key', '')
     if invite_key:
         return _invite_enroll(request, party_id, invite_key)
     else:
@@ -683,7 +684,7 @@ def invite_list(request, party_id):
 
 #生成默认内容
 def _create_default_content(creator, start_date, start_time , address, description):
-    content = creator + u'邀请你参加：' + description + u'活动'
+    content = creator + u'邀请你参加：' + description 
     address_content = u'，' + u'地点：' + (address if address != "" else u'待定') 
     if start_date == None and start_time == None:
         if address == "":
@@ -732,6 +733,7 @@ def _invite_list(request, party_id):
     for party_client in party_clients_list:
         party_client_data = {
             'id' : party_client.id,
+            'client_id' : party_client.client.id,
             'name' : party_client.client.name,
             'address': party.invite_type == 'email' and party_client.client.email or party_client.client.phone,
             'is_check': party_client.is_check,

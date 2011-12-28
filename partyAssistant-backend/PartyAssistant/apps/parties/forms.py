@@ -76,3 +76,5 @@ class EnrollForm(forms.Form):
                 raise forms.ValidationError(u'留言超过100字符')
             
             return self.cleaned_data['leave_message']
+        else:
+            return ''

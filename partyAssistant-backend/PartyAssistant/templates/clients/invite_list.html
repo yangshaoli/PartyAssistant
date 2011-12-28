@@ -87,7 +87,7 @@ function ajaxGetClients(applystatus){
             }
             //修改重新邀请的链接
             
-            $('img[alt="please"]').parent().attr('href',link+'?apply='+applystatus);
+            //$('img[alt="please"]').parent().attr('href',link+'?apply='+applystatus);
         },
         500: function(){ alert('没有获取到用户列表')}
         }
@@ -131,16 +131,27 @@ function ajaxChangeStatus(id, applystatus){
    document.execCommand('Refresh')
   }
   function invite_again(){
+   var href = window.location.href;
+   var hrefs = href.split('?');
+   params = '';
+   try{
+     params = hrefs[1];
+   }catch(err){
+   	 params = '';
+   }
+   if (params != ''){
+     params = '?' + params;
+   }
    var location = '#';
    {% if party.invite_type == "email" %}
-       location = '{% url email_invite party.id %}';
+       location = '{% url email_invite party.id %}' + params;
    {% else %}
        {% if party.invite_type == "phone" %}
-           location = '{% url sms_invite party.id %}';
+           location = '{% url sms_invite party.id %}' + params;
        {% else %}
            var confirm = window.confirm('该活动还没有添加收件人，请重新编辑后进行邀请。');
            if (confirm){
-               location = '{% url edit_party party.id %}';
+               location = '{% url edit_party party.id %}' + params;
            } 
        {% endif %}
    {% endif %}

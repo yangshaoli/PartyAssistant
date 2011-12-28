@@ -22,12 +22,11 @@ PAYMENT_TYPE = (
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    password = models.CharField(max_length = 16, blank = True)
     true_name = models.CharField(max_length = 16, blank = True)
     #自己注册的为管理员
     account_type = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)
     first_login = models.BooleanField(default = True)
-    phone = models.IntegerField(null = True, blank = True)
+    phone = models.CharField(max_length = 16, blank = True)
     used_sms_count = models.IntegerField(default = 0)
     available_sms_count = models.IntegerField(default = 30)
     
@@ -59,18 +58,6 @@ class UserIPhoneToken(UserDeviceTokenBase):
 class UserAndroidToken(UserDeviceTokenBase):
     device_type = models.CharField(max_length = 16, default = 'Android')
     
-class TempActivateNote(models.Model):
-    random_str = models.CharField(max_length = 16, blank = True)
-    email = models.EmailField()
-    action = models.CharField(max_length = 16, choices = ACTION_CHOICES, blank = True)
-    password = models.CharField(max_length = 16, blank = True)
-    #待定内容
-    aim_limit = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)
-    userprofile = models.ForeignKey(UserProfile, null = True, blank = True)
-    
-    def __unicode__(self):
-        return self.email
-
 class ProductionInfo(models.Model):
     production_apple_id = models.CharField(max_length = 128, blank = True)
     pay_money = models.CharField(max_length = 8)
@@ -88,11 +75,11 @@ class Premium(models.Model):
 
 class UserReceiptBase(models.Model):
     user = models.ForeignKey(User)
-    buy_time = models.DateTimeField(null=True, blank=True)
+    buy_time = models.DateTimeField(null = True, blank = True)
     create_time = models.DateTimeField(auto_now_add = True)
 
     pre_sms_count = models.IntegerField()
-    final_sms_count = models.IntegerField(null=True, blank=True)
+    final_sms_count = models.IntegerField(null = True, blank = True)
     
     def __unicode__(self):
         return self.user
@@ -108,16 +95,12 @@ class UserAppleReceipt(UserReceiptBase):
 
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
-    payment = models.CharField(max_length = 16,null=True, blank=True)
+    payment = models.CharField(max_length = 16, null = True, blank = True)
     items_count = models.IntegerField()
-    premium = models.ForeignKey(Premium, default=1)
-    totle_fee = models.DecimalField(max_digits=19, decimal_places=10, default=0)
+    premium = models.ForeignKey(Premium, default = 1)
+    totle_fee = models.DecimalField(max_digits = 19, decimal_places = 10, default = 0)
     def __unicode__(self):
         return self.user.username
-
-
-
-
     
 def crerate_user_profile(sender = None, instance = None, created = False, **kwargs):
     if created:
