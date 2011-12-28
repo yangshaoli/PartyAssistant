@@ -9,4 +9,7 @@ from django.http import HttpResponse
 from django.template.response import TemplateResponse
 
 def home(request):
-    return TemplateResponse(request, 'home.html',)
+    return TemplateResponse(request, 'home.html')
+
+def download(request):
+    return TemplateResponse(request, 'download.html')

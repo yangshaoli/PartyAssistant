@@ -8,7 +8,7 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'apps.main.views.home', name='home'),
     url(r'^m/$', 'apps.main.views.home'),
-    # url(r'^PartyAssistant/', include('PartyAssistant.foo.urls')),
+    url(r'^download/$', 'apps.main.views.download', name='download'),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
