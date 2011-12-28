@@ -10,7 +10,7 @@
 <meta name="copyright" content="Copyright 2008" />
 <meta name="rating" content="general" />
 <link rel = "shortcut icon" href="favicon.ico" />
-<title> {% block title %}{% endblock %}</title>
+<title> {% block title %}{% endblock %} - 爱热闹</title>
 <link href="/static/css/main.css" type="text/css" rel="stylesheet" />
 <style type="text/css" media="print">
 @import url( /static/css/print.css );
@@ -22,13 +22,33 @@
 <body>
 <!--START: Wrapper -->
 <div id="wrapper">
-  {% block nav %}{% endblock %}
+ <!--START: Header -->
+ <div id="header">
+  <h1><a href="#">logo</a></h1>
+  <!--START: Menu -->
+  <ul class="menu">
+   <li><a href="/"><span>INDEX</span><strong>首页</strong></a></li>
+   <li class="active"><a href="{% url list_party %}"><span>MY PARTY</span><strong>我的活动</strong></a></li>
+   <li><a href="{%url download %}"><span>DOWNLOAD</span><strong>下载应用</strong></a></li>
+  </ul>
+  <!--END: Menu -->
+  <ul class="menu user_login">
+    {% if user.is_authenticated %}
+   <li><a href="{%url profile %}"><span>PROFILE</span><strong>{{user.username}}</strong></a></li>
+   <li><a href="{%url logout %}"><span>LOGOUT</span><strong>登出</strong></a></li>
+    {% else %}
+   <li><a href="{%url login %}"><span>LOGIN</span><strong>登陆</strong></a></li>
+   <li><a href="{%url register %}"><span>REGISTER</span><strong>注册</strong></a></li>
+    {% endif %}
+  </ul>
+ </div>
+ <!--END: Header --> 
  <!--START: content -->
  {% block content %}{% endblock %}
  
  <!--END: content --> 
  <!--START: Footer -->
- <div id="footer"> </div>
+ <div id="footer">© 2012 北京华美汉盛软件技术有限公司 <a href="#">服务条款</a>.</div>
  <!--END: Footer --> 
 </div>
 <!--END: Wrapper -->
