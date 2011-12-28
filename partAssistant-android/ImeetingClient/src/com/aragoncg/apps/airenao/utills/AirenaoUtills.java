@@ -15,9 +15,11 @@ import com.aragoncg.apps.airenao.model.MyPerson;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -527,4 +529,5 @@ public class AirenaoUtills {
 		else
 			return false;
 	}
+	
 }

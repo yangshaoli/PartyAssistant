@@ -35,17 +35,12 @@
 		android:layout_height="64sp"
 		android:src="@drawable/add"
 		/>	
- <LinearLayout android:id="@+id/listLinearLayout" 
-      android:layout_width="fill_parent"   
-      android:layout_height="wrap_content"
-      android:orientation="vertical">    
   
   <ListView android:id="@+id/android:list"         
       android:layout_width="fill_parent"
-      android:layout_weight="1"
-      android:layout_height="fill_parent" 
+      android:layout_height="wrap_content" 
       android:drawSelectorOnTop="false"  
       android:fadeScrollbars="true"
       android:scrollbars="none"/> <!--drawSelectorOnTop="false" 如果为true，那么选中时颜色会覆盖以上的文字  -->
- </LinearLayout>
+  
 </LinearLayout> 

@@ -638,7 +638,6 @@ public class CreateActivity extends Activity implements OnClickListener {
 		if(this.limitNum == null || "".equals(this.limitNum)){
 			this.limitNum = "0";
 		}
-		tempActivity.setPeopleLimitNum(Integer.valueOf(limitNum));
 		tempActivity.setActivityContent(this.activityDes);
 		activitys.add(tempActivity);
 		}

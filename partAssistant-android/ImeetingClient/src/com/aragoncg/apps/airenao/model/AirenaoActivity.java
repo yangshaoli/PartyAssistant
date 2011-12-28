@@ -22,17 +22,20 @@ public class AirenaoActivity implements Serializable{
 	 */
 	
 	private static final long serialVersionUID = 1L;
-	private int id ;
+	private String id ;
 	private String activityName;
 	private String activityTime;
 	private String activityPosition;
-	private int peopleLimitNum;
+	private String peopleLimitNum;
 	private String activityContent;
-	private int invitedPeople;
-	private int signUp;
-	private int unSignUp;
-	private int unJoin;
+	private String invitedPeople;
+	private String newInvitedPeople;
+	private String newUnSignUP;
+	private String signUp;
+	private String unSignUp;
+	private String unJoin;
 	private String sendType;
+	private int flagNew = 0;
 	private List<Map<String,Object>> peopleList;
 	private Map<String,String> clients;
 	
@@ -69,7 +72,7 @@ public class AirenaoActivity implements Serializable{
 	}
 
 	public AirenaoActivity(String activityName, String activityTime,
-			String activityPosition, int peopleLimitNum, String activityContent) {
+			String activityPosition, String peopleLimitNum, String activityContent) {
 		this.activityName = activityName;
 		this.activityTime = activityTime;
 		this.activityPosition = activityPosition;
@@ -100,11 +103,11 @@ public class AirenaoActivity implements Serializable{
 		this.activityPosition = activityPosition;
 	}
 	
-	public int getPeopleLimitNum() {
+	public String getPeopleLimitNum() {
 		return peopleLimitNum;
 	}
 	
-	public void setPeopleLimitNum(int peopleLimitNum) {
+	public void setPeopleLimitNum(String peopleLimitNum) {
 		this.peopleLimitNum = peopleLimitNum;
 	}
 	
@@ -116,44 +119,68 @@ public class AirenaoActivity implements Serializable{
 		this.activityContent = activityContent;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public int getInvitedPeople() {
+	public String getInvitedPeople() {
 		return invitedPeople;
 	}
 
-	public void setInvitedPeople(int invitedPeople) {
+	public void setInvitedPeople(String invitedPeople) {
 		this.invitedPeople = invitedPeople;
 	}
 
-	public int getSignUp() {
+	public String getSignUp() {
 		return signUp;
 	}
 
-	public void setSignUp(int signUp) {
+	public void setSignUp(String signUp) {
 		this.signUp = signUp;
 	}
 
-	public int getUnSignUp() {
+	public String getUnSignUp() {
 		return unSignUp;
 	}
 
-	public void setUnSignUp(int unSignUp) {
+	public void setUnSignUp(String unSignUp) {
 		this.unSignUp = unSignUp;
 	}
 
-	public int getUnJoin() {
+	public String getUnJoin() {
 		return unJoin;
 	}
 
-	public void setUnJoin(int unJoin) {
+	public void setUnJoin(String unJoin) {
 		this.unJoin = unJoin;
+	}
+
+	public String getNewInvitedPeople() {
+		return newInvitedPeople;
+	}
+
+	public void setNewInvitedPeople(String newInvitedPeople) {
+		this.newInvitedPeople = newInvitedPeople;
+	}
+
+	public String getNewUnSignUP() {
+		return newUnSignUP;
+	}
+
+	public void setNewUnSignUP(String newUnSignUP) {
+		this.newUnSignUP = newUnSignUP;
+	}
+
+	public int getFlagNew() {
+		return flagNew;
+	}
+
+	public void setFlagNew(int flagNew) {
+		this.flagNew = flagNew;
 	}
 	
 	

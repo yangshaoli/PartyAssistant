@@ -18,12 +18,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,7 +32,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -194,7 +191,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		if (myAirenaoActivity == null) {
 			throw new NullPointerException("没有获得列表中的活动");
 		}
-		partyId = myAirenaoActivity.getId();
+		partyId = Integer.valueOf(myAirenaoActivity.getId());
 		getClientsCountUrl = getString(R.string.getClientsCountUrl);
 		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId+"");
 		asynTask.execute(getClientsCountUrl);

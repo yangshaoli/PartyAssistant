@@ -115,10 +115,11 @@ public class Constants {
     public static final String IS_SUPER_PRIMARY = "isSuperPrimary";
     public static final String PEOPLE_TAG = "peopleTag";
     public static final String BACK_END_ID = "backendID";
-    
+    public static final String ALL_CLIENT_COUNT = "allClientcount";
     public static final String APPLIED_CLIENT_COUNT = "appliedClientcount";
     public static final String NEW_APPLIED_CLIENT_COUNT = "newAppliedClientcount";
     public static final String DONOTHING_CLIENT_COUNT = "donothingClientcount";
     public static final String REFUSED_CLIENT_COUNT ="refusedClientcount";
     public static final String NEW_REFUSED_CLIENT_COUNT = "newRefusedClientcount";
+    public static final String NEW_FLAG= "newFlag";
 }

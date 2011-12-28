@@ -9,12 +9,12 @@
         android:layout_height="fill_parent">  
   
         <ProgressBar android:layout_gravity="center_vertical"  
-            android:id="@+id/footprogress" android:layout_width="wrap_content"  
+            android:id="@+id/footprogress" android:layout_width="wrap_content" 
             android:layout_height="wrap_content" android:indeterminateBehavior="repeat"  
             style="?android:progressBarStyleSmallInverse" />  
   
-        <TextView android:textColor="#ff000000" android:gravity="left|center"  
-            android:padding="3.0px" android:layout_width="wrap_content"  
+        <TextView android:textColor="#ffffff" android:gravity="left|center"  
+            android:padding="3.0px" android:layout_width="wrap_content" 
             android:layout_height="wrap_content" android:text="loading..." />  
   
     </LinearLayout>  

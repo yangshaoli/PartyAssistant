@@ -60,7 +60,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -77,6 +76,8 @@ public class SendAirenaoActivity extends Activity {
 	private static final int EXCEPTION = 1;
 	private static final int SEND_WITHOUT_OWN = 2;
 	private static final int SUCCESS = 3;
+	private static final int SEND_WAY_ONE = 0;
+	
 
 	private ImageButton btnSendReciever;
 	private EditText txtSendLableContent;
@@ -87,8 +88,8 @@ public class SendAirenaoActivity extends Activity {
 	private Button btnSendLableRecovery;
 	private String stringLink;
 	private String smsContent;
-	private Spinner mySpinner;
-	public static final int MENU_SET = 0;
+	private static final int MENU_SET = 0;
+	private static final int MENU_SEND_WAY = 1;
 	private boolean sendSMS = true;
 	private boolean isShow = false;
 
@@ -595,11 +596,6 @@ public class SendAirenaoActivity extends Activity {
 						}
 						;
 					}
-					peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
-					peopleNumbers.setText(names);
-					theTime = airenao.getActivityTime();
-					thePosition = airenao.getActivityPosition();
-					theNumber = airenao.getPeopleLimitNum();
 					theContent = airenao.getActivityContent();
 					if (theTime == null || "".equals(theTime)) {
 						theTime = getString(R.string.sendLableTime);
@@ -633,9 +629,6 @@ public class SendAirenaoActivity extends Activity {
 			} else {
 				AirenaoActivity airenao = (AirenaoActivity) intent
 						.getSerializableExtra(Constants.ONE_PARTY);
-				theTime = airenao.getActivityTime();
-				thePosition = airenao.getActivityPosition();
-				theNumber = airenao.getPeopleLimitNum();
 				theContent = airenao.getActivityContent();
 				List<Map<String, Object>> list = airenao.getPeopleList();
 				String names = "";
@@ -675,32 +668,8 @@ public class SendAirenaoActivity extends Activity {
 		txtSendLableContent = (EditText) findViewById(R.id.txtSendLable);
 		
 		peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
-		mySpinner = (Spinner)findViewById(R.id.spinnerSend);
 		ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(this, R.array.sendWay, android.R.layout.simple_spinner_item);
 		mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mySpinner.setAdapter(mAdapter);
-		mySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-				if(0==position){
-					ckSendLableUseOwn = true;
-				}else{
-					ckSendLableUseOwn = false;
-				}
-				
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
-		// String content =
-		// userName+"邀请您参加："+theContent+"，时间在："+theTime+"，地点是："+thePosition;
-		// txtSendLableContent.setText(content);
 
 		btnSendReciever.setOnTouchListener(new OnTouchListener() {
 
@@ -1095,7 +1064,7 @@ public class SendAirenaoActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_SET, 0, getString(R.string.btn_setting));
-
+		menu.add(0, MENU_SEND_WAY, 1,getString(R.string.memu_send_way));
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -1123,6 +1092,22 @@ public class SendAirenaoActivity extends Activity {
 								}
 							}).create();
 			settingDialog.show();
+			return true;
+		case MENU_SEND_WAY:
+			AlertDialog oneDialog = new AlertDialog.Builder(SendAirenaoActivity.this)
+	                .setTitle(R.string.memu_send_way)
+	                .setItems(R.array.sendWay, new DialogInterface.OnClickListener() {
+	                    public void onClick(DialogInterface dialog, int whichButton) {
+	                    	if(whichButton == SEND_WAY_ONE){
+	                    		ckSendLableUseOwn = true;
+	                    	}else{
+	                    		ckSendLableUseOwn = false;
+	                    	}
+	                        
+	                    }
+	                })
+	               .create();
+			oneDialog.show();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

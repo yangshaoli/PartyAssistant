@@ -24,11 +24,20 @@ public class DbHelper {
 	public final static String ACTIVITY_TABLE_NAME = "myActivitys";
 	public final static String PARTY_ID = "parytid";
 	public final static String FIELD_ID = "_id";
+	public final static String FIELD_TITLE_NAME = "name";
 	public final static String FIELD_TITLE_TIME = "time";
 	public final static String FIELD_TITLE_POSITION = "position";
 	public final static String FIELD_TITLE_NUMBER = "number";
 	public final static String FIELD_TITLE_CONTENT = "content";
 	public final static String FIELD_TITLE_SEND_TYPE = "sendtype";
+	public final static String FIELD_TITLE_INVTD = "invitedpeople";
+	public final static String FIELD_TITLE_SN_UP = "signup";
+	public final static String FIELD_TITLE_NEW_SN_UP = "newsignup";
+	public final static String FIELD_TITLE_UN_SN_UP = "unsignup";
+	public final static String FIELD_TITLE_NEW_UN_SN_UP = "newunsignup";
+	public final static String FIELD_TITLE_UN_JOIN = "unjoin";
+	public final static String FLAG_NEW = "flagnew";
+	
 	private static DbHelper myDbHelper;
 	private static List<Map<String, Object>> listActivity;
 	static String time;
@@ -40,17 +49,22 @@ public class DbHelper {
 	public static final String deleteLastSql = "delete from " + LAST_TABLE_NAME;
 	public static final String deleteActivitySql = "delete from "
 			+ ACTIVITY_TABLE_NAME;
-
+	
 	public static final String createSql = "Create table " + LAST_TABLE_NAME
 			+ "(" + FIELD_ID + " integer primary key autoincrement,"
 			+ FIELD_TITLE_TIME + " text, " + FIELD_TITLE_POSITION + " text, "
 			+ FIELD_TITLE_NUMBER + " text, " + FIELD_TITLE_CONTENT + " text);";
+			
 
 	public static final String createSql1 = "Create table "
 			+ ACTIVITY_TABLE_NAME + "(" + FIELD_ID
-			+ " integer primary key autoincrement, " +PARTY_ID+" text, "+ FIELD_TITLE_TIME
+			+ " integer primary key autoincrement, " +PARTY_ID+" text, " 
+			+ FIELD_TITLE_NAME +" text, "
+			+ FIELD_TITLE_TIME
 			+ " text, " + FIELD_TITLE_POSITION + " text, " + FIELD_TITLE_NUMBER
-			+ " text, " + FIELD_TITLE_CONTENT + " text);";
+			+ " text, " + FIELD_TITLE_CONTENT + " text, "+ FIELD_TITLE_INVTD + " text, " +FIELD_TITLE_SN_UP+" text, "+ FIELD_TITLE_NEW_SN_UP 
+			+" text, "+FIELD_TITLE_UN_SN_UP+" text, "+FIELD_TITLE_NEW_UN_SN_UP+" text, "
+			+" text, "+FIELD_TITLE_UN_JOIN+ " text, "+FLAG_NEW+" integer);";
 	public static final String dropSql = " DROP TABLE IF EXISTS "
 			+ LAST_TABLE_NAME;
 	public static final String dropSql1 = " DROP TABLE IF EXISTS "
@@ -104,10 +118,20 @@ public class DbHelper {
 		// SQLiteDatabase db=this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(PARTY_ID, airenao.getId());
-		cv.put(FIELD_TITLE_TIME, "" + airenao.getActivityTime());
-		cv.put(FIELD_TITLE_POSITION, "" + airenao.getActivityPosition());
-		cv.put(FIELD_TITLE_NUMBER, "" + airenao.getPeopleLimitNum());
-		cv.put(FIELD_TITLE_CONTENT, "" + airenao.getActivityContent());
+		cv.put(FIELD_TITLE_NAME,  airenao.getActivityName());
+		cv.put(FIELD_TITLE_TIME,  airenao.getActivityTime());
+		cv.put(FIELD_TITLE_POSITION,  airenao.getActivityPosition());
+		cv.put(FIELD_TITLE_NUMBER,  airenao.getPeopleLimitNum());
+		cv.put(FIELD_TITLE_CONTENT,  airenao.getActivityContent());
+		cv.put(FIELD_TITLE_INVTD,  airenao.getInvitedPeople());
+		cv.put(FIELD_TITLE_SN_UP,  airenao.getSignUp());
+		cv.put(FIELD_TITLE_NEW_SN_UP,  airenao.getNewUnSignUP());
+		cv.put(FIELD_TITLE_UN_SN_UP,  airenao.getUnSignUp());
+		cv.put(FIELD_TITLE_NEW_UN_SN_UP,  airenao.getNewUnSignUP());
+		cv.put(FIELD_TITLE_UN_JOIN,  airenao.getUnJoin());
+		cv.put(FLAG_NEW,  airenao.getFlagNew());
+		
+		
 		long row = -1;
 		try {
 			row = db.insert(tableName, null, cv);
@@ -169,11 +193,18 @@ public class DbHelper {
 					content = cursor.getString(cursor
 							.getColumnIndex(FIELD_TITLE_CONTENT));
 					hashMap.put(Constants.PARTY_ID, partyId);
-					hashMap.put(Constants.ACTIVITY_NAME, content);
+					hashMap.put(Constants.ACTIVITY_NAME, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NAME)));
 					hashMap.put(Constants.ACTIVITY_TIME, time);
 					hashMap.put(Constants.ACTIVITY_POSITION, position);
 					hashMap.put(Constants.ACTIVITY_NUMBER, number);
 					hashMap.put(Constants.ACTIVITY_CONTENT, content);
+					hashMap.put(Constants.ALL_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_INVTD)));
+					hashMap.put(Constants.APPLIED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP)));
+					hashMap.put(Constants.NEW_APPLIED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_SN_UP)));
+					hashMap.put(Constants.DONOTHING_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN)));
+					hashMap.put(Constants.REFUSED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP)));
+					hashMap.put(Constants.NEW_REFUSED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP)));
+					hashMap.put(Constants.NEW_FLAG, cursor.getString(cursor.getColumnIndex(FLAG_NEW)));
 					listActivity.add(hashMap);
 				} else {
 					listActivity.clear();
@@ -214,7 +245,7 @@ public class DbHelper {
 
 				airenao.setActivityTime(time);
 				airenao.setActivityPosition(position);
-				airenao.setPeopleLimitNum(Integer.valueOf(number));
+				airenao.setPeopleLimitNum(number);
 				airenao.setActivityContent(content);
 			} else {
 				airenao = null;

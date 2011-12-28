@@ -22,6 +22,7 @@
 	<string name="btn_ok">确定</string>
 	<string name="btn_cancle">取消</string>
 	<string name="btn_setting">设置</string>
+	<string name="memu_send_way">发送方式</string>
 	<string name="sendLableTime">时间待定</string>
 	<string name="sendLablePosition">地点待定</string>
 	<string name="position_too_lang">您输入的字符过长，字符上限为256个字符！</string>
