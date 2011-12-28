@@ -52,14 +52,14 @@ def createParty(request):
         description = content
         peopleMaximum = 0
         
-#        try:
-#            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
-#        except Exception:
-#            startdate = None
-#        try:
-#            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
-#        except Exception:
-#            starttime = None
+        try:
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
+        except Exception:
+            startdate = None
+        try:
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
+        except Exception:
+            starttime = None
 #        if len(location) > 256:
 #            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         
@@ -183,14 +183,7 @@ def PartyList(request, uid, start_id = 0):
     GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
-        try:
-            party.start_time = datetime.datetime.combine(party.start_date, party.start_time)
-            partyObject['starttime'] = party.start_time.strftime(GMT_FORMAT)
-        except Exception, e:
-            partyObject['starttime'] = None
         partyObject['description'] = party.description
-        partyObject['peopleMaximum'] = party.limit_count
-        partyObject['location'] = party.address
         partyObject['partyId'] = party.id
         
         #各个活动的人数情况
@@ -336,7 +329,8 @@ def GetPartyClientSeperatedList(request, pid, type):
                'cValue':cValue,
                'isCheck':is_checked,
                'backendID':clientparty.id,
-               'status':clientparty.apply_status
+               'status':clientparty.apply_status,
+               "msg":clientparty.leave_message
                }
         clientList.append(dic)
     party_list = Party.objects.filter(creator = party.creator)
