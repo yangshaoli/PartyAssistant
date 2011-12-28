@@ -22,10 +22,10 @@ $(document).ready(function(){
 <div id="content">
   <div class="grid_a">
    <h2 class="title">用户信息</h2>
-    欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<a href="{% url change_password %}" style="font-size:9pt; color:#237237237; text-decoration:underline;">修改密码</a><br/><br/>
+    欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<br/><br/>
 <br />
 
-<form method='post' action='{% url profile %}'  class="creat_exercise">
+<form method='post' action='{% url completeprofile %}'  class="creat_exercise">
     {% csrf_token %}
     <fieldset>
         <div class="field">
@@ -43,7 +43,7 @@ $(document).ready(function(){
          <font color='red'>{{ form.phone.errors.0 }}</red>
          </div>
          <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>
-         <input type='submit' value='保存' name='save'></input>
+         <input type='submit' value='保存' name='save'></input><input type='submit' value='跳过' name='ignore'></input>
         </fieldset>	
     </form>
   </div>

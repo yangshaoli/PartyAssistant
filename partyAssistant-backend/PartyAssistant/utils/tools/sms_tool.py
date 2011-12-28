@@ -75,9 +75,9 @@ def sms_modem_send_sms(outbox_message, message, party):
         if message.is_apply_tips:
             for phone in phone_list:
                 content = message.content
-                enroll_link = 'http://' + DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
+                enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
                 new_key = generate_key()
-                short_link = 'http://' + SHORT_DOMAIN_NAME + '/' + new_key
+                short_link = SHORT_DOMAIN_NAME + '/' + new_key
                 content = u'【爱热闹】' + content + u' 快来报名：%s' % short_link
                 ShortLink.objects.create(short_link=new_key, long_link=enroll_link)
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
@@ -94,7 +94,7 @@ def sms_modem_send_sms(outbox_message, message, party):
                     logger.exception('send sms error!')
         else:
             for phone in phone_list:
-                content = message.content
+                content = u'【爱热闹】' + message.content
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)

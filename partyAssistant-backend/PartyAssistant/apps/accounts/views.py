@@ -35,7 +35,7 @@ def register(request):
             user = authenticate(username = username, password = password)
             login(request, user)
             
-            return redirect('profile')
+            return redirect('completeprofile')
     else:
         form = RegistrationForm()
 
@@ -43,8 +43,10 @@ def register(request):
 
 @login_required
 @commit_on_success
-def profile(request):
+def profile(request, template_name='accounts/profile.html', redirected='profile'):
     if request.method == 'POST':
+        if 'ignore' in request.POST:
+            return redirect('list_party')
         form = UserProfileForm(request.POST)
         user = request.user
         userprofile = user.get_profile()
@@ -65,10 +67,7 @@ def profile(request):
             user = request.user
             userprofile = UserProfile.objects.get(user = user)
             sms_count = userprofile.available_sms_count    
-            return TemplateResponse(request, 'accounts/profile.html', {'form':form,
-                                                                       'sms_count':sms_count,
-                                                                       'profile_status':''
-                                                                       })
+            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count,'profile_status':''})
         
     else:    
         user = request.user
@@ -84,7 +83,7 @@ def profile(request):
               }
         form = UserProfileForm(data)
         profile_status = ''
-        return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
+        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
 @commit_on_success
