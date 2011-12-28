@@ -8,8 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "PartyDetailTableVC.h"
+#import "PartyModel.h"
+#import "ClientObject.h"
 @interface StatusTableVC : UITableViewController{
-    NSMutableArray  *participantsArray;
+    NSArray *clientsArray;
+    NSString *clientStatusFlag;
+    PartyModel *partyObj;
+    NSString *wordString;
 }
-@property (nonatomic,retain) NSMutableArray  *participantsArray;
+@property(nonatomic, retain)NSArray *clientsArray;
+@property(nonatomic, retain)NSString *clientStatusFlag;
+@property(nonatomic, retain)PartyModel *partyObj;
+@property(nonatomic, retain)NSString *wordString;
 @end

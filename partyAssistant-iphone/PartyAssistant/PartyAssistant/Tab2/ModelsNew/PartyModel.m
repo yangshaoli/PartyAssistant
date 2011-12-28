@@ -31,7 +31,7 @@
     [encoder encodeObject: self.clientsArray forKey:@"clientsArray"];
     [encoder encodeObject: self.contentString forKey:@"contentString"];
 	[encoder encodeBool: self.isSendByServer forKey:@"isSendByServer"];
-	[encoder encodeInteger: self.partyId forKey:@"partyId"];
+	[encoder encodeObject:self.partyId forKey:@"partyId"];
     [encoder encodeObject: self.peopleCountDict forKey:@"peopleCountDict"];
 }
 
@@ -40,7 +40,7 @@
     self.clientsArray  = [decoder decodeObjectForKey:@"clientsArray"];
 	self.contentString = [decoder decodeObjectForKey:@"contentString"];
     self.isSendByServer = [decoder decodeBoolForKey:@"isSendByServer"];
-    self.partyId = [decoder decodeIntegerForKey:@"partyId"];
+    self.partyId = [decoder decodeObjectForKey:@"partyId"];
     self.peopleCountDict=[decoder decodeObjectForKey:@"peopleCountDict"];
 	return self;
 }

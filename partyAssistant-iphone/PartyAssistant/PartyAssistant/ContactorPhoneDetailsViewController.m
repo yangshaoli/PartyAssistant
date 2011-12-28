@@ -7,9 +7,14 @@
 //
 
 #import "ContactorPhoneDetailsViewController.h"
-
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "HTTPRequestErrorMSG.h"
+#import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phone,card,phoneDetailDelegate;
+@synthesize contactorID,phone,card,phoneDetailDelegate,clientDict;
+@synthesize messageTextView;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,18 +43,29 @@
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
 //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
+    goButton.tag=23;
     goButton.backgroundColor=[UIColor  clearColor];
+    [goButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
+    
     [self.view addSubview:goButton];
 
     UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [notGoButton setFrame:CGRectMake(200, 200,80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
     //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
+    notGoButton.tag=24;
     notGoButton.backgroundColor=[UIColor clearColor];
+    [notGoButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:notGoButton];
 
     
-      
+    
+    messageTextView=[[UITextView alloc] init];
+    messageTextView.frame=CGRectMake(100, 153, 200, 40);
+    messageTextView.font=[UIFont systemFontOfSize:15];
+    messageTextView.backgroundColor=[UIColor redColor];
+    messageTextView.editable=NO;
+    [self.view addSubview:messageTextView];
    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -92,6 +108,102 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+
+- (void)changeClientStatus:(UIButton *)btn
+{
+    [self performSelectorOnMainThread:@selector(sendChangeClientRequest:) withObject:btn waitUntilDone:NO];
+}
+
+- (void)sendChangeClientRequest:(UIButton *)btn
+{
+//    int row = btn.tag;
+//    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+//    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    NSURL *url = [NSURL URLWithString:CLIENT_STATUS_OPERATOR];
+    NSString *statusAction = @"";
+    if(btn.tag==23){
+        statusAction=@"apply";
+    
+    }else if(btn.tag==24){
+        statusAction=@"reject";
+    
+    }
+//    if ([self.clientStatusFlag isEqualToString:@"all"]) {
+//        if ([[[self.clientsArray objectAtIndex:row] objectForKey:@"status"] isEqualToString:@"已报名"]) {
+//            statusAction = @"refuse";
+//        }else{
+//            statusAction = @"apply";
+//        }
+//    }else{
+//        if ([self.clientStatusFlag isEqualToString:@"applied"]) {
+//            statusAction = @"refuse";
+//        }else{
+//            statusAction = @"apply";
+//        }
+//    }
+    
+    NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
+    [request setPostValue:statusAction forKey:@"cpAction"];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    //btn.hidden = YES;
+    btn.enabled = NO;
+//    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+//    activity.frame = btn.frame;
+//    [activity startAnimating];
+//    [cell addSubview:activity];
+    [request setDidFinishSelector:nil];
+    [request setDidFailSelector:nil];
+    [request startSynchronous];
+    NSError *error = [request error];
+    if (!error) {
+        //[activity removeFromSuperview];
+        NSString *response = [request responseString];
+        SBJsonParser *parser = [[SBJsonParser alloc] init];
+        NSDictionary *result = [parser objectWithString:response];
+        NSString *description = [result objectForKey:@"description"];
+        if ([request responseStatusCode] == 200) {
+            if ([description isEqualToString:@"ok"]) {
+                //[btn removeFromSuperview];
+//                for (int i=0; i<[[cell subviews] count]; i++) {
+//                    if ([[[cell subviews] objectAtIndex:i] isMemberOfClass:[UILabel class]]) {
+//                        UILabel *l = [[cell  subviews] objectAtIndex:i];
+//                        if ([l.text isEqualToString:@"已报名" ]) {
+//                            l.text = @"已拒绝";
+//                        }else if([l.text isEqualToString:@"已拒绝" ] || [l.text isEqualToString:@"未报名" ]){
+//                            l.text = @"已报名";
+                NSLog(@"改变状态成功");
+                        //}
+                    //}
+               // }
+            } else {
+                btn.enabled = YES;
+               // btn.hidden = NO;
+            }
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+            btn.hidden = NO;
+            btn.enabled = YES;
+        }else{
+            btn.hidden = NO;
+            btn.enabled = YES;
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }
+    } else {
+        //[activity removeFromSuperview];
+        btn.hidden = NO;
+        btn.enabled = YES;
+        //[self showAlert:[error localizedDescription]];
+    }
+    
+    
+}
+
+
+
 
 #pragma mark - Table view data source
 
@@ -143,14 +255,16 @@
         [cell addSubview:valLb];
     }
     if(indexPath.section==1){
+        cell.selectionStyle= UITableViewCellSelectionStyleNone;
         UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
         wordsLabel.text=@"留言";
         wordsLabel.textAlignment = UITextAlignmentRight;
         wordsLabel.textColor = [UIColor blueColor];
         wordsLabel.backgroundColor = [UIColor clearColor];
         [cell addSubview:wordsLabel];
-
-         
+        
+        
+             
     }
         
     return cell;

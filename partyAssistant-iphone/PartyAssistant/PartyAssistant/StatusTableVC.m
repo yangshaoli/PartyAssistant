@@ -8,6 +8,14 @@
 
 #import "StatusTableVC.h"
 #import "ContactorPhoneDetailsViewController.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "HTTPRequestErrorMSG.h"
+#import "UITableViewControllerExtra.h"
+
+
+
 @interface StatusTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -15,9 +23,11 @@
 
 @end
 
-
 @implementation StatusTableVC
-@synthesize participantsArray;
+@synthesize clientsArray;
+@synthesize clientStatusFlag;
+@synthesize partyObj;
+@synthesize wordString;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -40,13 +50,64 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.participantsArray=[[NSMutableArray alloc] initWithObjects:@"张三",@"李四",@"王五", nil];
+    //self.clientsArray=[[NSMutableArray alloc] initWithObjects:@"张三",@"李四",@"王五", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self showWaiting];
+    NSNumber *partyIdNumber=self.partyObj.partyId;
+    NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
 }
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dict = [result objectForKey:@"datasource"];
+            self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"self.clientsArray在statustableVC中输出后%@",self.clientsArray);
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
+            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
+            }
+            [self.tableView reloadData];
+        }else{
+            [self showAlertRequestFailed:description];	
+              NSLog(@"self.clientsArray在1");
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+         NSLog(@"self.clientsArray在2");
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+         NSLog(@"self.clientsArray在3");
+    }
+	
+}
+
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
 
 - (void)viewDidUnload
 {
@@ -95,7 +156,7 @@
 {
 #warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return  [self.participantsArray count];
+    return  [self.clientsArray count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -104,11 +165,47 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
+    NSDictionary *clentDic=[self.clientsArray objectAtIndex:[indexPath row]];
+    self.wordString=[clentDic objectForKey:@"msg"];
     // Configure the cell...
-    cell.textLabel.text=[self.participantsArray  objectAtIndex:[indexPath row]];
+    //cell.textLabel.text=[self.clientsArray  objectAtIndex:[indexPath row]];
+    UILabel *upLaterLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
+    upLaterLb.text = self.title;
+    upLaterLb.textAlignment = UITextAlignmentLeft;
+    upLaterLb.textColor = [UIColor blueColor];
+    upLaterLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:upLaterLb];
+    
+    UILabel *firstLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 150, 20)];
+    firstLb.text=[clentDic objectForKey:@"cName"];
+    //firstLb.text = [self.clientsArray  objectAtIndex:[indexPath row]];
+    firstLb.textAlignment = UITextAlignmentLeft;
+    firstLb.textColor = [UIColor blueColor];
+    firstLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:firstLb];
+    
+    
+    if([self.title isEqualToString:@"已报名"]||[self.title isEqualToString:@"不参加"]){
+        BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
+        if(isCheck){
+            UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+            cellImageView.image=[UIImage imageNamed:@"new2"];
+            [cell  addSubview:cellImageView];
+        }
+        
+        
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        secondLb.text = [clentDic objectForKey:@"msg"];
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }
+    
     return cell;
 }
 
@@ -164,10 +261,17 @@
      */
     
      ContactorPhoneDetailsViewController *contactorPhoneDetailsViewController = [[ContactorPhoneDetailsViewController alloc] initWithNibName:@"ContactorPhoneDetailsViewController" bundle:[NSBundle mainBundle]];
-      contactorPhoneDetailsViewController.contactorID = 5;
-      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
-
+      
+      contactorPhoneDetailsViewController.contactorID =10;
+//    contactorPhoneDetailsViewController.contactorID =[[clientDic  objectForKey:@"backendID"] intValue];
+//    NSLog(@"backendID>>>>%d",contactorPhoneDetailsViewController.contactorID);
+    
+   
+//      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
+     contactorPhoneDetailsViewController.clientDict=[self.clientsArray  objectAtIndex:[indexPath row]];
+    
      [self.navigationController pushViewController:contactorPhoneDetailsViewController animated:YES];
+    contactorPhoneDetailsViewController.messageTextView.text=@"留言自造数据ddddddddddddddddddd的 点点滴滴 ddddddddddd 点点滴滴ddddd 点点滴滴 淡淡的 得到 的的额度的的的的的";//需要放在push后面才可以成功赋值
 }
 
 

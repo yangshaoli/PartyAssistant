@@ -45,7 +45,7 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
+    
     self.navigationController.title = @"活动详情";
     self.editButtonItem.action = @selector(editBtnAction);
     self.editButtonItem.title = @"编辑";
@@ -321,51 +321,19 @@
     }
 }
 
-- (void)loadClientCount
-{
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@" ,GET_PARTY_CLIENT_MAIN_COUNT,self.baseinfo.partyId]];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
-    [request setDelegate:self];
-    [request setShouldAttemptPersistentConnection:NO];
-    [request startAsynchronous];
-}
-
-- (void)requestFinished:(ASIHTTPRequest *)request{
-    
-	NSString *response = [request responseString];
-	SBJsonParser *parser = [[SBJsonParser alloc] init];
-	NSDictionary *result = [parser objectWithString:response];
-	NSString *description = [result objectForKey:@"description"];
-    if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
-            NSDictionary *dataSource = [result objectForKey:@"datasource"];
-            NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
-            NSNumber *appliedClientcount = [dataSource objectForKey:@"appliedClientcount"];
-            NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
-            NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
-            NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[refusedClientcount stringValue],[donothingClientcount stringValue], nil];
-            self.peopleCountArray = countArray;
-            [self.tableView reloadData];
-        }else{
-            [self showAlertRequestFailed:description];		
-        }
-    }
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
-//	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
-}
 
 - (void)shareAction
 {
+    
+//    if ([delegate respondsToSelector:@selector(UserLogin)]) 
+//    {
+//        [delegate UserLogin];
+//    }
     WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
     rootVC.baseinfo = baseinfo;
     WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
     [self presentModalViewController:vc animated:YES];
+    
 }
 
 - (void)editBtnAction{
