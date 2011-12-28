@@ -57,6 +57,12 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self showWaiting];
+    
+    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次发送" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
+    self.navigationItem.rightBarButtonItem = resendBtn;
+    
+    
+    
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
@@ -143,6 +149,11 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+
+- (void)resendBtnAction{
+    NSLog(@"调用再次发送");
+
+}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -269,9 +280,10 @@
    
 //      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
      contactorPhoneDetailsViewController.clientDict=[self.clientsArray  objectAtIndex:[indexPath row]];
-    
+     contactorPhoneDetailsViewController.partyObj=self.partyObj;
      [self.navigationController pushViewController:contactorPhoneDetailsViewController animated:YES];
-    contactorPhoneDetailsViewController.messageTextView.text=@"留言自造数据ddddddddddddddddddd的 点点滴滴 ddddddddddd 点点滴滴ddddd 点点滴滴 淡淡的 得到 的的额度的的的的的";//需要放在push后面才可以成功赋值
+    
+   
 }
 
 

@@ -351,6 +351,7 @@
             statusTableVC.clientStatusFlag=@"refused";
         }
         [self.navigationController pushViewController:statusTableVC animated:YES];
+        
     }
 }
 
@@ -372,7 +373,9 @@
 - (void)editBtnAction{
     ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
     contentTableVC.title=@"编辑活动内容";
+    contentTableVC.partyObj=self.partyObj;
     [self.navigationController pushViewController:contentTableVC animated:YES];
+    
 }
 - (void)refreshItem{
     NSLog(@"调用刷新");

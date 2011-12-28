@@ -46,31 +46,8 @@
     self.title=@"活动列表";
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
-   
-        
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
     
-//    PartyModel *partyObj2=[[PartyModel alloc] init];
-//    ClientObject *client1=[[ClientObject alloc] init];
-//    client1.cName=@"收件人1";
-//    
-//    partyObj2.clientsArray=[[ContactData   contactsArray] mutableCopy];
-//    partyObj2.contentString=@"唱歌嗨一把";
-//    partyObj2.isSendByServer=NO;
-//    partyObj2.partyId=[NSNumber numberWithInt:1];
-//    partyObj2.userObject.uID=1;
-//    //partyObj2.peopleCountDict=
-//    NSLog(@"self.partyList打印出来：：%@",self.partyList);
-//    self.title=@"活动列表";
-//    
-//    PartyModel *partyObj1=[[PartyModel alloc] init];
-//    //partyObj1.receiversArray=[[ContactData   contactsArray] mutableCopy];
-//    partyObj1.contentString=@"跳舞爽";
-//    partyObj1.isSendByServer=NO;
-//    partyObj1.partyId=[NSNumber numberWithInt:10];
-    //self.partyList=[[PartyListService sharedPartyListService] addPartyList:partyObj2];
-    //[PartyListService sharedPartyListService].partyList=[[NSMutableArray alloc] initWithObjects:partyObj2, nil];
-//    NSString *lastString2=[[NSString alloc] initWithString:@"最后吃饭"];
-   //[[PartyListService sharedPartyListService].partyList  addObject:partyObj1];
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
     
@@ -103,7 +80,6 @@
 	//  update the last update date
 	[bottomRefreshView refreshLastUpdatedDate];
     [topRefreshView refreshLastUpdatedDate];
-    //self.partyList=[[NSArray alloc] initWithObjects:@"踢球1",@"唱歌2",@"聚餐3", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -124,6 +100,7 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
+    [self refreshBtnAction];
     [self.tableView reloadData];
 }
 
@@ -273,21 +250,38 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     NSInteger row=[indexPath row];
-    UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
-    cellImageView.image=[UIImage imageNamed:@"new1"];
-    [cell  addSubview:cellImageView];
+    
+    UIView *oldLayout = nil;
+    oldLayout = [cell viewWithTag:2];
+    [oldLayout removeFromSuperview];
+    
+    NSInteger getPartyId=[[[self.partyList  objectAtIndex:[indexPath row]] partyId]  intValue];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",getPartyId];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
+    NSLog(@"在list中输出getStatusChangedInt》》》》》%d",getStatusChangedInt);
+    if(1==getStatusChangedInt){
+        
+        UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+        cellImageView.image=[UIImage imageNamed:@"new1"];
+        cellImageView.tag=2;
+        [cell  addSubview:cellImageView];
+    
+    }
+
+    
     
     UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 175, 40)];
     contentLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     contentLabel.font=[UIFont systemFontOfSize:15];
     [cell  addSubview:contentLabel];
      
-    UIView *oldLayout = nil;
-    oldLayout = [cell viewWithTag:2];
+
+    oldLayout = [cell viewWithTag:6];
     [oldLayout removeFromSuperview];
 
     UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 90, 40)];    
-    lb_1.tag = 2;
+    lb_1.tag = 6;
     NSString *applyString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"appliedClientcount"]];
     NSString *donothingString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"donothingClientcount"]];
     NSString *refuseString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"refusedClientcount"]];

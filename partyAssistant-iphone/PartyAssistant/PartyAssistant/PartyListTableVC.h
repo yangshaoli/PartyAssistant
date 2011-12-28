@@ -40,5 +40,6 @@
 - (void)doneLoadingTopRefreshTableViewData;
 - (void)doneLoadingBottomRefreshTableViewData;
 - (void)setBottomRefreshViewYandDeltaHeight;
+- (void)refreshBtnAction;
 
 @end
