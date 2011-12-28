@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "PartyModel.h"
 @interface ContentTableVC : UITableViewController
 {
   UITextView *contentTextView;
+    PartyModel *partyObj;
 }
 @property (nonatomic,retain) UITextView *contentTextView;
+@property (nonatomic,retain) PartyModel *partyObj;
 @end

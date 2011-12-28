@@ -17,11 +17,12 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 
+
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
 @implementation PartyDetailTableVC
-@synthesize myToolbarItems;
-
+@synthesize myToolbarItems,peopleCountArray;
+@synthesize partyObj;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -35,10 +36,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-   
+        
+    [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
+
     self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
     [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];
     [self.navigationController.toolbar sizeToFit];
+    
+    
     
     if (!self.myToolbarItems) {
         UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
@@ -52,7 +57,7 @@
                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"refresh_word"]
                                                                 style:UIBarButtonItemStylePlain 
                                                                target:self
-                                                               action:@selector(refreshItem:)],
+                                                               action:@selector(refreshItem)],
                                flexButton, 
                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"del_word"]
                                                                 style:UIBarButtonItemStylePlain
@@ -64,6 +69,11 @@
                                                                target:self
                                                                action:@selector(editBtnAction)],
                                flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reinvite_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(resentMsg)],
+                               flexButton,
                                nil];
         
         [self setToolbarItems:myToolbarItems animated:YES];
@@ -73,7 +83,13 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self.tableView reloadData];
 }
+
+
+
+
+
 
 - (void)viewDidUnload
 {
@@ -86,6 +102,12 @@
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
+    [self.tableView reloadData];
+    
+//    //[GetClientsCountService sharedGetClientsCountService].partyObj=self.partyObj;
+//    NSLog(@"在Detail页面输出partyid》》》》%d",self.partyObj.partyId);
+   
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -109,6 +131,63 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+
+
+
+- (void)loadClientCount
+{
+    NSNumber *partIdNumber=self.partyObj.partyId;
+    NSString *partIdString=[partIdNumber stringValue];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
+    NSLog(@"在loadClientCount中输出partid》》》%@",self.partyObj.partyId);
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+}
+
+
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
+            
+            NSNumber *appliedClientcount = [dataSource objectForKey:@"appliedClientcount"];
+            NSNumber *newAppliedClientcount = [dataSource objectForKey:@"newAppliedClientcount"];
+            
+            NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
+            NSNumber *newRefusedClientcount = [dataSource objectForKey:@"newRefusedClientcount"];
+            NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
+            
+            NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[newAppliedClientcount stringValue],[refusedClientcount stringValue],[newRefusedClientcount stringValue],[donothingClientcount stringValue], nil];
+            self.peopleCountArray = countArray;
+            NSLog(@"self.peopleCountArray输出。。%@",self.peopleCountArray);
+            [self.tableView reloadData];
+        }else{
+            NSLog(@"GetClientsCountService》》》requestFinished》  获取数据出错了。。。。。。");
+            // [self showAlertRequestFailed:description];		
+        }
+    }
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    NSLog(@"GetClientsCountService》》》》requestFailed  出错了。。。。。。");
+    //	NSError *error = [request error];
+	//[self dismissWaiting];
+	//[self showAlertRequestFailed: error.localizedDescription];
+}
+
+
+
 
 #pragma mark - Table view data source
 
@@ -146,20 +225,50 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    UIView *oldLayout = nil;
+    oldLayout = [cell viewWithTag:2];
+    [oldLayout removeFromSuperview];
     if(indexPath.section==0){
 //        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
 //        [cell addSubview:contentTextField];
         cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
-        cell.textLabel.text=@"将要编辑的内容";
+        cell.textLabel.text=self.partyObj.contentString;
     }else{
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
+            
+
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:0]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
+            
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
         }else if(indexPath.row==2){
             cell.textLabel.text=@"未响应";  
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:5]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:3]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
         }
         cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
@@ -222,22 +331,115 @@
     if(indexPath.section==0){
         ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
         contentTableVC.title=@"编辑活动内容";
+        contentTableVC.partyObj=self.partyObj;
         [self.navigationController pushViewController:contentTableVC animated:YES];
     }
     if(indexPath.section==1){
         StatusTableVC  *statusTableVC=[[StatusTableVC  alloc] initWithNibName:@"StatusTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
-        
+        statusTableVC.partyObj=self.partyObj;
         if(indexPath.row==0){
             statusTableVC.title=@"已邀请";
+            statusTableVC.clientStatusFlag=@"all";
         }else if(indexPath.row==1){
             statusTableVC.title=@"已报名";
+            statusTableVC.clientStatusFlag=@"applied";
         }else if(indexPath.row==2){
             statusTableVC.title=@"未响应";
+            statusTableVC.clientStatusFlag=@"donothing";
         }else {
             statusTableVC.title=@"不参加";
+            statusTableVC.clientStatusFlag=@"refused";
         }
         [self.navigationController pushViewController:statusTableVC animated:YES];
     }
 }
+
+- (void)shareAction
+{
+    
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    //rootVC.baseinfo = baseinfo;
+    rootVC.partyObj=self.partyObj;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
+    
+}
+
+- (void)resentMsg{
+    NSLog(@"调用再次发送");
+
+}
+- (void)editBtnAction{
+    ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
+    contentTableVC.title=@"编辑活动内容";
+    [self.navigationController pushViewController:contentTableVC animated:YES];
+}
+- (void)refreshItem{
+    NSLog(@"调用刷新");
+    
+}
+- (void)deleteParty
+{
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:nil message:@"删除后不能再恢复，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+    alertV.tag = DELETE_PARTY_ALERT_VIEW_TAG;
+    [alertV show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == DELETE_PARTY_ALERT_VIEW_TAG){
+        if (buttonIndex == 1) {
+            [self showWaiting];
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSURL *url = [NSURL URLWithString:DELETE_PARTY];
+            ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+            [request setPostValue:self.partyObj.partyId forKey:@"pID"];
+            [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+            
+            //request.timeOutSeconds = 30;
+            [request setDelegate:self];
+            [request setDidFinishSelector:@selector(deleteRequestFinished:)];
+            [request setDidFailSelector:@selector(deleteRequestFailed:)];
+            [request setShouldAttemptPersistentConnection:NO];
+            [request startAsynchronous];
+            NSLog(@"调用alert");
+        }
+    }
+}
+
+- (void)deleteRequestFinished:(ASIHTTPRequest *)request{
+	//[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
+    NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+           [self.navigationController popViewControllerAnimated:YES];
+            NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:notification];
+            NSLog(@"调用deleteRequestFinished");
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+       
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+	
+}
+
+- (void)deleteRequestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+    NSLog(@"调用deleteRequestFailed");
+}
+
+
 
 @end

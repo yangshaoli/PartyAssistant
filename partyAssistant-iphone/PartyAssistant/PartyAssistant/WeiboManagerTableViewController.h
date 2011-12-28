@@ -13,7 +13,7 @@
 #import "WeiboPersonalProfile.h"
 #import "WeiboLoginViewController.h"
 #import "WeiboNavigationController.h"
-
+#import "PartyDetailTableVC.h"
 @interface WeiboManagerTableViewController : UITableViewController<WeiboLoginViewControllerDelegate>
 {
     WeiBo *weibo;
