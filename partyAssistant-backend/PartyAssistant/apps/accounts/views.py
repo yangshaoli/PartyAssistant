@@ -35,15 +35,17 @@ def register(request):
             user = authenticate(username=username, password=password)
             login(request, user)
             
-            return redirect('profile')
+            return redirect('completeprofile')
     else:
         form = RegistrationForm()
 
     return TemplateResponse(request, 'accounts/register.html', {'form': form})
 
 @login_required
-def profile(request):
+def profile(request, template_name='accounts/profile.html', redirected='profile'):
     if request.method == 'POST':
+        if 'ignore' in request.POST:
+            return redirect('list_party')
         form = UserProfileForm(request.POST)
         user = request.user
         userprofile = UserProfile.objects.get(user=user)
@@ -75,12 +77,12 @@ def profile(request):
             
             if profile_status:
                 request.session['profile_status'] = profile_status
-            return redirect('profile')
+            return redirect(redirected)
         else:
             user = request.user
             userprofile = UserProfile.objects.get(user=user)
             sms_count = userprofile.available_sms_count    
-            return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count})
+            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count})
         
     else:    
         user = request.user
@@ -88,7 +90,7 @@ def profile(request):
         
         email = user.email
         phone = userprofile.phone
-        true_name = userprofile.true_nametrue_name = userprofile.true_name
+        true_name = userprofile.true_name
         sms_count = userprofile.available_sms_count    
         data={'email':email,
               'phone':phone,
@@ -99,7 +101,7 @@ def profile(request):
         if 'profile_status' in request.session:
             profile_status = request.session['profile_status']
             del request.session['profile_status']
-        return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
+        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
 def change_password(request):
