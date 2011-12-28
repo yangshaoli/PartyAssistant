@@ -1,38 +1,38 @@
 #-*- coding: utf-8 -*-
+import datetime
+import logging
 
-from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
-    RegistrationForm, UserProfileForm, BuySMSForm
-from apps.accounts.models import UserProfile, TempActivateNote, UserAliReceipt
 from decimal import Decimal, InvalidOperation
+
+from django.db.transaction import commit_on_success
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, redirect, get_object_or_404, \
-    HttpResponse
+from django.shortcuts import render_to_response, redirect, HttpResponse
 from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
-from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME, ALIPAY_SELLER_EMAIL
+
+from apps.accounts.models import UserProfile, UserAliReceipt
+from apps.accounts.forms import ChangePasswordForm, RegistrationForm, UserProfileForm, BuySMSForm
+from settings import DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
-from utils.tools.email_tool import send_emails
-import datetime
-import logging
-import random
+
 logger = logging.getLogger('airenao')
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
+@commit_on_success
 def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data["password"]
-            User.objects.create_user(username=username,email='',  password=password)
+            User.objects.create_user(username = username, email = '', password = password)
             
             # django bug, must authenticate before login
-            user = authenticate(username=username, password=password)
+            user = authenticate(username = username, password = password)
             login(request, user)
             
             return redirect('profile')
@@ -42,45 +42,33 @@ def register(request):
     return TemplateResponse(request, 'accounts/register.html', {'form': form})
 
 @login_required
+@commit_on_success
 def profile(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST)
         user = request.user
-        userprofile = UserProfile.objects.get(user=user)
+        userprofile = user.get_profile()
         if form.is_valid():
             true_name = form.cleaned_data['true_name']
-            phone = form.cleaned_data['phone']
-            email = form.cleaned_data['email']
             
-            profile_status = ''
+            profile_status = 'success'
             if userprofile.true_name != true_name:
                 userprofile.true_name = true_name
                 userprofile.save()
-                profile_status = 'success'
-            if phone == None:
-                if userprofile.phone != phone:
-                    userprofile.phone = phone
-                    userprofile.save()
-                    profile_status = 'success'
-            else:           
-                if userprofile.phone != long(phone):
-                    userprofile.phone = phone
-                    userprofile.save()
-                    profile_status = 'success'
-                    
-            if user.email != email:
-                user.email = email
-                user.save()
-                profile_status = 'success'
             
-            if profile_status:
-                request.session['profile_status'] = profile_status
-            return redirect('profile')
+            return TemplateResponse(request, 'accounts/profile.html', {'form':form,
+                                                                       'sms_count':userprofile.available_sms_count,
+                                                                       'profile_status':profile_status
+                                                                       })
+#            return redirect('profile')
         else:
             user = request.user
-            userprofile = UserProfile.objects.get(user=user)
+            userprofile = UserProfile.objects.get(user = user)
             sms_count = userprofile.available_sms_count    
-            return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count})
+            return TemplateResponse(request, 'accounts/profile.html', {'form':form,
+                                                                       'sms_count':sms_count,
+                                                                       'profile_status':''
+                                                                       })
         
     else:    
         user = request.user
@@ -88,20 +76,18 @@ def profile(request):
         
         email = user.email
         phone = userprofile.phone
-        true_name = userprofile.true_nametrue_name = userprofile.true_name
+        true_name = userprofile.true_name
         sms_count = userprofile.available_sms_count    
-        data={'email':email,
+        data = {'email':email,
               'phone':phone,
               'true_name':true_name                      
               }
         form = UserProfileForm(data)
         profile_status = ''
-        if 'profile_status' in request.session:
-            profile_status = request.session['profile_status']
-            del request.session['profile_status']
         return TemplateResponse(request, 'accounts/profile.html', {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
+@commit_on_success
 def change_password(request):
     if request.method == 'POST':
         form = ChangePasswordForm(request, request.POST)
@@ -122,6 +108,7 @@ def get_availbale_sms_count_ajax(request):
     return HttpResponse(simplejson.dumps(data))
 
 @login_required
+@commit_on_success
 def buy_sms(request):
     request_url = '/accounts/profile'
     if request.method == 'POST':
@@ -143,9 +130,9 @@ def buy_sms(request):
             if seller_email and subject and out_trade_no and total_fee and notify_url and payment_type:
                 user = request.user
                 #存入UserAliReceipt表
-                userprofile = UserProfile.objects.get(user=user)
-                order = UserAliReceipt.objects.create(user=user, pre_sms_count=userprofile.available_sms_count,
-                                                      receipt=out_trade_no,totle_fee=total_fee, items_count=sms_count, 
+                userprofile = UserProfile.objects.get(user = user)
+                UserAliReceipt.objects.create(user = user, pre_sms_count = userprofile.available_sms_count,
+                                                      receipt = out_trade_no, totle_fee = total_fee, items_count = sms_count,
                                                       )
                 alipay = Alipay()
                 request_url = alipay.create_direct_pay_by_user_url(seller_email, subject, body, out_trade_no, total_fee, notify_url, payment_type)
@@ -157,7 +144,7 @@ def buy_sms(request):
                 'out_trade_no':out_trade_no,
                 'domain':DOMAIN_NAME,
                 'form':form
-                }, context_instance=RequestContext(request))            
+                }, context_instance = RequestContext(request))            
     else:
         form = BuySMSForm()
         now = datetime.datetime.now()
@@ -166,16 +153,16 @@ def buy_sms(request):
             'out_trade_no':out_trade_no,
             'domain':DOMAIN_NAME,
             'form':form
-            }, context_instance=RequestContext(request))
+            }, context_instance = RequestContext(request))
 
 def bought_success(request):
     if request.method == 'POST':
-        total_fee = request.POST.get('total_fee',0)
+#        total_fee = request.POST.get('total_fee', 0)
         out_trade_no = request.POST.get('out_trade_no', '')
-        receipt = UserAliReceipt.objects.get(receipt=out_trade_no)
-        userprofile = UserProfile.objects.get(user=receipt.user)
+        receipt = UserAliReceipt.objects.get(receipt = out_trade_no)
+        userprofile = UserProfile.objects.get(user = receipt.user)
         userprofile.available_sms_count = userprofile.available_sms_count + receipt.item_count
         userprofile.save()
-        return HttpResponse("success", mimetype="text/html")
+        return HttpResponse("success", mimetype = "text/html")
     else:
-        return HttpResponse("", mimetype="text/html")
+        return HttpResponse("", mimetype = "text/html")
