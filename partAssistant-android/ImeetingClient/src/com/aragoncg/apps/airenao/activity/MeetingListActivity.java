@@ -56,7 +56,6 @@ public class MeetingListActivity extends ListActivity implements
 	private MyAdapter myDaAdapter;
 
 	private ImageButton btnAddOneActivity;
-	private LayoutInflater layoutInflater;
 	private View footerView;
 	private Thread mThread;
 	private Runnable firstLoadDataThread;
@@ -113,10 +112,10 @@ public class MeetingListActivity extends ListActivity implements
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_list);
 		AirenaoUtills.activityList.add(this);
-
 		mContext = getBaseContext();
-		Intent intent = getIntent();
-		mData = getData(intent);
+		init();
+		needRefresh = getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
+		mData = getData();
 		myListView = getListView();
 		footerView = LayoutInflater.from(this).inflate(R.layout.load_layout,
 				null);
@@ -124,7 +123,7 @@ public class MeetingListActivity extends ListActivity implements
 		footerView.setVisibility(View.GONE);
 		myDaAdapter = new MyAdapter(this);
 		setListAdapter(myDaAdapter);
-		init();
+		
 
 		myListView.setOnScrollListener(this);
 		// get the ListView and add item on long press menu
@@ -161,13 +160,24 @@ public class MeetingListActivity extends ListActivity implements
 		setButtonRefresh();
 	}
 
+	@Override
+	protected void onRestart() {
+		needRefresh = true;
+		if (needRefresh) {
+			mData = getData();
+			myDaAdapter.notifyDataSetChanged();
+		}
+		super.onRestart();
+	}
+
 	public void setButtonRefresh() {
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		btnRefresh.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				progressDialog = ProgressDialog.show(MeetingListActivity.this, "", getString(R.string.loadAirenao),true,true);
+				progressDialog = ProgressDialog.show(MeetingListActivity.this,
+						"刷新", getString(R.string.loadAirenao), true, true);
 
 				if (list == null) {
 					list = new ArrayList<Map<String, Object>>();
@@ -182,27 +192,13 @@ public class MeetingListActivity extends ListActivity implements
 	// 对footerView的处理
 	private void init() {
 		firstLoadDataThread = initLoadThread();
-		/*
-		 * layoutInflater = (LayoutInflater)
-		 * getSystemService(Context.LAYOUT_INFLATER_SERVICE); footerView =
-		 * layoutInflater.inflate(R.layout.load_layout, null);
-		 */
-
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case MSG_ID_SCROLL:
 					footerView.setVisibility(View.GONE);
-					/*
-					 * if (myDaAdapter.count <= 20) { myDaAdapter.count += 7;
-					 * int currentPage = myDaAdapter.count / 7; //
-					 * Toast.makeText(getApplicationContext(),"第" + //
-					 * currentPage + "页", Toast.LENGTH_LONG).show(); } else { //
-					 * myListView.removeFooterView(footerView);
-					 * Toast.makeText(getApplicationContext(), "恰面网提示底了！",
-					 * Toast.LENGTH_LONG).show();s } // 重新刷新Listview的adapter里面数据
-					 */myDaAdapter.notifyDataSetChanged();
+					myDaAdapter.notifyDataSetChanged();
 					break;
 				case MSG_ID_DELETE:
 					String message = (String) msg.getData().get(
@@ -216,6 +212,37 @@ public class MeetingListActivity extends ListActivity implements
 			}
 
 		};
+
+		postHandler = new Handler() {
+
+			@Override
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case Constants.POST_MESSAGE_CASE: {
+					String message = msg.getData().getString(
+							Constants.HENDLER_MESSAGE);
+					AlertDialog aDig = new AlertDialog.Builder(
+							MeetingListActivity.this).setMessage(message)
+							.create();
+					aDig.show();
+				}
+				case Constants.POST_MESSAGE_SUCCESS: {
+					if (progressDialog != null) {
+						progressDialog.dismiss();
+					}
+					myDaAdapter.notifyDataSetChanged();
+				}
+				}
+
+				super.handleMessage(msg);
+			}
+
+		};
+		SharedPreferences mySharedPreferences = AirenaoUtills
+				.getMySharedPreferences(MeetingListActivity.this);
+		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
+				null);
+		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
 
 	}
 
@@ -374,8 +401,7 @@ public class MeetingListActivity extends ListActivity implements
 		HashMap<String, Object> dataHashMap = (HashMap<String, Object>) mData
 				.get(position);
 		AirenaoActivity airenaoData = new AirenaoActivity();
-		airenaoData.setId((String) dataHashMap
-				.get(Constants.PARTY_ID));
+		airenaoData.setId((String) dataHashMap.get(Constants.PARTY_ID));
 		airenaoData.setActivityName((String) dataHashMap
 				.get(Constants.ACTIVITY_NAME));
 		airenaoData.setActivityContent((String) dataHashMap
@@ -401,42 +427,15 @@ public class MeetingListActivity extends ListActivity implements
 	 * @throws
 	 * 
 	 */
-	private List<Map<String, Object>> getData(Intent data) {
-		needRefresh = data.getBooleanExtra(Constants.NEED_REFRESH, false);
-		postHandler = new Handler() {
-
-			@Override
-			public void handleMessage(Message msg) {
-				switch (msg.what) {
-				case Constants.POST_MESSAGE_CASE: {
-					String message = msg.getData().getString(
-							Constants.HENDLER_MESSAGE);
-					AlertDialog aDig = new AlertDialog.Builder(
-							MeetingListActivity.this).setMessage(message)
-							.create();
-					aDig.show();
-				}
-				case Constants.POST_MESSAGE_SUCCESS: {
-					progressDialog.dismiss();
-					myDaAdapter.notifyDataSetChanged();
-				}
-				}
-
-				super.handleMessage(msg);
-			}
-
-		};
-		SharedPreferences mySharedPreferences = AirenaoUtills
-				.getMySharedPreferences(MeetingListActivity.this);
-		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
-				null);
-		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
+	private List<Map<String, Object>> getData() {
 
 		// 在map装配的时候，一个活动的所有属性全部装配
 		// 先从本地获得数据，如果数据为空那么在从后台取数据
 		showDialog(1);
 		if (list == null) {
 			list = new ArrayList<Map<String, Object>>();
+		}else{
+			list.clear();
 		}
 		if (!needRefresh) {
 			list = getDataFromServer();
@@ -447,10 +446,8 @@ public class MeetingListActivity extends ListActivity implements
 		} else {
 			if (firstLoadDataThread == null) {
 				firstLoadDataThread = initLoadThread();
-				postHandler.post(firstLoadDataThread);
-				return list;
 			}
-
+			postHandler.post(firstLoadDataThread);
 			return list;
 		}
 
@@ -498,11 +495,10 @@ public class MeetingListActivity extends ListActivity implements
 		public TextView activityName;
 
 		public TextView activityJoinNum;
-		
+
 		public TextView activityUnJoinNum;
-		
+
 		public TextView activityUnTakeNum;
-		
 
 	}
 
@@ -569,10 +565,10 @@ public class MeetingListActivity extends ListActivity implements
 
 				holder.activityJoinNum = (TextView) convertView
 						.findViewById(R.id.activity_join_num);
-				
+
 				holder.activityUnJoinNum = (TextView) convertView
 						.findViewById(R.id.activity_unjoin_num);
-				
+
 				holder.activityUnTakeNum = (TextView) convertView
 						.findViewById(R.id.activity_untake_num);
 				convertView.setTag(holder);
@@ -587,39 +583,41 @@ public class MeetingListActivity extends ListActivity implements
 					Constants.ACTIVITY_NAME));
 			donothingClientcount = (String) mData.get(position).get(
 					Constants.DONOTHING_CLIENT_COUNT);
-			
-			if(donothingClientcount==null){
-				donothingClientcount="0";
+
+			if (donothingClientcount == null) {
+				donothingClientcount = "0";
 			}
 			holder.activityUnJoinNum.setText(donothingClientcount);
-			//计算多少人未参加  已经拒绝的+刚拒绝的
-			refusedClientcount = (String)mData.get(position).get(Constants.REFUSED_CLIENT_COUNT);
-			if(refusedClientcount == null){
-				refusedClientcount="0";
+			// 计算多少人未参加 已经拒绝的+刚拒绝的
+			refusedClientcount = (String) mData.get(position).get(
+					Constants.REFUSED_CLIENT_COUNT);
+			if (refusedClientcount == null) {
+				refusedClientcount = "0";
 			}
-			newRefusedClientcount = (String)mData.get(position).get(Constants.NEW_REFUSED_CLIENT_COUNT);
-			if(newRefusedClientcount == null){
-				newRefusedClientcount="0";
+			newRefusedClientcount = (String) mData.get(position).get(
+					Constants.NEW_REFUSED_CLIENT_COUNT);
+			if (newRefusedClientcount == null) {
+				newRefusedClientcount = "0";
 			}
-			refusedCount =Integer.valueOf(refusedClientcount)+
-			Integer.valueOf(newRefusedClientcount);
-			
-			holder.activityUnTakeNum.setText(
-					refusedCount+"");
-			//计算多少人被邀请 已邀请的+刚被邀请的
-			appliedClientcount = (String)mData.get(position).get(Constants.APPLIED_CLIENT_COUNT);
-			if(appliedClientcount==null){
-				appliedClientcount="0";
+			refusedCount = Integer.valueOf(refusedClientcount)
+					+ Integer.valueOf(newRefusedClientcount);
+
+			holder.activityUnTakeNum.setText(refusedCount + "");
+			// 计算多少人被邀请 已邀请的+刚被邀请的
+			appliedClientcount = (String) mData.get(position).get(
+					Constants.APPLIED_CLIENT_COUNT);
+			if (appliedClientcount == null) {
+				appliedClientcount = "0";
 			}
-			newAppliedClientcount = (String)mData.get(position).get(Constants.NEW_APPLIED_CLIENT_COUNT);
-			if(newAppliedClientcount==null){
-				newAppliedClientcount="0";
+			newAppliedClientcount = (String) mData.get(position).get(
+					Constants.NEW_APPLIED_CLIENT_COUNT);
+			if (newAppliedClientcount == null) {
+				newAppliedClientcount = "0";
 			}
-			registeredCount = Integer.valueOf(appliedClientcount)+
-					Integer.valueOf(newAppliedClientcount);
-			holder.activityJoinNum.setText(
-					registeredCount+"");
-					
+			registeredCount = Integer.valueOf(appliedClientcount)
+					+ Integer.valueOf(newAppliedClientcount);
+			holder.activityJoinNum.setText(registeredCount + "");
+
 			return convertView;
 
 		}
@@ -701,8 +699,6 @@ public class MeetingListActivity extends ListActivity implements
 		}
 		// 使用Handler调用listAdapter.notifyDataSetChanged();更新数据
 	}
-
-	
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -794,7 +790,7 @@ public class MeetingListActivity extends ListActivity implements
 		if (db != null) {
 			db.close();
 		}
-
+		myDaAdapter.notifyDataSetChanged();
 	}
 
 	/**
@@ -826,10 +822,11 @@ public class MeetingListActivity extends ListActivity implements
 		try {
 			description = data.getString(PARTY_DESCRIPTION);
 			map.put(Constants.PARTY_ID, data.get(PARTY_ID) + "");
-			if(description.length()<22){
+			if (description.length() < 22) {
 				map.put(Constants.ACTIVITY_NAME, description);
-			}else{
-				map.put(Constants.ACTIVITY_NAME, description.substring(0, 22)+"...");
+			} else {
+				map.put(Constants.ACTIVITY_NAME, description.substring(0, 22)
+						+ "...");
 			}
 			map.put(Constants.ALL_CLIENT_COUNT, allClientcount);
 			map.put(Constants.APPLIED_CLIENT_COUNT, appliedClientcount);
@@ -837,8 +834,7 @@ public class MeetingListActivity extends ListActivity implements
 			map.put(Constants.DONOTHING_CLIENT_COUNT, donothingClientcount);
 			map.put(Constants.REFUSED_CLIENT_COUNT, refusedClientcount);
 			map.put(Constants.NEW_REFUSED_CLIENT_COUNT, newRefusedClientcount);
-			map.put(Constants.ACTIVITY_CONTENT,description
-					);
+			map.put(Constants.ACTIVITY_CONTENT, description);
 		} catch (JSONException e) {
 
 			e.printStackTrace();
@@ -859,11 +855,11 @@ public class MeetingListActivity extends ListActivity implements
 			myActivity.setId(data.getString(PARTY_ID));
 			String content = data.getString(PARTY_DESCRIPTION);
 			if (content.length() > 22) {
-				myActivity.setActivityName(content.substring(0, 22)+"...");
+				myActivity.setActivityName(content.substring(0, 22) + "...");
 			} else {
 				myActivity.setActivityName(content);
 			}
-			
+
 			myActivity.setActivityContent(content);
 			myActivity.setInvitedPeople(allClientcount);
 			myActivity.setSignUp(appliedClientcount);
@@ -871,7 +867,6 @@ public class MeetingListActivity extends ListActivity implements
 			myActivity.setUnJoin(donothingClientcount);
 			myActivity.setUnSignUp(refusedClientcount);
 			myActivity.setNewUnSignUP(newRefusedClientcount);
-			
 
 		} catch (JSONException e) {
 

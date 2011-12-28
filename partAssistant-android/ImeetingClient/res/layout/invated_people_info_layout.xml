@@ -48,6 +48,7 @@
 		android:layout_height="fill_parent"
 		android:gravity="center"
 		android:text="没数据"
+		android:visibility="gone"
 		android:minHeight="80dip"
 		android:layout_gravity="center_vertical|center_horizontal"/>	
 </LinearLayout>

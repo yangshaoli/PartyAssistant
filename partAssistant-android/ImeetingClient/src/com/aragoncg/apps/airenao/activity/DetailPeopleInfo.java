@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,7 +42,9 @@ public class DetailPeopleInfo extends Activity {
 	private final static int SIGNED_PEOPLE = 1;
 	private final static int UNSIGNED_PEOPLE = 2;
 	private final static int UNRESPONSED_PEOPLE = 3;
-
+	private final static int SUCCESS = 0;
+	private final static int FAIL = 1;
+	private final static int EXCEPTION = 2;
 	String SEND_SMS_ACTION = "sendSmsAction";
 	private int peopleTag = -1;
 	private TextView name;
@@ -64,6 +67,7 @@ public class DetailPeopleInfo extends Activity {
 	private BroadcastReceiver sendMessageB;
 	private PendingIntent sentPI;
 	private Handler myHandler;
+	private ProgressDialog progressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,11 +98,44 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public void handleMessage(Message msg) {
 				switch(msg.what){
-					case 0:
+					case SUCCESS:
+						 AlertDialog aDig = new AlertDialog.Builder(
+								DetailPeopleInfo.this).setMessage("成功")
+								.setPositiveButton("OK", new OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										
+									}
+								})
+								.create();
+						aDig.show();
 						break;
-					case 1:
+					case FAIL:
+						AlertDialog aDigFail = new AlertDialog.Builder(
+								DetailPeopleInfo.this).setMessage("失败")
+								.setPositiveButton("OK", new OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										
+									}
+								})
+								.create();
+						aDigFail.show();
 						break;
-					case 2:
+					case EXCEPTION:
+						AlertDialog aDigError = new AlertDialog.Builder(
+								DetailPeopleInfo.this).setMessage("系统错误,请重试")
+								.setPositiveButton("OK", new OnClickListener() {
+									
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										
+									}
+								})
+								.create();
+						aDigError.show();
 						break;
 					
 				}
@@ -141,7 +178,7 @@ public class DetailPeopleInfo extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					// 发送短信
 					try {
-						SmsManager mySmsManager = SmsManager.getDefault();
+						/*SmsManager mySmsManager = SmsManager.getDefault();
 						// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
 						if (contenMessage.length() > 70) {
 							ArrayList<String> msgs = mySmsManager
@@ -153,10 +190,13 @@ public class DetailPeopleInfo extends Activity {
 						} else {
 							mySmsManager.sendTextMessage(cValue, null,
 									contenMessage, sentPI, null);
-						}
-
+						}*/
+						Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("sms",
+								cValue, null));
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						startActivity(intent);
 					} catch (Exception e) {
-						showOkOrNotDialog("短信发送失败,是否重新发送？", false);
+						showOkOrNotDialog("短信发送失败", false);
 					}
 				}
 				return false;
@@ -180,11 +220,11 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					progressDialog = ProgressDialog.show(DetailPeopleInfo.this, "", "报名中...",true,true);
 					// 参加
 					action = "apply";
 					applayRunnable = getRunnable();
 					myHandler.post(applayRunnable);
-					join.setClickable(false);
 					return false;
 				}
 				return false;
@@ -196,11 +236,11 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					progressDialog = ProgressDialog.show(DetailPeopleInfo.this, "", "取消报名中...",true,true);
 					// 不参加
 					action = "";
 					applayRunnable = getRunnable();
 					myHandler.post(applayRunnable);
-					unJoin.setClickable(false);
 					return false;
 				}
 				return false;
@@ -221,14 +261,20 @@ public class DetailPeopleInfo extends Activity {
 				String status;
 				String description;
 				try {
-					JSONObject resultObject = new JSONObject(result);
+					JSONObject resultObject = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
 					status = resultObject.getString(Constants.STATUS);
 					description = resultObject.getString(Constants.DESCRIPTION);
-					Message message = new Message();
+					progressDialog.cancel();
 					//message.what = APPLAY_RESULT;
-					//myHandler.sendMessage(message);
+					if("ok".equals(status)){
+						myHandler.sendEmptyMessage(SUCCESS);
+					}else{
+						myHandler.sendEmptyMessage(FAIL);
+					}
+					
 				} catch (JSONException e) {
-					e.printStackTrace();
+					progressDialog.cancel();
+					myHandler.sendEmptyMessage(EXCEPTION);
 				}
 				
 				

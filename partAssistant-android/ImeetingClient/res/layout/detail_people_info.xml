@@ -18,25 +18,25 @@
 		android:layout_toRightOf="@id/touxiang"
 		android:text="chengyang"
 		android:layout_centerVertical="true"
-		android:textSize="25sp"
+		android:textSize="20sp"
 		android:textColor="@color/black"/>
 		<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:orientation="horizontal"
 		android:layout_alignParentRight="true"
-		android:layout_marginRight="40dip">
+		android:layout_marginLeft="80dip">
 		<ImageButton
 		android:id="@+id/btnSMSDetail"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:src="@drawable/btn_gv_on"
+		android:src="@drawable/btn_happy"
 		android:layout_marginRight="30dip"/>
 		<ImageButton
 		android:id="@+id/btnCallDetail"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:src="@drawable/btn_happy"/>
+		android:src="@drawable/btn_gv_on"/>
 		</LinearLayout>
 	</RelativeLayout>
 	<ImageView

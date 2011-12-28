@@ -23,20 +23,23 @@
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:paddingTop="2dip"  
-            android:paddingRight="30dip" 
+            android:paddingRight="30dip"
             android:layout_gravity="right" /> 
                 
     	<TextView android:id="@+id/activity_time"  
               android:layout_width="wrap_content"  
               android:layout_height="wrap_content"  
               android:textSize="10pt"  
-              android:singleLine="true"    
+              android:singleLine="true"
               android:paddingTop="2dip"  
-              android:paddingRight="30dip" 
+              android:paddingRight="70dip" 
               android:layout_gravity="right"
               android:textColor="@color/black"
              /> 
-         
+        <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_menu_more"/> 
     </LinearLayout>            
     <TextView
     	android:layout_width="wrap_content"

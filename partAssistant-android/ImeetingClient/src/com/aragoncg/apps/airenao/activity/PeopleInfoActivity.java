@@ -29,7 +29,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -59,7 +58,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	private Button reInvated;
 	private TextView myTitle;
 	private int peopleTag = -1;
-	private int partyId = -1;
+	private String partyId = "-1";
 	private String getPeopleInfoUrl;
 	private String applayUrl;
 	private ProgressDialog myProgressDialog;
@@ -186,9 +185,9 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		Editor editor = spf.edit();
 		editor.putInt(Constants.PEOPLE_TAG, peopleTag);
 		editor.commit();
-		partyId = intent.getIntExtra(Constants.PARTY_ID, -1);
+		partyId = intent.getStringExtra(Constants.PARTY_ID);
 		getPeopleInfoUrl = getString(R.string.getPeopleInfoUrl);
-		if (peopleTag == -1 || partyId == -1) {
+		if (peopleTag == -1 || "-1".equals(partyId)) {
 			throw new MyRuntimeException(PeopleInfoActivity.this,
 					getString(R.string.systemMistakeTitle),
 					getString(R.string.systemMistake));
@@ -201,26 +200,26 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	public void getDataFromServer() {
 		if (peopleTag == INVATED_PEOPLE) {
 
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId,
 					TYPE_ALL);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == SIGNED_PEOPLE) {
 			// 获得已报名人的信息
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId,
 					TYPE_APPLIED);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == UNSIGNED_PEOPLE) {
 			// 获得未报名人的信息
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
-					TYPE_REFUSED);
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId,
+					TYPE_DONOTHING);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == UNRESPONSED_PEOPLE) {
 			// 获得为参加人的信息
-			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId + "",
-					TYPE_DONOTHING);
+			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId,
+					TYPE_REFUSED);
 			asynTask.execute(getPeopleInfoUrl);
 		}
 	}

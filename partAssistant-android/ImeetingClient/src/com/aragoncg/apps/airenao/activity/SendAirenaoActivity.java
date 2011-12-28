@@ -50,7 +50,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -72,12 +71,10 @@ import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class SendAirenaoActivity extends Activity {
-	private static final int SAVE_RESULT = 0;
+	private static final int FAILT = 0;
 	private static final int EXCEPTION = 1;
-	private static final int SEND_WITHOUT_OWN = 2;
 	private static final int SUCCESS = 3;
 	private static final int SEND_WAY_ONE = 0;
-	
 
 	private ImageButton btnSendReciever;
 	private EditText txtSendLableContent;
@@ -107,7 +104,8 @@ public class SendAirenaoActivity extends Activity {
 	private String oneEmail;
 	private BroadcastReceiver sendMessageB;
 	private PendingIntent sentPI;
-	
+	private String partyId;
+	private String applyURL;
 
 	String SEND_SMS_ACTION = "sendSmsAction";
 	String DELIVERED_SMS_ACTION = "deliveredSmsAction";
@@ -122,6 +120,7 @@ public class SendAirenaoActivity extends Activity {
 	private HashMap<String, String> clientDicts = new HashMap<String, String>();
 	private int count = 0;
 	private ArrayList<String> phoneNumbers = new ArrayList<String>();
+	private ProgressDialog progerssDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -357,9 +356,9 @@ public class SendAirenaoActivity extends Activity {
 			@Override
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
-				case SAVE_RESULT:
-					String message = (String) msg.getData().get(
-							SAVE_RESULT + "");
+				case FAILT:
+
+					String message = (String) msg.getData().get(FAILT + "");
 					AlertDialog aDig = new AlertDialog.Builder(
 							SendAirenaoActivity.this).setMessage(message)
 							.create();
@@ -377,23 +376,18 @@ public class SendAirenaoActivity extends Activity {
 							Toast.LENGTH_LONG).show();
 
 					break;
-				case SEND_WITHOUT_OWN:
-					String message2 = (String) msg.getData().get(
-							SEND_WITHOUT_OWN + "");
-					AlertDialog aDig2 = new AlertDialog.Builder(
-							SendAirenaoActivity.this).setMessage(message2)
-							.create();
-					aDig2.show();
-					break;
 				case SUCCESS:
-					if (msg.getData().getString("noContacts") == null) {
+					if (msg.getData().getString("noContacts") == null) {// 等于null说明联系人不为空
 						if (sendSMS) {
 							// 如果用自己手机发送
 							if (ckSendLableUseOwn) {
 								if (tempContactNumbers.size() > 0) {
-									sendSMSorEmail(sendSMS,
-											ckSendLableUseOwn);
+									sendSMSorEmail(sendSMS, ckSendLableUseOwn);
+									progerssDialog.dismiss();
 								}
+							} else {
+								sendSMSorEmail(sendSMS, !ckSendLableUseOwn);
+								progerssDialog.dismiss();
 							}
 						}
 					}
@@ -420,10 +414,6 @@ public class SendAirenaoActivity extends Activity {
 				if (sendSMS && !ckSendLableUseOwn) {
 					saveToPcAndSaveDicts(noContacts);
 				}
-				// 发送邮件
-				if (!sendSMS) {
-					saveToPcAndSaveDicts(noContacts);
-				}
 			}
 
 		};
@@ -433,7 +423,7 @@ public class SendAirenaoActivity extends Activity {
 	 * 将数据同步到后台
 	 */
 	public void saveToPcAndSaveDicts(final String noContacts) {
-
+		smsContent = txtSendLableContent.getText().toString();
 		String name = "";
 		String dict = "";
 		JSONObject Json = new JSONObject();
@@ -446,7 +436,7 @@ public class SendAirenaoActivity extends Activity {
 			dict = (String) entry.getValue();
 			try {
 				Json.put("cName", name);
-				Json.put("cVal", dict);
+				Json.put("cValue", dict);
 				myDicts.put(Json);
 			} catch (JSONException e) {
 
@@ -459,13 +449,12 @@ public class SendAirenaoActivity extends Activity {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put(Constants.ACTIVITY_RECEIVERS, myDicts.toString());
 		params.put(Constants.CONTENT, smsContent);
-		if(ckSendLableUseOwn){
+		if (ckSendLableUseOwn) {
 			ckLable = 1;
-		}else{
+		} else {
 			ckLable = 0;
 		}
-		params.put(Constants.ACTIVITY_SEND_BYSELF,
-				ckLable + "");
+		params.put(Constants.ACTIVITY_SEND_BYSELF, ckLable + "");
 
 		params.put("uID", userId);
 		params.put(Constants.ADDRESS_TYPE, "android");
@@ -481,6 +470,16 @@ public class SendAirenaoActivity extends Activity {
 			String status = output.getString(Constants.STATUS);
 			String description = output.getString(Constants.DESCRIPTION);
 			if ("ok".equals(status)) {
+				JSONObject data = output.getJSONObject(Constants.DATA_SOURCE);
+				partyId = data.getString("partyId");
+				applyURL = data.getString("applyURL");
+				if (ckSendLableWithLink) {
+					stringLink = applyURL;
+				}
+
+				smsContent = "";
+				smsContent = txtSendLableContent.getText().toString() + "\n"
+						+ stringLink;
 				Message message = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(SUCCESS + "", description);
@@ -488,29 +487,22 @@ public class SendAirenaoActivity extends Activity {
 				message.what = SUCCESS;
 				message.setData(bundle);
 				myHandler.sendMessage(message);
-			}
-			if (sendSMS && !ckSendLableUseOwn) {
+			} else {
+				progerssDialog.dismiss();
 				Message message = new Message();
 				Bundle bundle = new Bundle();
-				bundle.putString(SEND_WITHOUT_OWN + "", description);
-				message.what = SEND_WITHOUT_OWN;
+				bundle.putString(FAILT + "", description);
+				message.what = FAILT;
 				message.setData(bundle);
 				myHandler.sendMessage(message);
 			}
 
-			if (!"ok".equals(status)) {
-				Message message = new Message();
-				Bundle bundle = new Bundle();
-				bundle.putString(SAVE_RESULT + "", description);
-				message.what = SAVE_RESULT;
-				message.setData(bundle);
-				myHandler.sendMessage(message);
-			}
 		} catch (JSONException e) {
+			progerssDialog.dismiss();
 			// result
 			Message message = new Message();
 			Bundle bundle = new Bundle();
-			bundle.putString(EXCEPTION + "", result);
+			bundle.putString(EXCEPTION + "", "错误！");
 			message.what = EXCEPTION;
 			message.setData(bundle);
 			myHandler.sendMessage(message);
@@ -661,14 +653,15 @@ public class SendAirenaoActivity extends Activity {
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 				null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
-		
+
 		stringLink = getString(R.string.sendLableLink);
 		btnSendReciever = (ImageButton) findViewById(R.id.btnSendReciever);
 		btnSendLable = (Button) findViewById(R.id.btnSend);
 		txtSendLableContent = (EditText) findViewById(R.id.txtSendLable);
-		
+
 		peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
-		ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(this, R.array.sendWay, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(
+				this, R.array.sendWay, android.R.layout.simple_spinner_item);
 		mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		btnSendReciever.setOnTouchListener(new OnTouchListener() {
@@ -696,13 +689,6 @@ public class SendAirenaoActivity extends Activity {
 			public void onClick(View v) {
 				count = 0;
 				getPhoneNumbersOrgetEmail(sendSMS);
-				if (ckSendLableWithLink) {
-					stringLink = getString(R.string.sendLableLink);
-				}
-
-				smsContent = "";
-				smsContent = txtSendLableContent.getText().toString() + "\n"
-						+ stringLink;
 
 				if (peopleNumbers.getText().toString() == null
 						|| "".equals(peopleNumbers.getText().toString())) {
@@ -731,44 +717,33 @@ public class SendAirenaoActivity extends Activity {
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											initThreadSaveMessage("no");
+											initThreadSaveMessage("no");// no指的是收件人为空
 											myHandler.post(threadSaveMessage);
 											// threadSaveMessage.start();
-											Intent myIntent = new Intent(
+											/*Intent myIntent = new Intent(
 													SendAirenaoActivity.this,
 													MeetingListActivity.class);
 											myIntent.putExtra(
 													Constants.NEED_REFRESH,
 													true);
-											startActivity(myIntent);
+											startActivity(myIntent);*/
+											finish();
 											return;
 										}
 
 									}).create();
 					noticeDialog.show();
 				} else {
-
+					progerssDialog = ProgressDialog.show(
+							SendAirenaoActivity.this, "", "发送中...", true, true);
 					initThreadSaveMessage(null);
 					myHandler.post(threadSaveMessage);
-					/*
-					 * oneDialog = onOneCreateDialog(); oneDialog.show();
-					 */
-					/*
-					 * getPhoneNumbersOrgetEmail(sendSMS);
-					 * if(smsContent.length() > 140){ //return; } if(sendSMS){
-					 * //如果用自己手机发送 if(ckSendLableUseOwn.isChecked()){
-					 * if(tempContactNumbers.size() > 0){
-					 * sendSMSorEmail(sendSMS,ckSendLableUseOwn.isChecked()); }
-					 * }else{ //使用后台电脑发送 if(tempContactNumbers.size() > 0){
-					 * sendSMSorEmail(sendSMS,ckSendLableUseOwn.isChecked()); }
-					 * } }else{ //使用Email发送
-					 * sendSMSorEmail(sendSMS,ckSendLableUseOwn.isChecked()); }
-					 */
+
 				}
 
 			}
 		});
-		
+
 	}
 
 	/**
@@ -922,34 +897,26 @@ public class SendAirenaoActivity extends Activity {
 				}
 				return;
 			}
-		} else {
-			// 发送Email
-			// 系统邮件系统的动作为android.content.Intent.ACTION_SEND
-			Intent email = new Intent(android.content.Intent.ACTION_SEND);
-			email.setType("plain/text");
-			String[] emailReciver = new String[tempContactNumbers.size()];
-			for (int i = 0; i < tempContactNumbers.size(); i++) {
-				emailReciver[i] = tempContactNumbers.get(i);
-			}
-			String emailSubject = "请填入主题";
-			String emailBody = smsContent;
-
-			// 设置邮件默认地址
-			email.putExtra(android.content.Intent.EXTRA_EMAIL, emailReciver);
-			// 设置邮件默认标题
-			email.putExtra(android.content.Intent.EXTRA_SUBJECT, emailSubject);
-			// 设置要默认发送的内容
-			email.putExtra(android.content.Intent.EXTRA_TEXT, emailBody);
-			// 调用系统的邮件系统
-			startActivity(Intent.createChooser(email, "请选择邮件发送软件"));
-			if (oneDialog != null) {
-				oneDialog.cancel();
-			}
-
-			// threadSaveMessage.start();
-
-			return;
-		}
+		} /*
+		 * else { // 发送Email // 系统邮件系统的动作为android.content.Intent.ACTION_SEND
+		 * Intent email = new Intent(android.content.Intent.ACTION_SEND);
+		 * email.setType("plain/text"); String[] emailReciver = new
+		 * String[tempContactNumbers.size()]; for (int i = 0; i <
+		 * tempContactNumbers.size(); i++) { emailReciver[i] =
+		 * tempContactNumbers.get(i); } String emailSubject = "请填入主题"; String
+		 * emailBody = smsContent;
+		 * 
+		 * // 设置邮件默认地址 email.putExtra(android.content.Intent.EXTRA_EMAIL,
+		 * emailReciver); // 设置邮件默认标题
+		 * email.putExtra(android.content.Intent.EXTRA_SUBJECT, emailSubject);
+		 * // 设置要默认发送的内容 email.putExtra(android.content.Intent.EXTRA_TEXT,
+		 * emailBody); // 调用系统的邮件系统 startActivity(Intent.createChooser(email,
+		 * "请选择邮件发送软件")); if (oneDialog != null) { oneDialog.cancel(); }
+		 * 
+		 * // threadSaveMessage.start();
+		 * 
+		 * return; }
+		 */
 
 	}
 
@@ -976,20 +943,6 @@ public class SendAirenaoActivity extends Activity {
 			}
 		}
 
-	}
-
-	protected Dialog onOneCreateDialog() {
-		ProgressDialog dialog = new ProgressDialog(SendAirenaoActivity.this);
-		dialog.setMessage("正在发送...");
-		dialog.setIndeterminate(true);
-		dialog.setCancelable(true);
-
-		return dialog;
-
-	}
-
-	protected void cancleDialog(Dialog dialog) {
-		dialog.cancel();
 	}
 
 	/**
@@ -1064,7 +1017,7 @@ public class SendAirenaoActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, MENU_SET, 0, getString(R.string.btn_setting));
-		menu.add(0, MENU_SEND_WAY, 1,getString(R.string.memu_send_way));
+		menu.add(0, MENU_SEND_WAY, 1, getString(R.string.memu_send_way));
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -1094,19 +1047,21 @@ public class SendAirenaoActivity extends Activity {
 			settingDialog.show();
 			return true;
 		case MENU_SEND_WAY:
-			AlertDialog oneDialog = new AlertDialog.Builder(SendAirenaoActivity.this)
-	                .setTitle(R.string.memu_send_way)
-	                .setItems(R.array.sendWay, new DialogInterface.OnClickListener() {
-	                    public void onClick(DialogInterface dialog, int whichButton) {
-	                    	if(whichButton == SEND_WAY_ONE){
-	                    		ckSendLableUseOwn = true;
-	                    	}else{
-	                    		ckSendLableUseOwn = false;
-	                    	}
-	                        
-	                    }
-	                })
-	               .create();
+			AlertDialog oneDialog = new AlertDialog.Builder(
+					SendAirenaoActivity.this)
+					.setTitle(R.string.memu_send_way)
+					.setItems(R.array.sendWay,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									if (whichButton == SEND_WAY_ONE) {
+										ckSendLableUseOwn = true;
+									} else {
+										ckSendLableUseOwn = false;
+									}
+
+								}
+							}).create();
 			oneDialog.show();
 			return true;
 		}
@@ -1287,47 +1242,54 @@ public class SendAirenaoActivity extends Activity {
 		}
 
 	}
-	
-	@Override  
-	public boolean onKeyDown(int keyCode, KeyEvent event) {  
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		smsContent = txtSendLableContent.getText().toString();
-	    if (keyCode == KeyEvent.KEYCODE_BACK) {  
-	    		if(this.smsContent != null && !"".equals(this.smsContent)){
-			    	
-			    	 AlertDialog noticeDialog = new AlertDialog.Builder(SendAirenaoActivity.this)
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (this.smsContent != null && !"".equals(this.smsContent)) {
+
+				AlertDialog noticeDialog = new AlertDialog.Builder(
+						SendAirenaoActivity.this)
 						.setCancelable(true)
 						.setTitle(R.string.sendLableTitle)
 						.setMessage(R.string.createToList)
-						.setNegativeButton(R.string.btn_cancle, new android.content.DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								
-								
-							}
-						})
-						.setPositiveButton(R.string.btn_ok, new android.content.DialogInterface.OnClickListener(){
+						.setNegativeButton(
+								R.string.btn_cancle,
+								new android.content.DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								Intent myIntent = new Intent(SendAirenaoActivity.this,MeetingListActivity.class);
-								startActivity(myIntent);
-								
-							}
-							
-						})
-						.create();
-			    	noticeDialog.show();	
-			        event.startTracking();  
-			        return false; 
-	    		}else{
-	    			Intent myIntent = new Intent(SendAirenaoActivity.this,MeetingListActivity.class);
-					startActivity(myIntent);
-	    		}
-	    		
-	     
-	    }  
-	    return super.onKeyDown(keyCode, event);  
-	} 
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+
+									}
+								})
+						.setPositiveButton(
+								R.string.btn_ok,
+								new android.content.DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										Intent myIntent = new Intent(
+												SendAirenaoActivity.this,
+												MeetingListActivity.class);
+										startActivity(myIntent);
+
+									}
+
+								}).create();
+				noticeDialog.show();
+				event.startTracking();
+				return false;
+			} else {
+				Intent myIntent = new Intent(SendAirenaoActivity.this,
+						MeetingListActivity.class);
+				startActivity(myIntent);
+			}
+
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 }

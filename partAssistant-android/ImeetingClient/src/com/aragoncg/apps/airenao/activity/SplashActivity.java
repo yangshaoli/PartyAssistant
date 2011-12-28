@@ -92,6 +92,7 @@ public class SplashActivity extends Activity {
 				finish();
 				Intent intentTO = new Intent(SplashActivity.this,
 						MeetingListActivity.class);
+				intentTO.putExtra(Constants.NEED_REFRESH,false);
 				startActivity(intentTO);
 				break;
 			case MSG_ID_LOG_CREATE_NULL:
@@ -244,11 +245,11 @@ public class SplashActivity extends Activity {
 
 							if (activityList.size() > 0) {
 								mHandler.sendEmptyMessageDelayed(
-										MSG_ID_LOG_LIST, 2000);
+										MSG_ID_LOG_LIST, 0);
 
 							} else {
 								mHandler.sendEmptyMessageDelayed(
-										MSG_ID_LOG_CREATE_NULL, 2000);
+										MSG_ID_LOG_CREATE_NULL, 0);
 							}
 
 						}

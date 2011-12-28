@@ -9,9 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -46,6 +48,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
@@ -65,11 +68,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private MyAdapter adapter;
 	private Handler myHandler;
 	private boolean loated = false;
-	private int partyId = -1;
+	private String partyId = "-1";
 	private Runnable editSaveRun;
 	private static final int PROGRESS_GONE = 1;
 	private String userId;
 	private GridView gridView; 
+	private String delteUrl;
 	
 	private static final int SUCCESS = 0;
 	private static final int FAIL = 3;
@@ -78,6 +82,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private static final int MENU_REFRESH = 1;
 	private static final int MENU_SHARE = 2;
 	private static final int MENU_SETTINT = 3;
+	private static final int MSG_ID_DELETE = 4;
+	private static final int MSG_ID_REFRESH = 5;
+	private ProgressDialog progressDialog;
 	
 	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private List<Map<String, Object>> dataList;
@@ -94,10 +101,10 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		//setProgressBarVisibility(true);
 		// 获得屏幕的高度
 		initMyHandler();
-		dataList = getData();
+		initBaseData();
 		getComponentsCache();
-		
 		initFormData();
+		dataList = getDataFromServer();
 		adapter = new MyAdapter(this);
 		
 		ListView dataListView = (ListView) findViewById(R.id.listDetailLable);
@@ -116,26 +123,34 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			public void handleMessage(Message msg) {
 				switch(msg.what){
 				 case PROGRESS_GONE:{
-					 int count = adapter.getCount();
-						/*for(int i=0;i<count;i++){
-							View convertView = adapter.getView(i, null, null);
-							ViewHolder holder = (ViewHolder)convertView.getTag();
-							holder.progressBar.setVisibility(View.GONE);
-							adapter.notifyDataSetChanged();
-						}*/
 					 break;
 				 }
 				 case SUCCESS:
-					   
-					
+					 if(progressDialog!=null){
+							progressDialog.cancel();
+						}
+					 finish();
 					 break;
 				 case FAIL:
 					 Toast.makeText(DetailActivity.this, "保存失败", Toast.LENGTH_SHORT);
 					 break;
 				 case EXCEPTION:
-					 Toast.makeText(DetailActivity.this, "出现异常", Toast.LENGTH_SHORT);
+					 if(progressDialog!=null){
+						 progressDialog.cancel();
+					 }
+					 Toast.makeText(DetailActivity.this, "错误，请重试", Toast.LENGTH_SHORT);
 					 break;
-				
+				 case MSG_ID_DELETE:
+					 if(progressDialog!=null){
+							progressDialog.cancel();
+						}
+					 Toast.makeText(DetailActivity.this, "删除失败", Toast.LENGTH_SHORT);
+					 break;
+				 case MSG_ID_REFRESH:
+					 if(progressDialog!=null){
+							progressDialog.cancel();
+						}
+					 Toast.makeText(DetailActivity.this, "获得数据失败", Toast.LENGTH_SHORT);
 				}
 				
 				super.handleMessage(msg);
@@ -143,12 +158,11 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			
 		};
 	}
+	
 	/**
-	 * 获得数据
-	 * @return
+	 * 生成一些基本的对象
 	 */
-	private List<Map<String, Object>> getData() {
-		
+	private void initBaseData(){
 		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(DetailActivity.this);
 		//userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME, null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
@@ -191,9 +205,17 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		if (myAirenaoActivity == null) {
 			throw new NullPointerException("没有获得列表中的活动");
 		}
-		partyId = Integer.valueOf(myAirenaoActivity.getId());
+		partyId = myAirenaoActivity.getId();
 		getClientsCountUrl = getString(R.string.getClientsCountUrl);
-		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId+"");
+	}
+	/**
+	 * 获得数据
+	 * @return
+	 */
+	private List<Map<String, Object>> getDataFromServer() {
+		
+		
+		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId);
 		asynTask.execute(getClientsCountUrl);
 		
 		Map<String, Object> map;
@@ -258,15 +280,29 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					int position, long id) {
 				switch(position){
 				 case MENU_DELETE:
+					 
 					 if (pw.isShowing()){
 						 pw.dismiss();
-						 
+						 progressDialog = ProgressDialog.show(DetailActivity.this, "", "删除中...",true,true);
+						 //删除
+						 delteUrl = getString(R.string.deleteUrl);
+						 Runnable remove = new Runnable() {
+
+								@Override
+								public void run() {
+									// 删除
+									deleleOnePraty(delteUrl,
+											partyId);
+								}
+							};
+							new Handler().post(remove);
 						 }
 					 break;
 				 case MENU_REFRESH:
 					 if (pw.isShowing()){
 						 pw.dismiss();
-						 
+						 progressDialog = ProgressDialog.show(DetailActivity.this, "", "loading...",true,true);
+						 dataList = getDataFromServer();
 						 }
 					 break;
 				 case MENU_SHARE:
@@ -599,7 +635,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				JSONObject jSonObject = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
 				status = jSonObject.getString(Constants.STATUS);
 				description = jSonObject.getString(Constants.DESCRIPTION);
-				if("ok".equals(status) && "ok".equals(description)){
+				if("ok".equals(status)){
 					datasource = jSonObject.getJSONObject(DATA_SOURCE);
 					String allClientCount = datasource.getString(ALL_CLIENT_COUNT);
 					String appliedClientCount = datasource.getString(APPLIED_CLIENT_COUNT);
@@ -607,15 +643,19 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					String donothingClientcount = datasource.getString(DONOTHING_CLIENT_COUNT);
 					results[0] = allClientCount;
 					results[1] = appliedClientCount;
-					results[2] = refusedClientCount;
-					results[3] = donothingClientcount;
+					results[2] = donothingClientcount ;
+					results[3] = refusedClientCount;
+					if(progressDialog!=null){
+						progressDialog.cancel();
+					}
 				}else{
 					//返回信息
+					myHandler.sendEmptyMessage(MSG_ID_REFRESH);
+					
 				}
 				
 			} catch (JSONException e) {
-				
-				e.printStackTrace();
+				myHandler.sendEmptyMessage(EXCEPTION);
 			}
 			return results;
 		}
@@ -624,7 +664,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 	@Override
 	protected void onRestart() {
-		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId+"");
+		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId);
 		asynTask.execute(getClientsCountUrl);
 		
 		Map<String, Object> map;
@@ -649,5 +689,51 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		super.onRestart();
 	}
 	
+	/**
+	 * 删除一个party
+	 * 
+	 * @param url
+	 * @param partyId
+	 */
+	public void deleleOnePraty(final String url, String partyId) {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put("pID", partyId);
+		params.put("uID", userId);
+		HttpHelper httpClient = new HttpHelper();
+		String status = "";
+
+		String result = httpClient.performPost(url, params,
+				DetailActivity.this);
+		result = AirenaoUtills.linkResult(result);
+		try {
+			JSONObject outPut = new JSONObject(result)
+					.getJSONObject(Constants.OUT_PUT);
+			status = outPut.getString(Constants.STATUS);
+			// 删除数据库
+			SQLiteDatabase db = DbHelper
+					.openOrCreateDatabase();
+			String sql = AirenaoUtills
+					.linkSQL(partyId);
+			try {
+				DbHelper.delete(db, sql);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				db.close();
+			}
+			if("ok".equals(status)){
+				myHandler.sendEmptyMessage(SUCCESS);
+			}else{
+				Message msg = new Message();
+				Bundle bundle = new Bundle();
+				bundle.putString(Constants.DESCRIPTION, "删除失败");
+				msg.setData(bundle);
+				msg.what = MSG_ID_DELETE;
+				myHandler.sendMessage(msg);
+			}
+		} catch (Exception e) {
+			myHandler.sendEmptyMessage(EXCEPTION);
+		}
+	}
 	
 }
