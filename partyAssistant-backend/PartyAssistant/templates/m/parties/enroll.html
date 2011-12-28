@@ -17,15 +17,6 @@ $(document).ready(function(){
     ajaxGetClients('apply');
     ajaxGetClients('noanswer');
     ajaxGetClients('reject');
-    //为带有key的action，拼加key
-    var href =window.location.href;
-    vales =  href.split('?');
-    var key = '';
-    if(vales.length>1){
-      key = vales[1];
-      form_action = $('form').attr('action');
-      $('form').attr('action',form_action+'?'+key)
-    }
 });
 
 $(document).bind("mobileinit", function(){
