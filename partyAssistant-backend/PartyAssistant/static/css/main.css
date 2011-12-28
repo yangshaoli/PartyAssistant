@@ -95,12 +95,22 @@ abbr, acronym {
  padding:30px 0;
 }
 #wrapper {
- width:760px;
+ width:960px;
  margin:0 auto;
 }
 #header {
  position:relative;
  height:43px;
+}
+#content{
+ margin:0 auto;
+ clear:both;
+}
+#footer{
+ font-size:12px;
+ border-top:2px solid #ff0000;
+ text-align:center;
+ padding:20px 0;
 }
 /** 3.2 Homepage **/
 body {
@@ -109,13 +119,20 @@ body {
  font-size:14px;
  background:#fafaf0 url(../images/bg_body.png) left top repeat-x;
 }
+body {
+ font-family:"微软雅黑";
+ color:#545454;
+ font-size:14px;
+ background:#fafaf0 url(../images/bg_body3.png) top left repeat-x;
+}
+
 #header h1 {
  position:absolute;
  left:0;
- top:6px;
- height:54px;
- width:145px;
- background:url(../images/logo.png) left top no-repeat;
+ top:5px;
+ height:69px;
+ width:196px;
+ background:url(../images/logo1.png) left top no-repeat;
 }
 #header h1 a {
  display:block;
@@ -125,39 +142,207 @@ body {
  overflow:hidden;
 }
 .menu {
- padding-left:160px;
+ padding-left:278px;
  padding-top:1px;
  float:left;
+ margin-top:16px;
 }
 .menu li {
- display:inline;
+ float:left;
+ text-align:center;
+}
+.menu li span{
+ color:#e61e00;
+ font-size:18px;
+ font-family:Impact;
+ height:26px;
+ line-height:26px;
 }
 .menu li a {
  color:white;
  text-decoration:none;
  float:left;
- line-height:41px;
+ line-height:33px;
  padding:0 10px;
  margin-right:15px;
 }
-.menu li.active a, .menu li a:hover {
- background-color:#d10303;
+.menu li a strong{
+ display:block;
+}
+.menu li.active a strong, .menu li a:hover strong{
+ background-color:white;
+ color:#e61e00;
 }
 .user_login {
  float:right;
+ padding:0;
 }
-.user_login li {
- display:inline;
- margin-left:15px;
- line-height:41px;
+
+.home-section1{
+ border:3px solid #ff0000;
+ margin-top:6px;
+ clear:both;
+ height:506px;
+ background:#efefef url(../images/bg_slogan.gif) 2px 60px no-repeat;
+ -webkit-box-shadow: rgba(200,200,20);
+ box-shadow: rgba(200,200,20);
+ -khtml-box-shadow: rgba(200,200,200,1) 0 2px 18px;
 }
-.user_login li a {
- color:white;
- text-decoration:none;
+.home-section1 .phone{
+ width:400px;
+ background:url(../images/phone.png) 55px 18px no-repeat;
+ float:left;
+ height:100%;
 }
-.user_login li a:hover{
- text-decoration:underline;
+.home-section1  .help-you h2{
+ background:url(../images/text_slogan.png) left top no-repeat;
+ height:58px;
+ margin-bottom:20px;
+ text-indent:-9999px;
+ overflow:hidden;
+ margin:77px 0 25px;
+ position:relative;
+ left:-7px;
 }
+.home-section1  .help-you .help-list{
+ line-height:30px;
+ font-size:16px;
+}
+.free-down{
+ display:block;
+ width:172px;
+ height:36px;
+ text-indent:-9999px;
+ overflow:hidden;
+ background:url(../images/free_down.png) left top no-repeat;
+ margin:30px 0;
+}
+.home-section1 .versions li{
+ float:left;
+ width:118px;
+ height:80px;
+ background:url(../images/versions.png) left top no-repeat;
+ margin-right:23px;
+}
+.home-section1 .versions li a{
+ display:block;
+ width:100%;
+ height:100%;
+ text-indent:-9999px;
+ overflow:hidden;
+}
+.home-section1 .versions li.iphone{
+ background-position:right top;
+}
+.home-section2{
+ border-radius:5px;
+ clear:both;
+ background:#f9fbfa;
+ border-top:1px solid #e9edee;
+ border-bottom:1px solid #e9edee;
+ padding:20px 30px;
+ margin:8px 0;
+ -webkit-box-shadow: rgba(200,200,20);
+ box-shadow: rgba(200,200,20);
+ -khtml-box-shadow: rgba(200,200,200,1) 0 2px 18px;
+}
+.home-section2 .col1,.home-section2 .col2,.home-section2 .col3{
+ border-right:1px solid #e9edee;
+ float:left;
+ min-height:165px;
+ _height:165px;
+ padding:5px 0;
+}
+.home-section2 .col2{
+ width:208px;
+ padding:5px 15px;
+}
+.home-section2 .col3{
+ border-right:0;
+ padding:5px 15px;
+ width:180px;
+}
+.home-section2 .hd{
+ padding-bottom:12px;
+}
+.activity-list{
+ font-size:14px;
+ width:450px;
+ float:left;
+}
+.activity-list li{
+ font-size:12px;
+ float:left;
+ width:24.9%;
+ background:url(../images/bg_activity.png) left top no-repeat;
+}
+.activity-list li span{
+ color:#C80000;
+ font-size:14px;
+ display:block;
+}
+.activity-list li a{
+ float:left;
+ padding-top:94px;
+ background:url(../images/bg_activity_list.png) 2px top no-repeat;
+ padding-left:3px;
+ padding-top:94px;
+}
+.activity-list li.l2 a{
+ background-position:-116px top;
+}
+.activity-list li.l3 a{
+ background-position:-236px top;
+}
+.activity-list li.l4 a{
+ background-position:-353px top;
+}
+.home-section2 .col2 h3{
+ color:#c80000;
+ float:left;
+}
+.twitter{
+ float:right;
+}
+.twitter li{
+ float:right;
+ margin-left:8px;
+ width:24px;
+ height:24px;
+ background:url(../images/ico_twitter.png) left top no-repeat;
+}
+.twitter li.t2{
+ background-position:-31px top;
+}
+.twitter li a{
+ width:100%;
+ height:100%;
+ display:block;
+ text-indent:-9999px;
+ overflow:hidden;
+}
+.home-section2 .col2 .tro{
+ padding:10px;
+ -moz-border-radius:5px;
+ -webkit-border-radius: 5px;
+ border-radius: 5px;
+ background-color:white;
+ border:1px solid #e9edee;
+ font-size:12px;
+ min-height:100px;
+}
+.know-more-lists li{
+ background:url(../images/icon_1.png) 5px center no-repeat;
+ padding:7px 0 7px 30px;
+ border-bottom:1px solid #e9edee;
+}
+.know-more-lists li.last{
+ border:0;
+}
+.know-more-lists li a{
+ color:#c80000;
+}
+
 /** 3.3 subpage **/
 /*** 3.3.1 subpage1 ***/
 .creat_exercise .field{
