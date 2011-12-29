@@ -102,6 +102,7 @@
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
+    [self loadClientCount];
     [self.tableView reloadData];
     
 //    //[GetClientsCountService sharedGetClientsCountService].partyObj=self.partyObj;
@@ -237,7 +238,6 @@
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
             
-
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:0]];
@@ -247,12 +247,23 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
+            
+            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+            NSString *appliedKeyString=[[NSString alloc] initWithString:@"appliedIscheck"];
+            NSInteger showImageInt=[isChenkDefault integerForKey:appliedKeyString];
+            NSLog(@"已报名数：：：：》》》%d",showImageInt);
+            if(showImageInt>0){
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+                cellImageView.image=[UIImage imageNamed:@"new2"];
+                [cell  addSubview:cellImageView];
+            }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
+            NSLog(@"新参加%@",[NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:2]]);
         }else if(indexPath.row==2){
             cell.textLabel.text=@"未响应";  
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
@@ -263,12 +274,22 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
+            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+            NSString *refusedKeyString=[[NSString alloc] initWithString:@"refusedIscheck"];
+            NSInteger showImageInt=[isChenkDefault integerForKey:refusedKeyString];
+            NSLog(@"不参加数：：：：》》》%d",showImageInt);
+            if(showImageInt>0){
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+                cellImageView.image=[UIImage imageNamed:@"new2"];
+                [cell  addSubview:cellImageView];
+            }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:3]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
+            NSLog(@"新拒绝%@",[NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:4]]);
         }
         cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
@@ -379,6 +400,7 @@
 }
 - (void)refreshItem{
     NSLog(@"调用刷新");
+    [self loadClientCount];
     
 }
 - (void)deleteParty

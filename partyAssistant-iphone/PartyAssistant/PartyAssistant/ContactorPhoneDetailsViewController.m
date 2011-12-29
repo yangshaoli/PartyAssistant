@@ -63,7 +63,7 @@
     messageTextView=[[UITextView alloc] init];
     messageTextView.frame=CGRectMake(100, 153, 200, 40);
     messageTextView.font=[UIFont systemFontOfSize:15];
-    messageTextView.backgroundColor=[UIColor redColor];
+    messageTextView.backgroundColor=[UIColor clearColor];
     messageTextView.editable=NO;
     [self.view addSubview:messageTextView];
    
@@ -400,21 +400,33 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {  
     if(actionSheet.tag==5){
-        if(buttonIndex==0){
-            NSLog(@"发送短信");   
-            NSString *shotMegString=[[NSString alloc]initWithFormat:@"sms://%@",[clientDict objectForKey:@"cValue"]];
-            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:shotMegString]];
-        }else if(buttonIndex==1){
-            NSLog(@">>>>>phoneConnect");
-            NSString *phoneString=[[NSString alloc]initWithFormat:@"tel://%@",[clientDict objectForKey:@"cValue"]];
-            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:phoneString]];
+      if([[[UIDevice alloc] init]userInterfaceIdiom]!=UIUserInterfaceIdiomPhone){
             
-            return;
-        }else{
-            return;
-         
-        }
-    
+          NSLog(@"不用iphone发送短信与拨打电话");   
+          UIAlertView *cannotAlertView=[[UIAlertView alloc] initWithTitle:@"设备类型不符合" message:@"该设备不能发送短信与拨打电话" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+          [cannotAlertView show];
+      }else { 
+          if(buttonIndex==0){
+              NSLog(@"用iphone发送短信"); 
+              NSString *shotMegString=[[NSString alloc]initWithFormat:@"sms://%@",[clientDict objectForKey:@"cValue"]];
+              [[UIApplication sharedApplication]openURL:[NSURL URLWithString:shotMegString]];
+              
+          }else if(buttonIndex==1){
+              NSLog(@">>>>>phoneConnect");
+              NSString *phoneString=[[NSString alloc]initWithFormat:@"tel://%@",[clientDict objectForKey:@"cValue"]];
+              [[UIApplication sharedApplication]openURL:[NSURL URLWithString:phoneString]];
+              
+              return;
+          }else{
+              return;
+              
+          }
+
+      
+      
+      }
+        
+            
     }
     return;
       

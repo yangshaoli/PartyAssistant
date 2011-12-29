@@ -198,16 +198,39 @@
     firstLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:firstLb];
     
-    
-    if([self.title isEqualToString:@"已报名"]||[self.title isEqualToString:@"不参加"]){
+    if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *appliedKeyString=[[NSString alloc] initWithString:@"appliedIscheck"];
+        int i=0;
         if(isCheck){
+            NSLog(@"在已报名页面");
+            i++;
+            [isChenkDefault setInteger:i  forKey:appliedKeyString];
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             [cell  addSubview:cellImageView];
         }
-        
-        
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        secondLb.text = [clentDic objectForKey:@"msg"];
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }else if([self.title isEqualToString:@"不参加"]){
+        BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *refusedKeyString=[[NSString alloc] initWithString:@"refusedIscheck"];
+        int j=0;
+        if(isCheck){
+            NSLog(@"在不参加页面");
+            j++;
+            [isChenkDefault setInteger:j  forKey:refusedKeyString];
+            UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+            cellImageView.image=[UIImage imageNamed:@"new2"];
+            [cell  addSubview:cellImageView];
+        }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
         secondLb.text = [clentDic objectForKey:@"msg"];
         secondLb.font=[UIFont systemFontOfSize:15];
@@ -216,7 +239,6 @@
         secondLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:secondLb];
     }
-    
     return cell;
 }
 
