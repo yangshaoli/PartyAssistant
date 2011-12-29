@@ -34,7 +34,7 @@ class Party(models.Model):
     
     created_time = models.DateTimeField(auto_now_add = True)
     last_modified_time = models.DateTimeField(auto_now = True)
-    invite_type = models.CharField(max_length = 8, blank = True, null = True, choices = INVITE_TYPE)
+    invite_type = models.CharField(max_length = 8, blank = True, choices = INVITE_TYPE)
     
     def __unicode__(self):
         return '%s %s %s' % (self.description[:10],
@@ -47,7 +47,7 @@ class PartiesClients(models.Model):
     apply_status = models.CharField(max_length = 16, choices = APPLY_STATUS, default = 'noanswer')
     is_check = models.BooleanField(default = True)
     invite_key = models.CharField(max_length = 32)
-    leave_message = models.TextField(blank=True)
+    leave_message = models.TextField(blank = True)
     
         
     def get_contact_info(self):

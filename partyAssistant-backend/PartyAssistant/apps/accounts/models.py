@@ -35,7 +35,7 @@ class UserProfile(models.Model):
 
 class UserDeviceTokenBase(models.Model):
     user = models.ForeignKey(User)
-    device_token = models.CharField(max_length = 32)
+    device_token = models.CharField(max_length = 128)
     
     def __unicode__(self):
         return self.user.username
