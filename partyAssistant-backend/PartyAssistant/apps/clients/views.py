@@ -3,24 +3,25 @@
 @summary: 报名处理，包括公开报名和邮件邀请报名
 @author:chenyang
 '''
-from apps.parties.models import Party, PartiesClients
-from apps.clients.models import Client
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 from django.contrib.auth.decorators import login_required
 
-#获得报名/未响应/不参加的客户数
-@login_required
-def get_client_sum(party_id):
-    party = Party.objects.get(id=party_id)
-    client_sum = {
-        'apply':PartiesClients.objects.filter(party=party).filter(apply_status='apply').count(),
-        'noanswer':PartiesClients.objects.filter(party=party).filter(apply_status='noanswer').count(),
-        'reject':PartiesClients.objects.filter(party=party).filter(apply_status='reject').count(),
-    }
-    return client_sum
+from apps.parties.models import Party, PartiesClients
+from apps.clients.models import Client
+
+
+##获得报名/未响应/不参加的客户数
+#def get_client_sum(party_id):
+#    party = Party.objects.get(id = party_id)
+#    client_sum = {
+#        'apply':PartiesClients.objects.filter(party = party).filter(apply_status = 'apply').count(),
+#        'noanswer':PartiesClients.objects.filter(party = party).filter(apply_status = 'noanswer').count(),
+#        'reject':PartiesClients.objects.filter(party = party).filter(apply_status = 'reject').count(),
+#    }
+#    return client_sum
 
 
 '''
@@ -28,7 +29,7 @@ def get_client_sum(party_id):
 '''
 @login_required
 def change_apply_status(request, id, applystatus):
-    client_party = PartiesClients.objects.get(pk=id)      
+    client_party = PartiesClients.objects.get(pk = id, creator = request.user)
     client_party.apply_status = applystatus
     client_party.save()        
     return HttpResponse('ok') 
@@ -37,20 +38,20 @@ def change_apply_status(request, id, applystatus):
 #受邀人员列表
 @login_required
 def invite_list(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
-    party_clients_list = PartiesClients.objects.filter(party=party)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
+    party_clients_list = PartiesClients.objects.filter(party = party)
     
     party_clients = {
         'apply': {
-            'is_check': True, 
+            'is_check': True,
             'client_count': 0
-        }, 
+        },
         'noanswer': {
-            'is_check': True, 
+            'is_check': True,
             'client_count': 0
-        }, 
+        },
         'reject': {
-            'is_check': True, 
+            'is_check': True,
             'client_count': 0
         }
     }
@@ -69,5 +70,5 @@ def invite_list(request, party_id):
             if not party_client.is_check:
                 party_clients['reject']['is_check'] = False
     
-    return TemplateResponse(request,'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
+    return TemplateResponse(request, 'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
 
