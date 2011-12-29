@@ -386,8 +386,9 @@ public class SendAirenaoActivity extends Activity {
 									progerssDialog.dismiss();
 								}
 							} else {
-								sendSMSorEmail(sendSMS, !ckSendLableUseOwn);
-								progerssDialog.dismiss();
+								if(progerssDialog!=null){
+									progerssDialog.dismiss();
+								}
 							}
 						}
 					}
@@ -406,17 +407,12 @@ public class SendAirenaoActivity extends Activity {
 
 			@Override
 			public void run() {
-				// 用自己手机发送短信
-				if (sendSMS && ckSendLableUseOwn) {
+				
+				if (sendSMS) {
 					saveToPcAndSaveDicts(noContacts);
-				}
-				// 用电脑发送短信
-				if (sendSMS && !ckSendLableUseOwn) {
-					saveToPcAndSaveDicts(noContacts);
-				}
 			}
 
-		};
+		}};
 	}
 
 	/**
@@ -822,11 +818,12 @@ public class SendAirenaoActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						if (ok) {
 							// 跳转到meeting list 页面
-							Intent intent = new Intent(
+							/*Intent intent = new Intent(
 									SendAirenaoActivity.this,
 									MeetingListActivity.class);
 							intent.putExtra(Constants.NEED_REFRESH, true);
-							startActivity(intent);
+							startActivity(intent);*/
+							finish();
 						} else {
 							// 还在本页
 						}
@@ -840,11 +837,12 @@ public class SendAirenaoActivity extends Activity {
 						if (ok) {
 
 						} else {
-							Intent intent = new Intent(
+						/*	Intent intent = new Intent(
 									SendAirenaoActivity.this,
 									MeetingListActivity.class);
 							intent.putExtra(Constants.NEED_REFRESH, true);
-							startActivity(intent);
+							startActivity(intent);*/
+							finish();
 						}
 					}
 				}).create();

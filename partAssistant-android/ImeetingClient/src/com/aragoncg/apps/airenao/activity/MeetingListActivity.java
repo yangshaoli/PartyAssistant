@@ -81,6 +81,7 @@ public class MeetingListActivity extends ListActivity implements
 	private int refusedCount = 0;
 	private int registeredCount = 0;
 	private Dialog progressDialog;
+	private boolean separatePage = false;
 
 	public static final String LAST_ID = "lastID";
 	private int lastID;
@@ -390,13 +391,13 @@ public class MeetingListActivity extends ListActivity implements
 			long id) {
 
 		super.onListItemClick(listView, v, position, id);
-		if (v == footerView) {
+		/*if (v == footerView) {
 			loadRemnantListItem();
 			listView.setSelection(position - 1);
 		}
 		System.out.println("id = " + id);
 		System.out.println("position = " + position);
-
+*/
 		// 活动对象的数据组合
 		HashMap<String, Object> dataHashMap = (HashMap<String, Object>) mData
 				.get(position);
@@ -428,14 +429,12 @@ public class MeetingListActivity extends ListActivity implements
 	 * 
 	 */
 	private List<Map<String, Object>> getData() {
-
+		separatePage = false;
 		// 在map装配的时候，一个活动的所有属性全部装配
 		// 先从本地获得数据，如果数据为空那么在从后台取数据
 		showDialog(1);
 		if (list == null) {
 			list = new ArrayList<Map<String, Object>>();
-		}else{
-			list.clear();
 		}
 		if (!needRefresh) {
 			list = getDataFromServer();
@@ -459,6 +458,7 @@ public class MeetingListActivity extends ListActivity implements
 			@Override
 			public void run() {
 				// 配置url
+				list.clear();
 				partyListUrl = getString(R.string.partyListUrl);
 				partyListUrl = partyListUrl + userId + "/" + startId + "/";
 				HttpHelper myHttpHelper = new HttpHelper();
@@ -475,6 +475,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * 获得本地数据
 	 */
 	public List<Map<String, Object>> getDataFromServer() {
+		list.clear();
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
 	}
@@ -588,7 +589,6 @@ public class MeetingListActivity extends ListActivity implements
 				donothingClientcount = "0";
 			}
 			holder.activityUnJoinNum.setText(donothingClientcount);
-			// 计算多少人未参加 已经拒绝的+刚拒绝的
 			refusedClientcount = (String) mData.get(position).get(
 					Constants.REFUSED_CLIENT_COUNT);
 			if (refusedClientcount == null) {
@@ -603,7 +603,6 @@ public class MeetingListActivity extends ListActivity implements
 					+ Integer.valueOf(newRefusedClientcount);
 
 			holder.activityUnTakeNum.setText(refusedCount + "");
-			// 计算多少人被邀请 已邀请的+刚被邀请的
 			appliedClientcount = (String) mData.get(position).get(
 					Constants.APPLIED_CLIENT_COUNT);
 			if (appliedClientcount == null) {
@@ -651,9 +650,9 @@ public class MeetingListActivity extends ListActivity implements
 				&& scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
 			if (tempCount > 0) {
 				footerView.setVisibility(View.VISIBLE);
+				loadRemnantListItem();
 			}
 
-			loadRemnantListItem();
 		}
 	}
 
@@ -661,6 +660,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * 加载更多的数据
 	 */
 	private void loadRemnantListItem() {// 滚到加载余下的数据
+		separatePage = true;
 		// 开线程去下载网络数据
 		if (mThread == null || !mThread.isAlive()) {
 			mThread = new Thread() {
@@ -679,7 +679,7 @@ public class MeetingListActivity extends ListActivity implements
 							dataResult = AirenaoUtills.linkResult(dataResult);
 							analyzeJson(dataResult);
 						}
-						// Thread.sleep(2000);
+						 Thread.sleep(2000);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -742,7 +742,6 @@ public class MeetingListActivity extends ListActivity implements
 	 */
 	public void analyzeJson(String result) {
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-
 		try {
 			JSONObject output = new JSONObject(result)
 					.getJSONObject(Constants.OUT_PUT);
@@ -761,7 +760,9 @@ public class MeetingListActivity extends ListActivity implements
 				myJsonArray = dataSource.getJSONArray(PARTY_LIST);
 				tempCount = myJsonArray.length();
 				if (tempCount > 0) {
-					DbHelper.delete(db, DbHelper.deleteActivitySql);
+					if(!separatePage){
+						DbHelper.delete(db, DbHelper.deleteActivitySql);
+					}
 				}
 				for (int i = 0; myJsonArray.length() > 0; i++) {
 					JSONObject tempActivity = myJsonArray.getJSONObject(i);
@@ -770,11 +771,12 @@ public class MeetingListActivity extends ListActivity implements
 
 						DbHelper.insert(db, organizeOneActivity(tempActivity),
 								DbHelper.ACTIVITY_TABLE_NAME);
+						myListView.requestFocusFromTouch();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-
+				
 			} else {
 				Message message = new Message();
 				message.what = Constants.POST_MESSAGE_CASE;
@@ -782,15 +784,18 @@ public class MeetingListActivity extends ListActivity implements
 				bundle.putString(Constants.HENDLER_MESSAGE, description);
 				message.setData(bundle);
 				postHandler.sendMessage(message);
-			}
-
+			}	
+				myListView.requestFocusFromTouch();
+				if(tempCount > 0){
+					myDaAdapter.notifyDataSetChanged();
+				}
+				//异步更新完后要重新获得焦点，不然条目不能点击
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		if (db != null) {
 			db.close();
 		}
-		myDaAdapter.notifyDataSetChanged();
 	}
 
 	/**
