@@ -197,7 +197,7 @@ LOGIN_REDIRECT_URL = '/parties/list/'
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
 
-AUTH_PROFILE_MODULE = 'apps.accounts.UserProfile'
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 
 ALIPAY_PARTNER = '2088701462122036'
 ALIPAY_KEY = 'jut7uqx5fodoajps5jomwwz03rs0516y'
