@@ -22,7 +22,6 @@ PAYMENT_TYPE = (
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
-    password = models.CharField(max_length = 16, blank = True)
     true_name = models.CharField(max_length = 16, blank = True)
     #自己注册的为管理员
     account_type = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)

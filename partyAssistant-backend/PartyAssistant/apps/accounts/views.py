@@ -48,7 +48,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
             return redirect('list_party')
         form = UserProfileForm(request.POST)
         user = request.user
-        userprofile = UserProfile.objects.get(user=user)
+        userprofile = user.get_profile()
         if form.is_valid():
             true_name = form.cleaned_data['true_name']
             phone = form.cleaned_data['phone']
@@ -80,7 +80,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
             return redirect(redirected)
         else:
             user = request.user
-            userprofile = UserProfile.objects.get(user=user)
+            userprofile = user.get_profile()
             sms_count = userprofile.available_sms_count    
             return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count})
         
@@ -145,7 +145,7 @@ def buy_sms(request):
             if seller_email and subject and out_trade_no and total_fee and notify_url and payment_type:
                 user = request.user
                 #存入UserAliReceipt表
-                userprofile = UserProfile.objects.get(user=user)
+                userprofile = user.get_profile()
                 order = UserAliReceipt.objects.create(user=user, pre_sms_count=userprofile.available_sms_count,
                                                       receipt=out_trade_no,totle_fee=total_fee, items_count=sms_count, 
                                                       )
@@ -175,7 +175,7 @@ def bought_success(request):
         total_fee = request.POST.get('total_fee',0)
         out_trade_no = request.POST.get('out_trade_no', '')
         receipt = UserAliReceipt.objects.get(receipt=out_trade_no)
-        userprofile = UserProfile.objects.get(user=receipt.user)
+        userprofile = receipt.user.get_profile()
         userprofile.available_sms_count = userprofile.available_sms_count + receipt.item_count
         userprofile.save()
         return HttpResponse("success", mimetype="text/html")
