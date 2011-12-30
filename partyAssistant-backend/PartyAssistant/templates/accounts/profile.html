@@ -15,7 +15,7 @@ function bindingEmail(){
     if(answer){
         $.ajax({
             type : 'POST',
-            url : '{%url ajax_binding %}',
+            url : '{%url email_binding %}',
             data : {'email': v},
             statusCode : {
                 200: function(response){
@@ -63,7 +63,7 @@ $(document).ready(function(){
          <input name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}'></input><font color='red'>{{ form.true_name.errors.0 }}</red>
          </div>
          <div class="field">
-         <label for="email">电子邮件</label>
+         <label for="email">电子邮件</label>{{userprofile.email}}
          <input name='email' id='id_email' value='{{ form.email.value|default:'' }}' {% if user.email %} disabled="true" {% endif %}></input>
             {% if user.email %}
             <a href="#" onclick="changeEmail()">[修改]

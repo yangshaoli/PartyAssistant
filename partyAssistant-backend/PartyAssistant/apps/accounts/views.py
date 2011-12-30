@@ -82,7 +82,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
         user = request.user
         userprofile = user.get_profile()
         
-        email = user.email
+        email = userprofile.email
         phone = userprofile.phone
         true_name = userprofile.true_name
         sms_count = userprofile.available_sms_count    
@@ -279,7 +279,7 @@ def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑
     
     return response
 
-def ajax_binding(request):
+def email_binding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
         if email:
@@ -299,7 +299,9 @@ def ajax_binding(request):
             else:
                 record = UserBindingTemp.objects.get(key=key)
             user = User.objects.get(pk=record.user.id)
-            user.email = record.binding_address
-            user.save()
+            userprofile = user.get_profile()
+            userprofile.email = record.binding_address
+            userprofile.email_binding_status = 'bind'
+            userprofile.save()
             record.delete()
             return HttpResponseRedirect('/accounts/profile')
