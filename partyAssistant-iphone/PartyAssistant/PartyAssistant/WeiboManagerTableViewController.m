@@ -192,6 +192,7 @@
 
 -(void)UserLogin
 {
+    NSLog(@"点击登录后输出》》》》》》》");
     WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
     rootVC.isOnlyLogin = YES;
     rootVC.delegate = self;

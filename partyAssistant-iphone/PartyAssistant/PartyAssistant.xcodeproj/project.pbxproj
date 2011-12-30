@@ -193,6 +193,11 @@
 		CE295D4814A3492F00C73505 /* ContentTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CE295D4614A3492E00C73505 /* ContentTableVC.m */; };
 		CE295D4914A3492F00C73505 /* ContentTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE295D4714A3492E00C73505 /* ContentTableVC.xib */; };
 		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
+		CEA4179414A872F300497186 /* new1.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179014A872F300497186 /* new1.png */; };
+		CEA4179514A872F300497186 /* new2.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179114A872F300497186 /* new2.png */; };
+		CEA4179614A872F300497186 /* reinvite_word.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179214A872F300497186 /* reinvite_word.png */; };
+		CEA4179714A872F300497186 /* reinvite.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179314A872F300497186 /* reinvite.png */; };
+		CEAA2D0314A6E2D300FF1444 /* GetClientsCountService.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAA2D0214A6E2D300FF1444 /* GetClientsCountService.m */; };
 		CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */; };
 		CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */; };
 		CEB072C8149EDE9A0056F7B5 /* PartyDetailTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */; };
@@ -520,10 +525,16 @@
 		CE295D4714A3492E00C73505 /* ContentTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentTableVC.xib; sourceTree = "<group>"; };
 		CE472E9D148DB53E00E24742 /* pinyin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = pinyin.c; path = PartyAssistant/pinyin.c; sourceTree = SOURCE_ROOT; };
 		CE472E9E148DB53E00E24742 /* pinyin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pinyin.h; path = PartyAssistant/pinyin.h; sourceTree = SOURCE_ROOT; };
+		CEA4179014A872F300497186 /* new1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new1.png; sourceTree = "<group>"; };
+		CEA4179114A872F300497186 /* new2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new2.png; sourceTree = "<group>"; };
+		CEA4179214A872F300497186 /* reinvite_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reinvite_word.png; sourceTree = "<group>"; };
+		CEA4179314A872F300497186 /* reinvite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reinvite.png; sourceTree = "<group>"; };
+		CEAA2D0114A6E2D300FF1444 /* GetClientsCountService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetClientsCountService.h; sourceTree = "<group>"; };
+		CEAA2D0214A6E2D300FF1444 /* GetClientsCountService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetClientsCountService.m; sourceTree = "<group>"; };
 		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
 		CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListTableVC.m; path = ../PartyListTableVC.m; sourceTree = "<group>"; };
 		CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyListTableVC.xib; path = ../PartyListTableVC.xib; sourceTree = "<group>"; };
-		CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; name = PartyDetailTableVC.h; path = ../PartyDetailTableVC.h; sourceTree = "<group>"; };
+		CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyDetailTableVC.h; path = ../PartyDetailTableVC.h; sourceTree = "<group>"; };
 		CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyDetailTableVC.m; path = ../PartyDetailTableVC.m; sourceTree = "<group>"; };
 		CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyDetailTableVC.xib; path = ../PartyDetailTableVC.xib; sourceTree = "<group>"; };
 		CEB072CB149F140F0056F7B5 /* StatusTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StatusTableVC.h; path = ../StatusTableVC.h; sourceTree = "<group>"; };
@@ -749,6 +760,10 @@
 		891A4DC21457A83100A2CF47 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				CEA4179014A872F300497186 /* new1.png */,
+				CEA4179114A872F300497186 /* new2.png */,
+				CEA4179214A872F300497186 /* reinvite_word.png */,
+				CEA4179314A872F300497186 /* reinvite.png */,
 				7A2CDD8D14A207D00054B723 /* toolbar */,
 				89C10A7E1491E23200BCE0CD /* new_tips.png */,
 				89C10A7F1491E23200BCE0CD /* new_tips@2x.png */,
@@ -1147,12 +1162,12 @@
 				CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */,
 				CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */,
 				CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */,
-				CE295D4514A3492E00C73505 /* ContentTableVC.h */,
-				CE295D4614A3492E00C73505 /* ContentTableVC.m */,
-				CE295D4714A3492E00C73505 /* ContentTableVC.xib */,
 				CEB072C5149EDE9A0056F7B5 /* PartyDetailTableVC.h */,
 				CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */,
 				CEB072C7149EDE9A0056F7B5 /* PartyDetailTableVC.xib */,
+				CE295D4514A3492E00C73505 /* ContentTableVC.h */,
+				CE295D4614A3492E00C73505 /* ContentTableVC.m */,
+				CE295D4714A3492E00C73505 /* ContentTableVC.xib */,
 				CEB072CB149F140F0056F7B5 /* StatusTableVC.h */,
 				CEB072CC149F140F0056F7B5 /* StatusTableVC.m */,
 				CEB072CD149F140F0056F7B5 /* StatusTableVC.xib */,
@@ -1184,6 +1199,8 @@
 				8980AB5E14A33C0F00C3C63B /* PartyListService.h */,
 				8980AB5F14A33C1600C3C63B /* PartyListService.m */,
 				8980AB5D14A33B7100C3C63B /* SynthesizeSingleton.h */,
+				CEAA2D0114A6E2D300FF1444 /* GetClientsCountService.h */,
+				CEAA2D0214A6E2D300FF1444 /* GetClientsCountService.m */,
 			);
 			name = ServiceNew;
 			path = Tab2/ModelsNew/ServiceNew;
@@ -1341,6 +1358,10 @@
 				CEB072C9149EDE9A0056F7B5 /* PartyDetailTableVC.xib in Resources */,
 				CEB072CF149F140F0056F7B5 /* StatusTableVC.xib in Resources */,
 				CE295D4914A3492F00C73505 /* ContentTableVC.xib in Resources */,
+				CEA4179414A872F300497186 /* new1.png in Resources */,
+				CEA4179514A872F300497186 /* new2.png in Resources */,
+				CEA4179614A872F300497186 /* reinvite_word.png in Resources */,
+				CEA4179714A872F300497186 /* reinvite.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1487,6 +1508,7 @@
 				CEB072D4149F2E150056F7B5 /* PartyModel.m in Sources */,
 				CE295D4814A3492F00C73505 /* ContentTableVC.m in Sources */,
 				8980AB6014A33C1600C3C63B /* PartyListService.m in Sources */,
+				CEAA2D0314A6E2D300FF1444 /* GetClientsCountService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

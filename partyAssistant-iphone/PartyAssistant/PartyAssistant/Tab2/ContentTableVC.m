@@ -5,8 +5,15 @@
 //  Created by user on 11-12-22.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
+#import "UITableViewControllerExtra.h"
 #import "ContentTableVC.h"
+#import "UserObjectService.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "URLSettings.h"
+#import "NotificationSettings.h"
+#import "UITableViewControllerExtra.h"
+#import "HTTPRequestErrorMSG.h"
 @interface ContentTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -15,6 +22,7 @@
 @end
 @implementation ContentTableVC
 @synthesize  contentTextView;
+@synthesize partyObj;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -38,6 +46,10 @@
 {
     [super viewDidLoad];
 
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
+    self.navigationItem.rightBarButtonItem = doneBtn;
+
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -88,6 +100,73 @@
     }
     return 44.0f;
 }
+- (void)saveInfo{
+    self.partyObj.contentString = self.contentTextView.text;
+}
+- (void)doneBtnAction{
+    if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"编辑内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
+        
+    }else{
+        
+        [self saveInfo];
+        [self showWaiting];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        NSURL *url = [NSURL URLWithString:EDIT_PARTY];
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:self.partyObj.contentString forKey:@"description"];
+        [request setPostValue:self.partyObj.partyId forKey:@"partyID"];
+        [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+        
+        request.timeOutSeconds = 30;
+        [request setDelegate:self];
+        [request setShouldAttemptPersistentConnection:NO];
+        [request startAsynchronous];
+        NSLog(@"调用doneBtnAction");
+    }
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            [self.navigationController popViewControllerAnimated:YES];
+            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
+            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
+            [[NSNotificationCenter defaultCenter] postNotification:notification];
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+	NSLog(@"调用requestFinished");
+}
+
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+    NSLog(@"调用requestFailed");
+}
+
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -115,9 +194,10 @@
         self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
     }
     contentTextView.backgroundColor = [UIColor clearColor];
+    contentTextView.text=self.partyObj.contentString;
     [cell addSubview:contentTextView];
     cell.textLabel.text  = @"活动内容";
-
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
     // Configure the cell...
     
     return cell;

@@ -334,6 +334,7 @@
     [self showWaiting];
     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
     BaseInfoObject *baseinfo = [bs getBaseInfo];
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];

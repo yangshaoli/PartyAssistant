@@ -156,6 +156,7 @@
 
 - (void)loginCheck {
     //check usrname and pwd is not nil and legal( length > 3?)
+  //为了调试暂时先注释掉  
     if (!_userNameTextField.text || [_userNameTextField.text isEqualToString:@""]
         || !_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
         [self showNotLegalInput];
@@ -174,6 +175,9 @@
     [_HUD show:YES];
    
     [self tryConnectToServer];
+    
+    //[self gotoContentVC];//调试新加的无用语句
+    
 }
 
 - (void)tryConnectToServer {
@@ -181,6 +185,7 @@
     NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
                                             validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
+
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
             [self showInvalidateNetworkalert];
@@ -307,8 +312,6 @@
     
      //add suggest user input name page here?
     [self checkIfUserNameSaved];
-        
-//    [self checkIfUserNameSaved];
     
     
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab

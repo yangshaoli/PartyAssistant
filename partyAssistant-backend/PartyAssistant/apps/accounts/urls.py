@@ -3,9 +3,9 @@ from django.conf.urls.defaults import patterns, url
 from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns('apps.accounts.views',
-    url(r'^login/$', auth_views.login, {'template_name': 'accounts/login.html', 'authentication_form':LoginForm }, name='login'),
-    url(r'^register/$', 'register', name='register'),
-    url(r'^logout/$', auth_views.logout_then_login, name='logout'),
+    url(r'^login/$', auth_views.login, {'template_name': 'accounts/login.html', 'authentication_form':LoginForm }, name = 'login'),
+    url(r'^register/$', 'register', name = 'register'),
+    url(r'^logout/$', auth_views.logout_then_login, name = 'logout'),
     
     url(r'^profile/$', 'profile', name='profile'),
     url(r'^completeprofile/$', 'profile', {'template_name': 'accounts/completeprofile.html', 'redirected': 'list_party'}, name='completeprofile'),
@@ -16,4 +16,5 @@ urlpatterns = patterns('apps.accounts.views',
     url(r'^bought_success/$', 'bought_success', name='bought_success'),
     url(r'^apply_phone_bingding_ajax/(?P<phone>\w+)/$', 'apply_phone_bingding_ajax', name='apply_phone_bingding_ajax'),
     url(r'^validate_phone_bingding_ajax/(?P<key>\w+)/$', 'validate_phone_bingding_ajax', name='validate_phone_bingding_ajax'),
+    url(r'^ajax_binding/$', 'ajax_binding', name='ajax_binding'),
 )

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AddressBook/AddressBook.h>
 #import "NotificationSettings.h"
+#import "ClientObject.h"
 
 @protocol ContactorPhoneDetailsViewControllerDelegate <NSObject>
 
@@ -22,11 +23,14 @@
     ABMultiValueRef phone;
     ABRecordRef card;
     id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
+    NSDictionary *clientDict;
+    UITextView *messageTextView;
 }
-
+@property(nonatomic, retain)UITextView *messageTextView;
 @property(nonatomic, assign)ABRecordID contactorID;
 @property(nonatomic, assign)ABMultiValueRef phone;
 @property(nonatomic, assign)ABRecordRef card;
 @property(nonatomic, strong)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
+@property(nonatomic, retain)NSDictionary *clientDict;
 
 @end
