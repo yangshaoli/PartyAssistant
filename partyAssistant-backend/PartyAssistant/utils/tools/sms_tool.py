@@ -131,8 +131,10 @@ def sendsmsBingdingmessage(UserBindingTemp):
 
 def sendsmsMessage(message):
     phone =  message['address']
-    if message['content'] == 'success':
+    if message['content'] == 'bindsuccess':
         message['content'] = u'手机号码绑定成功'
+    elif message['content'] == 'unbindsuccess':
+        message['content'] = u'手机号码解除绑定成功'
     else:
         return
     content = u'【爱热闹】'+ message['content']

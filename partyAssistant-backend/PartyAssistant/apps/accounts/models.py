@@ -21,6 +21,12 @@ PAYMENT_TYPE = (
                 (u'人民币', u'人民币'),
                 (u'美元', u'美元'),
                 )
+BINDING_STATUS = (
+                  (u'未绑定', 'unbind')
+                  (u'绑定', 'bind'),
+                  (u'待验证', 'waitingbind'),
+                  (u'待解除', 'waiteunbind'),
+                  )
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -28,7 +34,8 @@ class UserProfile(models.Model):
     #自己注册的为管理员
     account_type = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)
     first_login = models.BooleanField(default = True)
-    phone = models.CharField(null = True, blank = True, max_length = 16)
+    phone = models.CharField(blank = True, max_length = 16)
+    phone_binding_status = models.CharField(blank = True, max_length = 16, choices = BINDING_STATUS)
     used_sms_count = models.IntegerField(default = 0)
     available_sms_count = models.IntegerField(default = 30)
     

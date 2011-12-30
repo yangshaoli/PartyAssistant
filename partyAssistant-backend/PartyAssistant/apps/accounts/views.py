@@ -174,7 +174,22 @@ def bought_success(request):
     else:
         return HttpResponse("", mimetype="text/html")
 
-
+@login_required    
+def apply_phone_unbingding_ajax(request):#申请手机解绑定
+    phone = request.user.get_profile().phone
+    
+    userkey = generate_phone_code()
+    userbindingtemp = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, bingding_type='phone')
+    userbindingtemp.key = userkey
+    userbindingtemp.save()
+    
+    profile = request.get_profile()
+    profile.phone = userbindingtemp.binding_address
+    profile.phone_binding_status = 'waitingunbind'
+    profile.save()
+    
+    response = HttpResponse("success")
+    return response
 
 @login_required    
 def apply_phone_bingding_ajax(request, phone):#申请手机绑定
@@ -187,42 +202,61 @@ def apply_phone_bingding_ajax(request, phone):#申请手机绑定
     phone_re = r'1\d{10}'
     if not re.search(phone_re, phone):
         return  HttpResponse("invalidate")
+    #是否有用户已经绑定，该手机号码
+    exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
+    if exist:
+        return HttpResponse("used")
+    
     userkey = generate_phone_code()
-    userbindingtemp = UserBindingTemp.objects.create(user=request.user, binding_address=phone, bingding_type='phone', key=userkey)
-    return HttpResponse("success")
+    userbindingtemp = UserBindingTemp.objects.get_or_create(user=request.user, bingding_type='phone')
+    userbindingtemp.binding_address = phone
+    userbindingtemp.key = userkey
+    userbindingtemp.save()
+    
+    profile = request.get_profile()
+    profile.phone = userbindingtemp.binding_address
+    profile.phone_binding_status = 'waitingbind'
+    profile.save()
+    
+    response = HttpResponse("success")
+    return response
 
 @login_required     
-def validate_phone_bingding_ajax(request, key):#手机绑定验证
+def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑定验证
     #1.获取验证码
     #2.是否有验证码
-    #3.是否是最新的手机验证码
-    #.绑定成功
+    #.绑定/解绑成功
     userkey = key
-#    delay = timedelta(minutes=20)
     data={'status':''}
     exists = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').count > 0
     if exists:
-        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').orderby('-id')[0]
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').orderby('-id')[0]#避免有多条数据，虽然理论上不存在
         bingding_key = userbindingtemp.key
-#        if bingding_key == userkey:
-#            create_time = userbindingtemp.created_time
-#            now = datetime.now()
-#            if (now - create_time) > delay:
-#                data['status'] = 'outoftime'
-#            else:#绑定成功
-#                profile = request.user.get_profile()
-#                profile.phone = userbindingtemp.bingding_address
-#                #发送绑定成功信息
-#                message = {'phone':'' , 'content':''}
-#                message['phone'] = userbindingtemp.bingding_address
-#                message['content'] = 'success'
-#                thread.start_new_thread(sendsmsMessage,(message))
-#                
-#                userbindingtemp.delete()
-#                logger.info('binding success, delete userbindingtemp')
-#                data['status'] = 'success'
-#        else:            
-#            data['status'] = 'wrong'
+        if userkey == bingding_key:
+            phone = userbindingtemp.binding_address
+            #是否有用户已经绑定，该手机号码
+            exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
+            if exist:
+                data['status'] = 'used'    
+            else:#绑定操作
+                profile = request.get_profile()
+                profile.phone = userbindingtemp.binding_address
+                profile.phone_binding_status = binding_status
+                profile.save()
+                #删除临时表
+                userbindingtemp.delete()
+                #短信通知用户，绑定成功
+                message = {'phone':'' , 'content':''}
+                message['phone'] = userbindingtemp.bingding_address
+                if binding_status == 'bind':
+                    message['content'] = 'bindsuccess'
+                else:
+                    message['content'] = 'unbindsuccess'
+                thread.start_new_thread(sendsmsMessage,(message))
+                
+                data['status'] = 'success'
+        else:
+            data['status'] = 'wrongkey'    
     else :        
         data['status'] = 'notexist'
         
