@@ -82,7 +82,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
         user = request.user
         userprofile = user.get_profile()
         
-        email = user.email
+        email = userprofile.email
         phone = userprofile.phone
         true_name = userprofile.true_name
         sms_count = userprofile.available_sms_count    
@@ -92,7 +92,8 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
               }
         form = UserProfileForm(data)
         profile_status = ''
-        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status, 'userprofile':userprofile})
+        
+        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
 @commit_on_success
@@ -220,9 +221,7 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
     userbindingtemp.binding_address = phone
     userbindingtemp.key = userkey
-    print '>>'
     userbindingtemp.save()
-    print '>>'
     profile = request.user.get_profile()
     
     profile.phone = userbindingtemp.binding_address
@@ -268,7 +267,7 @@ def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑
                     message['content'] = 'bindsuccess'
                 else:
                     message['content'] = 'unbindsuccess'
-                thread.start_new_thread(sendsmsMessage,(message))
+                thread.start_new_thread(sendsmsMessage,(message,))
                 
                 data['status'] = 'success'
         else:
@@ -282,7 +281,7 @@ def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑
     
     return response
 
-def ajax_binding(request):
+def email_binding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
         if email:
@@ -302,7 +301,9 @@ def ajax_binding(request):
             else:
                 record = UserBindingTemp.objects.get(key=key)
             user = User.objects.get(pk=record.user.id)
-            user.email = record.binding_address
-            user.save()
+            userprofile = user.get_profile()
+            userprofile.email = record.binding_address
+            userprofile.email_binding_status = 'bind'
+            userprofile.save()
             record.delete()
             return HttpResponseRedirect('/accounts/profile')
