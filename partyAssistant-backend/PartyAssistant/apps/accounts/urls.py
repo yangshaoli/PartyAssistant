@@ -14,4 +14,6 @@ urlpatterns = patterns('apps.accounts.views',
     url(r'^get_availbale_sms_count_ajax/$', 'get_availbale_sms_count_ajax', name='get_availbale_sms_count_ajax'), 
     url(r'^buy_sms/$', 'buy_sms', name='buy_sms'), 
     url(r'^bought_success/$', 'bought_success', name='bought_success'),
+    url(r'^apply_phone_bingding_ajax/(?P<phone>\w+)/$', 'apply_phone_bingding_ajax', name='apply_phone_bingding_ajax'),
+    url(r'^validate_phone_bingding_ajax/(?P<key>\w+)/$', 'validate_phone_bingding_ajax', name='validate_phone_bingding_ajax'),
 )

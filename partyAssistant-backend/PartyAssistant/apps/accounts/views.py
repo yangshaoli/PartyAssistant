@@ -2,7 +2,8 @@
 
 from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
     RegistrationForm, UserProfileForm, BuySMSForm
-from apps.accounts.models import UserProfile, TempActivateNote, UserAliReceipt
+from apps.accounts.models import UserAliReceipt, UserBindingTemp
+from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
@@ -16,10 +17,12 @@ from django.template.response import TemplateResponse
 from django.utils import simplejson
 from settings import SYS_EMAIL_ADDRESS, DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
-from utils.tools.email_tool import send_emails
-import datetime
+from utils.tools.phone_key_tool import generate_phone_code
+from utils.tools.sms_tool import sendsmsMessage
 import logging
-import random
+import re
+import thread
+
 logger = logging.getLogger('airenao')
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
@@ -181,3 +184,57 @@ def bought_success(request):
         return HttpResponse("success", mimetype="text/html")
     else:
         return HttpResponse("", mimetype="text/html")
+
+
+
+@login_required    
+def apply_phone_bingding_ajax(request, phone):#申请手机绑定
+
+    #1.收到手机号码(翻送间歇1min，重新获取/重i才能输入手机号码)cookie中,手机号码已经被使用
+    #2.产生验证码
+    #3.保存到UserBindingTemp 
+
+    phone = phone
+    phone_re = r'1\d{10}'
+    if not re.search(phone_re, phone):
+        return  HttpResponse("invalidate")
+    userkey = generate_phone_code()
+    userbindingtemp = UserBindingTemp.objects.create(user=request.user, binding_address=phone, bingding_type='phone', key=userkey)
+    return HttpResponse("success")
+
+@login_required     
+def validate_phone_bingding_ajax(request, key):#手机绑定验证
+    #1.获取验证码
+    #2.是否有验证码
+    #3.是否是最新的手机验证码
+    #.绑定成功
+    userkey = key
+#    delay = timedelta(minutes=20)
+    data={'status':''}
+    exists = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').count > 0
+    if exists:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').orderby('-id')[0]
+        bingding_key = userbindingtemp.key
+#        if bingding_key == userkey:
+#            create_time = userbindingtemp.created_time
+#            now = datetime.now()
+#            if (now - create_time) > delay:
+#                data['status'] = 'outoftime'
+#            else:#绑定成功
+#                profile = request.user.get_profile()
+#                profile.phone = userbindingtemp.bingding_address
+#                #发送绑定成功信息
+#                message = {'phone':'' , 'content':''}
+#                message['phone'] = userbindingtemp.bingding_address
+#                message['content'] = 'success'
+#                thread.start_new_thread(sendsmsMessage,(message))
+#                
+#                userbindingtemp.delete()
+#                logger.info('binding success, delete userbindingtemp')
+#                data['status'] = 'success'
+#        else:            
+#            data['status'] = 'wrong'
+    else :        
+        data['status'] = 'notexist'
+        
+    return HttpResponse(simplejson.dumps(data))
