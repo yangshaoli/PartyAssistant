@@ -92,7 +92,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
               }
         form = UserProfileForm(data)
         profile_status = ''
-        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
+        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
 @commit_on_success
