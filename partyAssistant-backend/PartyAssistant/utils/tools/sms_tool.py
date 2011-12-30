@@ -117,3 +117,31 @@ def sms_modem_send_sms(outbox_message, message, party):
         logger.exception('send sms error!')
     finally:
         outbox_message.delete()
+
+def sendsmsBingdingmessage(UserBindingTemp):
+    phone =  UserBindingTemp.binding_address
+    content = u'【爱热闹】'+ u'您的手机绑定验证码：' + UserBindingTemp.key
+    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send sendsmsBingdingmessage error!')
+
+def sendsmsMessage(message):
+    phone =  message['address']
+    if message['content'] == 'bindsuccess':
+        message['content'] = u'手机号码绑定成功'
+    elif message['content'] == 'unbindsuccess':
+        message['content'] = u'手机号码解除绑定成功'
+    else:
+        return
+    content = u'【爱热闹】'+ message['content']
+    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send sendsmsBingdingmessage error!')        

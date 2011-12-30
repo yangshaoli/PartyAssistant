@@ -4,10 +4,40 @@
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script type="text/javascript">
-function changetoAble(o){
-   $(document.getElementById(o)).removeAttr('readonly');
-   
+
+function bindingEmail(){
+    var v = $('#id_email').val();
+    if (!v) {
+        alert('请输入邮件地址');
+        return false;
+    }
+    var answer = confirm("要给"+v+"发送确认邮件吗？")
+    if(answer){
+        $.ajax({
+            type : 'POST',
+            url : '{%url ajax_binding %}',
+            data : {'email': v},
+            statusCode : {
+                200: function(response){
+                    if (response == 'record_already_exist') {
+                        alert('确认邮件已经发送，请查看您的邮箱')
+                    } else {
+                        alert('发送成功，请查看您的确认邮件')
+                    }
+                },
+                500: function(response){
+                    
+                }
+            }
+        })
+    }
 }
+
+function changeEmail(){
+    $("#id_email").attr('disabled',null).val(null);
+    $('a[onclick^="changeEmail"]').attr('onclick','bindingEmail()').text('[绑定]');
+}
+
 $(document).ready(function(){
     $("#tips").delay(3000).fadeOut();    
 })
@@ -34,7 +64,13 @@ $(document).ready(function(){
          </div>
          <div class="field">
          <label for="email">电子邮件</label>
-         <input name='email' id='id_email' value='{{ form.email.value|default:'' }}'></input>
+         <input name='email' id='id_email' value='{{ form.email.value|default:'' }}' {% if user.email %} disabled="true" {% endif %}></input>
+            {% if user.email %}
+            <a href="#" onclick="changeEmail()">[修改]
+            {%else%}
+            <a href="#" onclick="bindingEmail()">[绑定]
+            {% endif %}
+            </a>
          <font color='red'>{{ form.email.errors.0 }}</red>
          </div>
          <div class="field">
