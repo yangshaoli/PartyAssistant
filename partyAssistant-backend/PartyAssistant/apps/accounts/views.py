@@ -14,11 +14,11 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 
-from apps.accounts.models import UserProfile, UserAliReceipt
+from apps.accounts.models import UserProfile, UserAliReceipt, UserBindingTemp
 from apps.accounts.forms import ChangePasswordForm, RegistrationForm, UserProfileForm, BuySMSForm
 from settings import DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
-
+import hashlib
 logger = logging.getLogger('airenao')
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
@@ -165,3 +165,29 @@ def bought_success(request):
         return HttpResponse("success", mimetype = "text/html")
     else:
         return HttpResponse("", mimetype = "text/html")
+
+def ajax_binding(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        if email:
+            key =  hashlib.md5(email).hexdigest()
+            if UserBindingTemp.objects.filter(key=key).count() == 0:
+                UserBindingTemp.objects.create(user=request.user, binding_type='email', key=key, binding_address=email)
+                return HttpResponse("success")
+            else:
+                return HttpResponse("record_already_exist")
+    else:
+        key = request.GET.get('key','')
+        if key:
+            try:
+                UserBindingTemp.objects.get(key=key)
+            except:
+                return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
+            else:
+                record = UserBindingTemp.objects.get(key=key)
+            user = User.objects.get(pk=record.user.id)
+            user.email = record.binding_address
+            user.save()
+            record.delete()
+            return HttpResponseRedirect('/accounts/profile')
+            

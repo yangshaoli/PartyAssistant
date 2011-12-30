@@ -101,7 +101,19 @@ class UserAliReceipt(UserReceiptBase):
     totle_fee = models.DecimalField(max_digits = 19, decimal_places = 10, default = 0)
     def __unicode__(self):
         return self.user.username
-    
+
+BINDING_TYPE = (
+                 ('phone','phone'),
+                 ('email','email')
+                )
+class UserBindingTemp(models.Model):
+    user = models.ForeignKey(User)
+    binding_type = models.CharField(max_length=8, choices=BINDING_TYPE)
+    key = models.CharField(max_length=32)
+    binding_address = models.CharField(max_length=75)
+    created_time = models.DateTimeField(auto_now_add = True)
+    last_modified_time = models.DateTimeField(auto_now = True)
+
 def crerate_user_profile(sender = None, instance = None, created = False, **kwargs):
     if created:
         UserProfile.objects.create(user = instance)
