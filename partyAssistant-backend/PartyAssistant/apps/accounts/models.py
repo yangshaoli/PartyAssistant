@@ -22,7 +22,7 @@ PAYMENT_TYPE = (
                 (u'美元', u'美元'),
                 )
 BINDING_STATUS = (
-                  (u'未绑定', 'unbind')
+                  (u'未绑定', 'unbind'),
                   (u'绑定', 'bind'),
                   (u'待验证', 'waitingbind'),
                   (u'待解除', 'waiteunbind'),

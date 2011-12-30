@@ -1,3 +1,4 @@
+#coding=utf-8
 import datetime
 import logging
 
@@ -176,6 +177,8 @@ def bought_success(request):
 
 @login_required    
 def apply_phone_unbingding_ajax(request):#申请手机解绑定
+    if 'phone_unbingding' in request.COOKIES:
+        return
     phone = request.user.get_profile().phone
     
     userkey = generate_phone_code()
@@ -189,6 +192,9 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
     profile.save()
     
     response = HttpResponse("success")
+    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
+    response.set_cookie('phone_unbingding',request.user.id,expires=dt)
+    
     return response
 
 @login_required    
@@ -197,7 +203,8 @@ def apply_phone_bingding_ajax(request, phone):#申请手机绑定
     #1.收到手机号码(翻送间歇1min，重新获取/重i才能输入手机号码)cookie中,手机号码已经被使用
     #2.产生验证码
     #3.保存到UserBindingTemp 
-
+    if 'airennao_phone_bingding' in request.COOKIES:
+        return
     phone = phone
     phone_re = r'1\d{10}'
     if not re.search(phone_re, phone):
@@ -219,6 +226,10 @@ def apply_phone_bingding_ajax(request, phone):#申请手机绑定
     profile.save()
     
     response = HttpResponse("success")
+    
+    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
+    response.set_cookie('phone_bingding',request.user.id,expires=dt)
+    
     return response
 
 @login_required     
@@ -226,6 +237,8 @@ def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑
     #1.获取验证码
     #2.是否有验证码
     #.绑定/解绑成功
+    if 'validate_phone_bingding' in request.COOKIES:
+        return
     userkey = key
     data={'status':''}
     exists = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').count > 0
@@ -260,7 +273,11 @@ def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑
     else :        
         data['status'] = 'notexist'
         
-    return HttpResponse(simplejson.dumps(data))
+    response = HttpResponse(simplejson.dumps(data))   
+    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
+    response.set_cookie('validate_phone_bingding',request.user.id,expires=dt) 
+    
+    return response
 
 def ajax_binding(request):
     if request.method == 'POST':
