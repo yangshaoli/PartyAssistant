@@ -38,6 +38,43 @@ function changeEmail(){
     $('a[onclick^="changeEmail"]').attr('onclick','bindingEmail()').text('[绑定]');
 }
 
+function bindingPhone(){
+    var v = $('#id_phone').val();
+    if (!v) {
+        alert('请输入手机号码');
+        return false;
+    }
+    if (v.length!=11){
+        alert('手机号码长度不合法');
+        return false;    
+    }
+    var myReg = /1\d{10}/; 
+    var ms = v.match(myReg);
+    if (ms == null){
+        alert('手机号码不合法');
+        return false;       
+    }
+    var answer = confirm("要给"+v+"发送手机验证码吗？")
+    if(answer){
+        $.ajax({
+            type : 'POST',
+            url : '{%url apply_phone_bingding_ajax %}',
+            data : {'phone': v},
+            statusCode : {
+                200: function(response){
+                	alert(response);
+                },
+                404: function(response){
+                    alert('服务器正忙,请很稍后');
+                },
+                500: function(response){
+                    
+                }
+            }
+        })
+    }
+}
+
 $(document).ready(function(){
     $("#tips").delay(3000).fadeOut();    
 })
@@ -76,6 +113,12 @@ $(document).ready(function(){
          <div class="field">
          <label for="phone">手机</label>
          <input name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}'></input>
+            {% if profile.phone %}
+            <a href="#" onclick="changePhone()">[修改]
+            {%else%}
+            <a href="#" onclick="bindingPhone()">[绑定]
+            {% endif %}
+            </a>         
          <font color='red'>{{ form.phone.errors.0 }}</red>
          </div>
          <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>

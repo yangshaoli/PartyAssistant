@@ -2,7 +2,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
-from utils.tools.sms_tool import sendsmsBingdingmessage
+from utils.tools.sms_tool import sendsmsBindingmessage
 import thread
 
 ACCOUNT_TYPE_CHOICES = (
@@ -102,16 +102,16 @@ class UserAppleReceipt(UserReceiptBase):
     def __unicode__(self):
         return self.user.username
 
-BINGDING_TYPE = (
+BINDING_TYPE = (
                 ('phone','phone'),
                 ('email','email')
                 )
 class UserBindingTemp(models.Model):
     user = models.ForeignKey(User)
-    bingding_type = models.CharField(max_length=8, choices=BINGDING_TYPE)
-    key = models.CharField(max_length=32)
-    binding_address = models.CharField(max_length=75)
-    created_time = models.DateTimeField(auto_now_add = True)
+    binding_type = models.CharField(max_length=8, choices=BINDING_TYPE)
+    key = models.CharField(max_length=32, blank = True, default='')
+    binding_address = models.CharField(max_length=75, blank = True, default='')
+    created_time = models.DateTimeField(auto_now = True)
    
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
@@ -132,8 +132,8 @@ signals.post_save.connect(create_user_profile, sender = User)
 
 
 def sendBindingMessage(sender = None, instance = None, **kwargs):
-    if instance.bingding_type == 'phone':
-        thread.start_new_thread(sendsmsBingdingmessage, (instance))
+    if instance.binding_type == 'phone':
+        thread.start_new_thread(sendsmsBindingmessage, (instance, ))
     else:
         pass
 

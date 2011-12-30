@@ -76,7 +76,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
             user = request.user
             userprofile = user.get_profile()
             sms_count = userprofile.available_sms_count    
-            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count,'profile_status':''})
+            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count,'profile_status':'', 'userprofile':userprofile})
         
     else:    
         user = request.user
@@ -92,7 +92,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
               }
         form = UserProfileForm(data)
         profile_status = ''
-        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
+        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status, 'userprofile':userprofile})
 
 @login_required
 @commit_on_success
@@ -198,36 +198,39 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
     return response
 
 @login_required    
-def apply_phone_bingding_ajax(request, phone):#申请手机绑定
+def apply_phone_bingding_ajax(request):#申请手机绑定
 
     #1.收到手机号码(翻送间歇1min，重新获取/重i才能输入手机号码)cookie中,手机号码已经被使用
     #2.产生验证码
     #3.保存到UserBindingTemp 
-    if 'airennao_phone_bingding' in request.COOKIES:
-        return
-    phone = phone
-    phone_re = r'1\d{10}'
-    if not re.search(phone_re, phone):
+#    if 'airennao_phone_bingding' in request.COOKIES:
+#        return
+    phone = request.POST.get('phone','')
+    phone_re = re.compile(r'1\d{10}')
+    match = phone_re.search(phone)
+    if (not match.group()) or (len(phone)!=11):
         return  HttpResponse("invalidate")
+    
     #是否有用户已经绑定，该手机号码
     exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
     if exist:
         return HttpResponse("used")
     
     userkey = generate_phone_code()
-    userbindingtemp = UserBindingTemp.objects.get_or_create(user=request.user, bingding_type='phone')
+    userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
     userbindingtemp.binding_address = phone
     userbindingtemp.key = userkey
+    print '>>'
     userbindingtemp.save()
+    print '>>'
+    profile = request.user.get_profile()
     
-    profile = request.get_profile()
     profile.phone = userbindingtemp.binding_address
     profile.phone_binding_status = 'waitingbind'
     profile.save()
     
     response = HttpResponse("success")
-    
-    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
+    dt = datetime.now() + timedelta(minutes = 1)
     response.set_cookie('phone_bingding',request.user.id,expires=dt)
     
     return response
