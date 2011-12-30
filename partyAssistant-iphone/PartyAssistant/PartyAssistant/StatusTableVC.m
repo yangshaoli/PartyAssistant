@@ -61,8 +61,6 @@
     UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次发送" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
     self.navigationItem.rightBarButtonItem = resendBtn;
     
-    
-    
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
@@ -126,6 +124,16 @@
 {
     [super viewWillAppear:animated];
     [self hideTabBar:self.tabBarController];
+    if(self.title==@"已报名"||self.title==@"不参加"){
+        
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
+        NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
+        [isChenkDefault setInteger:0 forKey:appliedKeyString];
+        [isChenkDefault setInteger:0 forKey:refusedKeyString];
+        
+    }
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -183,32 +191,48 @@
     self.wordString=[clentDic objectForKey:@"msg"];
     // Configure the cell...
     //cell.textLabel.text=[self.clientsArray  objectAtIndex:[indexPath row]];
-    UILabel *upLaterLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
-    upLaterLb.text = self.title;
-    upLaterLb.textAlignment = UITextAlignmentLeft;
-    upLaterLb.textColor = [UIColor blueColor];
-    upLaterLb.backgroundColor = [UIColor clearColor];
-    [cell addSubview:upLaterLb];
     
-    UILabel *firstLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 150, 20)];
-    firstLb.text=[clentDic objectForKey:@"cName"];
-    //firstLb.text = [self.clientsArray  objectAtIndex:[indexPath row]];
-    firstLb.textAlignment = UITextAlignmentLeft;
-    firstLb.textColor = [UIColor blueColor];
-    firstLb.backgroundColor = [UIColor clearColor];
-    [cell addSubview:firstLb];
+    UILabel *statusLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
+    statusLb.text = self.title;
+    statusLb.textAlignment = UITextAlignmentLeft;
+    statusLb.textColor = [UIColor blueColor];
+    statusLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:statusLb];
+    
+    
+    UIView *oldLayout2 = nil;
+    oldLayout2=[cell viewWithTag:5];
+    [oldLayout2 removeFromSuperview];
+    
+    
+    UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 70, 20)];
+    nameLb.text=[clentDic objectForKey:@"cName"];
+    nameLb.font=[UIFont systemFontOfSize:10];
+    nameLb.textAlignment = UITextAlignmentLeft;
+    nameLb.textColor = [UIColor blueColor];
+    nameLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:nameLb];
+    
+    UILabel *phoneLb= [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 80, 20)];
+    phoneLb.text=[clentDic objectForKey:@"cValue"];
+    phoneLb.font=[UIFont systemFontOfSize:10];
+    phoneLb.textAlignment = UITextAlignmentLeft;
+    phoneLb.textColor = [UIColor grayColor];
+    phoneLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:phoneLb];
+    
     
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-        NSString *appliedKeyString=[[NSString alloc] initWithString:@"appliedIscheck"];
-        int i=0;
+        NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
+        NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
         if(isCheck){
             NSLog(@"在已报名页面");
-            i++;
-            [isChenkDefault setInteger:i  forKey:appliedKeyString];
+            [isChenkDefault setInteger:currentInt+1  forKey:appliedKeyString];
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
+            cellImageView.tag=5;
             [cell  addSubview:cellImageView];
         }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
@@ -221,14 +245,14 @@
     }else if([self.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-        NSString *refusedKeyString=[[NSString alloc] initWithString:@"refusedIscheck"];
-        int j=0;
+        NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
+        NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
         if(isCheck){
             NSLog(@"在不参加页面");
-            j++;
-            [isChenkDefault setInteger:j  forKey:refusedKeyString];
+            [isChenkDefault setInteger:currentInt+1  forKey:refusedKeyString];
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
+            cellImageView.tag=5;
             [cell  addSubview:cellImageView];
         }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];

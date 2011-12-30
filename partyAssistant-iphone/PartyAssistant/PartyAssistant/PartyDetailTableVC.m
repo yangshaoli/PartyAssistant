@@ -83,6 +83,7 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
     [self.tableView reloadData];
 }
 
@@ -226,6 +227,12 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    
+    UIView *oldLayout2 = nil;
+    oldLayout2=[cell viewWithTag:5];
+    [oldLayout2 removeFromSuperview];
+    
+    
     UIView *oldLayout = nil;
     oldLayout = [cell viewWithTag:2];
     [oldLayout removeFromSuperview];
@@ -249,12 +256,13 @@
             cell.textLabel.text=@"已报名";
             
             NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-            NSString *appliedKeyString=[[NSString alloc] initWithString:@"appliedIscheck"];
+            NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
             NSInteger showImageInt=[isChenkDefault integerForKey:appliedKeyString];
             NSLog(@"已报名数：：：：》》》%d",showImageInt);
             if(showImageInt>0){
-                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
+                cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
@@ -275,12 +283,13 @@
         }else {
             cell.textLabel.text=@"不参加";
             NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-            NSString *refusedKeyString=[[NSString alloc] initWithString:@"refusedIscheck"];
+            NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
             NSInteger showImageInt=[isChenkDefault integerForKey:refusedKeyString];
             NSLog(@"不参加数：：：：》》》%d",showImageInt);
             if(showImageInt>0){
-                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
+                cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];

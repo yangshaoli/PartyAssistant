@@ -131,9 +131,17 @@
     NSString *statusAction = @"";
     if(btn.tag==23){
         statusAction=@"apply";
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
+        NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
+        [isChenkDefault  setInteger:currentInt+1  forKey:appliedKeyString]; 
     
     }else if(btn.tag==24){
         statusAction=@"reject";
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
+        NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
+        [isChenkDefault setInteger:currentInt-1 forKey:refusedKeyString];
     
     }
 //    if ([self.clientStatusFlag isEqualToString:@"all"]) {

@@ -252,10 +252,9 @@
     }
     NSInteger row=[indexPath row];
     
-    UIView *oldLayout = nil;
-    oldLayout = [cell viewWithTag:2];
-    [oldLayout removeFromSuperview];
-    
+    UIView *oldLayout2 = nil;
+    oldLayout2 = [cell viewWithTag:2];
+    [oldLayout2 removeFromSuperview];
     NSInteger getPartyId=[[[self.partyList  objectAtIndex:[indexPath row]] partyId]  intValue];
     NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",getPartyId];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
@@ -269,28 +268,37 @@
         [cell  addSubview:cellImageView];
     
     }
-
-    
-    
     UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 175, 40)];
     contentLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     contentLabel.font=[UIFont systemFontOfSize:15];
     [cell  addSubview:contentLabel];
      
-
-    oldLayout = [cell viewWithTag:6];
-    [oldLayout removeFromSuperview];
-
-    UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 90, 40)];    
-    lb_1.tag = 6;
     NSString *applyString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"appliedClientcount"]];
     NSString *donothingString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"donothingClientcount"]];
     NSString *refuseString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"refusedClientcount"]];
     NSInteger allNumbers=[applyString intValue]+[donothingString intValue]+[refuseString intValue];
-    lb_1.text = [NSString stringWithFormat:@"%@/%d",applyString,allNumbers];
+    //已报名人数label
+    UIView *oldLayout6 = nil;
+    oldLayout6 = [cell viewWithTag:6];
+    [oldLayout6 removeFromSuperview];
+    UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 50, 40)];    
+    lb_1.tag = 6;
+    lb_1.text = [NSString stringWithFormat:@"%@/",applyString];
     lb_1.textAlignment = UITextAlignmentRight;
     lb_1.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb_1];
+    
+    //所有邀请人label
+    UIView *oldLayout7 = nil;
+    oldLayout7 = [cell viewWithTag:7];
+    [oldLayout7 removeFromSuperview];
+    UILabel *lb_7 = [[UILabel alloc] initWithFrame:CGRectMake(250, 0, 45, 40)];    
+    lb_7.tag = 7;
+    lb_7.text = [NSString stringWithFormat:@"%d",allNumbers];
+    lb_7.textColor=[UIColor greenColor];
+    lb_7.textAlignment = UITextAlignmentLeft;
+    lb_7.backgroundColor = [UIColor clearColor];
+    [cell addSubview:lb_7];
     
     //cell.textLabel.text=[self.partyList  objectAtIndex:row];
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
