@@ -284,8 +284,8 @@
     UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
     UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:listBarImage tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:addPageBarImage tag:2];
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:listBarImage tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:addPageBarImage tag:2];
     UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;

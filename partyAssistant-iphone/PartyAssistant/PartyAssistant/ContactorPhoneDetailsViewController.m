@@ -13,7 +13,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phone,card,phoneDetailDelegate,clientDict;
+@synthesize contactorID,phone,card,phoneDetailDelegate,clientDict,partyObj;
 @synthesize messageTextView;
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -63,7 +63,7 @@
     messageTextView=[[UITextView alloc] init];
     messageTextView.frame=CGRectMake(100, 153, 200, 40);
     messageTextView.font=[UIFont systemFontOfSize:15];
-    messageTextView.backgroundColor=[UIColor redColor];
+    messageTextView.backgroundColor=[UIColor clearColor];
     messageTextView.editable=NO;
     [self.view addSubview:messageTextView];
    
@@ -86,6 +86,14 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
+    [defaults setInteger:5  forKey:keyString]; 
+   
+    
+    NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
+    NSLog(@"在viewWillAppear中调用  输出keyString:::%@     值:%d",keyString,getStatusChangedInt);
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -123,9 +131,17 @@
     NSString *statusAction = @"";
     if(btn.tag==23){
         statusAction=@"apply";
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
+        NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
+        [isChenkDefault  setInteger:currentInt+1  forKey:appliedKeyString]; 
     
     }else if(btn.tag==24){
         statusAction=@"reject";
+        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+        NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
+        NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
+        [isChenkDefault setInteger:currentInt-1 forKey:refusedKeyString];
     
     }
 //    if ([self.clientStatusFlag isEqualToString:@"all"]) {
@@ -176,6 +192,12 @@
 //                        }else if([l.text isEqualToString:@"已拒绝" ] || [l.text isEqualToString:@"未报名" ]){
 //                            l.text = @"已报名";
                 NSLog(@"改变状态成功");
+                
+                NSLog(@"输出self.partyObj.id>>>>%@",self.partyObj.partyId);
+                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+                NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
+                [defaults setInteger:1  forKey:keyString];    //wxz
+
                         //}
                     //}
                // }
@@ -216,17 +238,17 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if(section==0){
-        ABAddressBookRef addressBook = ABAddressBookCreate();
-        if(!card){
-            self.card = ABAddressBookGetPersonWithRecordID(addressBook, self.contactorID);
-        }
-        if (!phone) {
-            self.phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
-        }
-        int num = ABMultiValueGetCount(self.phone);
-        return num;
-    }
+//    if(section==0){
+//        ABAddressBookRef addressBook = ABAddressBookCreate();
+//        if(!card){
+//            self.card = ABAddressBookGetPersonWithRecordID(addressBook, self.contactorID);
+//        }
+//        if (!phone) {
+//            self.phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+//        }
+//        int num = ABMultiValueGetCount(self.phone);
+//        return num;
+//    }
     return 1;
     
 }
@@ -239,19 +261,21 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    
     // Configure the cell...
     if(indexPath.section==0){
-        NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
-        NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
+        //NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
+       // NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
         UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-        typeLb.text = typeStr;
+        typeLb.text = @"联系方式";
         typeLb.textAlignment = UITextAlignmentRight;
         typeLb.textColor = [UIColor blueColor];
         typeLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:typeLb];
         UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
-        valLb.text = valStr;
+        valLb.text = [clientDict objectForKey:@"cValue"];
         valLb.backgroundColor = [UIColor clearColor];
+        cell.selectionStyle=UITableViewCellSelectionStyleNone;
         [cell addSubview:valLb];
     }
     if(indexPath.section==1){
@@ -261,10 +285,9 @@
         wordsLabel.textAlignment = UITextAlignmentRight;
         wordsLabel.textColor = [UIColor blueColor];
         wordsLabel.backgroundColor = [UIColor clearColor];
+        messageTextView.text=[self.clientDict objectForKey:@"msg"];
+       //messageTextView.text=@"留言自造数据ddddddddddddddddddd的 点点滴滴 ddddddddddd 点点滴滴ddddd 点点滴滴 淡淡的 得到 的的额度的的的的的";//需要放在push后面才可以成功赋值
         [cell addSubview:wordsLabel];
-        
-        
-             
     }
         
     return cell;
@@ -275,27 +298,28 @@
     if(section==0){
         UIView *headV = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 85.0f)];
         
-        NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
+         //NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
         
         UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
-        [imgV setImage:[UIImage imageWithData:imgData]];
+        //[imgV setImage:[UIImage imageWithData:imgData]];
         imgV.backgroundColor = [UIColor whiteColor];
         [headV addSubview:imgV];
         
         UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
-        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
-        if (personFName == nil) {
-            personFName = @"";
-        }
-        NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonLastNameProperty);
-        if (personLName == nil) {
-            personLName = @"";
-        }
-        NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonMiddleNameProperty);
-        if (personMName == nil) {
-            personMName = @"";
-        }
-        lblV.text = [NSString stringWithFormat:@"%@ %@ %@",personFName,personMName,personLName];
+//        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
+//        if (personFName == nil) {
+//            personFName = @"";
+//        }
+//        NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonLastNameProperty);
+//        if (personLName == nil) {
+//            personLName = @"";
+//        }
+//        NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonMiddleNameProperty);
+//        if (personMName == nil) {
+//            personMName = @"";
+//        }
+       // lblV.text = [NSString stringWithFormat:@"%@ %@ %@",personFName,personMName,personLName];
+        lblV.text=[self.clientDict objectForKey:@"cName"];
         lblV.backgroundColor = [UIColor clearColor];
         [headV addSubview:lblV];
         return headV;
@@ -374,9 +398,48 @@
     if(indexPath.section==0){
             //NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"发送短信" otherButtonTitles:@"拨打电话", nil];
-            actionSheet.tag = 0;
+            actionSheet.tag = 5;
             [actionSheet showInView:self.tabBarController.view];
     }
 }
+
+
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{  
+    if(actionSheet.tag==5){
+      if([[[UIDevice alloc] init]userInterfaceIdiom]!=UIUserInterfaceIdiomPhone){
+            
+          NSLog(@"不用iphone发送短信与拨打电话");   
+          UIAlertView *cannotAlertView=[[UIAlertView alloc] initWithTitle:@"设备类型不符合" message:@"该设备不能发送短信与拨打电话" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+          [cannotAlertView show];
+      }else { 
+          if(buttonIndex==0){
+              NSLog(@"用iphone发送短信"); 
+              NSString *shotMegString=[[NSString alloc]initWithFormat:@"sms://%@",[clientDict objectForKey:@"cValue"]];
+              [[UIApplication sharedApplication]openURL:[NSURL URLWithString:shotMegString]];
+              
+          }else if(buttonIndex==1){
+              NSLog(@">>>>>phoneConnect");
+              NSString *phoneString=[[NSString alloc]initWithFormat:@"tel://%@",[clientDict objectForKey:@"cValue"]];
+              [[UIApplication sharedApplication]openURL:[NSURL URLWithString:phoneString]];
+              
+              return;
+          }else{
+              return;
+              
+          }
+
+      
+      
+      }
+        
+            
+    }
+    return;
+      
+        
+}
+
 
 @end

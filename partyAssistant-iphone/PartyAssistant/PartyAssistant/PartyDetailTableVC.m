@@ -83,6 +83,7 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
     [self.tableView reloadData];
 }
 
@@ -102,6 +103,7 @@
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
+    [self loadClientCount];
     [self.tableView reloadData];
     
 //    //[GetClientsCountService sharedGetClientsCountService].partyObj=self.partyObj;
@@ -225,6 +227,12 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    
+    UIView *oldLayout2 = nil;
+    oldLayout2=[cell viewWithTag:5];
+    [oldLayout2 removeFromSuperview];
+    
+    
     UIView *oldLayout = nil;
     oldLayout = [cell viewWithTag:2];
     [oldLayout removeFromSuperview];
@@ -237,7 +245,6 @@
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
             
-
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:0]];
@@ -247,12 +254,24 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
+            
+            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+            NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
+            NSInteger showImageInt=[isChenkDefault integerForKey:appliedKeyString];
+            NSLog(@"已报名数：：：：》》》%d",showImageInt);
+            if(showImageInt>0){
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
+                cellImageView.image=[UIImage imageNamed:@"new2"];
+                cellImageView.tag=5;
+                [cell  addSubview:cellImageView];
+            }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
+            NSLog(@"新参加%@",[NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:2]]);
         }else if(indexPath.row==2){
             cell.textLabel.text=@"未响应";  
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
@@ -263,12 +282,23 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
+            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
+            NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
+            NSInteger showImageInt=[isChenkDefault integerForKey:refusedKeyString];
+            NSLog(@"不参加数：：：：》》》%d",showImageInt);
+            if(showImageInt>0){
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
+                cellImageView.image=[UIImage imageNamed:@"new2"];
+                cellImageView.tag=5;
+                [cell  addSubview:cellImageView];
+            }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:3]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
+            NSLog(@"新拒绝%@",[NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:4]]);
         }
         cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
@@ -351,6 +381,7 @@
             statusTableVC.clientStatusFlag=@"refused";
         }
         [self.navigationController pushViewController:statusTableVC animated:YES];
+        
     }
 }
 
@@ -372,10 +403,13 @@
 - (void)editBtnAction{
     ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
     contentTableVC.title=@"编辑活动内容";
+    contentTableVC.partyObj=self.partyObj;
     [self.navigationController pushViewController:contentTableVC animated:YES];
+    
 }
 - (void)refreshItem{
     NSLog(@"调用刷新");
+    [self loadClientCount];
     
 }
 - (void)deleteParty
