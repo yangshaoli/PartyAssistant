@@ -1,88 +1,134 @@
 {% extends 'login_base.html' %}
-
 {% block title %} 用户信息  {% endblock %}
 {% block script %}
-<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js">
+</script>
 <script type="text/javascript">
-
-function bindingEmail(){
-    var v = $('#id_email').val();
+    
+function bindingPhone(){
+    var v = $("#id_phone").val();
     if (!v) {
-        alert('请输入邮件地址');
+        alert('请输入手机号码');
         return false;
     }
-    var answer = confirm("要给"+v+"发送确认邮件吗？")
-    if(answer){
+    var answer = confirm("要给" + v + "发送验证码吗？")
+    if (answer) {
         $.ajax({
-            type : 'POST',
-            url : '{%url ajax_binding %}',
-            data : {'email': v},
-            statusCode : {
+            type: 'POST',
+            url: '#',
+            data: {
+                'phone': v
+            },
+            statusCode: {
                 200: function(response){
-                    if (response == 'record_already_exist') {
-                        alert('确认邮件已经发送，请查看您的邮箱')
-                    } else {
-                        alert('发送成功，请查看您的确认邮件')
-                    }
+                    var dom = $("#id_phone").parent().clone();
+                    $("#id_phone").parent().append(dom);
+                    dom.attr('style','margin-top:20px;').children('label').text('验证码');
+                    dom.children('input').val(null).attr('id','验证码的id');
+                    dom.children('a').text('[确认]').attr('onclick','确认调用的函数')
                 },
                 500: function(response){
-                    
+                
                 }
             }
         })
     }
 }
-
-function changeEmail(){
-    $("#id_email").attr('disabled',null).val(null);
-    $('a[onclick^="changeEmail"]').attr('onclick','bindingEmail()').text('[绑定]');
-}
-
-$(document).ready(function(){
-    $("#tips").delay(3000).fadeOut();    
-})
+    
+    function bindingEmail(){
+        var v = $('#id_email').val();
+        if (!v) {
+            alert('请输入邮件地址');
+            return false;
+        }
+        var answer = confirm("要给" + v + "发送确认邮件吗？")
+        if (answer) {
+            $.ajax({
+                type: 'POST',
+                url: '{%url email_binding %}',
+                data: {
+                    'email': v
+                },
+                statusCode: {
+                    200: function(response){
+                        if (response == 'record_already_exist') {
+                            alert('确认邮件已经发送，请查看您的邮箱')
+                        }
+                        else {
+                            alert('发送成功，请查看您的确认邮件')
+                        }
+                    },
+                    500: function(response){
+                    
+                    }
+                }
+            })
+        }
+    }
+    
+    function changeEmail(){
+        $("#id_email").attr('disabled', null).val(null);
+        $('a[onclick^="changeEmail"]').attr('onclick', 'bindingEmail()').text('[绑定]');
+    }
+    
+    $(document).ready(function(){
+        $("#tips").delay(3000).fadeOut();
+    })
 </script>
 {% endblock %}
 {% block content %}
 {% ifequal profile_status 'success' %}
 <div id="tips" style="color:#000;   background:#ffff00; padding:5px; width:400px; border-radius:5px;text-align:center; margin:20px; position:absolute;  margin-left:150px;">
- 保存成功 
+    保存成功 
 </div>
 {% endifequal %}
 <div id="content">
-  <div class="grid_a">
-   <h2 class="title">用户信息</h2>
-    欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<a href="{% url change_password %}" style="font-size:9pt; color:#237237237; text-decoration:underline;">修改密码</a><br/><br/>
-<br />
-
-<form method='post' action='{% url profile %}'  class="creat_exercise">
-    {% csrf_token %}
-    <fieldset>
-        <div class="field">
-        <label for="true_name">姓名</label>
-         <input name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}'></input><font color='red'>{{ form.true_name.errors.0 }}</red>
-         </div>
-         <div class="field">
-         <label for="email">电子邮件</label>
-         <input name='email' id='id_email' value='{{ form.email.value|default:'' }}' {% if user.email %} disabled="true" {% endif %}></input>
-            {% if user.email %}
-            <a href="#" onclick="changeEmail()">[修改]
-            {%else%}
-            <a href="#" onclick="bindingEmail()">[绑定]
-            {% endif %}
-            </a>
-         <font color='red'>{{ form.email.errors.0 }}</red>
-         </div>
-         <div class="field">
-         <label for="phone">手机</label>
-         <input name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}'></input>
-         <font color='red'>{{ form.phone.errors.0 }}</red>
-         </div>
-         <div class="field">剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a></div>
-         <input type='submit' value='保存' name='save'></input>
-        </fieldset>	
-    </form>
-  </div>
- </div>
-
-{% endblock %}
+    <div class="grid_a">
+        <h2 class="title">用户信息</h2>
+        欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<a href="{% url change_password %}" style="font-size:9pt; color:#237237237; text-decoration:underline;">修改密码</a>
+        <br/>
+        <br/>
+        <br/>
+        <form method='post' action='{% url profile %}' class="creat_exercise">
+            {% csrf_token %}
+            <fieldset>
+                <div class="field">
+                    <label for="true_name">
+                        姓名
+                    </label>
+                    <input name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}'>
+                    </input>
+                    <font color='red'>
+                    {{ form.true_name.errors.0 }}
+                </red>
+                </div>
+                <div class="field">
+                    <label for="email">
+                        电子邮件
+                    </label>
+                    <input name='email' id='id_email' value='{{ form.email.value|default:'' }}' {%  if userprofile.email %}  disabled="true" {%  endif %}>
+                    </input>{% if userprofile.email %}<a href="#" onclick="changeEmail()">[修改]
+                        {%else%}<a href="#" onclick="bindingEmail()">[绑定]
+                            {% endif %}</a>
+                        <font color='red'>{{ form.email.errors.0 }}
+                        </red>
+                    </div>
+                    <div class="field">
+                        <label for="phone">
+                            手机
+                        </label>
+                        <input name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}'>
+                        </input><a href="#" onclick="bindingPhone()">[绑定]</a>
+                        <font color='red'>
+                        {{ form.phone.errors.0 }}
+                    </red>
+                </div>
+                <div class="field">
+                    剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a>
+                </div>
+                <input type='submit' value='保存' name='save'>
+                </input>
+                </fieldset>
+            </form>
+        </div>
+    </div> {% endblock %}

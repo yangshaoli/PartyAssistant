@@ -2,7 +2,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
-from utils.tools.sms_tool import sendsmsBingdingmessage
+from utils.tools.sms_tool import sendsmsBindingmessage
+from utils.tools.email_tool import send_binding_email
 import thread
 
 ACCOUNT_TYPE_CHOICES = (
@@ -36,6 +37,8 @@ class UserProfile(models.Model):
     first_login = models.BooleanField(default = True)
     phone = models.CharField(blank = True, max_length = 16)
     phone_binding_status = models.CharField(blank = True, max_length = 16, choices = BINDING_STATUS)
+    email = models.CharField(blank = True, null = True, max_length = 16)
+    email_binding_status = models.CharField(default = 'unbind', max_length = 16, choices = BINDING_STATUS)
     used_sms_count = models.IntegerField(default = 0)
     available_sms_count = models.IntegerField(default = 30)
     
@@ -102,16 +105,17 @@ class UserAppleReceipt(UserReceiptBase):
     def __unicode__(self):
         return self.user.username
 
-BINGDING_TYPE = (
+BINDING_TYPE = (
                 ('phone','phone'),
                 ('email','email')
                 )
 class UserBindingTemp(models.Model):
     user = models.ForeignKey(User)
-    bingding_type = models.CharField(max_length=8, choices=BINGDING_TYPE)
-    key = models.CharField(max_length=32)
-    binding_address = models.CharField(max_length=75)
-    created_time = models.DateTimeField(auto_now_add = True)
+    binding_type = models.CharField(max_length=8, choices=BINDING_TYPE)
+    key = models.CharField(max_length=32, blank = True, default='')
+    binding_address = models.CharField(max_length=75, blank = True, default='')
+    created_time = models.DateTimeField(auto_now = True)
+    binding_type = models.CharField(max_length=8, choices=BINDING_TYPE)
    
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
@@ -132,10 +136,11 @@ signals.post_save.connect(create_user_profile, sender = User)
 
 
 def sendBindingMessage(sender = None, instance = None, **kwargs):
-    if instance.bingding_type == 'phone':
-        thread.start_new_thread(sendsmsBingdingmessage, (instance))
-    else:
-        pass
+    if instance.binding_type == 'phone':
+        thread.start_new_thread(sendsmsBindingmessage, (instance, ))
+        
+    if instance.binding_type == 'email':
+        thread.start_new_thread(send_binding_email, (instance,))
 
 signals.post_save.connect(sendBindingMessage, sender = UserBindingTemp)
 
