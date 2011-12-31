@@ -17,10 +17,8 @@
 
 
 @interface StatusTableVC()
-
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
 -(void) showTabBar:(UITabBarController*) tabbarcontroller;
-
 @end
 
 @implementation StatusTableVC

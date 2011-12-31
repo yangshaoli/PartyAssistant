@@ -21,7 +21,7 @@
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
 @implementation PartyDetailTableVC
-@synthesize myToolbarItems,peopleCountArray;
+@synthesize myToolbarItems,peopleCountArray,clientsArray;
 @synthesize partyObj;
 - (void)didReceiveMemoryWarning
 {
@@ -85,12 +85,6 @@
     
     [self.tableView reloadData];
 }
-
-
-
-
-
-
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -361,6 +355,68 @@
 }
 */
 
+#pragma mark - resend  request
+- (void)getPartyClientSeperatedList{
+    NSLog(@"预期调用1111");
+    NSNumber *partyIdNumber=self.partyObj.partyId;
+    NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(getPartyClientSeperatedListRequestFinished:)];
+    [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+}
+
+- (void)getPartyClientSeperatedListRequestFinished:(ASIHTTPRequest *)request{
+     NSLog(@"预期调用2222");
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dict = [result objectForKey:@"datasource"];
+            self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"self.clientsArray输出>>>>%@",self.clientsArray);
+            NSLog(@"self.clientsArray在statustableVC中输出后%@",self.clientsArray);
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
+            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
+            }
+            [self.tableView reloadData];
+        }else{
+            [self showAlertRequestFailed:description];	
+            NSLog(@"self.clientsArray在1");
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+        NSLog(@"self.clientsArray在2");
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+        NSLog(@"self.clientsArray在3");
+    }
+	
+}
+
+
+- (void)getPartyClientSeperatedListRequestFailed:(ASIHTTPRequest *)request
+{
+    NSLog(@"预期调用3333");
+    NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+
+
+
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -410,7 +466,10 @@
     
 }
 
+
+
 - (void)resentMsg{
+    [self getPartyClientSeperatedList];
     NSLog(@"调用再次发送");
 
 }

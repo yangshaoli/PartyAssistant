@@ -1,12 +1,12 @@
+#-*- coding: utf-8 -*-
 '''
 Created on 2011-11-21
 
 @author: liwenjian
 '''
 from apps.common.models import ShortLink
+import hashlib
 import random
-from apps.common.views import short_link
-
 KEY_CHOICES = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 NEXT_KEY_STEP_RANGE = (2900, 3100)
 
@@ -45,3 +45,5 @@ def generate_key():
         exists = ShortLink.objects.filter(short_link=new_key).count() > 0
         if not exists:
             return new_key
+
+

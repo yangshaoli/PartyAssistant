@@ -17,5 +17,8 @@ class Client(models.Model):
     creator = models.ForeignKey(User)
     invite_type = models.CharField(max_length = 8, blank = True, choices = INVITE_TYPE)
     
+    class Meta:
+        ordering = ['name']
+    
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.creator.username)

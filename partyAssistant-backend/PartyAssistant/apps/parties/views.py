@@ -298,7 +298,7 @@ def sms_invite(request, party_id):
             with transaction.commit_on_success():
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 client_phone_list_len = len(client_phone_list)
-                userprofile = UserProfile.objects.get(user = request.user) 
+                userprofile = request.user.get_profile() 
                 sms_count = userprofile.available_sms_count
                 will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
                 if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
@@ -523,7 +523,7 @@ def _public_enroll(request, party_id):
             invite_message = 'email'
         else:
             invite_message = 'phone'
-        userprofile = UserProfile.objects.get(user = party.creator)
+        userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username    
         data = {
             'party': party,
@@ -595,7 +595,7 @@ def _invite_enroll(request, party_id, invite_key):
              }
             return TemplateResponse(request, 'parties/enroll.html', data)
     else:
-        userprofile = UserProfile.objects.get(user = party.creator)
+        userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
         data = {
             'client': client,

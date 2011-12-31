@@ -1,7 +1,11 @@
-#-*- coding: utf-8 -*-
+#coding=utf-8
 import datetime
 import logging
 
+from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
+    RegistrationForm, UserProfileForm, BuySMSForm
+from apps.accounts.models import UserAliReceipt, UserBindingTemp
+from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.db.transaction import commit_on_success
@@ -14,11 +18,16 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 
-from apps.accounts.models import UserProfile, UserAliReceipt
+from apps.accounts.models import UserProfile, UserAliReceipt, UserBindingTemp
 from apps.accounts.forms import ChangePasswordForm, RegistrationForm, UserProfileForm, BuySMSForm
 from settings import DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
-
+from utils.tools.phone_key_tool import generate_phone_code
+from utils.tools.sms_tool import sendsmsMessage
+import logging
+import re
+import thread
+import hashlib
 logger = logging.getLogger('airenao')
 EMAIL_CONTENT = u'<div>尊敬的爱热闹用户：：<br>您使用了找回密码的功能，您登录系统的临时密码为 %s ，请登录后进入”账户信息“页面修改密码。</div>'
 
@@ -65,15 +74,15 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
 #            return redirect('profile')
         else:
             user = request.user
-            userprofile = UserProfile.objects.get(user = user)
+            userprofile = user.get_profile()
             sms_count = userprofile.available_sms_count    
-            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count,'profile_status':''})
+            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count,'profile_status':'', 'userprofile':userprofile})
         
     else:    
         user = request.user
         userprofile = user.get_profile()
         
-        email = user.email
+        email = userprofile.email
         phone = userprofile.phone
         true_name = userprofile.true_name
         sms_count = userprofile.available_sms_count    
@@ -83,7 +92,8 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
               }
         form = UserProfileForm(data)
         profile_status = ''
-        return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':profile_status})
+        
+        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status})
 
 @login_required
 @commit_on_success
@@ -129,7 +139,7 @@ def buy_sms(request):
             if seller_email and subject and out_trade_no and total_fee and notify_url and payment_type:
                 user = request.user
                 #存入UserAliReceipt表
-                userprofile = UserProfile.objects.get(user = user)
+                userprofile = user.get_profile()
                 UserAliReceipt.objects.create(user = user, pre_sms_count = userprofile.available_sms_count,
                                                       receipt = out_trade_no, totle_fee = total_fee, items_count = sms_count,
                                                       )
@@ -158,10 +168,142 @@ def bought_success(request):
     if request.method == 'POST':
 #        total_fee = request.POST.get('total_fee', 0)
         out_trade_no = request.POST.get('out_trade_no', '')
-        receipt = UserAliReceipt.objects.get(receipt = out_trade_no)
-        userprofile = UserProfile.objects.get(user = receipt.user)
+        receipt = UserAliReceipt.objects.get(receipt=out_trade_no)
+        userprofile = receipt.user.get_profile()
         userprofile.available_sms_count = userprofile.available_sms_count + receipt.item_count
         userprofile.save()
         return HttpResponse("success", mimetype = "text/html")
     else:
-        return HttpResponse("", mimetype = "text/html")
+        return HttpResponse("", mimetype="text/html")
+
+@login_required    
+def apply_phone_unbingding_ajax(request):#申请手机解绑定
+    if 'phone_unbingding' in request.COOKIES:
+        return
+    phone = request.user.get_profile().phone
+    
+    userkey = generate_phone_code()
+    userbindingtemp = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, bingding_type='phone')
+    userbindingtemp.key = userkey
+    userbindingtemp.save()
+    
+    profile = request.get_profile()
+    profile.phone = userbindingtemp.binding_address
+    profile.phone_binding_status = 'waitingunbind'
+    profile.save()
+    
+    response = HttpResponse("success")
+    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
+    response.set_cookie('phone_unbingding',request.user.id,expires=dt)
+    
+    return response
+
+@login_required    
+def apply_phone_bingding_ajax(request):#申请手机绑定
+
+    #1.收到手机号码(翻送间歇1min，重新获取/重i才能输入手机号码)cookie中,手机号码已经被使用
+    #2.产生验证码
+    #3.保存到UserBindingTemp 
+#    if 'airennao_phone_bingding' in request.COOKIES:
+#        return
+    phone = request.POST.get('phone','')
+    phone_re = re.compile(r'1\d{10}')
+    match = phone_re.search(phone)
+    if (not match.group()) or (len(phone)!=11):
+        return  HttpResponse("invalidate")
+    
+    #是否有用户已经绑定，该手机号码
+    exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
+    if exist:
+        return HttpResponse("used")
+    
+    userkey = generate_phone_code()
+    userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
+    userbindingtemp.binding_address = phone
+    userbindingtemp.key = userkey
+    userbindingtemp.save()
+    profile = request.user.get_profile()
+    
+    profile.phone = userbindingtemp.binding_address
+    profile.phone_binding_status = 'waitingbind'
+    profile.save()
+    
+    response = HttpResponse("success")
+    dt = datetime.now() + timedelta(minutes = 1)
+    response.set_cookie('phone_bingding',request.user.id,expires=dt)
+    
+    return response
+
+@login_required     
+def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑定验证
+    #1.获取验证码
+    #2.是否有验证码
+    #.绑定/解绑成功
+    if 'validate_phone_bingding' in request.COOKIES:
+        return
+    userkey = key
+    data={'status':''}
+    exists = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').count > 0
+    if exists:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').orderby('-id')[0]#避免有多条数据，虽然理论上不存在
+        bingding_key = userbindingtemp.key
+        if userkey == bingding_key:
+            phone = userbindingtemp.binding_address
+            #是否有用户已经绑定，该手机号码
+            exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
+            if exist:
+                data['status'] = 'used'    
+            else:#绑定操作
+                profile = request.get_profile()
+                profile.phone = userbindingtemp.binding_address
+                profile.phone_binding_status = binding_status
+                profile.save()
+                #删除临时表
+                userbindingtemp.delete()
+                #短信通知用户，绑定成功
+                message = {'phone':'' , 'content':''}
+                message['phone'] = userbindingtemp.bingding_address
+                if binding_status == 'bind':
+                    message['content'] = 'bindsuccess'
+                else:
+                    message['content'] = 'unbindsuccess'
+                thread.start_new_thread(sendsmsMessage,(message,))
+                
+                data['status'] = 'success'
+        else:
+            data['status'] = 'wrongkey'    
+    else :        
+        data['status'] = 'notexist'
+        
+    response = HttpResponse(simplejson.dumps(data))   
+    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
+    response.set_cookie('validate_phone_bingding',request.user.id,expires=dt) 
+    
+    return response
+
+def email_binding(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        if email:
+            key =  hashlib.md5(email).hexdigest()
+            if UserBindingTemp.objects.filter(key=key).count() == 0:
+                UserBindingTemp.objects.create(user=request.user, binding_type='email', key=key, binding_address=email)
+                return HttpResponse("success")
+            else:
+                return HttpResponse("record_already_exist")
+    else:
+        key = request.GET.get('key','')
+        if key:
+            try:
+                UserBindingTemp.objects.get(key=key)
+            except:
+                return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
+            else:
+                record = UserBindingTemp.objects.get(key=key)
+            user = User.objects.get(pk=record.user.id)
+            userprofile = user.get_profile()
+            userprofile.email = record.binding_address
+            userprofile.email_binding_status = 'bind'
+            userprofile.save()
+            record.delete()
+            return HttpResponseRedirect('/accounts/profile')
