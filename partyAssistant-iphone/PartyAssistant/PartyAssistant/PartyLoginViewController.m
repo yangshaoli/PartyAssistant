@@ -320,7 +320,7 @@
     [creat release];
     
      //add suggest user input name page here?
-    [self checkIfUserNameSaved];
+//    [self checkIfUserNameSaved];
     
     
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab

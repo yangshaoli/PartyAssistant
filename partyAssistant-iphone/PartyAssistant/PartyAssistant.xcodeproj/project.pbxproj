@@ -21,6 +21,7 @@
 		75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */; };
 		75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */; };
 		75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */; };
+		75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
@@ -136,7 +137,7 @@
 		893FE0E3147E24CE0081BFD1 /* SBJsonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE0DB147E24CE0081BFD1 /* SBJsonBase.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		893FE0E4147E24CF0081BFD1 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE0DD147E24CE0081BFD1 /* SBJsonParser.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		893FE0E5147E24CF0081BFD1 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 893FE0DF147E24CE0081BFD1 /* SBJsonWriter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		8944F6FE14735D81001E30C6 /* PartyUserNameInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */; };
+		8944F6FE14735D81001E30C6 /* PartyUserNameInputViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		8944F6FF14735D81001E30C6 /* PartyUserNameInputViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */; };
 		8944F7021473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8944F7011473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib */; };
 		8947F01D145800E100017ED1 /* PartyObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 8947F01C145800E100017ED1 /* PartyObject.m */; };
@@ -165,7 +166,7 @@
 		899BE86B145A9920000BAFEC /* SendSMSToClientsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899BE868145A9920000BAFEC /* SendSMSToClientsViewController.m */; };
 		899BE86C145A9920000BAFEC /* SendSMSToClientsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899BE869145A9920000BAFEC /* SendSMSToClientsViewController.xib */; };
 		899BE86D145A9920000BAFEC /* SendSMSToClientsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899BE869145A9920000BAFEC /* SendSMSToClientsViewController.xib */; };
-		899D62F4145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D62F2145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m */; };
+		899D62F4145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D62F2145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		899D62F5145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D62F3145FFA1800B9B4EC /* ContactorPhoneDetailsViewController.xib */; };
 		899D62FA145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 899D62F8145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.m */; };
 		899D62FB145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 899D62F9145FFA2D00B9B4EC /* ContactorEmailDetailsViewController.xib */; };
@@ -227,6 +228,8 @@
 		CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28894148E17A300B7E3B7 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889C148E17A300B7E3B7 /* AddressBookDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28896148E17A300B7E3B7 /* AddressBookDataManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28898148E17A300B7E3B7 /* ContactData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750614ADCDA000348263 /* reinvite_word@2x.png */; };
+		CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750714ADCDA000348263 /* reinvite@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -266,6 +269,8 @@
 		75A0476D14AC0DAA00B2532C /* EditableTableViewCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableTableViewCellDelegate.h; sourceTree = "<group>"; };
 		75A2265714AEE23F0025BFC3 /* BottomSepratorLineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BottomSepratorLineView.h; sourceTree = "<group>"; };
 		75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomSepratorLineView.m; sourceTree = "<group>"; };
+		75A2266F14AF0D890025BFC3 /* ResendPartyViaSMSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendPartyViaSMSViewController.h; sourceTree = "<group>"; };
+		75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendPartyViaSMSViewController.m; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
@@ -598,6 +603,8 @@
 		CEB28896148E17A300B7E3B7 /* AddressBookDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDataManager.m; sourceTree = "<group>"; };
 		CEB28897148E17A300B7E3B7 /* ContactData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactData.h; sourceTree = "<group>"; };
 		CEB28898148E17A300B7E3B7 /* ContactData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactData.m; sourceTree = "<group>"; };
+		CEC0750614ADCDA000348263 /* reinvite_word@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reinvite_word@2x.png"; sourceTree = "<group>"; };
+		CEC0750714ADCDA000348263 /* reinvite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reinvite@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -881,6 +888,8 @@
 		891A4DC21457A83100A2CF47 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				CEC0750614ADCDA000348263 /* reinvite_word@2x.png */,
+				CEC0750714ADCDA000348263 /* reinvite@2x.png */,
 				CEA4179014A872F300497186 /* new1.png */,
 				CEA4179114A872F300497186 /* new2.png */,
 				7A2CDD8D14A207D00054B723 /* toolbar */,
@@ -920,6 +929,8 @@
 				7528DAD814AB16EF00236609 /* SendSMSModeChooseViewController.h */,
 				7528DAD914AB16EF00236609 /* SendSMSModeChooseViewController.m */,
 				7528DADA14AB16EF00236609 /* SendSMSModeChooseViewController.xib */,
+				75A2266F14AF0D890025BFC3 /* ResendPartyViaSMSViewController.h */,
+				75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */,
 			);
 			name = AddNewParty;
 			sourceTree = "<group>";
@@ -1494,6 +1505,8 @@
 				8920895314AEF1FB00F31001 /* edit_word.png in Resources */,
 				8920895614AEF21500F31001 /* refresh_word.png in Resources */,
 				8920895814AEF22100F31001 /* share_word.png in Resources */,
+				CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */,
+				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1652,6 +1665,7 @@
 				75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */,
 				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 				75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */,
+				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

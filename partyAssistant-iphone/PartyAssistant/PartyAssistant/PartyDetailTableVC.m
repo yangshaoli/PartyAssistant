@@ -44,7 +44,6 @@
     [self.navigationController.toolbar sizeToFit];
     
     
-    
     if (!self.myToolbarItems) {
         UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
         self.myToolbarItems = [NSArray arrayWithObjects:
@@ -140,7 +139,7 @@
 {
     NSNumber *partIdNumber=self.partyObj.partyId;
     NSString *partIdString=[partIdNumber stringValue];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
     NSLog(@"在loadClientCount中输出partid》》》%@",self.partyObj.partyId);
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
@@ -190,8 +189,17 @@
 
 
 
-
 #pragma mark - Table view data source
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
+{
+    if(indexPath.section==0){
+        return 100;
+    }
+    return 44;
+}
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -237,10 +245,14 @@
     oldLayout = [cell viewWithTag:2];
     [oldLayout removeFromSuperview];
     if(indexPath.section==0){
-//        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
-//        [cell addSubview:contentTextField];
-        cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
-        cell.textLabel.text=self.partyObj.contentString;
+        cell.textLabel.font=[UIFont systemFontOfSize:13];
+        cell.textLabel.numberOfLines = 0;
+        if([self.partyObj.contentString length]>140){
+            NSLog(@"输出内容长度》》》%d",[self.partyObj.contentString length]);
+            cell.textLabel.text=[self.partyObj.contentString  substringToIndex:140];
+        }else{
+            cell.textLabel.text=self.partyObj.contentString;
+        }
     }else{
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
@@ -254,16 +266,17 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
+            NSInteger newAppliedInt=[[self.peopleCountArray objectAtIndex:2] intValue];
+            NSLog(@"已报名数newAppliedInt：：：：》》》%d",newAppliedInt);
             
-            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-            NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
-            NSInteger showImageInt=[isChenkDefault integerForKey:appliedKeyString];
-            NSLog(@"已报名数：：：：》》》%d",showImageInt);
-            if(showImageInt>0){
+            if(newAppliedInt>0){
+                self.partyObj.isnewApplied=YES;
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
+            }else{
+                self.partyObj.isnewApplied=NO;
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
@@ -282,15 +295,16 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
-            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-            NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
-            NSInteger showImageInt=[isChenkDefault integerForKey:refusedKeyString];
-            NSLog(@"不参加数：：：：》》》%d",showImageInt);
-            if(showImageInt>0){
+            NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
+            NSLog(@"已报名数newRefusedInt：：：：》》》%d",newRefusedInt);
+            if(newRefusedInt>0){
+                self.partyObj.isnewRefused=YES;
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
+            }else{
+                self.partyObj.isnewRefused=NO;
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
