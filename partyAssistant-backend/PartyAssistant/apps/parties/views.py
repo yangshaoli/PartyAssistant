@@ -640,10 +640,13 @@ def _get_client_count(party):
 
 @login_required
 def change_apply_status(request, party_client_id, applystatus):
-    client_party = PartiesClients.objects.get(pk = party_client_id)      
-    client_party.apply_status = applystatus
-    client_party.save()        
-    return HttpResponse('ok') 
+    if applystatus == 'reject' or applystatus == 'noanswere' or applystatus == 'apply':
+        client_party = PartiesClients.objects.get(pk = party_client_id)      
+        client_party.apply_status = applystatus
+        client_party.save()        
+        return HttpResponse('ok') 
+    else :
+        return HttpResponse('badstatus')
 
 @login_required
 def invite_list(request, party_id):
