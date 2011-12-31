@@ -7,6 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7528DAD114AB0D6900236609 /* CreatNewPartyViaSMSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DACF14AB0D6900236609 /* CreatNewPartyViaSMSViewController.m */; };
+		7528DAD214AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7528DAD014AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib */; };
+		7528DADB14AB16EF00236609 /* SendSMSModeChooseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAD914AB16EF00236609 /* SendSMSModeChooseViewController.m */; };
+		7528DADC14AB16EF00236609 /* SendSMSModeChooseViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7528DADA14AB16EF00236609 /* SendSMSModeChooseViewController.xib */; };
+		7528DAEF14AB1E7200236609 /* AddPersonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAE114AB1E7200236609 /* AddPersonViewController.m */; };
+		7528DAF014AB1E7200236609 /* AddView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAE314AB1E7200236609 /* AddView.m */; };
+		7528DAF214AB1E7200236609 /* ButtonPeoplePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAE714AB1E7200236609 /* ButtonPeoplePicker.m */; };
+		7528DAF314AB1E7200236609 /* PeoplePickerCustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAE914AB1E7200236609 /* PeoplePickerCustomCell.m */; };
+		7528DAF414AB1E7200236609 /* ShadowedTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAEB14AB1E7200236609 /* ShadowedTableView.m */; };
+		7528DAF514AB1E7200236609 /* ContactsListPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		7528DAFB14AB22A300236609 /* ButtonPeoplePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */; };
+		75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */; };
+		75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
@@ -23,6 +36,9 @@
 		7A2CDD9514A2080A0054B723 /* share_word.png in Resources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9114A2080A0054B723 /* share_word.png */; };
 		7A2CDD9814A2082F0054B723 /* AddressBookDBService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */; };
 		7A2CDD9A14A208C60054B723 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A2CDD9914A208C60054B723 /* libsqlite3.dylib */; };
+		75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840414AC61CF00AB950A /* bottom-button-bg.png */; };
+		75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840514AC61CF00AB950A /* ButtonCorners.png */; };
+		75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -223,6 +239,30 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7528DACE14AB0D6900236609 /* CreatNewPartyViaSMSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreatNewPartyViaSMSViewController.h; sourceTree = "<group>"; };
+		7528DACF14AB0D6900236609 /* CreatNewPartyViaSMSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreatNewPartyViaSMSViewController.m; sourceTree = "<group>"; };
+		7528DAD014AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CreatNewPartyViaSMSViewController.xib; sourceTree = "<group>"; };
+		7528DAD814AB16EF00236609 /* SendSMSModeChooseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendSMSModeChooseViewController.h; sourceTree = "<group>"; };
+		7528DAD914AB16EF00236609 /* SendSMSModeChooseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendSMSModeChooseViewController.m; sourceTree = "<group>"; };
+		7528DADA14AB16EF00236609 /* SendSMSModeChooseViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SendSMSModeChooseViewController.xib; sourceTree = "<group>"; };
+		7528DAE014AB1E7200236609 /* AddPersonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddPersonViewController.h; sourceTree = "<group>"; };
+		7528DAE114AB1E7200236609 /* AddPersonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddPersonViewController.m; sourceTree = "<group>"; };
+		7528DAE214AB1E7200236609 /* AddView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddView.h; sourceTree = "<group>"; };
+		7528DAE314AB1E7200236609 /* AddView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddView.m; sourceTree = "<group>"; };
+		7528DAE614AB1E7200236609 /* ButtonPeoplePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonPeoplePicker.h; sourceTree = "<group>"; };
+		7528DAE714AB1E7200236609 /* ButtonPeoplePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonPeoplePicker.m; sourceTree = "<group>"; };
+		7528DAE814AB1E7200236609 /* PeoplePickerCustomCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeoplePickerCustomCell.h; sourceTree = "<group>"; };
+		7528DAE914AB1E7200236609 /* PeoplePickerCustomCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeoplePickerCustomCell.m; sourceTree = "<group>"; };
+		7528DAEA14AB1E7200236609 /* ShadowedTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowedTableView.h; sourceTree = "<group>"; };
+		7528DAEB14AB1E7200236609 /* ShadowedTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShadowedTableView.m; sourceTree = "<group>"; };
+		7528DAED14AB1E7200236609 /* ContactsListPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsListPickerViewController.h; sourceTree = "<group>"; };
+		7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsListPickerViewController.m; sourceTree = "<group>"; };
+		7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonPeoplePicker.xib; sourceTree = "<group>"; };
+		75A0476814AC0D9F00B2532C /* JFTextViewNoInset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JFTextViewNoInset.h; sourceTree = "<group>"; };
+		75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JFTextViewNoInset.m; sourceTree = "<group>"; };
+		75A0476B14AC0DAA00B2532C /* EditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableTableViewCell.h; sourceTree = "<group>"; };
+		75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableTableViewCell.m; sourceTree = "<group>"; };
+		75A0476D14AC0DAA00B2532C /* EditableTableViewCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableTableViewCellDelegate.h; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
@@ -249,6 +289,9 @@
 		7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDBService.h; sourceTree = "<group>"; };
 		7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDBService.m; sourceTree = "<group>"; };
 		7A2CDD9914A208C60054B723 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		75E4840414AC61CF00AB950A /* bottom-button-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom-button-bg.png"; sourceTree = "<group>"; };
+		75E4840514AC61CF00AB950A /* ButtonCorners.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonCorners.png; sourceTree = "<group>"; };
+		75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonCorners@2x.png"; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -592,6 +635,65 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7528DADE14AB1E4000236609 /* AddContactReceipt */ = {
+			isa = PBXGroup;
+			children = (
+				7528DADF14AB1E7200236609 /* AddContactReceipt */,
+				7528DAEC14AB1E7200236609 /* ContactList */,
+			);
+			name = AddContactReceipt;
+			sourceTree = "<group>";
+		};
+		7528DADF14AB1E7200236609 /* AddContactReceipt */ = {
+			isa = PBXGroup;
+			children = (
+				7528DAE014AB1E7200236609 /* AddPersonViewController.h */,
+				7528DAE114AB1E7200236609 /* AddPersonViewController.m */,
+				7528DAE214AB1E7200236609 /* AddView.h */,
+				7528DAE314AB1E7200236609 /* AddView.m */,
+				7528DAE614AB1E7200236609 /* ButtonPeoplePicker.h */,
+				7528DAE714AB1E7200236609 /* ButtonPeoplePicker.m */,
+				7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */,
+				7528DAE814AB1E7200236609 /* PeoplePickerCustomCell.h */,
+				7528DAE914AB1E7200236609 /* PeoplePickerCustomCell.m */,
+				7528DAEA14AB1E7200236609 /* ShadowedTableView.h */,
+				7528DAEB14AB1E7200236609 /* ShadowedTableView.m */,
+			);
+			name = AddContactReceipt;
+			path = Main/Controller/AddContactReceipt;
+			sourceTree = "<group>";
+		};
+		7528DAEC14AB1E7200236609 /* ContactList */ = {
+			isa = PBXGroup;
+			children = (
+				7528DAED14AB1E7200236609 /* ContactsListPickerViewController.h */,
+				7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */,
+			);
+			name = ContactList;
+			path = Main/Controller/ContactList;
+			sourceTree = "<group>";
+		};
+		75A0476514AC0D4700B2532C /* SMS */ = {
+			isa = PBXGroup;
+			children = (
+				75A0476714AC0D5900B2532C /* autosizeTextviewCell */,
+				7528DADE14AB1E4000236609 /* AddContactReceipt */,
+			);
+			name = SMS;
+			sourceTree = "<group>";
+		};
+		75A0476714AC0D5900B2532C /* autosizeTextviewCell */ = {
+			isa = PBXGroup;
+			children = (
+				75A0476B14AC0DAA00B2532C /* EditableTableViewCell.h */,
+				75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */,
+				75A0476D14AC0DAA00B2532C /* EditableTableViewCellDelegate.h */,
+				75A0476814AC0D9F00B2532C /* JFTextViewNoInset.h */,
+				75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */,
+			);
+			name = autosizeTextviewCell;
+			sourceTree = "<group>";
+		};
 		75BC083514987DE3007B39CB /* DeviceDetection */ = {
 			isa = PBXGroup;
 			children = (
@@ -644,6 +746,15 @@
 				7A2CDD9114A2080A0054B723 /* share_word.png */,
 			);
 			name = toolbar;
+		75E4840314AC61CF00AB950A /* ButtonPicker */ = {
+			isa = PBXGroup;
+			children = (
+				75E4840414AC61CF00AB950A /* bottom-button-bg.png */,
+				75E4840514AC61CF00AB950A /* ButtonCorners.png */,
+				75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */,
+			);
+			name = ButtonPicker;
+			path = Resources/ButtonPicker;
 			sourceTree = "<group>";
 		};
 		891A4D7114579B3B00A2CF47 = {
@@ -752,6 +863,7 @@
 		891A4DC11457A80900A2CF47 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				75E4840314AC61CF00AB950A /* ButtonPicker */,
 				891A4DC21457A83100A2CF47 /* Images */,
 			);
 			name = Resources;
@@ -785,6 +897,7 @@
 		891A4DC31457B16200A2CF47 /* AddNewParty */ = {
 			isa = PBXGroup;
 			children = (
+				75A0476514AC0D4700B2532C /* SMS */,
 				891A4DCC1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.h */,
 				891A4DCD1457D49900A2CF47 /* AddNewPartyBaseInfoTableViewController.m */,
 				8944F7011473A9E7001E30C6 /* AddNewPartyBaseInfoTableViewController.xib */,
@@ -794,6 +907,12 @@
 				899BE867145A9920000BAFEC /* SendSMSToClientsViewController.h */,
 				899BE868145A9920000BAFEC /* SendSMSToClientsViewController.m */,
 				899BE869145A9920000BAFEC /* SendSMSToClientsViewController.xib */,
+				7528DACE14AB0D6900236609 /* CreatNewPartyViaSMSViewController.h */,
+				7528DACF14AB0D6900236609 /* CreatNewPartyViaSMSViewController.m */,
+				7528DAD014AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib */,
+				7528DAD814AB16EF00236609 /* SendSMSModeChooseViewController.h */,
+				7528DAD914AB16EF00236609 /* SendSMSModeChooseViewController.m */,
+				7528DADA14AB16EF00236609 /* SendSMSModeChooseViewController.xib */,
 			);
 			name = AddNewParty;
 			sourceTree = "<group>";
@@ -1362,6 +1481,12 @@
 				CEA4179514A872F300497186 /* new2.png in Resources */,
 				CEA4179614A872F300497186 /* reinvite_word.png in Resources */,
 				CEA4179714A872F300497186 /* reinvite.png in Resources */,
+				7528DAD214AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib in Resources */,
+				7528DADC14AB16EF00236609 /* SendSMSModeChooseViewController.xib in Resources */,
+				7528DAFB14AB22A300236609 /* ButtonPeoplePicker.xib in Resources */,
+				75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */,
+				75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */,
+				75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1509,6 +1634,16 @@
 				CE295D4814A3492F00C73505 /* ContentTableVC.m in Sources */,
 				8980AB6014A33C1600C3C63B /* PartyListService.m in Sources */,
 				CEAA2D0314A6E2D300FF1444 /* GetClientsCountService.m in Sources */,
+				7528DAD114AB0D6900236609 /* CreatNewPartyViaSMSViewController.m in Sources */,
+				7528DADB14AB16EF00236609 /* SendSMSModeChooseViewController.m in Sources */,
+				7528DAEF14AB1E7200236609 /* AddPersonViewController.m in Sources */,
+				7528DAF014AB1E7200236609 /* AddView.m in Sources */,
+				7528DAF214AB1E7200236609 /* ButtonPeoplePicker.m in Sources */,
+				7528DAF314AB1E7200236609 /* PeoplePickerCustomCell.m in Sources */,
+				7528DAF414AB1E7200236609 /* ShadowedTableView.m in Sources */,
+				7528DAF514AB1E7200236609 /* ContactsListPickerViewController.m in Sources */,
+				75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */,
+				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

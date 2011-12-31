@@ -9,6 +9,7 @@
 
 
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "CreatNewPartyViaSMSViewController.h"
 #import "DataManager.h"
 #import "GlossyButton.h"
 #import "PartyListTableViewController.h"
@@ -277,8 +278,13 @@
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
     UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
+    CreatNewPartyViaSMSViewController *creat = [[CreatNewPartyViaSMSViewController alloc] initWithNibName:nil bundle:nil];
+    
     UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
+    UINavigationController *creatNav = [[UINavigationController alloc] 
+        initWithRootViewController:creat];
+    
     
     UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
     UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
@@ -298,17 +304,19 @@
     
     UITabBarController *tab = [[UITabBarController alloc] init];
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
-    tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, creatNav, nil];
     [self.navigationController pushViewController:tab animated:YES];
 
     [listNav release];
     [addPageNav release];
     [settingNav release];
+    [creatNav release];
     
     //[list release];
     [pattyListTableVC release];
     [addPage release];
     [settings release];
+    [creat release];
     
      //add suggest user input name page here?
     [self checkIfUserNameSaved];
