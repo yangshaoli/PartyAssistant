@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('AIMeeting', 'airenao@cn-acg.com'),
+    ('airenao', 'airenao@cn-acg.com'),
 )
 
 DATABASES = {
@@ -128,8 +128,8 @@ INSTALLED_APPS = (
     'apps.accounts',
     'apps.clients',
     'apps.parties',
-    'apps.messages', 
-    'apps.common', 
+    'apps.messages',
+    'apps.common',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -138,34 +138,34 @@ INSTALLED_APPS = (
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1, 
-    'disable_existing_loggers': True, 
+    'version': 1,
+    'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        }, 
+        },
         'simple': {
             'format': '%(levelname)s %(asctime)s %(message)s'
         },
     },
     'handlers': {
         'null': {
-            'level': 'DEBUG', 
+            'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
-        }, 
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'file': {
-            'level': 'DEBUG', 
-            'class': 'logging.handlers.RotatingFileHandler', 
-            'formatter': 'simple', 
-            'filename': 'airenao.log', 
-            'maxBytes': 1048576, 
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'simple',
+            'filename': 'airenao.log',
+            'maxBytes': 1048576,
             'backupCount': 10
-        }, 
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
@@ -190,10 +190,15 @@ LOGGING = {
 }
 
 SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
-DOMAIN_NAME = 'http://192.168.1.15:43401'
+DOMAIN_NAME = 'http://airenao.com'
+SHORT_DOMAIN_NAME = 'http://arn.bz'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+ALIPAY_PARTNER = '2088701462122036'
+ALIPAY_KEY = 'jut7uqx5fodoajps5jomwwz03rs0516y'
+ALIPAY_SELLER_EMAIL = 'payment@orilong.com'

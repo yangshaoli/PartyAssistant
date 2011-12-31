@@ -1,0 +1,58 @@
+{% extends "not_login_base.html" %} 
+
+{% block title %}Android, iPhone, iPad 应用下载{% endblock %}
+
+{% block style %}
+<style>
+.download { width: 760px; margin-left:100px;}
+.download li {  padding:20px 20px 0px 20px; border-bottom:1px dashed #ccc}
+h3 { font-size:14px; font-weight:bolder; text-shadow:1px 1px 1px #ccc; margin:10px 0px;}
+button { border-radius:3px; margin:10px 0px;}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!--START: content -->
+ <div id="content" style="margin-top:50px;">
+ 	<ul class="download">
+ 	    <li>
+ 	        <table><tr>
+ 	            <td width="300px;"><img src="/static/images/android.png" alt="Android" /></td>
+                <td>
+                    <h3>Android 应用下载</h3>
+                    <p>适用于Android 2.1 以上版本。</p>
+                    <p><button>点击下载</button></p>
+                </td>
+            </tr></table>
+ 	    </li>
+        <li>
+ 	        <table><tr>
+ 	            <td width="500px;">
+ 	                <h3>iPhone 应用下载</h3>
+                    <p>适用于ios 4.0 以上版本。</p>
+                    <p><button>点击下载</button></p>
+ 	            </td>
+                <td valign="top">
+                    <h3><img src="/static/images/iphone.png" alt="iPhone" /></h3>
+                </td>
+            </tr></table>
+        </li>
+        <li>
+ 	        <table><tr><td>
+ 	               <h3>iPad 应用下载</h3> 
+ 	            </td></tr>
+ 	        <tr>
+                <td valign="top">
+                    <h3><img src="/static/images/ipad.png" alt="iPad" /></h3>
+                </td>
+            </tr></table>
+        </li>
+ 	</ul>
+ </div>
+ <!--END: content --> 
+<script>
+document.getElementsByClassName('menu')[0].children[1].className = '';
+document.getElementsByClassName('menu')[0].children[2].className = 'active';
+</script>
+{% endblock %}

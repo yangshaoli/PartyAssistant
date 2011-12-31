@@ -11,12 +11,19 @@
 #import "BaseInfoService.h"
 #import "SendSMSToClientsViewController.h"
 #import "SendEmailToClientsViewController.h"
-@interface AddNewPartyBaseInfoTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate,UIPickerViewDelegate,UITextViewDelegate,UIScrollViewDelegate>{
+
+
+
+@interface AddNewPartyBaseInfoTableViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate,UITextFieldDelegate,UIPickerViewDelegate,UITextViewDelegate,UIScrollViewDelegate,SendSMSToClientsDelegate>{
     BaseInfoObject *baseInfoObject;
     UIDatePicker *datePicker;
     UIPickerView *peoplemaxiumPicker;
     UITextField *locationTextField;
     UITextView *descriptionTextView;
+    NSInteger buttonIndexInteger;//控制时间
+    NSInteger peoplebuttonIndex;//控制人数
+
+    
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseInfoObject;

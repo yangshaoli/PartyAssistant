@@ -8,8 +8,14 @@
 
 #import "SettingsListTableViewController.h"
 #import "NicknameManageTableViewController.h"
+#import "DataManager.h"
 #import "PurchaseListViewController.h"
-#define NAVIGATION_CONTROLLER_TITLE @"个人设置"
+
+#define NAVIGATION_CONTROLLER_TITLE @"设置"
+#define LogoutTag                   1
+#define NotPassTag                  2
+#define SuccessfulTag               3
+#define InvalidateNetwork           4
 
 @implementation SettingsListTableViewController
 
@@ -103,17 +109,17 @@
     
     // Configure the cell...
     if (indexPath.row == 0) {
-        cell.textLabel.text = @"更改个人信息";
+        cell.textLabel.text = @"个人信息";
     }else if(indexPath.row == 1){
-        cell.textLabel.text = @"变更密码";
+        cell.textLabel.text = @"修改密码";
     }else if(indexPath.row == 2){
         cell.textLabel.text = @"微博管理";
     }else if(indexPath.row == 3){
         cell.textLabel.text = @"帮我们评分";
     }else if(indexPath.row == 4){
-        cell.textLabel.text = @"登出";
+        cell.textLabel.text = @"充值";
     }else if(indexPath.row == 5){
-        cell.textLabel.text = @"购买";
+        cell.textLabel.text = @"登出";
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -179,9 +185,80 @@
         WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
         [self.navigationController pushViewController:vc animated:YES];
     }
-    if(indexPath.row == 5){
+    if(indexPath.row == 4){
         PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
         [self.navigationController pushViewController:purchaseListVC animated:YES];
+    }
+    if(indexPath.row == 5){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"登出" message:@"确认登出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+        alertView.tag = LogoutTag;
+        [alertView show];
+    }
+    
+}
+
+#pragma mark -
+#pragma mark MBProgress_HUDDelegate methods
+
+- (void)HUDWasHidden:(MBProgressHUD *)hUD {
+    // Remove _HUD from screen when the _HUD was hidded
+    [_HUD removeFromSuperview];
+	_HUD = nil;
+}
+
+#pragma mark - UIAlertDelegate Method 
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if ((alertView.tag == LogoutTag ) && ( buttonIndex == 1)) {
+        _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+        [self.navigationController.view addSubview:_HUD];
+        
+        _HUD.labelText = @"Loading";
+        
+        _HUD.delegate = self;
+        
+        [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
+    }
+}
+
+- (void)showAlertWithMessage:(NSString *)message 
+                 buttonTitle:(NSString *)buttonTitle 
+                         tag:(int)tagNum{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    alert.tag = tagNum;
+    [alert show];
+}
+
+- (void)showInvalidateNetworkalert {
+    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+                   buttonTitle:@"OK" 
+                           tag:InvalidateNetwork];
+}
+
+- (void)showRegistSuccessfulAlert {
+    [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
+    [self showAlertWithMessage:@"登出成功！" buttonTitle:@"OK" tag:SuccessfulTag];
+}
+
+- (void)showNotPassChekAlert {
+    [self showAlertWithMessage:@"无法完成登出！" buttonTitle:@"OK" tag:NotPassTag];
+}
+
+- (void)tryConnectToServer {
+    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+                                            logoutUser];
+    [_HUD hide:YES];
+    //may need to creat some other connection status
+    switch (networkStatus) {
+        case NetworkConnectionInvalidate:
+            [self showNotPassChekAlert];
+            break;
+        case NetWorkConnectionCheckPass:
+            [self showRegistSuccessfulAlert];
+            break;
+        default:
+            [self showNotPassChekAlert];
+            break;
     }
 }
 

@@ -686,7 +686,7 @@
     NSInteger section = self.currentSelectedSectionIndex;
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
     UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    [self showOrCancleSelectedMark:cell mutableMSGValue:[[notification userInfo] objectForKey:@"val"]];
+    [self showOrCancleSelectedMark:cell mutableMSGValue:[[notification userInfo]objectForKey:@"val"]];
 }
 
 - (void)contactDetailSelectedWithUserInfo:(NSDictionary *)info{

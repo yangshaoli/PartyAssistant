@@ -66,6 +66,7 @@
         [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
         [receiverCell addSubview:addBTN];
     }
+    self.title=@"再次邀请";
 }
 
 - (void)viewDidUnload
@@ -139,6 +140,7 @@
             }
             contentTextView.text = self.smsObject.smsContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
             cell.textLabel.text  = @"短信内容";
         }else if(indexPath.section == 2){

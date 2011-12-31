@@ -4,23 +4,30 @@ Created on 2011-11-7
 
 @author: liuxue
 '''
-from ERROR_MSG_SETTINGS import *
+
+import datetime
+import re
+
+from django.db import transaction
+from django.contrib.auth.models import User
+from django.db.transaction import commit_on_success
+from django.core.urlresolvers import reverse
+from django.utils import simplejson
+from django.views.decorators.csrf import csrf_exempt
+
 from apps.clients.models import Client
 from apps.messages.models import EmailMessage, SMSMessage, Outbox, BaseMessage
 from apps.parties.models import Party, PartiesClients
-from django.contrib.auth.models import User
-from django.db.transaction import commit_on_success
-from django.utils import simplejson
-from django.views.decorators.csrf import csrf_exempt
-from utils.settings.page_size_setting import LIST_MEETING_PAGE_SIZE
+
+from settings import DOMAIN_NAME
+from ERROR_MSG_SETTINGS import *
+
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
-from utils.tools.paginator_tool import process_paginator
-import datetime
-import re
-from django.db import transaction
 
-PARTY_COUNT_PER_PAGE = 20
+
+
+PARTY_COUNT_PER_PAGE = 10
 
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
@@ -29,18 +36,27 @@ def createParty(request):
     if request.method == 'POST' :
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
-        subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips'] == '1'
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
         _issendbyself = request.POST['_issendbyself'] == '1'
-        msgType = request.POST['msgType']
-        starttime = request.POST['starttime']
-        location = request.POST['location']
-        description = request.POST['description']
-        peopleMaximum = request.POST['peopleMaximum']
+#        msgType = request.POST['msgType']
+#        starttime = request.POST['starttime']
+#        location = request.POST['location']
+#        description = request.POST['description']
+#        peopleMaximum = request.POST['peopleMaximum']
         uID = request.POST['uID']
-        addressType = request.POST['addressType']
+#        addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
         startdate = None
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
+        starttime = ''
+        location = ""
+        description = content
+        peopleMaximum = 0
+        
         try:
             startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
         except Exception:
@@ -49,8 +65,8 @@ def createParty(request):
             starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
         except Exception:
             starttime = None
-        if len(location) > 256:
-            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
+#        if len(location) > 256:
+#            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         
         with transaction.commit_on_success():
             #创建活动
@@ -66,15 +82,52 @@ def createParty(request):
                 receiver = receivers[i]
                 
                 if msgType == 'SMS':
-                    client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
-                                                                      name = receiver['cName'],
-                                                                      creator = user,
-                                                                      )
+#                    client = Client.objects.get_or_create(phone = receiver['cValue'],
+#                                                                      name = receiver['cName'],
+#                                                                      creator = user,
+#                                                                      )[0]
+                    client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                        name = receiver['cName'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                    else:
+                        empty_name_client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                                       name = '',
+                                                                       creator = user
+                                                                       )
+                        if empty_name_client_list:
+                            client = empty_name_client_list[0]
+                            client.name = receiver['cName']
+                            client.save()
+                        else:
+                            client = Client.objects.create(phone = receiver['cValue'],
+                                                           name = receiver['cName'],
+                                                           creator = user
+                                                           )
+                    
                 else:
-                    client, is_created = Client.objects.get_or_create(email = receiver['cValue'],
-                                                                      name = receiver['cName'],
-                                                                      creator = user,
-                                                                      )
+                    client_list = Client.objects.filter(email = receiver['cValue'],
+                                                        name = receiver['cName'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                    else:
+                        empty_name_client_list = Client.objects.filter(email = receiver['cValue'],
+                                                                       name = '',
+                                                                       creator = user
+                                                                       )
+                        if empty_name_client_list:
+                            client = empty_name_client_list[0]
+                            client.name = receiver['cName']
+                            client.save()
+                        else:
+                            client = Client.objects.create(email = receiver['cValue'],
+                                                           name = receiver['cName'],
+                                                           creator = user
+                                                           )
                 PartiesClients.objects.create(
                                               party = party,
                                               client = client,
@@ -82,13 +135,13 @@ def createParty(request):
                 addressArray.append(receiver['cValue'])
             addressString = simplejson.dumps(addressArray)
             if msgType == 'SMS':
-                msg, created = SMSMessage.objects.get_or_create(party = party)
+                msg = SMSMessage.objects.get_or_create(party = party)[0]
                 msg.content = content
                 msg.is_apply_tips = _isapplytips
                 msg.is_send_by_self = _issendbyself
                 msg.save()
             else:
-                msg, created = EmailMessage.objects.get_or_create(party = party)
+                msg = EmailMessage.objects.get_or_create(party = party)[0]
                 msg.subject = subject
                 msg.content = content
                 msg.is_apply_tips = _isapplytips
@@ -101,27 +154,34 @@ def createParty(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
 
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }
 
 @csrf_exempt
 @apis_json_response_decorator
 def editParty(request):
     if request.method == 'POST':
         partyID = request.POST['partyID']
-        location = request.POST['location']
-        starttime = request.POST['starttime']
-        peopleMaximum = request.POST['peopleMaximum']
+#        location = request.POST['location']
+#        starttime = request.POST['starttime']
+#        peopleMaximum = request.POST['peopleMaximum']
         description = request.POST['description']
         uID = request.POST['uID']
-        startdate = None
-        try:
-            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
-        except:
-            startdate = None               
-        try:
-            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
-        except Exception:
-            starttime = None
+#        startdate = None
+        
+        location = ''
+#        starttime = ''
+#        peopleMaximum = 0
+#        try:
+#            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
+#        except:
+#            startdate = None               
+#        try:
+#            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
+#        except Exception:
+#            starttime = None
         if len(location) > 256:
             raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
         
@@ -130,11 +190,11 @@ def editParty(request):
             party = Party.objects.get(pk = partyID, creator = user)
         except Exception:
             raise myException(u'您要编辑的会议已被删除')
-        party.start_date = startdate
-        party.start_time = starttime
+#        party.start_date = startdate
+#        party.start_time = starttime
         party.description = description
-        party.address = location
-        party.limit_count = peopleMaximum
+#        party.address = location
+#        party.limit_count = peopleMaximum
         party.save()
         
 @csrf_exempt
@@ -146,8 +206,8 @@ def deleteParty(request):
         uID = request.POST['uID']
         user = User.objects.get(pk = uID)
         try:
-            party = Party.objects.get(pk = pID)
-        except Exception, e:
+            party = Party.objects.get(pk = pID, creator = user)
+        except Exception:
             return 'ok'
         party.delete()
 
@@ -156,21 +216,14 @@ def deleteParty(request):
 def PartyList(request, uid, start_id = 0):
     user = User.objects.get(pk = uid)
     PartyObjectArray = []
-    if start_id == 0:
+    if str(start_id) == "0":
         partylist = Party.objects.filter(creator = user).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
     else:
-        partylist = Party.objects.filter(creator = user, pk__gt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
-    GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
+        partylist = Party.objects.filter(creator = user, pk__lt = start_id).order_by('-created_time')[:PARTY_COUNT_PER_PAGE]
+#    GMT_FORMAT = '%Y-%m-%d %H:%M:%S'
     for party in partylist:
         partyObject = {}
-        try:
-            party.start_time = datetime.datetime.combine(party.start_date, party.start_time)
-            partyObject['starttime'] = party.start_time.strftime(GMT_FORMAT)
-        except Exception, e:
-            partyObject['starttime'] = None
         partyObject['description'] = party.description
-        partyObject['peopleMaximum'] = party.limit_count
-        partyObject['location'] = party.address
         partyObject['partyId'] = party.id
         
         #各个活动的人数情况
@@ -198,12 +251,12 @@ def PartyList(request, uid, start_id = 0):
         PartyObjectArray.append(partyObject)
     if partylist:
         return {
-                'page':partylist[partylist.count() - 1].id,
+                'lastID':partylist[partylist.count() - 1].id,
                 'partyList':PartyObjectArray
                 }
     else:
         return {
-                'page':start_id,
+                'lastID':start_id,
                 'partyList':[]
                 }
 
@@ -228,9 +281,7 @@ def GetPartyMsg(request, pid):
         dict['cName'] = partiesclients.client.name
         dict['backendID'] = partiesclients.id
         receivers.append(dict)
-    print 1
     subObj = message.get_subclass_obj()
-    print 2
     if messageType == 'SMS':
         subject = ''
         content = subObj.content
@@ -255,11 +306,11 @@ def GetPartyClientMainCount(request, pid):
         party = Party.objects.get(pk = pid)
     except:
         raise myException(u'您要复制的会议已被删除')
-    clientparty_list = PartiesClients.objects.filter(party = party)
-    all_client_count = clientparty_list.count()
-    applied_client_count = clientparty_list.filter(apply_status = u'apply').count()
-    donothing_client_count = clientparty_list.filter(apply_status = u'noanswer').count()
-    refused_client_count = clientparty_list.filter(apply_status = u'reject').count()
+#    clientparty_list = PartiesClients.objects.filter(party = party)
+#    all_client_count = clientparty_list.count()
+#    applied_client_count = clientparty_list.filter(apply_status = u'apply').count()
+#    donothing_client_count = clientparty_list.filter(apply_status = u'noanswer').count()
+#    refused_client_count = clientparty_list.filter(apply_status = u'reject').count()
     #各个活动的人数情况
     party_clients = PartiesClients.objects.select_related('client').filter(party = party)
     client_counts = {
@@ -294,13 +345,13 @@ def GetPartyClientSeperatedList(request, pid, type):
     except:
         raise myException(u'该会议已被删除')
     if type == "all":
-        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('apply_status')
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('apply_status').order_by('is_check').order_by('client')
     elif type == 'applied':
-        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"apply")
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"apply").order_by('is_check').order_by('client')
     elif type == 'refused':
-        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"reject")
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"reject").order_by('is_check').order_by('client')
     elif type == 'donothing':
-        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"noanswer")
+        clientparty_list = PartiesClients.objects.select_related('client').filter(party = party, apply_status = u"noanswer").order_by('is_check').order_by('client')
     clientList = []
     for clientparty in clientparty_list:
         if not clientparty.client.phone:
@@ -318,7 +369,8 @@ def GetPartyClientSeperatedList(request, pid, type):
                'cValue':cValue,
                'isCheck':is_checked,
                'backendID':clientparty.id,
-               'status':clientparty.apply_status
+               'status':clientparty.apply_status,
+               "msg":clientparty.leave_message
                }
         clientList.append(dic)
     party_list = Party.objects.filter(creator = party.creator)
@@ -346,14 +398,18 @@ def resendMsg(request):
     if request.method == "POST":
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
-        subject = request.POST['subject']
-        _isapplytips = request.POST['_isapplytips'] == '1'
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
         _issendbyself = request.POST['_issendbyself'] == '1'
-        msgType = request.POST['msgType']
+#        msgType = request.POST['msgType']
         partyID = request.POST['partyID']
         uID = request.POST['uID']
-        addressType = request.POST['addressType']
+#        addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
         
         try:
             party = Party.objects.get(pk = partyID, creator = user)
@@ -366,30 +422,64 @@ def resendMsg(request):
                 receiver = receivers[i]
                 
                 if msgType == 'SMS':
-                    client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
-                                                                  name = receiver['cName'],
-                                                                  creator = user,
-                                                                  )
+                    client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                        name = receiver['cName'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                    else:
+                        empty_name_client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                                       name = '',
+                                                                       creator = user
+                                                                       )
+                        if empty_name_client_list:
+                            client = empty_name_client_list[0]
+                            client.name = receiver['cName']
+                            client.save()
+                        else:
+                            client = Client.objects.create(phone = receiver['cValue'],
+                                                           name = receiver['cName'],
+                                                           creator = user
+                                                           )
                 else:
-                    client, is_created = Client.objects.get_or_create(phone = receiver['cValue'],
-                                                                  name = receiver['cName'],
-                                                                  creator = user,
-                                                                  )
+                    client_list = Client.objects.filter(email = receiver['cValue'],
+                                                        name = receiver['cName'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                    else:
+                        empty_name_client_list = Client.objects.filter(email = receiver['cValue'],
+                                                                       name = '',
+                                                                       creator = user
+                                                                       )
+                        if empty_name_client_list:
+                            client = empty_name_client_list[0]
+                            client.name = receiver['cName']
+                            client.save()
+                        else:
+                            client = Client.objects.create(email = receiver['cValue'],
+                                                           name = receiver['cName'],
+                                                           creator = user
+                                                           )
                 PartiesClients.objects.get_or_create(
                                                   party = party,
                                                   client = client,
-                                                  apply_status = u'noanswer'
+                                                  defaults = {
+                                                              "apply_status":'noanswer'
+                                                              }
                                                   ) 
                 addressArray.append(receiver['cValue'])
     
             if msgType == 'SMS':
-                msg, created = SMSMessage.objects.get_or_create(party = party)
+                msg = SMSMessage.objects.get_or_create(party = party)[0]
                 msg.content = content
                 msg.is_apply_tips = _isapplytips
                 msg.is_send_by_self = _issendbyself
                 msg.save()
             else:
-                msg, created = EmailMessage.objects.get_or_create(party = party)
+                msg = EmailMessage.objects.get_or_create(party = party)[0]
                 msg.subject = subject
                 msg.content = content
                 msg.is_apply_tips = _isapplytips
@@ -402,4 +492,7 @@ def resendMsg(request):
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
         
-        return {'partyId':party.id}
+        return {
+                'partyId':party.id,
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                }

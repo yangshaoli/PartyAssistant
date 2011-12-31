@@ -7,14 +7,15 @@
 //
 
 #import "SendSMSToClientsViewController.h"
-
+#import "AddNewPartyBaseInfoTableViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
 #define DONE_ALERT_TAG 13
 
+
 @implementation SendSMSToClientsViewController
 @synthesize receiverArray,contentTextView,receiversView,_isShowAllReceivers,countlbl,smsObject,receiverCell;
-
+@synthesize delegate;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -146,9 +147,12 @@
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.smsObject.smsContent;
+            NSLog(@"调用cell");
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"短信内容";
+            
+            cell.textLabel.text  = @"短信内容:";
         }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
@@ -297,6 +301,10 @@
     [self.navigationController popToRootViewControllerAnimated:NO];
 }
 
+- (IBAction)clearAddNewPartyBaseInfo{
+    [delegate clearAddNewPartyBaseInfo];
+
+}
 - (void)doneBtnAction{
   if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
         UIAlertView *alert=[[UIAlertView alloc]
@@ -318,11 +326,15 @@
         [self sendCreateRequest];
     }
   }
+//    //清空AddNewPartyBaseInfoVc
+//    [self clearAddNewPartyBaseInfo];
+//    NSLog(@"调用done");
 }
 - (void)sendCreateRequest{
     [self showWaiting];
     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
     BaseInfoObject *baseinfo = [bs getBaseInfo];
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];

@@ -30,6 +30,11 @@
 #import "EmailObjectService.h"
 #import "ReceiverTableViewCell.h"
 
+@protocol SendSMSToClientsDelegate <NSObject>
+
+- (void)clearAddNewPartyBaseInfo;
+@end
+
 @interface SendSMSToClientsViewController : UITableViewController<UITableViewDelegate, UIActionSheetDelegate,  MFMessageComposeViewControllerDelegate,UIAlertViewDelegate,ContactListViewControllerDelegate>
 {
     UIView *receiversView;
@@ -39,6 +44,7 @@
     UILabel *countlbl;
     SMSObject *smsObject;
     ReceiverTableViewCell *receiverCell;
+    id<SendSMSToClientsDelegate> delegate;
 }
 
 @property(nonatomic, retain)UIView *receiversView;
@@ -48,6 +54,7 @@
 @property(nonatomic, retain)UILabel *countlbl;
 @property(nonatomic, retain)SMSObject *smsObject;
 @property(nonatomic, retain)ReceiverTableViewCell *receiverCell;
+@property (nonatomic, retain) id<SendSMSToClientsDelegate> delegate;
 
 - (void)reorganizeReceiverField:(NSNotification *)notification;
 - (void)setDefaultAction;
@@ -56,4 +63,6 @@
 - (void)applyTipsSwitchAction:(UISwitch *)curSwitch;
 - (void)sendBySelfSwitchAction:(UISwitch *)curSwitch;
 - (NSString *)getDefaultContent:(BaseInfoObject *)paraBaseInfo;
+- (IBAction)clearAddNewPartyBaseInfo;
+
 @end

@@ -9,7 +9,7 @@
 #import "WeiboLoginViewController.h"
 
 @implementation WeiboLoginViewController
-@synthesize weibo,childView,baseinfo,isOnlyLogin,delegate;
+@synthesize weibo,childView,baseinfo,isOnlyLogin,delegate,partyObj;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -48,7 +48,8 @@
             [alertV show];
         }else{
             PostWeiboViewController *vc = [[PostWeiboViewController alloc] initWithNibName:@"PostWeiboViewController" bundle:nil];
-            vc.baseinfo = baseinfo;
+            //vc.baseinfo = baseinfo;
+            vc.partyObj = self.partyObj;
             [self.navigationController pushViewController:vc animated:NO];
         }
     }else{
@@ -80,6 +81,7 @@
 
 - (void)showLoginPage:(NSNotification *)notification{
     NSString *urlStr = [[notification userInfo] objectForKey:@"url"];
+    NSLog(@"url微博%@",urlStr);
     NSURL *url = [NSURL URLWithString:urlStr];
     [self.childView loadRequest:[NSURLRequest requestWithURL:url]];
 }
@@ -115,7 +117,8 @@
         
     }else{
         PostWeiboViewController *vc = [[PostWeiboViewController alloc] initWithNibName:@"PostWeiboViewController" bundle:nil];
-        vc.baseinfo = baseinfo;
+       // vc.baseinfo = baseinfo;
+        vc.partyObj = vc.partyObj;
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

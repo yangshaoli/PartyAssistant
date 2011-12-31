@@ -67,8 +67,8 @@ $(document).ready(function(){
      <label for="id_start_date">
      何时
      </label>
-	 <input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|date:'Y-m-d'|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
-	 <input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|time:'H:i'|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
+	 <input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
+	 <input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
      <font color='red'>{{ form.start_date.errors }}
      {{ form.start_time.errors }}<font>
      </div>
@@ -96,7 +96,7 @@ $(document).ready(function(){
      <div class="submit_field">
      <input type='submit' value='保存'></input>
      {% if party.invite_type %}
-     <input type='submit' name='save_send' value='保存并发送'></input>
+     <input type='submit' name='save_send' value='保存并发送' style="width:120px"></input>
      {% endif  %}
      {% if not party.invite_type %}
      <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信" alt="sms"/>

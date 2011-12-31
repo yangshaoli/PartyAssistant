@@ -60,7 +60,16 @@ $(document).ready(function(){
       $("#id_start_time").val(startDate);
    });
 });
-
+$(function() {
+    $("form input").keypress(function (e) {
+        if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+            $('button[type=submit] .default').click();
+            return false;
+        } else {
+            return true;
+        }
+    });
+});
 </script>
 
 {% endblock %}
@@ -77,8 +86,8 @@ $(document).ready(function(){
      <label for="id_start_date">
      何时
      </label>
-	<input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|date:'Y-m-d'|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
-	<input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|time:'H:i'|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
+	<input type='text' name='start_date' id='id_start_date' value='{{ form.start_date.value|default:'' }}' placeholder='选填'  class='input-txt3 mys' style='width:150px'></input>
+	<input type='text' name='start_time' id='id_start_time' value='{{ form.start_time.value|default:'' }}' placeholder='选填'  class='input-txt3 mys TimePker' autocomplete='off'></input>
 	 <font color='red'>{{ form.start_date.errors.0 }}
      {{ form.start_time.errors.0 }}<font>
      </div>
@@ -104,6 +113,7 @@ $(document).ready(function(){
      <font color='red'>{{ form.limit_count.errors.0 }}</font>
      </div>
      <div class="submit_field">
+      <input class="default" name="button2" value="defaultButton" type="hidden"/><!-- 屏蔽掉Enter -->
       <input id="id_sms_invite_submit" type="submit" name="sms_invite" value="发送短信" alt="sms"/>
       <input id="id_email_invite_submit" type="submit" name="email_invite" value="发送邮件" alt="email"/>
      </div>

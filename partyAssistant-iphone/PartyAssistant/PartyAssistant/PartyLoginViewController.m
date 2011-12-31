@@ -5,6 +5,8 @@
 //  Created by Wang Jun on 11/4/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
+#import "PartyListTableVC.h"
+
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "CreatNewPartyViaSMSViewController.h"
@@ -115,7 +117,7 @@
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
 //    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
-   NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
+ //  NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
 //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
 //    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
    // [keyString release]; 
@@ -155,6 +157,7 @@
 
 - (void)loginCheck {
     //check usrname and pwd is not nil and legal( length > 3?)
+  //为了调试暂时先注释掉  
     if (!_userNameTextField.text || [_userNameTextField.text isEqualToString:@""]
         || !_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
         [self showNotLegalInput];
@@ -173,6 +176,9 @@
     [_HUD show:YES];
    
     [self tryConnectToServer];
+    
+    //[self gotoContentVC];//调试新加的无用语句
+    
 }
 
 - (void)tryConnectToServer {
@@ -180,6 +186,7 @@
     NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
                                             validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
+
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
             [self showInvalidateNetworkalert];
@@ -253,20 +260,26 @@
 - (void)registerUser {
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
+    registerVC.delegate=self;
     [self.navigationController pushViewController:registerVC animated:YES];
     [registerVC release];
 }
 
 - (void)pushToContentVC {
-    self.navigationController.navigationBarHidden = YES;
+    self.userNameTextField.text = @"";
+    self.pwdTextField.text = @"";
     
-    PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+    self.navigationController.navigationBarHidden = YES;
+    PartyListTableVC  *pattyListTableVC=[[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
+    
+    
+    //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
     AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
+    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
     CreatNewPartyViaSMSViewController *creat = [[CreatNewPartyViaSMSViewController alloc] initWithNibName:nil bundle:nil];
     
-    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
     UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
     UINavigationController *creatNav = [[UINavigationController alloc] 
@@ -277,9 +290,9 @@
     UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
     UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:listBarImage tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:addPageBarImage tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:settingBarImage tag:3];
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:listBarImage tag:1];
+    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:addPageBarImage tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
     addPageNav.tabBarItem = addPageBarItem;
@@ -299,13 +312,14 @@
     [settingNav release];
     [creatNav release];
     
-    [list release];
+    //[list release];
+    [pattyListTableVC release];
     [addPage release];
     [settings release];
     [creat release];
     
      //add suggest user input name page here?
-//    [self checkIfUserNameSaved];
+    [self checkIfUserNameSaved];
     
     
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
@@ -314,8 +328,8 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-    NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
-    
+   //NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
+    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
     if(getDefaultCountNumber!=0){  
         NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
         tab.selectedIndex=1;
@@ -327,7 +341,11 @@
     }
     [keyString release];
 }
+//wxz
+- (void)autoLogin{
+    [self pushToContentVC];
 
+}
 #pragma mark -
 #pragma tableViewDelegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

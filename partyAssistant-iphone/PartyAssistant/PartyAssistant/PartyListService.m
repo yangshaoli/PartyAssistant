@@ -7,7 +7,7 @@
 //
 
 #import "PartyListService.h"
-
+#import "ContactData.h"
 @implementation PartyListService
 @synthesize partyList;
 
@@ -16,17 +16,21 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
 - (id)init
 {
     self = [super init];
-    if (self) {
-        // Initialization code here.
-    }
-    
+    self.partyList = [self getPartyList];
     return self;
 }
 
-- (NSMutableArray *)getPartyList
+
+- (NSString *)filePathString{
+    NSArray *paths=NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *fileDirectory=[paths objectAtIndex:0];
+    return [fileDirectory stringByAppendingPathComponent:PARTYLISTFILE];
+}
+
+
+- (NSArray *)getPartyList
 {
     if (partyList) {
-        NSLog(@"partyList1:%@",partyList);
         return partyList;
     }
     
@@ -43,8 +47,11 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     } else {
         self.partyList = [[NSMutableArray alloc] initWithCapacity:0];
     }
+    NSLog(@"self.partyList打印》》》%@",self.partyList);
     return self.partyList;
 }
+
+
 - (void)savePartyList
 {
     if (!self.partyList) {
@@ -63,16 +70,16 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     
     NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:PARTYLISTFILE];
     [theData writeToFile:fullPathToFile atomically:YES];
-     NSLog(@"savePartyList....self.partyList.count在方法中打印%d",self.partyList.count);
 }
 
-- (NSArray *)addPartyList:(BaseInfoObject *)baseinfo
+
+
+- (NSArray *)addPartyList:(PartyModel *)partyObj
 {
-    [self.partyList addObject:baseinfo];
-   
+    [self.partyList addObject:partyObj];
     return partyList;
-    
 }
+
 - (void)clearPartyList
 {
     self.partyList = [[NSMutableArray alloc]initWithCapacity:0];

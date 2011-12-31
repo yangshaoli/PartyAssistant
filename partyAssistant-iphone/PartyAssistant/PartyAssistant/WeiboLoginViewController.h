@@ -14,7 +14,7 @@
 #import "WeiboService.h"
 #import "PostWeiboViewController.h"
 #import "BaseInfoObject.h"
-
+#import "PartyModel.h"
 #ifndef IBOutlet
 #define IBOutlet
 #endif
@@ -31,6 +31,7 @@
     id childView;
     BOOL isOnlyLogin;
     BaseInfoObject *baseinfo;
+    PartyModel *partyObj;
     id<WeiboLoginViewControllerDelegate> delegate;
 }
 
@@ -39,6 +40,7 @@
 @property(nonatomic,retain)id childView;
 @property(nonatomic,assign)BOOL isOnlyLogin;
 @property(nonatomic,retain)BaseInfoObject *baseinfo;
+@property(nonatomic,retain)PartyModel *partyObj;
 
 - (IBAction)cancelBtnAction:(id)sender;
 - (void)WeiboLogin;

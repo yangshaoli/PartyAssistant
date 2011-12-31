@@ -39,7 +39,6 @@
 				<string key="NSFrame">{{0, 20}, {320, 460}}</string>
 				<reference key="NSSuperview"/>
 				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">10</int>
 					<object class="NSImage" key="NSImage">
@@ -170,6 +169,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<int key="objectID">4</int>
 						<reference key="object" ref="873029372"/>
 						<reference key="parent" ref="0"/>
+						<string key="objectName">Table View</string>
 					</object>
 				</object>
 			</object>
@@ -204,7 +204,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">7</int>
+			<int key="maxID">8</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

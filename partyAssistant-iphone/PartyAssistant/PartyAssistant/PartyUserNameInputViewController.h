@@ -26,6 +26,8 @@
     UITableViewCell *_emailInfoTableCell;
     UITextField *_emailInfoTextField;
 
+    UITableViewCell *_phoneNumTableCell;
+    UITextField *_phoneNumTextField;
     
     id<PartyUserNameInputDelegate> delegate;
 }
@@ -36,6 +38,10 @@
 
 @property (nonatomic, retain) IBOutlet UITableViewCell *emailInfoTableCell;
 @property (nonatomic, retain) IBOutlet UITextField *emailInfoTextField;
+
+@property (nonatomic, retain) IBOutlet UITableViewCell *phoneNumTableCell;
+@property (nonatomic, retain) IBOutlet UITextField *phoneNumTextField;
+
 @property (nonatomic, retain) id<PartyUserNameInputDelegate> delegate;
 
 - (IBAction)cancleInput;

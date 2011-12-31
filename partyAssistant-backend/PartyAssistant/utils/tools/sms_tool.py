@@ -6,13 +6,14 @@ Created on 2011-11-17
 '''
  
 from apps.common.models import ShortLink
-from django.utils import simplejson
-from settings import DOMAIN_NAME
-from utils.tools.str_tool import next_key
+from settings import DOMAIN_NAME, SHORT_DOMAIN_NAME
+from utils.tools.str_tool import generate_key
 import hashlib
 import logging
 import urllib
 import urllib2
+BASIC_MESSAGE_LENGTH = 65
+SHORT_LINK_LENGTH = 18
 
 logger = logging.getLogger('airenao')
 SMS_SERVER_NAME = 'http://u.wangxun360.com'
@@ -68,40 +69,79 @@ def _post_api_request_sendSMS(params={}):
  
  
 def sms_modem_send_sms(outbox_message, message, party):
+    number_of_message = (len(message.content) + (SHORT_LINK_LENGTH if message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
     try:
         phone_list = outbox_message.address.split(',')
         if message.is_apply_tips:
-            link_count = ShortLink.objects.all().count()
-            if link_count > 0:
-                last_key = ShortLink.objects.all().order_by('-id')[0].short_link
-            else:
-                last_key = 'airenao'
-            
             for phone in phone_list:
                 content = message.content
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
-                last_key = next_key(last_key)
-                short_link = DOMAIN_NAME + '/' + last_key
-                content = content + u' 快来报名：%s' % short_link
-                ShortLink.objects.create(short_link=last_key, long_link=enroll_link)
+                new_key = generate_key()
+                short_link = SHORT_DOMAIN_NAME + '/' + new_key
+                content = u'【爱热闹】' + content + u' 快来报名：%s' % short_link
+                ShortLink.objects.create(short_link=new_key, long_link=enroll_link)
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res != '1':
                         logger.error(res)
                 except:
+                    userprofile = party.creator.get_profile()
+                    userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+                    userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+                    userprofile.save()
+                    logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
         else:
             for phone in phone_list:
-                content = message.content
+                content = u'【爱热闹】' + message.content
                 data = {'Mobile':phone, 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res != '1':
                         logger.error(res)
                 except:
+                    userprofile = party.creator.get_profile()
+                    userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+                    userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+                    userprofile.save()
+                    logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
     except:
+        userprofile = party.creator.get_profile()
+        userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
+        userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
+        userprofile.save()
+        logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
+        
         logger.exception('send sms error!')
     finally:
         outbox_message.delete()
+
+def sendsmsBindingmessage(UserBindingTemp):
+    phone =  UserBindingTemp.binding_address
+    content = u'【爱热闹】'+ u'您的手机绑定验证码：' + UserBindingTemp.key
+    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send sendsmsBindingmessage error!')
+
+def sendsmsMessage(message):
+    phone =  message['address']
+    if message['content'] == 'bindsuccess':
+        message['content'] = u'手机号码绑定成功'
+    elif message['content'] == 'unbindsuccess':
+        message['content'] = u'手机号码解除绑定成功'
+    else:
+        return
+    content = u'【爱热闹】'+ message['content']
+    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send sendsmsBingdingmessage error!')        

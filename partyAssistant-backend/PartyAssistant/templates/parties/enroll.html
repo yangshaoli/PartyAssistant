@@ -1,4 +1,4 @@
-{% extends 'not_login_base.html' %}
+{% extends 'login_base.html' %}
 
 {% block title %}报名页面 - 爱热闹{% endblock %}
 
@@ -25,13 +25,14 @@ input[type="image"] { border:0px;height:45px;}
 
 function ajaxGetClients(applystatus){
     $('.accordion_content table tbody').children().remove();
-    
     $.ajax({
         type : 'GET',
         url: '/parties/ajax_get_client_list/'+{{party.id}}+'/?apply='+applystatus,
         statusCode : {
         200: function(response){
-            clients = JSON.parse(response);
+            data = JSON.parse(response);
+            client_count = data.client_count;
+            clients = data.party_clients_datas;
             for (i in clients){
                 name = clients[i].name;
                 address = clients[i].address;
@@ -56,10 +57,12 @@ function ajaxGetClients(applystatus){
                 }else{
                 	row = "<tr><td></td><th>"+name+"</th><td>"+address+"</td><td></td></tr>"
                 }
-                $('.accordion_content table tbody').append(row);    
-            }
-            
-            //修改[再次邀请]的url
+                $('.accordion_content table tbody').append(row);  
+            }//endfor
+            //改变标签上的人数 
+            $('#tab_apply').html('去的<strong> ('+ client_count.apply +'人)');
+            $('#tab_noanswer').html('待定的<strong> ('+ client_count.noanswer +'人)');
+            $('#tab_reject').html('不去的<strong> ('+ client_count.reject +'人)');
         },
         500: function(){ alert('没有获取到用户列表')}
         }
@@ -90,13 +93,14 @@ function ajaxChangeStatus(id, applystatus){
    <div class="apply_details">
     <p>{{party.creator.username}} <span class="minor">邀请</span>  {% if client %}{{client.name}}{%else%}您{%endif%}：</p>
     <p>{{ party.start_date|date:"m月d日"}}  {{ party.start_time|time:"H:i"|default:"时间待定" }} </p>
-    <p class="paragraph">{{ party.address|default:"地点待定" }}<span class="minor">参加活动</span></p>
-    <p class="paragraph">{{party.description}}</p>
+    <p class="paragraph">{{ party.address|default:"地点待定" }}&nbsp;&nbsp;<span class="minor">参加活动</span></p>
+    <p class="paragraph">{{ party.description|linebreaksbr }}</p>
     
     
         {% if client %}
         <!-- 被邀请用户报名页面 -->
-    <form method="POST" url="{% url enroll party.id %}" class="creat_exercise">
+    <form method="POST" action="{% url enroll party.id %}?key={{key}}" class="creat_exercise">
+        <input name='key' type='hidden' value='{{ key }}'></input>
         {% if client.name == client.email %}
         <div class="field">
              <label for="client_email_list">姓名</label>
@@ -118,8 +122,8 @@ function ajaxChangeStatus(id, applystatus){
         <textarea name='leave_message' id='id_leave_message' cols='25' rows='4'>{{ form.leave_message.value|default:'' }}</textarea>
         <font color='red'>{{ form.leave_message.errors.0 }}</font>
         </div> 
-     <input type="image" src="/static/images/btn_join.png" onclick="$('#id_action').val('yes');" />
-     <input type="image" src="/static/images/btn_join_no.png" onclick="$('#id_action').val('no');" />
+     <input type="submit" style="background-image:url('/static/images/btn_join.png');width:103px;height:45px;" value='' name='yes' />
+     <input type="submit" style="background-image:url('/static/images/btn_join_no.png');width:103px;height:45px;" value='' name='no' />
      <input id="id_action" type="hidden" name="action" value="" />
        
          {% else %}
@@ -127,17 +131,16 @@ function ajaxChangeStatus(id, applystatus){
         <form action="{% url enroll party.id %}" method="POST" class="creat_exercise">{% csrf_token %}
             <div class="field">
              <label for="client_email_list">姓名<font color='red'>*</font></label>
-             <input type='text' name='name' id='id_name' value='{{ form.name.value.value|default:'' }}'></input>
+             <input type='text' name='name' id='id_name' value='{{ form.name.value|default:'' }}'></input>
              <font color='red'>{{ form.name.errors.0 }}<font>
              </div>
             <div class="field">
              <label for="client_email_list">联系方式<font color='red'>*</font></label>
-             <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' placeholder='手机号码或者邮箱地址'></input>
+             <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' ></input>
              <font color='red'>{{ form.phone_or_email.errors.0 }}</font>
              <br/>
-             {% if invite_message %}
-             {{ invite_message }}
-             {% endif %}
+             {% ifequal invite_message 'email' %} 请填写邮件地址，以免收不到活动具体通知  {% endifequal %}      
+             {% ifequal invite_message 'phone' %} 请填写手机号码，以免收不到活动具体通知  {% endifequal %}
              </div>
             <div class="field">
              <label for="client_email_list">我要留言</label>
@@ -156,7 +159,7 @@ function ajaxChangeStatus(id, applystatus){
 
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">爱热闹的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">犹豫的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">不来的 <strong>({{client_count.reject}}人)</strong></a> </h2>
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">去的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">待定的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">不去的 <strong>({{client_count.reject}}人)</strong></a> </h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>

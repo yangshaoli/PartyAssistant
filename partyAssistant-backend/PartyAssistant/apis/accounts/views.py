@@ -76,6 +76,13 @@ def accountRegist(request):
         if User.objects.filter(username = username):
             raise myException(ERROR_ACCOUNTREGIST_USER_EXIST)
         user = User.objects.create_user(username, '', password)
+        if user:
+            device_token = request.POST['device_token']
+            if device_token:
+                usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+                if usertoken.user != user:
+                    usertoken.user = user
+                    usertoken.save()
         return {'uid':user.id}
 
 
@@ -95,3 +102,14 @@ def getBadgeNum(request):
         return {'badgeNum':PartiesClients.objects.filter(party__in = party_list, is_check = False).count()}
     else:
         return {'badgeNum':0}
+
+@csrf_exempt
+@apis_json_response_decorator
+@commit_on_success
+def profilePage(request, uid):
+    user = User.objects.get(pk = id)
+    if request.method == 'POST':
+#        nickname = 
+        pass
+    else:
+        pass

@@ -9,7 +9,7 @@
 #import "EditPartyTableViewController.h"
 
 @implementation EditPartyTableViewController
-@synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView,starttimeLabel2;
+@synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -50,6 +50,8 @@
     }
     
     self.title=titleString;
+    buttonIndexInteger=1;//默认为时间待定
+    peoplebuttonIndex=1;//默认人数无限制
 }
 
 - (void)viewDidUnload
@@ -125,8 +127,11 @@
         UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
         starttimeLabel.textAlignment = UITextAlignmentRight;
         starttimeLabel.backgroundColor = [UIColor clearColor];
-       
-        starttimeLabel.text = baseInfoObject.starttimeStr;
+        if(buttonIndexInteger==0){
+             starttimeLabel.text = baseInfoObject.starttimeStr;        
+        }else{
+            starttimeLabel.text =@"待定";
+        }
         [cell addSubview:starttimeLabel];
         //            starttimeLabel.text = @"2011-11-11 11:00";
        
@@ -145,11 +150,17 @@
         peopleStrLable.backgroundColor = [UIColor clearColor];
         peopleStrLable.textAlignment = UITextAlignmentRight;
         peopleStrLable.text = @"人";
-        [cell addSubview:peopleStrLable];
+        
         UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
         peoplemaximumLabel.backgroundColor = [UIColor clearColor];
         peoplemaximumLabel.textAlignment = UITextAlignmentRight;
-        peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
+        if(peoplebuttonIndex==1){
+            peoplemaximumLabel.text=@"无限制";
+        }else{
+            [cell addSubview:peopleStrLable];
+           peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
+        }
+        
         //peoplemaximumLabel.text = @"1";
         if (![peoplemaximumLabel.text isEqualToString:@"0"]) {
             peoplemaximumLabel.textColor = [UIColor redColor];
@@ -162,6 +173,7 @@
         }
         descriptionTextView.text = baseInfoObject.description;
         descriptionTextView.backgroundColor = [UIColor clearColor];
+        descriptionTextView.font=[UIFont systemFontOfSize:15];
         //descriptionTextView.text = baseInfoObject.description;
         [cell addSubview:descriptionTextView];
     }
@@ -209,9 +221,9 @@
 #pragma mark - Save the Info
 
 - (void)saveInfo{
-    self.baseInfoObject.description = self.descriptionTextView.text;
-    self.baseInfoObject.location = self.locationTextField.text;
-    [self.baseInfoObject formatDateToString];
+        self.baseInfoObject.description = self.descriptionTextView.text;
+        self.baseInfoObject.location = self.locationTextField.text;
+        [self.baseInfoObject formatDateToString];
 }
 
 #pragma mark - Table view delegate
@@ -244,7 +256,7 @@
         
     }else if(indexPath.row == 2){
         NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:@"无限制" destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
         actionSheet.tag = 1;
         if(!peoplemaxiumPicker){
             self.peoplemaxiumPicker = [[UIPickerView alloc] init];
@@ -265,14 +277,25 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {   
     if (actionSheet.tag == 0) {
-        self.baseInfoObject.starttimeDate = [datePicker date];
-        [self.baseInfoObject formatDateToString];
-        NSLog(@"%d",buttonIndex);
+        if(buttonIndex==0){
+            self.baseInfoObject.starttimeDate = [datePicker date];
+            [self.baseInfoObject formatDateToString];
+            buttonIndexInteger=0;
+        }else{
+            buttonIndexInteger=1;
+        }
     }else{
-        NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
-        NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
-        NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
-        self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
+        if(buttonIndex==0){
+            NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
+            NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
+            NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
+            self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
+            peoplebuttonIndex=0;
+        }else{
+            peoplebuttonIndex=1;
+        
+        }
+       
     }
     [self saveInfo];
     [self.tableView reloadData];
@@ -297,7 +320,20 @@
     return [NSString stringWithFormat:@"%d",row];
 }
 
+
 - (void)doneBtnAction{
+  if(!self.descriptionTextView.text || [self.descriptionTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"描述内容不可以为空"
+                            message:@"描述为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+      return;
+        
+ }else{
+
     [self saveInfo];
     [self showWaiting];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -315,7 +351,7 @@
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
-
+ }
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{

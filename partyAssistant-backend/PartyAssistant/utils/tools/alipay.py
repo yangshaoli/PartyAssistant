@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-  
-# 
+# @author: Robin Huang
+
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -397,26 +398,3 @@ class Alipay(object):
         'BUYER_PAY_AFTER_RECEIVE':'货到付款', # 买家收到货物后直接支付给物流公司（费用不用计算到总价内）
     }
       
-@login_required
-def pay(request):
-    request_url = '/accounts/profile'
-    if request.method == 'POST':
-        seller_email = settings.ALIPAY_SELLER_EMAIL;
-        subject = request.POST.get('subject', '')
-        body = request.POST.get('body', '')
-        out_trade_no = request.POST.get('out_trade_no', '')
-        price = request.POST.get('price', '')
-
-        # Maybe security problem here
-        notify_url = request.POST.get('notify_url', '')
-
-        payment_type = request.POST.get('payment_type', '')
-        try:
-            total_fee = Decimal(price)
-        except InvalidOperation:
-            total_fee = None
-        if seller_email and subject and out_trade_no and total_fee and notify_url and payment_type:
-            user = request.user
-            alipay = Alipay()
-            request_url = alipay.create_direct_pay_by_user_url(seller_email, subject, body, out_trade_no, total_fee, notify_url, payment_type)
-    return HttpResponseRedirect(request_url)

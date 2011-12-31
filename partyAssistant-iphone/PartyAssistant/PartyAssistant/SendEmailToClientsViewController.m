@@ -156,7 +156,7 @@
             contentTextView.backgroundColor = [UIColor clearColor];
             contentTextView.font = [UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"邮件内容";
+            cell.textLabel.text  = @"邮件内容:";
         }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
@@ -306,6 +306,10 @@
           [self sendCreateRequest];
       }  
   }
+    //完成后清空所有内容
+    self.contentTextView.text=nil;
+    self.receiverArray=nil;
+ 
     
 }
 - (void)sendCreateRequest{
@@ -362,7 +366,8 @@
                   }
                   [vc setToRecipients:aArray];
                   vc.mailComposeDelegate = self;
-                  [self presentModalViewController:vc animated:YES];
+    
+                  [self.navigationController presentModalViewController:vc animated:YES];
                   EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
                   [se clearEmailObject];
                   SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
@@ -418,8 +423,14 @@
 	// Notifies users about errors associated with the interface
 	switch (result) {
 		case MFMailComposeResultCancelled:{
-            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请邮件" delegate:self cancelButtonTitle:@"继续编辑邮件" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
-            [sh showInView:self.tabBarController.view];
+//            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请邮件" delegate:self cancelButtonTitle:@"继续编辑邮件" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
+//            [sh showInView:self.tabBarController.view];
+            break;
+        }
+        case MFMailComposeResultSaved:{
+            NSLog(@"保存。。。。。。。");
+            [self.navigationController dismissModalViewControllerAnimated:YES];
+            [self.navigationController popToRootViewControllerAnimated:NO];
             break;
         }
 		case MFMailComposeResultSent:
@@ -443,6 +454,7 @@
         [self createPartySuc];
     }else{
         [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
+        return;
     }
     
 }

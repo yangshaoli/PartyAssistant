@@ -154,6 +154,7 @@
             }
             contentTextView.text = self.emailObject.emailContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
             cell.textLabel.text  = @"邮件内容";
         }else if(indexPath.section == 2){
