@@ -168,6 +168,7 @@ public class MeetingListActivity extends ListActivity implements
 
 	@Override
 	protected void onRestart() {
+		startId = 0;
 		needRefresh = true;
 		if (needRefresh) {
 			progressDialog = ProgressDialog.show(MeetingListActivity.this,

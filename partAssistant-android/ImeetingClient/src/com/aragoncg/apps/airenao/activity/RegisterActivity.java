@@ -122,6 +122,7 @@ public class RegisterActivity extends Activity {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("username", userNameReg);
 				params.put("password", pass1Reg);
+				params.put("device_token", "");
 				// 后台注册返回的结果
 				String result = new HttpHelper().performPost(registerUrl,
 						userNameReg, pass1Reg, null, params,

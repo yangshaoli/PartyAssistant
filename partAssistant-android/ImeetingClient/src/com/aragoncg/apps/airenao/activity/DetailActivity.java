@@ -418,7 +418,10 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				holder.progressBar.setVisibility(View.GONE);
 			}
 			if(dataList.get(position).get("newCount")!=null){
-				if(!"0".equals(dataList.get(position).get("newCount"))){
+				if("0".equals(dataList.get(position).get("newCount"))){
+					holder.flagNew.setVisibility(View.GONE
+							);
+				}else{
 					holder.flagNew.setVisibility(View.VISIBLE);
 				}
 			}
@@ -636,11 +639,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			map.put("newCount", newCount[1]);
 			list.add(map);
 			dataList = list;
+			adapter.notifyDataSetChanged();
 			Message message = new Message();
 			message.what = PROGRESS_GONE;
 			myHandler.sendMessage(message);
 			loated = true;
-			adapter.notifyDataSetChanged();
+			
 		}
 
 		/**

@@ -504,7 +504,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			
 			String flag =  (String) mData.get(position).get(
 					Constants.IS_CHECK);
-			if("true".equals(flag)){
+			if("false".equals(flag)){
 				viewHolder.newFlag.setVisibility(View.VISIBLE);
 			}
 			
@@ -524,7 +524,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		transIntent.putExtra(Constants.PARTY_ID, partyId);
 		transIntent.putExtra(Constants.BACK_END_ID, clientId);
 		startActivity(transIntent);
-
+		finish();
 	}
 
 }

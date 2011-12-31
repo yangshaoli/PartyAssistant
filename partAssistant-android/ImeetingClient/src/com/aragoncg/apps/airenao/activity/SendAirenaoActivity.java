@@ -162,14 +162,6 @@ public class SendAirenaoActivity extends Activity {
 				if (tempContactNumbers == null) {
 					tempContactNumbers = new ArrayList<String>();
 				}
-				/*
-				 * if (modeTag == -1) { if (email != null && !"".equals(email))
-				 * { tempContactNumbers.add(email); clientDicts.put(name,
-				 * email); } else { Toast.makeText(SendAirenaoActivity.this,
-				 * "此人无邮件", Toast.LENGTH_SHORT).show(); }
-				 * 
-				 * }
-				 */
 				if (modeTag == -2) {
 					int phoneNumberSize = phoneNumbers.size();
 					if (phoneNumberSize <= 1) {
@@ -380,7 +372,9 @@ public class SendAirenaoActivity extends Activity {
 							if (ckSendLableUseOwn) {
 								if (tempContactNumbers.size() > 0) {
 									sendSMSorEmail(sendSMS, ckSendLableUseOwn);
-									progerssDialog.dismiss();
+									if(progerssDialog!=null){
+										progerssDialog.dismiss();
+									}
 								}
 							} else {
 								Toast.makeText(SendAirenaoActivity.this,
@@ -475,8 +469,8 @@ public class SendAirenaoActivity extends Activity {
 				}
 
 				smsContent = "";
-				smsContent = txtSendLableContent.getText().toString() + "\n"
-						+ stringLink;
+				smsContent ="【爱热闹】"+ txtSendLableContent.getText().toString() + "\n"
+						+"快来报名："+stringLink;
 				Message message = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(SUCCESS + "", description);
@@ -688,8 +682,8 @@ public class SendAirenaoActivity extends Activity {
 									}).create();
 					noticeDialog.show();
 				} else {
-					progerssDialog = ProgressDialog.show(
-							SendAirenaoActivity.this, "", "发送中...", true, true);
+					/*progerssDialog = ProgressDialog.show(
+							SendAirenaoActivity.this, "", "发送中...", true, true);*/
 					initThreadSaveMessage(null);
 					myHandler.post(threadSaveMessage);
 
@@ -715,7 +709,7 @@ public class SendAirenaoActivity extends Activity {
 				for (int i = 0; i < personList.size(); i++) {
 					oneNumber = personList.get(i).getPhoneNumber();
 					tempName = personList.get(i).getName();
-					clientDicts.put(tempName, oneNumber);
+					//clientDicts.put(tempName, oneNumber);
 					tempContactNumbers.add(oneNumber);
 				}
 			}

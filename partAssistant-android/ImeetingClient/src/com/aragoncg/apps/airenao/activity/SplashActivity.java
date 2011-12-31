@@ -125,12 +125,7 @@ public class SplashActivity extends Activity {
 				netDig.show();
 				break;
 			case MSG_ID_NET_UP:
-				// 检测sdcard
-				sdcardUse = AirenaoUtills.checkSDCard();
-				if (!sdcardUse) {
-					//mHandler.sendEmptyMessageDelayed(MSG_ID_SDCARD_DOWN, 3000);
-				} else {
-
+			
 					SharedPreferences mySharedPreferences = AirenaoUtills
 							.getMySharedPreferences(SplashActivity.this);
 					userName = mySharedPreferences.getString(
@@ -144,7 +139,6 @@ public class SplashActivity extends Activity {
 						//
 						login();
 					}
-				}
 				break;
 			case MSG_ID_SDCARD_DOWN:
 				// show dialog
@@ -217,8 +211,7 @@ public class SplashActivity extends Activity {
 				params.put("username", userName);
 				params.put("password", passWord);
 				params.put("device_token", "");
-				String loginResult = new HttpHelper().performPost(loginUrl,
-						userName, passWord, null, params, SplashActivity.this);
+				String loginResult = new HttpHelper().savePerformPost(loginUrl, params, SplashActivity.this);
 				String result = "";
 				result = AirenaoUtills.linkResult(loginResult);
 				JSONObject jsonObject;
