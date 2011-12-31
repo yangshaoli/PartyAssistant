@@ -15,6 +15,8 @@
     BOOL isSendByServer;//是否服务器发送
     NSNumber *partyId;
     NSDictionary *peopleCountDict;
+    BOOL isnewApplied;
+    BOOL isnewRefused;
    
 }
 @property(nonatomic, retain)NSDictionary *peopleCountDict;
@@ -22,6 +24,8 @@
 @property (nonatomic,retain)NSMutableArray  *clientsArray;
 @property (nonatomic,retain)NSString *contentString;
 @property (nonatomic,assign)BOOL isSendByServer;
+@property (nonatomic,assign)BOOL isnewApplied;
+@property (nonatomic,assign)BOOL isnewRefused;
 @property(nonatomic, retain)NSNumber *partyId;
 
 @end

@@ -124,15 +124,6 @@
 {
     [super viewWillAppear:animated];
     [self hideTabBar:self.tabBarController];
-    if(self.title==@"已报名"||self.title==@"不参加"){
-        
-        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-        NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
-        NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
-        [isChenkDefault setInteger:0 forKey:appliedKeyString];
-        [isChenkDefault setInteger:0 forKey:refusedKeyString];
-        
-    }
 
 }
 
@@ -189,7 +180,7 @@
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     NSDictionary *clentDic=[self.clientsArray objectAtIndex:[indexPath row]];
     self.wordString=[clentDic objectForKey:@"msg"];
-    // Configure the cell...
+       // Configure the cell...
     //cell.textLabel.text=[self.clientsArray  objectAtIndex:[indexPath row]];
     
     UILabel *statusLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
@@ -207,7 +198,7 @@
     
     UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 70, 20)];
     nameLb.text=[clentDic objectForKey:@"cName"];
-    nameLb.font=[UIFont systemFontOfSize:10];
+    nameLb.font=[UIFont systemFontOfSize:15];
     nameLb.textAlignment = UITextAlignmentLeft;
     nameLb.textColor = [UIColor blueColor];
     nameLb.backgroundColor = [UIColor clearColor];
@@ -221,15 +212,15 @@
     phoneLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:phoneLb];
     
+    NSString *statusString=[clentDic objectForKey:@"status"];
+    NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
+
+    
     
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
-        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-        NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
-        NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
         if(isCheck){
             NSLog(@"在已报名页面");
-            [isChenkDefault setInteger:currentInt+1  forKey:appliedKeyString];
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -244,12 +235,8 @@
         [cell addSubview:secondLb];
     }else if([self.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
-        NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-        NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
-        NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
         if(isCheck){
             NSLog(@"在不参加页面");
-            [isChenkDefault setInteger:currentInt+1  forKey:refusedKeyString];
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -327,6 +314,7 @@
 //      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
      contactorPhoneDetailsViewController.clientDict=[self.clientsArray  objectAtIndex:[indexPath row]];
      contactorPhoneDetailsViewController.partyObj=self.partyObj;
+     contactorPhoneDetailsViewController.clientStatusFlag=self.clientStatusFlag;
      [self.navigationController pushViewController:contactorPhoneDetailsViewController animated:YES];
     
    

@@ -27,6 +27,7 @@
     NSDictionary *clientDict;//服务器获得的数据
     UITextView *messageTextView;
     PartyModel *partyObj;
+    NSString *clientStatusFlag;
     
 }
 @property(nonatomic, retain)UITextView *messageTextView;
@@ -36,5 +37,6 @@
 @property(nonatomic, strong)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 @property(nonatomic, retain)NSDictionary *clientDict;
 @property(nonatomic, retain)PartyModel *partyObj;
+@property(nonatomic, retain)NSString *clientStatusFlag;
 
 @end
