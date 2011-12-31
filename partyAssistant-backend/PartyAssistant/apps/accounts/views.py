@@ -186,7 +186,9 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
         now = datetime.now()
         dt = timedelta(minutes=1)
         if (create_time + dt) > now:
-            return HttpResponse("toomanyenter")
+            time = (now - create_time).total_seconds()
+            time= 60 - int(time)
+            return HttpResponse("time:"+str(time))
         
     phone = request.user.get_profile().phone
        
@@ -230,7 +232,10 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
         dt = timedelta(minutes=1)
         
         if (create_time + dt) > now:
-            return HttpResponse("toomanyenter")
+            time = (now - create_time).total_seconds()
+            time= 60 - int(time)
+            
+            return HttpResponse("time:"+str(time))
     
     userkey = generate_phone_code()
     userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
