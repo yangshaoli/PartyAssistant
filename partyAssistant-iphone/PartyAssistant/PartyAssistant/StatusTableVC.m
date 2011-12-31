@@ -60,7 +60,10 @@
     
     UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次发送" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
     self.navigationItem.rightBarButtonItem = resendBtn;
-    
+    [self getPartyClientSeperatedList];
+}
+
+- (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
@@ -124,6 +127,7 @@
 {
     [super viewWillAppear:animated];
     [self hideTabBar:self.tabBarController];
+    [self getPartyClientSeperatedList];
 
 }
 

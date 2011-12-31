@@ -20,4 +20,6 @@
 @property(nonatomic, retain)NSString *clientStatusFlag;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *wordString;
+
+- (void)getPartyClientSeperatedList;
 @end

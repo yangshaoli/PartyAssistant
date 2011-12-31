@@ -4,6 +4,8 @@
 //
 //  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
+
 #import "ContactData.h"
 #import "PartyListTableVC.h"
 #import "PartyDetailTableVC.h"
@@ -230,8 +232,6 @@
     //    [request setShouldAttemptPersistentConnection:NO];
     //    [request startAsynchronous];
     //    self._isRefreshing = YES;
-    
-    
     [self requestDataWithLastID:0];
     
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -275,6 +275,7 @@
     oldLayout2 = [cell viewWithTag:2];
     [oldLayout2 removeFromSuperview];
     PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
+    NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
     if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){        
         UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
         cellImageView.image=[UIImage imageNamed:@"new1"];
