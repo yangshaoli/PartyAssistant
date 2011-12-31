@@ -139,9 +139,10 @@ function validate_phone_bingding(isbind){
                  if(r_status=='success'){   
 					alert(alert_success);
 					$("#id_phone").attr('disabled','true');	
-	                    if($('#dom_id')){
+	                if($('#dom_id')){
 	                    	$('#dom_id').remove();
-	                    }
+	                }
+	                window.location.href='{% url profile %}';     
                  }
                  if(r_status=='used'){
                  	alert('已经被绑定');
@@ -152,7 +153,7 @@ function validate_phone_bingding(isbind){
                  if(r_status=='null'){
                  	alert('验证码不能为空');
                  }
-                 window.location.href='{% url profile %}';
+                 
             },
             500: function(response){
             
