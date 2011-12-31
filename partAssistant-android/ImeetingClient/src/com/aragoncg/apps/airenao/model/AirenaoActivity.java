@@ -6,23 +6,23 @@ import java.util.Map;
 
 /**
  * 
- * ClassName:AirenaoActivity
- * Function: to record one airenao activity
- * @author   cuikuangye
- * @version  
- * @Date	 2011	2011-11-5		pm 1:13:26
- * @see 	 
- *
+ * ClassName:AirenaoActivity Function: to record one airenao activity
+ * 
+ * @author cuikuangye
+ * @version
+ * @Date 2011 2011-11-5 pm 1:13:26
+ * @see
+ * 
  */
-public class AirenaoActivity implements Serializable{
+public class AirenaoActivity implements Serializable {
 	/**
 	 * serialVersionUID:TODO（......）
 	 * 
 	 * @since Ver 1.1
 	 */
-	
+
 	private static final long serialVersionUID = 1L;
-	private String id ;
+	private String id;
 	private String activityName;
 	private String activityTime;
 	private String activityPosition;
@@ -36,11 +36,9 @@ public class AirenaoActivity implements Serializable{
 	private String unJoin;
 	private String sendType;
 	private int flagNew = 0;
-	private List<Map<String,Object>> peopleList;
-	private Map<String,String> clients;
-	
-	
-	
+	private List<Map<String, Object>> peopleList;
+	private Map<String, String> clients;
+
 	public Map<String, String> getClients() {
 		return clients;
 	}
@@ -66,13 +64,14 @@ public class AirenaoActivity implements Serializable{
 	}
 
 	public AirenaoActivity() {
-		
+
 		super();
-		
+
 	}
 
 	public AirenaoActivity(String activityName, String activityTime,
-			String activityPosition, String peopleLimitNum, String activityContent) {
+			String activityPosition, String peopleLimitNum,
+			String activityContent) {
 		this.activityName = activityName;
 		this.activityTime = activityTime;
 		this.activityPosition = activityPosition;
@@ -83,38 +82,39 @@ public class AirenaoActivity implements Serializable{
 	public String getActivityName() {
 		return activityName;
 	}
-	
+
 	public void setActivityName(String activityName) {
 		this.activityName = activityName;
 	}
-	
+
 	public String getActivityTime() {
 		return activityTime;
 	}
+
 	public void setActivityTime(String activityTime) {
 		this.activityTime = activityTime;
 	}
-	
+
 	public String getActivityPosition() {
 		return activityPosition;
 	}
-	
+
 	public void setActivityPosition(String activityPosition) {
 		this.activityPosition = activityPosition;
 	}
-	
+
 	public String getPeopleLimitNum() {
 		return peopleLimitNum;
 	}
-	
+
 	public void setPeopleLimitNum(String peopleLimitNum) {
 		this.peopleLimitNum = peopleLimitNum;
 	}
-	
+
 	public String getActivityContent() {
 		return activityContent;
 	}
-	
+
 	public void setActivityContent(String activityContent) {
 		this.activityContent = activityContent;
 	}
@@ -182,7 +182,5 @@ public class AirenaoActivity implements Serializable{
 	public void setFlagNew(int flagNew) {
 		this.flagNew = flagNew;
 	}
-	
-	
-	
+
 }

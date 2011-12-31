@@ -49,6 +49,7 @@ public class DetailPeopleInfo extends Activity {
 	private int peopleTag = -1;
 	private TextView name;
 	private TextView txtMessage;
+	private TextView phoneNumber;
 	private ImageButton sms;
 	private ImageButton call;
 	private Button join;
@@ -93,61 +94,62 @@ public class DetailPeopleInfo extends Activity {
 		cValue = (String) transIntent.getStringExtra(Constants.PEOPLE_CONTACTS);
 		partyIdValue = (String) transIntent.getStringExtra(Constants.PARTY_ID);
 		backendID = (String) transIntent.getStringExtra(Constants.BACK_END_ID);
-		myHandler = new Handler(){
+		myHandler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
-				switch(msg.what){
-					case SUCCESS:
-						 AlertDialog aDig = new AlertDialog.Builder(
-								DetailPeopleInfo.this).setMessage("成功")
-								.setPositiveButton("OK", new OnClickListener() {
-									
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										
-									}
-								})
-								.create();
-						aDig.show();
-						break;
-					case FAIL:
-						AlertDialog aDigFail = new AlertDialog.Builder(
-								DetailPeopleInfo.this).setMessage("失败")
-								.setPositiveButton("OK", new OnClickListener() {
-									
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										
-									}
-								})
-								.create();
-						aDigFail.show();
-						break;
-					case EXCEPTION:
-						AlertDialog aDigError = new AlertDialog.Builder(
-								DetailPeopleInfo.this).setMessage("系统错误,请重试")
-								.setPositiveButton("OK", new OnClickListener() {
-									
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										
-									}
-								})
-								.create();
-						aDigError.show();
-						break;
-					
+				switch (msg.what) {
+				case SUCCESS:
+					AlertDialog aDig = new AlertDialog.Builder(
+							DetailPeopleInfo.this).setMessage("成功")
+							.setPositiveButton("OK", new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+
+								}
+							}).create();
+					aDig.show();
+					break;
+				case FAIL:
+					AlertDialog aDigFail = new AlertDialog.Builder(
+							DetailPeopleInfo.this).setMessage("失败")
+							.setPositiveButton("OK", new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+
+								}
+							}).create();
+					aDigFail.show();
+					break;
+				case EXCEPTION:
+					AlertDialog aDigError = new AlertDialog.Builder(
+							DetailPeopleInfo.this).setMessage("系统错误,请重试")
+							.setPositiveButton("OK", new OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+
+								}
+							}).create();
+					aDigError.show();
+					break;
+
 				}
 				super.handleMessage(msg);
 			}
-			
+
 		};
 	}
 
 	public void initWedgit() {
 		applayUrl = getString(R.string.applayUrl);
 		name = (TextView) findViewById(R.id.txtName);
+		phoneNumber = (TextView)findViewById(R.id.txtNumberDPI);
 		txtMessage = (TextView) findViewById(R.id.txtMessageDetail);
 		sms = (ImageButton) findViewById(R.id.btnSMSDetail);
 		call = (ImageButton) findViewById(R.id.btnCallDetail);
@@ -156,6 +158,7 @@ public class DetailPeopleInfo extends Activity {
 	}
 
 	public void setWedgit() {
+		phoneNumber.setText(cValue);
 		name.setText(frdName);
 		txtMessage.setText(message);
 
@@ -178,21 +181,19 @@ public class DetailPeopleInfo extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					// 发送短信
 					try {
-						/*SmsManager mySmsManager = SmsManager.getDefault();
-						// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
-						if (contenMessage.length() > 70) {
-							ArrayList<String> msgs = mySmsManager
-									.divideMessage(contenMessage);
-							for (String msg : msgs) {
-								mySmsManager.sendTextMessage(cValue, null, msg,
-										sentPI, null);
-							}
-						} else {
-							mySmsManager.sendTextMessage(cValue, null,
-									contenMessage, sentPI, null);
-						}*/
-						Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("sms",
-								cValue, null));
+						/*
+						 * SmsManager mySmsManager = SmsManager.getDefault(); //
+						 * 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去 if
+						 * (contenMessage.length() > 70) { ArrayList<String>
+						 * msgs = mySmsManager .divideMessage(contenMessage);
+						 * for (String msg : msgs) {
+						 * mySmsManager.sendTextMessage(cValue, null, msg,
+						 * sentPI, null); } } else {
+						 * mySmsManager.sendTextMessage(cValue, null,
+						 * contenMessage, sentPI, null); }
+						 */
+						Intent intent = new Intent(Intent.ACTION_SENDTO, Uri
+								.fromParts("sms", cValue, null));
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 						startActivity(intent);
 					} catch (Exception e) {
@@ -220,7 +221,8 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					progressDialog = ProgressDialog.show(DetailPeopleInfo.this, "", "报名中...",true,true);
+					progressDialog = ProgressDialog.show(DetailPeopleInfo.this,
+							"", "报名中...", true, true);
 					// 参加
 					action = "apply";
 					applayRunnable = getRunnable();
@@ -236,7 +238,8 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					progressDialog = ProgressDialog.show(DetailPeopleInfo.this, "", "取消报名中...",true,true);
+					progressDialog = ProgressDialog.show(DetailPeopleInfo.this,
+							"", "取消报名中...", true, true);
 					// 不参加
 					action = "";
 					applayRunnable = getRunnable();
@@ -247,43 +250,44 @@ public class DetailPeopleInfo extends Activity {
 			}
 		});
 	}
-	
-	public Runnable getRunnable(){
-		return new Runnable(){
+
+	public Runnable getRunnable() {
+		return new Runnable() {
 			@Override
 			public void run() {
 				HttpHelper httpHelper = new HttpHelper();
 				HashMap<String, String> map = new HashMap<String, String>();
 				map.put("cpID", backendID);
 				map.put("cpAction", action);
-				String result = httpHelper.performPost(applayUrl, map, DetailPeopleInfo.this);
+				String result = httpHelper.performPost(applayUrl, map,
+						DetailPeopleInfo.this);
 				result = AirenaoUtills.linkResult(result);
 				String status;
 				String description;
 				try {
-					JSONObject resultObject = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+					JSONObject resultObject = new JSONObject(result)
+							.getJSONObject(Constants.OUT_PUT);
 					status = resultObject.getString(Constants.STATUS);
 					description = resultObject.getString(Constants.DESCRIPTION);
 					progressDialog.cancel();
-					//message.what = APPLAY_RESULT;
-					if("ok".equals(status)){
+					// message.what = APPLAY_RESULT;
+					if ("ok".equals(status)) {
 						myHandler.sendEmptyMessage(SUCCESS);
-					}else{
+					} else {
 						myHandler.sendEmptyMessage(FAIL);
 					}
-					
+
 				} catch (JSONException e) {
 					progressDialog.cancel();
 					myHandler.sendEmptyMessage(EXCEPTION);
 				}
-				
-				
+
 			}
-			
+
 		};
-		
+
 	}
-	
+
 	public void showOkOrNotDialog(String message, final boolean ok) {
 		/*
 		 * initThreadSaveMessage(); myHandler.post(threadSaveMessage);

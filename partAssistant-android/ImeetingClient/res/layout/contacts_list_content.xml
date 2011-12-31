@@ -13,7 +13,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="60dip"
 		android:layout_gravity="center_horizontal"
-		android:background="@drawable/blue_button"
+		android:background="@drawable/red_button"
 		android:layout_alignParentBottom="true"
 		>
 		<Button

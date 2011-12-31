@@ -11,7 +11,7 @@
 	<string name="destination">去哪：</string>
 	<string name="people_limit">几人：</string>
 	<string name="desc_activity">短信内容：</string>
-	<string name="hint">必填项,请输入活动内容...</string>
+	<string name="hint">必填项,请编辑内容...</string>
 	<string name="send_lable_content_tip">活动内容不能为空</string>
 	<string name="send_message">发送手机短信</string>
 	<string name="send_mail">发送电子邮件</string>
@@ -203,6 +203,8 @@
 	<string name="deleteUrl">http://192.168.1.15:43401/a/parties/deleteparty/</string>
 	<string name="editUrl">http://192.168.1.15:43401/a/parties/editparty/</string>
 	<string name="getPartyMsg">http://192.168.1.15:43401/a/parties/get_party_msg/</string>
+	<string name="partyResend">http://192.168.1.15:43401/a/parties/resendmsg/</string>
+	
 	
 	
 	

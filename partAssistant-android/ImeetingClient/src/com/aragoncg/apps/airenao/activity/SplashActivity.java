@@ -49,7 +49,7 @@ public class SplashActivity extends Activity {
 	private static final int MSG_ID_NET_DOWN = 6;
 	private static final int MSG_ID_SDCARD_DOWN = 7;
 	private static final int MSG_ID_NET_UP = 8;
-	
+
 	Handler mHandler = new Handler() {
 
 		@Override
@@ -57,24 +57,25 @@ public class SplashActivity extends Activity {
 			switch (msg.what) {
 			case MSG_ID_LOG:
 				// 登陆失败
-				
-				AlertDialog aDig = new AlertDialog.Builder(
-						SplashActivity.this)
-				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent = new Intent();
-						intent.setClass(SplashActivity.this, LoginActivity.class);
-						startActivity(intent);
-						finish();
-					}
-				})
-				.setMessage(
-								getString(R.string.loginFalse)).create();
-				
+
+				AlertDialog aDig = new AlertDialog.Builder(SplashActivity.this)
+						.setPositiveButton(R.string.btn_ok,
+								new OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										Intent intent = new Intent();
+										intent.setClass(SplashActivity.this,
+												LoginActivity.class);
+										startActivity(intent);
+										finish();
+									}
+								}).setMessage(getString(R.string.loginFalse))
+						.create();
+
 				aDig.show();
-				
+
 				break;
 			case MSG_ID_CLOSE:
 				closeMe();
@@ -92,50 +93,52 @@ public class SplashActivity extends Activity {
 				finish();
 				Intent intentTO = new Intent(SplashActivity.this,
 						MeetingListActivity.class);
-				intentTO.putExtra(Constants.NEED_REFRESH,false);
+				intentTO.putExtra(Constants.NEED_REFRESH, false);
 				startActivity(intentTO);
 				break;
 			case MSG_ID_LOG_CREATE_NULL:
 				finish();
 				Intent intentTh = new Intent(SplashActivity.this,
 
-				SendAirenaoActivity.class);
+				MeetingListActivity.class);
 				startActivity(intentTh);
 				break;
 			case MSG_ID_NET_DOWN:
-				//show dialog
+				// show dialog
 				AlertDialog netDig = new AlertDialog.Builder(
 						SplashActivity.this)
-				.setTitle(getString(R.string.netdown))
-				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent = new Intent("android.settings.WIRELESS_SETTINGS");
-			            startActivity(intent);
-						finish();
-					}
-				})
-				.setMessage(
-								getString(R.string.netdownTip)).create();
-				
+						.setTitle(getString(R.string.netdown))
+						.setPositiveButton(R.string.btn_ok,
+								new OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										Intent intent = new Intent(
+												"android.settings.WIRELESS_SETTINGS");
+										startActivity(intent);
+										finish();
+									}
+								}).setMessage(getString(R.string.netdownTip))
+						.create();
+
 				netDig.show();
 				break;
 			case MSG_ID_NET_UP:
-				//检测sdcard
+				// 检测sdcard
 				sdcardUse = AirenaoUtills.checkSDCard();
-				if(!sdcardUse){
-					mHandler.sendEmptyMessageDelayed(MSG_ID_SDCARD_DOWN, 3000);
-				}else{
+				if (!sdcardUse) {
+					//mHandler.sendEmptyMessageDelayed(MSG_ID_SDCARD_DOWN, 3000);
+				} else {
 
 					SharedPreferences mySharedPreferences = AirenaoUtills
 							.getMySharedPreferences(SplashActivity.this);
-					userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
-							null);
-					passWord = mySharedPreferences.getString(Constants.AIRENAO_PASSWORD,
-							null);
-					if ("".equals(userName) || userName == null || "".equals(passWord)
-							|| passWord == null) {
+					userName = mySharedPreferences.getString(
+							Constants.AIRENAO_USER_NAME, null);
+					passWord = mySharedPreferences.getString(
+							Constants.AIRENAO_PASSWORD, null);
+					if ("".equals(userName) || userName == null
+							|| "".equals(passWord) || passWord == null) {
 						mHandler.sendEmptyMessageDelayed(MSG_ID_CLOSE, 3000);
 					} else {
 						//
@@ -144,19 +147,20 @@ public class SplashActivity extends Activity {
 				}
 				break;
 			case MSG_ID_SDCARD_DOWN:
-				//show dialog
+				// show dialog
 				AlertDialog sdcardDig = new AlertDialog.Builder(
 						SplashActivity.this)
-				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						finish();
-					}
-				})
-				.setMessage(
-								getString(R.string.chkSdcard)).create();
-				
+						.setPositiveButton(R.string.btn_ok,
+								new OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										finish();
+									}
+								}).setMessage(getString(R.string.chkSdcard))
+						.create();
+
 				sdcardDig.show();
 				break;
 
@@ -181,24 +185,24 @@ public class SplashActivity extends Activity {
 		setContentView(R.layout.splash);
 		createDb();
 		AirenaoUtills.activityList.add(this);
-		//检测网络
+		// 检测网络
 		netLinking = AirenaoUtills.isNetWorkExist(SplashActivity.this);
-		if(!netLinking){
+		if (!netLinking) {
 			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_DOWN, 3000);
-		}else{
+		} else {
 			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_UP, 3000);
 		}
-		
+
 	}
-	
-	public void createDb(){
+
+	public void createDb() {
 		DbHelper.getInstance(SplashActivity.this);
-		
+
 	}
-	
+
 	@Override
 	protected void onStart() {
-		
+
 		super.onStart();
 	}
 

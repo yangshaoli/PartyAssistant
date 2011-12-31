@@ -65,6 +65,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private AirenaoActivity myAirenaoActivity;
 	private String getClientsCountUrl;
 	private String[] clientCount;
+	private String[] newCount = new String[2];
 	private MyAdapter adapter;
 	private Handler myHandler;
 	private boolean loated = false;
@@ -72,9 +73,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private Runnable editSaveRun;
 	private static final int PROGRESS_GONE = 1;
 	private String userId;
-	private GridView gridView; 
+	private GridView gridView;
 	private String delteUrl;
-	
+
 	private static final int SUCCESS = 0;
 	private static final int FAIL = 3;
 	private static final int EXCEPTION = 2;
@@ -85,7 +86,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private static final int MSG_ID_DELETE = 4;
 	private static final int MSG_ID_REFRESH = 5;
 	private ProgressDialog progressDialog;
-	
+
 	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private List<Map<String, Object>> dataList;
 
@@ -98,7 +99,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		AirenaoUtills.activityList.add(this);
 		setContentView(R.layout.detail_activity_layout);
-		//setProgressBarVisibility(true);
+		// setProgressBarVisibility(true);
 		// 获得屏幕的高度
 		initMyHandler();
 		initBaseData();
@@ -106,74 +107,81 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		initFormData();
 		dataList = getDataFromServer();
 		adapter = new MyAdapter(this);
-		
+
 		ListView dataListView = (ListView) findViewById(R.id.listDetailLable);
 		dataListView.setAdapter(adapter);
 		dataListView.setOnItemClickListener(this);
-		//计算列表需要的高度
+		// 计算列表需要的高度
 		Utility.setListViewHeightBasedOnChildren(dataListView);
 
 	}
-	
-	
-	public void initMyHandler(){
-		myHandler = new Handler(){
+
+	public void initMyHandler() {
+		myHandler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
-				switch(msg.what){
-				 case PROGRESS_GONE:{
-					 break;
-				 }
-				 case SUCCESS:
-					 if(progressDialog!=null){
-							progressDialog.cancel();
-						}
-					 finish();
-					 break;
-				 case FAIL:
-					 Toast.makeText(DetailActivity.this, "保存失败", Toast.LENGTH_SHORT);
-					 break;
-				 case EXCEPTION:
-					 if(progressDialog!=null){
-						 progressDialog.cancel();
-					 }
-					 Toast.makeText(DetailActivity.this, "错误，请重试", Toast.LENGTH_SHORT);
-					 break;
-				 case MSG_ID_DELETE:
-					 if(progressDialog!=null){
-							progressDialog.cancel();
-						}
-					 Toast.makeText(DetailActivity.this, "删除失败", Toast.LENGTH_SHORT);
-					 break;
-				 case MSG_ID_REFRESH:
-					 if(progressDialog!=null){
-							progressDialog.cancel();
-						}
-					 Toast.makeText(DetailActivity.this, "获得数据失败", Toast.LENGTH_SHORT);
+				switch (msg.what) {
+				case PROGRESS_GONE: {
+					break;
 				}
-				
+				case SUCCESS:
+					if (progressDialog != null) {
+						progressDialog.cancel();
+					}
+					finish();
+					break;
+				case FAIL:
+					Toast.makeText(DetailActivity.this, "保存失败",
+							Toast.LENGTH_SHORT);
+					break;
+				case EXCEPTION:
+					if (progressDialog != null) {
+						progressDialog.cancel();
+					}
+					Toast.makeText(DetailActivity.this, "错误，请重试",
+							Toast.LENGTH_SHORT);
+					break;
+				case MSG_ID_DELETE:
+					if (progressDialog != null) {
+						progressDialog.cancel();
+					}
+					Toast.makeText(DetailActivity.this, "删除失败",
+							Toast.LENGTH_SHORT);
+					break;
+				case MSG_ID_REFRESH:
+					if (progressDialog != null) {
+						progressDialog.cancel();
+					}
+					Toast.makeText(DetailActivity.this, "获得数据失败",
+							Toast.LENGTH_SHORT);
+				}
+
 				super.handleMessage(msg);
 			}
-			
+
 		};
 	}
-	
+
 	/**
 	 * 生成一些基本的对象
 	 */
-	private void initBaseData(){
-		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(DetailActivity.this);
-		//userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME, null);
+	private void initBaseData() {
+		SharedPreferences mySharedPreferences = AirenaoUtills
+				.getMySharedPreferences(DetailActivity.this);
+		// userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
+		// null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
-		
+
 		// 获得组件集合对象
 		myCache = new ComponentsCache();
 		// 获得menu data
 		resImageArry = new int[] { R.drawable.delete_detail,
-				R.drawable.btn_synchronize, R.drawable.share_detail , R.drawable.btn_setting};
+				R.drawable.btn_synchronize, R.drawable.share_detail,
+				R.drawable.btn_setting };
 		resMenuNameArry = new String[] { getString(R.string.delete),
-				getString(R.string.refresh), getString(R.string.share),getString(R.string.btn_setting) };
+				getString(R.string.refresh), getString(R.string.share),
+				getString(R.string.btn_setting) };
 
 		/**
 		 * 得到menu的样式属性
@@ -194,9 +202,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		pw.setFocusable(true);
 		pw.setBackgroundDrawable(new BitmapDrawable());
 		pw.setOutsideTouchable(false);
-		//为gridView设置点击事件
+		// 为gridView设置点击事件
 		inintPopWindowListenner();
-		
+
 		// 获得list中pass过来的activity对象
 		Intent myIntent = getIntent();
 		myAirenaoActivity = (AirenaoActivity) myIntent
@@ -208,16 +216,17 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		partyId = myAirenaoActivity.getId();
 		getClientsCountUrl = getString(R.string.getClientsCountUrl);
 	}
+
 	/**
 	 * 获得数据
+	 * 
 	 * @return
 	 */
 	private List<Map<String, Object>> getDataFromServer() {
-		
-		
+
 		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId);
 		asynTask.execute(getClientsCountUrl);
-		
+
 		Map<String, Object> map;
 		map = new HashMap<String, Object>();
 		map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
@@ -235,25 +244,24 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		map.put(Constants.PEOPLE_NAME, getString(R.string.unjion));
 		map.put(Constants.PEOPLE_NUM, "");
 		list.add(map);
-		
-		
+
 		return list;
 
 	}
-	
-	public void inintPopWindowListenner(){
+
+	public void inintPopWindowListenner() {
 		pw.setTouchInterceptor(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View arg0, MotionEvent arg1) {
-				DisplayMetrics  dm = new DisplayMetrics();
+				DisplayMetrics dm = new DisplayMetrics();
 				int screenHight = dm.heightPixels;
 				if (arg1.getY() < (screenHight - gridView.getHeight())) {
 
 					if (pw.isShowing())
 						pw.dismiss();
 				}
-				
+
 				return false;
 			}
 		});
@@ -262,7 +270,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
 				// TODO Auto-generated method stub
-				
+
 				if (keyCode == KeyEvent.KEYCODE_MENU
 						&& event.getRepeatCount() == 0 && showFlag == true) {
 					if (pw.isShowing())
@@ -278,60 +286,64 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				switch(position){
-				 case MENU_DELETE:
-					 
-					 if (pw.isShowing()){
-						 pw.dismiss();
-						 progressDialog = ProgressDialog.show(DetailActivity.this, "", "删除中...",true,true);
-						 //删除
-						 delteUrl = getString(R.string.deleteUrl);
-						 Runnable remove = new Runnable() {
+				switch (position) {
+				case MENU_DELETE:
 
-								@Override
-								public void run() {
-									// 删除
-									deleleOnePraty(delteUrl,
-											partyId);
-								}
-							};
-							new Handler().post(remove);
-						 }
-					 break;
-				 case MENU_REFRESH:
-					 if (pw.isShowing()){
-						 pw.dismiss();
-						 progressDialog = ProgressDialog.show(DetailActivity.this, "", "loading...",true,true);
-						 dataList = getDataFromServer();
-						 }
-					 break;
-				 case MENU_SHARE:
-					 if (pw.isShowing()){
-						 pw.dismiss();
-						
-						 }
-					 break;
-				 case MENU_SETTINT:
-					 if (pw.isShowing()){
-						 pw.dismiss();
-						
-						 }
-					 break;
+					if (pw.isShowing()) {
+						pw.dismiss();
+						progressDialog = ProgressDialog.show(
+								DetailActivity.this, "", "删除中...", true, true);
+						// 删除
+						delteUrl = getString(R.string.deleteUrl);
+						Runnable remove = new Runnable() {
+
+							@Override
+							public void run() {
+								// 删除
+								deleleOnePraty(delteUrl, partyId);
+							}
+						};
+						new Handler().post(remove);
+					}
+					break;
+				case MENU_REFRESH:
+					if (pw.isShowing()) {
+						pw.dismiss();
+						progressDialog = ProgressDialog.show(
+								DetailActivity.this, "", "loading...", true,
+								true);
+						dataList = getDataFromServer();
+					}
+					break;
+				case MENU_SHARE:
+					if (pw.isShowing()) {
+						pw.dismiss();
+
+					}
+					break;
+				case MENU_SETTINT:
+					if (pw.isShowing()) {
+						pw.dismiss();
+
+					}
+					break;
 				}
-				
+
 			}
 		});
 	}
-	
-	public  class ViewHolder {
+
+	public class ViewHolder {
 
 		public TextView peopleName;
-		
+
 		public ProgressBar progressBar;
-		
+
 		public TextView peopleNum;
 
 		public TextView activityContent;
+		
+		public ImageView flagNew;
 
 	}
 
@@ -343,7 +355,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		public MyAdapter(Context context) {
 
 			this.mInflater = LayoutInflater.from(context);
-			
+
 		}
 
 		@Override
@@ -355,7 +367,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 		@Override
 		public Object getItem(int position) {
-			
+
 			return dataList.get(position);
 		}
 
@@ -375,32 +387,40 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 				holder = new ViewHolder();
 
-				convertView = mInflater.inflate(R.layout.detail_activity_property,
-						null);
+				convertView = mInflater.inflate(
+						R.layout.detail_activity_property, null);
 
 				holder.peopleName = (TextView) convertView
 						.findViewById(R.id.activity_name);
-				
-				holder.progressBar = (ProgressBar)convertView
+
+				holder.progressBar = (ProgressBar) convertView
 						.findViewById(R.id.progress_small);
 				holder.peopleNum = (TextView) convertView
 						.findViewById(R.id.activity_time);
-				
+
 				holder.activityContent = (TextView) convertView
 						.findViewById(R.id.activity_content);
+				
+				holder.flagNew  = (ImageView)convertView
+						.findViewById(R.id.flagNew);
 				convertView.setTag(holder);
 
 			} else {
 
 				holder = (ViewHolder) convertView.getTag();
 			}
-			
+
 			holder.peopleName.setText(String.valueOf(dataList.get(position)
 					.get(Constants.PEOPLE_NAME)));
 			holder.peopleNum.setText(String.valueOf(dataList.get(position).get(
 					Constants.PEOPLE_NUM)));
-			if(loated){
+			if (loated) {
 				holder.progressBar.setVisibility(View.GONE);
+			}
+			if(dataList.get(position).get("newCount")!=null){
+				if(!"0".equals(dataList.get(position).get("newCount"))){
+					holder.flagNew.setVisibility(View.VISIBLE);
+				}
 			}
 			
 			return convertView;
@@ -408,16 +428,15 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		}
 	}
 
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-			// NND, 第一个参数， 必须找个View
-			pw.showAtLocation(findViewById(R.id.tv), Gravity.CENTER
-					| Gravity.BOTTOM, 0, 0);
-			showFlag = false;
+		// NND, 第一个参数， 必须找个View
+		pw.showAtLocation(findViewById(R.id.tv), Gravity.CENTER
+				| Gravity.BOTTOM, 0, 0);
+		showFlag = false;
 		return false;
 	}
-	
+
 	public class ImageAdapter extends BaseAdapter {
 
 		private Context context;
@@ -514,12 +533,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 			@Override
 			public void onClick(View v) {
-				 Intent intent = new Intent();
-					intent.setClass(DetailActivity.this, EditActivity.class);
+				Intent intent = new Intent();
+				intent.setClass(DetailActivity.this, EditActivity.class);
 
-					intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
-					intent.putExtra(Constants.FROMDETAIL, true);
-					startActivity(intent);
+				intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
+				intent.putExtra(Constants.FROMDETAIL, true);
+				startActivity(intent);
 
 			}
 		});
@@ -548,8 +567,8 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		}
 		}
 	}
-	
-	public void startIntentToNextActivity(int position){
+
+	public void startIntentToNextActivity(int position) {
 		Intent intent = new Intent(DetailActivity.this,
 				PeopleInfoActivity.class);
 		intent.putExtra(Constants.WHAT_PEOPLE_TAG, position);
@@ -557,17 +576,19 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		intent.putExtra(Constants.PARTY_ID, partyId);
 		startActivity(intent);
 	}
+
 	/**
-	 * 异步加载数据  --- client count
+	 * 异步加载数据 --- client count
+	 * 
 	 * @author cuikuangye
-	 *
+	 * 
 	 */
 	class AsyncTaskLoad extends AsyncTask<String, Integer, String[]> {
 		private String id = "";
 		private Context context;
 		private HashMap<String, String> additionalHeaders;
-		
-		public AsyncTaskLoad(Context context,String id) {
+
+		public AsyncTaskLoad(Context context, String id) {
 			this.context = context;
 			this.id = id;
 		}
@@ -575,39 +596,44 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		@Override
 		protected String[] doInBackground(String... params) {
 			HttpHelper httpHelper = new HttpHelper();
-			String result = httpHelper.performGet(params[0]+id+"/", null, null, null, context);
+			String result = httpHelper.performGet(params[0] + id + "/", null,
+					null, null, context);
 			result = AirenaoUtills.linkResult(result);
-			
+
 			return analyzeJson(result);
 		}
 
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-			
+
 			super.onProgressUpdate(values);
 		}
 
 		@Override
 		protected void onPostExecute(String[] result) {
 			clientCount = result;
-			
+
 			list.clear();
 			Map<String, Object> map;
 			map = new HashMap<String, Object>();
 			map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
 			map.put(Constants.PEOPLE_NUM, clientCount[0]);
+			map.put("newCount", "0");
 			list.add(map);
 			map = new HashMap<String, Object>();
 			map.put(Constants.PEOPLE_NAME, getString(R.string.signed_number));
 			map.put(Constants.PEOPLE_NUM, clientCount[1]);
+			map.put("newCount", newCount[0]);
 			list.add(map);
 			map = new HashMap<String, Object>();
 			map.put(Constants.PEOPLE_NAME, getString(R.string.unsiged_number));
 			map.put(Constants.PEOPLE_NUM, clientCount[2]);
+			map.put("newCount", "0");
 			list.add(map);
 			map = new HashMap<String, Object>();
 			map.put(Constants.PEOPLE_NAME, getString(R.string.unjion));
 			map.put(Constants.PEOPLE_NUM, clientCount[3]);
+			map.put("newCount", newCount[1]);
 			list.add(map);
 			dataList = list;
 			Message message = new Message();
@@ -616,57 +642,71 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			loated = true;
 			adapter.notifyDataSetChanged();
 		}
+
 		/**
 		 * 解析数据
+		 * 
 		 * @param result
 		 */
-		public String[] analyzeJson(String result){
+		public String[] analyzeJson(String result) {
 			String[] results = new String[4];
 			String status;
 			String description;
 			JSONObject datasource;
-			final  String ALL_CLIENT_COUNT = "allClientcount";
-			final  String DATA_SOURCE = "datasource";
-			final  String APPLIED_CLIENT_COUNT = "appliedClientcount";
-			final  String REFUSED_CLENT_COUNT = "refusedClientcount";
-			final  String DONOTHING_CLIENT_COUNT = "donothingClientcount";
-					
+			final String ALL_CLIENT_COUNT = "allClientcount";
+			final String NEW_APPLIED_CLIENT_COUNT = "newAppliedClientcount";
+			final String DATA_SOURCE = "datasource";
+			final String APPLIED_CLIENT_COUNT = "appliedClientcount";
+			final String REFUSED_CLENT_COUNT = "refusedClientcount";
+			final String NEW_REFUSED_CLENT_COUNT = "newRefusedClientcount";
+			final String DONOTHING_CLIENT_COUNT = "donothingClientcount";
+
 			try {
-				JSONObject jSonObject = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+				JSONObject jSonObject = new JSONObject(result)
+						.getJSONObject(Constants.OUT_PUT);
 				status = jSonObject.getString(Constants.STATUS);
 				description = jSonObject.getString(Constants.DESCRIPTION);
-				if("ok".equals(status)){
+				if ("ok".equals(status)) {
 					datasource = jSonObject.getJSONObject(DATA_SOURCE);
-					String allClientCount = datasource.getString(ALL_CLIENT_COUNT);
-					String appliedClientCount = datasource.getString(APPLIED_CLIENT_COUNT);
-					String refusedClientCount = datasource.getString(REFUSED_CLENT_COUNT);
-					String donothingClientcount = datasource.getString(DONOTHING_CLIENT_COUNT);
+					String allClientCount = datasource
+							.getString(ALL_CLIENT_COUNT);
+					String appliedClientCount = datasource
+							.getString(APPLIED_CLIENT_COUNT);
+					String refusedClientCount = datasource
+							.getString(REFUSED_CLENT_COUNT);
+					String donothingClientcount = datasource
+							.getString(DONOTHING_CLIENT_COUNT);
+					newCount[0] = datasource
+							.getString(NEW_APPLIED_CLIENT_COUNT);
+					newCount[1] = 
+							datasource
+							.getString(NEW_REFUSED_CLENT_COUNT);
 					results[0] = allClientCount;
 					results[1] = appliedClientCount;
-					results[2] = donothingClientcount ;
+					results[2] = donothingClientcount;
 					results[3] = refusedClientCount;
-					if(progressDialog!=null){
+					if (progressDialog != null) {
 						progressDialog.cancel();
 					}
-				}else{
-					//返回信息
+				} else {
+					// 返回信息
 					myHandler.sendEmptyMessage(MSG_ID_REFRESH);
-					
+
 				}
-				
+
 			} catch (JSONException e) {
 				myHandler.sendEmptyMessage(EXCEPTION);
 			}
 			return results;
 		}
-		
+
 	}
 
 	@Override
 	protected void onRestart() {
 		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId);
 		asynTask.execute(getClientsCountUrl);
-		
+
 		Map<String, Object> map;
 		map = new HashMap<String, Object>();
 		map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
@@ -688,7 +728,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		adapter.notifyDataSetChanged();
 		super.onRestart();
 	}
-	
+
 	/**
 	 * 删除一个party
 	 * 
@@ -702,18 +742,16 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		HttpHelper httpClient = new HttpHelper();
 		String status = "";
 
-		String result = httpClient.performPost(url, params,
-				DetailActivity.this);
+		String result = httpClient
+				.performPost(url, params, DetailActivity.this);
 		result = AirenaoUtills.linkResult(result);
 		try {
 			JSONObject outPut = new JSONObject(result)
 					.getJSONObject(Constants.OUT_PUT);
 			status = outPut.getString(Constants.STATUS);
 			// 删除数据库
-			SQLiteDatabase db = DbHelper
-					.openOrCreateDatabase();
-			String sql = AirenaoUtills
-					.linkSQL(partyId);
+			SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+			String sql = AirenaoUtills.linkSQL(partyId);
 			try {
 				DbHelper.delete(db, sql);
 			} catch (Exception e) {
@@ -721,9 +759,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			} finally {
 				db.close();
 			}
-			if("ok".equals(status)){
+			if ("ok".equals(status)) {
 				myHandler.sendEmptyMessage(SUCCESS);
-			}else{
+			} else {
 				Message msg = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(Constants.DESCRIPTION, "删除失败");
@@ -735,5 +773,5 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			myHandler.sendEmptyMessage(EXCEPTION);
 		}
 	}
-	
+
 }

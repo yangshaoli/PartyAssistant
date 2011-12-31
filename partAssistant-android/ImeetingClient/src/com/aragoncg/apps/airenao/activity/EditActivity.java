@@ -1,5 +1,6 @@
 package com.aragoncg.apps.airenao.activity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -16,7 +17,12 @@ import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.telephony.gsm.SmsManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +42,9 @@ public class EditActivity extends Activity {
 	private AirenaoActivity activityFromDetail;
 	private boolean fromDetail;
 	private AirenaoActivity activityDb;
+	private String link;
+	private String partyId = "";
+	private String sendWithOwn = "1"; // 1表示用自己的手机发送 0表示用服务器
 
 	private TextView userTitle;
 	private LinearLayout userLayout;
@@ -44,19 +53,28 @@ public class EditActivity extends Activity {
 	private Runnable editSaveTask;
 	private Runnable getClientTask;
 	private Handler myHandler;
-	private HashMap<String, String> clientMap;
+	private JSONArray clientMap;
 	private ProgressDialog progressDialog;
+	private ArrayList<String> tempContactNumbers = new ArrayList<String>();
 
 	private static final int SUCCESS = 4;
 	private static final int FAIL = 3;
 	private static final int EXCEPTION = 2;
 	private static final int MSG_ID_SUCC = 5;
 	private static final int MSG_ID_FAIL = 6;
+	private static final int MSG_ID_SEND = 7;
+	
+	private static final int MENU_FALG_SET_WAY = 0;
+	private static final int SEND_WAY_ONE = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		AirenaoUtills.activityList.add(this);
 		setContentView(R.layout.edit_activity_layout);
 		initWedgit();
 		initDataFromOther();
@@ -90,13 +108,27 @@ public class EditActivity extends Activity {
 					break;
 				case MSG_ID_SUCC:
 
-					/*Intent mIntent = new Intent(EditActivity.this,
-							SendAirenaoActivity.class);
-					activityFromDetail.setClients(clientMap);
-					mIntent.putExtra("sendWithClients", activityFromDetail);
-					mIntent.putExtra("sendWithClientsTag", true);
-					mIntent.putExtra("mode", -2);// -2发送短信
-					startActivity(mIntent);*/
+					/*
+					 * Intent mIntent = new Intent(EditActivity.this,
+					 * SendAirenaoActivity.class);
+					 * activityFromDetail.setClients(clientMap);
+					 * mIntent.putExtra("sendWithClients", activityFromDetail);
+					 * mIntent.putExtra("sendWithClientsTag", true);
+					 * mIntent.putExtra("mode", -2);// -2发送短信
+					 * startActivity(mIntent);
+					 */
+					break;
+				case MSG_ID_SEND:
+					// 发送短信
+					if ("1".equals(sendWithOwn)) {
+						try {
+							sendSMSorEmail();
+						} catch (Exception e) {
+							Toast.makeText(EditActivity.this, "短信发送失败,是否重新发送？",
+									2000).show();
+						}
+						Toast.makeText(EditActivity.this, "发送成功", 2000).show();
+					}
 					break;
 				}
 
@@ -104,6 +136,39 @@ public class EditActivity extends Activity {
 			}
 
 		};
+	}
+
+	/**
+	 * 发送信息
+	 * 
+	 * @param sendSms
+	 */
+	@SuppressWarnings("deprecation")
+	public void sendSMSorEmail() {
+
+		// 用自己手机发送
+		for (int i = 0; i < tempContactNumbers.size(); i++) {
+			try {
+				SmsManager mySmsManager = SmsManager.getDefault();
+				// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
+				if ((edtActivityDes.getText().toString() + link).length() > 70) {
+					ArrayList<String> msgs = mySmsManager
+							.divideMessage((edtActivityDes.getText().toString() + link));
+					for (String msg : msgs) {
+						mySmsManager.sendTextMessage(tempContactNumbers.get(i),
+								null, msg, null, null);
+					}
+				} else {
+					mySmsManager.sendTextMessage(tempContactNumbers.get(i),
+							null, (edtActivityDes.getText().toString() + link),
+							null, null);
+				}
+
+			} catch (Exception e) {
+				Toast.makeText(EditActivity.this, "短信发送失败,是否重新发送？", 2000)
+						.show();
+			}
+		}
 	}
 
 	public void initRunable() {
@@ -114,7 +179,8 @@ public class EditActivity extends Activity {
 				HttpHelper httpHelper = new HttpHelper();
 				String url = getString(R.string.editUrl);
 				HashMap<String, String> params = new HashMap<String, String>();
-				params.put("partyID", activityFromDetail.getId() + "");
+				partyId = activityFromDetail.getId();
+				params.put("partyID", partyId);
 				params.put(Constants.DESCRIPTION, edtActivityDes.getText()
 						.toString());
 				params.put("uID", userId);
@@ -135,7 +201,7 @@ public class EditActivity extends Activity {
 						message.what = SUCCESS;
 						message.setData(bundle);
 						myHandler.sendMessage(message);
-					}else{
+					} else {
 						Message message = new Message();
 						Bundle bundle = new Bundle();
 						bundle.putString(FAIL + "", description);
@@ -161,8 +227,8 @@ public class EditActivity extends Activity {
 			@Override
 			public void run() {
 				HttpHelper httpHelper = new HttpHelper();
-				String url = getString(R.string.getPartyMsg);
-				url = url + activityFromDetail.getId() + "/";
+				String url = getString(R.string.getPeopleInfoUrl);
+				url = url + activityFromDetail.getId() + "/" + "all/";
 				// myAirenaoActivity
 				String result = httpHelper.performGet(url, EditActivity.this);
 				result = AirenaoUtills.linkResult(result);
@@ -175,30 +241,63 @@ public class EditActivity extends Activity {
 							.getString(Constants.DESCRIPTION);
 					if ("ok".equals(status)) {
 
-						clientMap = new HashMap<String, String>();
+						clientMap = new JSONArray();
 						JSONObject dataSource = output
 								.getJSONObject("datasource");
 						// '_isApplyTips':BOOL,
 						// '_isSendBySelf':BOOL
 						// msgType = dataSource.getString("msgType");
 						JSONArray receiverArray = dataSource
-								.getJSONArray("receiverArray");
+								.getJSONArray("clientList");
 						JSONObject client;
+						tempContactNumbers.clear();
 						for (int i = 0; i < receiverArray.length(); i++) {
-							client = receiverArray.getJSONObject(i);
-							clientMap.put(client.getString("cName"),
-									client.getString("cVal"));
+							client = new JSONObject();
+							tempContactNumbers.add(receiverArray.getJSONObject(
+									i).getString("cValue"));
+							client.put("cName", receiverArray.getJSONObject(i)
+									.getString("cName"));
+							client.put("cValue", receiverArray.getJSONObject(i)
+									.getString("cValue"));
+							clientMap.put(client);
+
 						}
-						String receiverType = dataSource
-								.getString("receiverType");
-						Message message = new Message();
-						Bundle bundle = new Bundle();
-						bundle.putString(MSG_ID_SUCC + "", description);
-						message.what = MSG_ID_SUCC;
-						message.setData(bundle);
-						myHandler.sendMessage(message);
-						progressDialog.cancel();
-					}else{
+
+						String reSendUrl = getString(R.string.partyResend);
+						HashMap<String, String> params = new HashMap<String, String>();
+						params.put("receivers", clientMap.toString());
+						params.put(Constants.CONTENT, edtActivityDes.getText()
+								.toString());
+						params.put("_issendbyself", sendWithOwn);
+						params.put("uID", userId);
+						params.put("addressType", "android");
+						params.put("partyID", partyId);
+						String respond = httpHelper.savePerformPost(reSendUrl,
+								params, EditActivity.this);
+						respond = AirenaoUtills.linkResult(respond);
+						output = new JSONObject(respond)
+								.getJSONObject(Constants.OUT_PUT);
+						status = output.getString(Constants.STATUS);
+						if ("ok".equals(status)) {
+							link = output.getJSONObject(Constants.DATA_SOURCE)
+									.getString("applyURL");
+							Message message = new Message();
+							Bundle bundle = new Bundle();
+							bundle.putString(MSG_ID_SEND + "", description);
+							message.what = MSG_ID_SEND;
+							message.setData(bundle);
+							myHandler.sendMessage(message);
+							progressDialog.cancel();
+						} else {
+							Message message = new Message();
+							Bundle bundle = new Bundle();
+							bundle.putString(MSG_ID_FAIL + "", description);
+							message.what = MSG_ID_FAIL;
+							message.setData(bundle);
+							myHandler.sendMessage(message);
+							progressDialog.cancel();
+						}
+					} else {
 						Message message = new Message();
 						Bundle bundle = new Bundle();
 						bundle.putString(MSG_ID_FAIL + "", description);
@@ -248,6 +347,7 @@ public class EditActivity extends Activity {
 									@Override
 									public void onClick(DialogInterface dialog,
 											int which) {
+										finish();
 										Intent intent = new Intent();
 										intent.setClass(EditActivity.this,
 												LoginActivity.class);
@@ -263,7 +363,8 @@ public class EditActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// 保存并发送
-				progressDialog = ProgressDialog.show(EditActivity.this, "", "保存并发送中...");
+				progressDialog = ProgressDialog.show(EditActivity.this, "",
+						"保存并发送中...");
 				myHandler.post(editSaveTask);
 				myHandler.post(getClientTask);
 				finish();
@@ -298,5 +399,38 @@ public class EditActivity extends Activity {
 		}
 
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.addSubMenu(0, MENU_FALG_SET_WAY, 0, getString(R.string.send_ways));
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case MENU_FALG_SET_WAY:
+				AlertDialog oneDialog = new AlertDialog.Builder(
+						EditActivity.this)
+						.setTitle(R.string.memu_send_way)
+						.setItems(R.array.sendWay,
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int whichButton) {
+										if (whichButton == SEND_WAY_ONE) {
+											sendWithOwn = "1";
+										} else {
+											sendWithOwn = "0";
+										}
+
+									}
+								}).create();
+				oneDialog.show();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	
 
 }

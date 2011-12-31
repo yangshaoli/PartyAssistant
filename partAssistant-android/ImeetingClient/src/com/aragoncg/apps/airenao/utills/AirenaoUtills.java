@@ -520,8 +520,8 @@ public class AirenaoUtills {
 		return null;
 
 	}
-	
-	//检查sdcard是否存在
+
+	// 检查sdcard是否存在
 	public static boolean checkSDCard() {
 		if (android.os.Environment.getExternalStorageState().equals(
 				android.os.Environment.MEDIA_MOUNTED))
@@ -529,5 +529,5 @@ public class AirenaoUtills {
 		else
 			return false;
 	}
-	
+
 }

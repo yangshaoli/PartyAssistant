@@ -11,7 +11,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
@@ -37,34 +36,33 @@ public class DbHelper {
 	public final static String FIELD_TITLE_NEW_UN_SN_UP = "newunsignup";
 	public final static String FIELD_TITLE_UN_JOIN = "unjoin";
 	public final static String FLAG_NEW = "flagnew";
-	
+
 	private static DbHelper myDbHelper;
 	private static List<Map<String, Object>> listActivity;
 	static String time;
 	static String position;
 	static String number;
 	static String content;
-	
-	
+
 	public static final String deleteLastSql = "delete from " + LAST_TABLE_NAME;
 	public static final String deleteActivitySql = "delete from "
 			+ ACTIVITY_TABLE_NAME;
-	
+
 	public static final String createSql = "Create table " + LAST_TABLE_NAME
 			+ "(" + FIELD_ID + " integer primary key autoincrement,"
 			+ FIELD_TITLE_TIME + " text, " + FIELD_TITLE_POSITION + " text, "
 			+ FIELD_TITLE_NUMBER + " text, " + FIELD_TITLE_CONTENT + " text);";
-			
 
 	public static final String createSql1 = "Create table "
 			+ ACTIVITY_TABLE_NAME + "(" + FIELD_ID
-			+ " integer primary key autoincrement, " +PARTY_ID+" text, " 
-			+ FIELD_TITLE_NAME +" text, "
-			+ FIELD_TITLE_TIME
-			+ " text, " + FIELD_TITLE_POSITION + " text, " + FIELD_TITLE_NUMBER
-			+ " text, " + FIELD_TITLE_CONTENT + " text, "+ FIELD_TITLE_INVTD + " text, " +FIELD_TITLE_SN_UP+" text, "+ FIELD_TITLE_NEW_SN_UP 
-			+" text, "+FIELD_TITLE_UN_SN_UP+" text, "+FIELD_TITLE_NEW_UN_SN_UP+" text, "
-			+" text, "+FIELD_TITLE_UN_JOIN+ " text, "+FLAG_NEW+" integer);";
+			+ " integer primary key autoincrement, " + PARTY_ID + " text, "
+			+ FIELD_TITLE_NAME + " text, " + FIELD_TITLE_TIME + " text, "
+			+ FIELD_TITLE_POSITION + " text, " + FIELD_TITLE_NUMBER + " text, "
+			+ FIELD_TITLE_CONTENT + " text, " + FIELD_TITLE_INVTD + " text, "
+			+ FIELD_TITLE_SN_UP + " text, " + FIELD_TITLE_NEW_SN_UP + " text, "
+			+ FIELD_TITLE_UN_SN_UP + " text, " + FIELD_TITLE_NEW_UN_SN_UP
+			+ " text, " + " text, " + FIELD_TITLE_UN_JOIN + " text, "
+			+ FLAG_NEW + " integer);";
 	public static final String dropSql = " DROP TABLE IF EXISTS "
 			+ LAST_TABLE_NAME;
 	public static final String dropSql1 = " DROP TABLE IF EXISTS "
@@ -72,16 +70,16 @@ public class DbHelper {
 
 	private DbHelper(Context context) {
 		SQLiteDatabase db = openOrCreateDatabase();
-		try{
-		createTables(db ,createSql);
-		createTables(db ,createSql1);
-		
-		}catch(Exception e){
+		try {
+			createTables(db, createSql);
+			createTables(db, createSql1);
+
+		} catch (Exception e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			db.close();
 		}
-		
+
 	}
 
 	public static DbHelper getInstance(Context context) {
@@ -118,20 +116,19 @@ public class DbHelper {
 		// SQLiteDatabase db=this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(PARTY_ID, airenao.getId());
-		cv.put(FIELD_TITLE_NAME,  airenao.getActivityName());
-		cv.put(FIELD_TITLE_TIME,  airenao.getActivityTime());
-		cv.put(FIELD_TITLE_POSITION,  airenao.getActivityPosition());
-		cv.put(FIELD_TITLE_NUMBER,  airenao.getPeopleLimitNum());
-		cv.put(FIELD_TITLE_CONTENT,  airenao.getActivityContent());
-		cv.put(FIELD_TITLE_INVTD,  airenao.getInvitedPeople());
-		cv.put(FIELD_TITLE_SN_UP,  airenao.getSignUp());
-		cv.put(FIELD_TITLE_NEW_SN_UP,  airenao.getNewUnSignUP());
-		cv.put(FIELD_TITLE_UN_SN_UP,  airenao.getUnSignUp());
-		cv.put(FIELD_TITLE_NEW_UN_SN_UP,  airenao.getNewUnSignUP());
-		cv.put(FIELD_TITLE_UN_JOIN,  airenao.getUnJoin());
-		cv.put(FLAG_NEW,  airenao.getFlagNew());
-		
-		
+		cv.put(FIELD_TITLE_NAME, airenao.getActivityName());
+		cv.put(FIELD_TITLE_TIME, airenao.getActivityTime());
+		cv.put(FIELD_TITLE_POSITION, airenao.getActivityPosition());
+		cv.put(FIELD_TITLE_NUMBER, airenao.getPeopleLimitNum());
+		cv.put(FIELD_TITLE_CONTENT, airenao.getActivityContent());
+		cv.put(FIELD_TITLE_INVTD, airenao.getInvitedPeople());
+		cv.put(FIELD_TITLE_SN_UP, airenao.getSignUp());
+		cv.put(FIELD_TITLE_NEW_SN_UP, airenao.getNewUnSignUP());
+		cv.put(FIELD_TITLE_UN_SN_UP, airenao.getUnSignUp());
+		cv.put(FIELD_TITLE_NEW_UN_SN_UP, airenao.getNewUnSignUP());
+		cv.put(FIELD_TITLE_UN_JOIN, airenao.getUnJoin());
+		cv.put(FLAG_NEW, airenao.getFlagNew());
+
 		long row = -1;
 		try {
 			row = db.insert(tableName, null, cv);
@@ -142,29 +139,24 @@ public class DbHelper {
 		return row;
 	}
 
-	/*public void update(List<AirenaoActivity> list) {
-
-		AirenaoActivity myAirenaoActivity = list.get(0);
-		SQLiteDatabase db = this.getWritableDatabase();
-		time = myAirenaoActivity.getActivityTime();
-		position = myAirenaoActivity.getActivityPosition();
-		number = String.valueOf(myAirenaoActivity.getPeopleLimitNum());
-		content = myAirenaoActivity.getActivityContent();
-		String[] paramters = { time, position, number, content };
-		paramters[0] = time;
-		String sql = "update " + LAST_TABLE_NAME + " set " + FIELD_TITLE_TIME
-				+ " =?," + FIELD_TITLE_POSITION + "=?," + FIELD_TITLE_NUMBER
-				+ "=?," + FIELD_TITLE_CONTENT + "=? where personid=0";
-		try {
-			db.execSQL(sql, paramters);
-		} catch (SQLException e) {
-			e.printStackTrace();
-
-		} finally {
-			db.close();
-		}
-
-	}*/
+	/*
+	 * public void update(List<AirenaoActivity> list) {
+	 * 
+	 * AirenaoActivity myAirenaoActivity = list.get(0); SQLiteDatabase db =
+	 * this.getWritableDatabase(); time = myAirenaoActivity.getActivityTime();
+	 * position = myAirenaoActivity.getActivityPosition(); number =
+	 * String.valueOf(myAirenaoActivity.getPeopleLimitNum()); content =
+	 * myAirenaoActivity.getActivityContent(); String[] paramters = { time,
+	 * position, number, content }; paramters[0] = time; String sql = "update "
+	 * + LAST_TABLE_NAME + " set " + FIELD_TITLE_TIME + " =?," +
+	 * FIELD_TITLE_POSITION + "=?," + FIELD_TITLE_NUMBER + "=?," +
+	 * FIELD_TITLE_CONTENT + "=? where personid=0"; try { db.execSQL(sql,
+	 * paramters); } catch (SQLException e) { e.printStackTrace();
+	 * 
+	 * } finally { db.close(); }
+	 * 
+	 * }
+	 */
 
 	public static List<Map<String, Object>> selectActivitys(SQLiteDatabase db) {
 
@@ -176,15 +168,15 @@ public class DbHelper {
 															// " order by datetime()";
 		try {
 			cursor = db.rawQuery(sql, null);
-			for(int i=0;i<cursor.getCount();i++){
+			for (int i = 0; i < cursor.getCount(); i++) {
 				if (cursor.moveToNext()) {
 					HashMap<String, Object> hashMap = new HashMap<String, Object>();
-					String partyId = cursor
-							.getString(cursor.getColumnIndex(PARTY_ID));
-					time = cursor
-							.getString(cursor.getColumnIndex(FIELD_TITLE_TIME));
-					if(time==null){
-						time="时间待定";
+					String partyId = cursor.getString(cursor
+							.getColumnIndex(PARTY_ID));
+					time = cursor.getString(cursor
+							.getColumnIndex(FIELD_TITLE_TIME));
+					if (time == null) {
+						time = "时间待定";
 					}
 					position = cursor.getString(cursor
 							.getColumnIndex(FIELD_TITLE_POSITION));
@@ -193,24 +185,37 @@ public class DbHelper {
 					content = cursor.getString(cursor
 							.getColumnIndex(FIELD_TITLE_CONTENT));
 					hashMap.put(Constants.PARTY_ID, partyId);
-					hashMap.put(Constants.ACTIVITY_NAME, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NAME)));
+					hashMap.put(Constants.ACTIVITY_NAME, cursor
+							.getString(cursor.getColumnIndex(FIELD_TITLE_NAME)));
 					hashMap.put(Constants.ACTIVITY_TIME, time);
 					hashMap.put(Constants.ACTIVITY_POSITION, position);
 					hashMap.put(Constants.ACTIVITY_NUMBER, number);
 					hashMap.put(Constants.ACTIVITY_CONTENT, content);
-					hashMap.put(Constants.ALL_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_INVTD)));
-					hashMap.put(Constants.APPLIED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP)));
-					hashMap.put(Constants.NEW_APPLIED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_SN_UP)));
-					hashMap.put(Constants.DONOTHING_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN)));
-					hashMap.put(Constants.REFUSED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP)));
-					hashMap.put(Constants.NEW_REFUSED_CLIENT_COUNT, cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP)));
-					hashMap.put(Constants.NEW_FLAG, cursor.getString(cursor.getColumnIndex(FLAG_NEW)));
+					hashMap.put(Constants.ALL_CLIENT_COUNT,
+							cursor.getString(cursor
+									.getColumnIndex(FIELD_TITLE_INVTD)));
+					hashMap.put(Constants.APPLIED_CLIENT_COUNT,
+							cursor.getString(cursor
+									.getColumnIndex(FIELD_TITLE_SN_UP)));
+					hashMap.put(Constants.NEW_APPLIED_CLIENT_COUNT, cursor
+							.getString(cursor
+									.getColumnIndex(FIELD_TITLE_NEW_SN_UP)));
+					hashMap.put(Constants.DONOTHING_CLIENT_COUNT, cursor
+							.getString(cursor
+									.getColumnIndex(FIELD_TITLE_UN_JOIN)));
+					hashMap.put(Constants.REFUSED_CLIENT_COUNT, cursor
+							.getString(cursor
+									.getColumnIndex(FIELD_TITLE_UN_SN_UP)));
+					hashMap.put(Constants.NEW_REFUSED_CLIENT_COUNT, cursor
+							.getString(cursor
+									.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP)));
+					hashMap.put(Constants.NEW_FLAG,
+							cursor.getString(cursor.getColumnIndex(FLAG_NEW)));
 					listActivity.add(hashMap);
 				} else {
 					listActivity.clear();
 				}
 			}
-			
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -268,7 +273,7 @@ public class DbHelper {
 
 		// SQLiteDatabase db=this.getWritableDatabase();
 		try {
-			
+
 			db.execSQL(sql);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -279,8 +284,10 @@ public class DbHelper {
 	public static SQLiteDatabase openOrCreateDatabase() {
 		SQLiteDatabase database = null;
 		try {
-			String fpath = android.os.Environment.getExternalStorageDirectory()
-					.getAbsolutePath() + Constants.DATA_BASE_PATH;
+			/*String fpath = android.os.Environment.getExternalStorageDirectory()
+					.getAbsolutePath() + Constants.DATA_BASE_PATH;*/
+			String fpath = android.os.Environment.getDataDirectory()
+					.getAbsolutePath()+Constants.DATA_BASE_PATH;
 			fpath = fpath + "/";
 			File fpathDir = new File(fpath);
 			File dbFile = new File(fpath + Constants.DATA_BASE_NAME);

@@ -5,10 +5,18 @@
 	android:layout_height="fill_parent" 
 	android:background="@drawable/bj"
 	android:weightSum="1">
+	<RelativeLayout
+	android:layout_width="fill_parent"
+	android:layout_height="40sp"
+	android:orientation="horizontal"
+	android:paddingTop="0dip"
+	android:background="@drawable/red_button">
+	<include layout="@layout/user_layout"/>"
 	<TextView android:layout_width="fill_parent"
-		android:textColor="#FFFFFF" android:layout_height="37sp"
-		android:text="@string/send_airenao_title" android:background="@drawable/red_button"
-		android:gravity="center" />
+		android:textColor="#FFFFFF"
+		android:layout_height="37sp" android:text="@string/send_airenao_title"
+		android:gravity="center|center_horizontal" />
+	</RelativeLayout>
 
 	<LinearLayout android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:orientation="vertical">
@@ -71,6 +79,7 @@
 			android:layout_marginRight="28dip" android:background="@drawable/edt_bg"
 			android:layout_height="wrap_content" 
 			android:gravity="top"
+			android:hint="@string/hint"
 			android:minHeight="220dp"
 			android:layout_weight="1"
 			android:freezesText="true">

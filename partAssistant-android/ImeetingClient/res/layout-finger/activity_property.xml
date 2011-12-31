@@ -11,7 +11,8 @@
               android:layout_height="wrap_content"    
               android:singleLine="true"  
               android:layout_marginLeft="30dip"  
-              android:textSize="10pt"  
+              android:textSize="20sp"
+              android:textStyle="bold"  
               android:paddingTop="2dip" 
               android:layout_weight="1"
               android:paddingLeft="2dip" 
@@ -21,6 +22,7 @@
          <ImageView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
+         android:id="@+id/flag_new_red"
          android:background="@drawable/flag_new_red"
          android:layout_gravity="right"/>      
     </LinearLayout>

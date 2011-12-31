@@ -6,39 +6,35 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-public  class MyPerson implements Parcelable{
-	
+public class MyPerson implements Parcelable {
+
 	private String name;
 	private String phoneNumber;
 	private String email;
-	private boolean checked ;
+	private boolean checked;
 	private ArrayList<String> numbers;
-	
-	public MyPerson(){
-		
+
+	public MyPerson() {
+
 	}
-	
-	
-	public MyPerson(String name,String email,String phoneNumber){
+
+	public MyPerson(String name, String email, String phoneNumber) {
 		this.name = name;
 		this.email = email;
 	}
-	
-	public MyPerson(String name,String number){
+
+	public MyPerson(String name, String number) {
 		this.name = name;
 		this.phoneNumber = number;
 	}
-	
-	
+
 	public ArrayList<String> getNumbers() {
 		return numbers;
 	}
 
-
 	public void setNumbers(ArrayList<String> numbers) {
 		this.numbers = numbers;
 	}
-
 
 	public String getName() {
 		return name;
@@ -63,8 +59,7 @@ public  class MyPerson implements Parcelable{
 	public void setChecked(boolean checked) {
 		this.checked = checked;
 	}
-	
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -84,23 +79,24 @@ public  class MyPerson implements Parcelable{
 		dest.writeString(name);
 		dest.writeString(phoneNumber);
 		dest.writeString(email);
-		
+
 	}
-	
+
 	public static final Parcelable.Creator<MyPerson> CREATOR = new Creator<MyPerson>() {
 		@Override
 		public MyPerson createFromParcel(Parcel source) {
-		Log.d("person","createFromParcel");
-		MyPerson mPerson = new MyPerson();
-		mPerson.name = source.readString();
-		mPerson.phoneNumber = source.readString();
-		mPerson.email = source.readString();
-		return mPerson;
+			Log.d("person", "createFromParcel");
+			MyPerson mPerson = new MyPerson();
+			mPerson.name = source.readString();
+			mPerson.phoneNumber = source.readString();
+			mPerson.email = source.readString();
+			return mPerson;
 		}
+
 		@Override
 		public MyPerson[] newArray(int size) {
-		// TODO Auto-generated method stub
-		return new MyPerson[size];
+			// TODO Auto-generated method stub
+			return new MyPerson[size];
 		}
-		};
+	};
 }

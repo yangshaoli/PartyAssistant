@@ -7,7 +7,10 @@
 	android:layout_width="fill_parent"
 	android:layout_height="45sp"
 	android:orientation="horizontal"
+	android:paddingTop="0dip"
 	android:background="@drawable/red_button">
+		<include layout="@layout/user_layout"
+		android:layout_marginBottom="5dip"/>"
 		<TextView android:layout_width="wrap_content"
 		android:textColor="#FFFFFF" android:layout_height="37sp"
 		android:text="@string/meeting_list"
@@ -22,6 +25,7 @@
 		android:layout_height="wrap_content"
 		android:layout_gravity="center_vertical"
 		android:paddingTop="0dp"
+		android:layout_marginTop="5dip"
 		android:gravity="center"
 		android:paddingBottom="2dip"
 		android:paddingLeft="8dip"

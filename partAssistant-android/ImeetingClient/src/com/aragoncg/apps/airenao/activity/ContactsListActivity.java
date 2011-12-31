@@ -106,9 +106,6 @@ import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.ContactsUtils;
 import com.aragoncg.apps.airenao.utills.MyAlphabetIndexe;
 
-
-
-
 /**
  * Displays a list of contacts. Usually is embedded into the ContactsActivity.
  */
@@ -140,7 +137,7 @@ public class ContactsListActivity extends ListActivity implements
 	private static final int SUBACTIVITY_NEW_CONTACT = 1;
 	private static final int SUBACTIVITY_VIEW_CONTACT = 2;
 	private static final int SUBACTIVITY_DISPLAY_GROUP = 3;
-	
+
 	private boolean isShow = false;
 	private Runnable dataLoading;
 
@@ -197,7 +194,7 @@ public class ContactsListActivity extends ListActivity implements
 	static final int MODE_MASK_DISABLE_QUIKCCONTACT = 0x01000000;
 	/** Mask to show the total number of contacts at the top */
 	static final int MODE_MASK_SHOW_NUMBER_OF_CONTACTS = 0x00800000;
-	
+
 	/** Unknown mode */
 	static final int MODE_UNKNOWN = 0;
 	/** Default mode */
@@ -281,18 +278,17 @@ public class ContactsListActivity extends ListActivity implements
 			Contacts.HAS_PHONE_NUMBER // 7
 	};
 	static final String[] CONTACTS_OLD_PROJECTION = new String[] {
-		android.provider.Contacts.Phones.PERSON_ID,
-		android.provider.Contacts.Phones.DISPLAY_NAME,
-		android.provider.Contacts.Phones.NUMBER,
+			android.provider.Contacts.Phones.PERSON_ID,
+			android.provider.Contacts.Phones.DISPLAY_NAME,
+			android.provider.Contacts.Phones.NUMBER,
 
-};
-	
-	static final String[] CONTACTS_EMAIAL = new String[]{
-		ContactsContract.CommonDataKinds.Email.CONTACT_ID,
-		ContactsContract.CommonDataKinds.Email.DISPLAY_NAME,
-		ContactsContract.CommonDataKinds.Email.DATA,
 	};
-	
+
+	static final String[] CONTACTS_EMAIAL = new String[] {
+			ContactsContract.CommonDataKinds.Email.CONTACT_ID,
+			ContactsContract.CommonDataKinds.Email.DISPLAY_NAME,
+			ContactsContract.CommonDataKinds.Email.DATA, };
+
 	static final String[] CONTACTS_SUMMARY_PROJECTION_FROM_EMAIL = new String[] {
 			Contacts._ID, // 0
 			Contacts.DISPLAY_NAME, // 1
@@ -410,7 +406,7 @@ public class ContactsListActivity extends ListActivity implements
 	private static final int CONTACTS_ID = 1001;
 
 	private static ExecutorService sImageFetchThreadPool;
-	
+
 	private EditText edtSearch;
 	private Button btnOk;
 	private Button btnCancle;
@@ -419,11 +415,11 @@ public class ContactsListActivity extends ListActivity implements
 	private MyPerson tempPerson;
 	private Intent personIntent;
 	private static final int MODE_EMAIL = -1;
-	private String input ="";
+	private String input = "";
 	private ArrayList<String> phoneNumbers;
 	private ImageButton btnSwitch;
-	//用来统计被选中的电话
-	private static Map<Integer,MyPerson> positions;
+	// 用来统计被选中的电话
+	private static Map<Integer, MyPerson> positions;
 	private HashMap<String, SearchInfo> searchInfo = new HashMap<String, SearchInfo>();
 
 	private class DeleteClickListener implements
@@ -446,8 +442,7 @@ public class ContactsListActivity extends ListActivity implements
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		setContentView(R.layout.contacts_list_content);
-		
-		
+
 		Intent it = this.getIntent();
 		mMode = it.getIntExtra("mode", MODE_DEFAULT);
 
@@ -479,33 +474,35 @@ public class ContactsListActivity extends ListActivity implements
 		mQueryHandler = new QueryHandler(this);
 		mJustCreated = true;
 		getListView().setTextFilterEnabled(false);
-		
+
 		myHandler = new Handler();
 		choosedData = new ArrayList<MyPerson>();
-		//添加按钮事件
-		
-		btnOk = (Button)findViewById(R.id.btnAdd);
-		btnCancle = (Button)findViewById(R.id.btnCancle);
+		// 添加按钮事件
+
+		btnOk = (Button) findViewById(R.id.btnAdd);
+		btnCancle = (Button) findViewById(R.id.btnCancle);
 		btnOk.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// 查找所有的电话，在封装返回
 				// 开启一个loadingBar
-				
+
 				showDialog(1);
 				dataLoading = new Runnable() {
 
 					@Override
 					public void run() {
-						Set<Entry<Integer, MyPerson>> set = positions.entrySet();
+						Set<Entry<Integer, MyPerson>> set = positions
+								.entrySet();
 						Iterator<Entry<Integer, MyPerson>> ite = set.iterator();
 						choosedData.clear();
 						while (ite.hasNext()) {
 							Entry<Integer, MyPerson> entry = ite.next();
 							int location = entry.getKey();
 							String name = entry.getValue().getName();
-							String phoneNumber = entry.getValue().getPhoneNumber();
+							String phoneNumber = entry.getValue()
+									.getPhoneNumber();
 							if (location == 0 || location < 0) {
 								try {
 									throw new Exception();
@@ -513,26 +510,29 @@ public class ContactsListActivity extends ListActivity implements
 									e.printStackTrace();
 								}
 							} else {
-								/*Cursor c = mAdapter.getCursor();
-								if (c != null) {
-									c.moveToPosition(location-1);*/
-									
-									//tempPerson = SmsContact(c,name);
-										tempPerson = new MyPerson(name,phoneNumber);
-									
-									if(tempPerson != null){
-										choosedData.add(tempPerson);
-									}
-								
+								/*
+								 * Cursor c = mAdapter.getCursor(); if (c !=
+								 * null) { c.moveToPosition(location-1);
+								 */
+
+								// tempPerson = SmsContact(c,name);
+								tempPerson = new MyPerson(name, phoneNumber);
+
+								if (tempPerson != null) {
+									choosedData.add(tempPerson);
+								}
+
 								System.out.println(entry.getKey() + "------"
 										+ entry.getValue());
 							}
 						}
 						personIntent = new Intent();
-						personIntent.putParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND, (ArrayList<? extends Parcelable>) choosedData);
-						setResult(21, personIntent);//21只是一个返回的结果代码
+						personIntent.putParcelableArrayListExtra(
+								Constants.FROMCONTACTSLISTTOSEND,
+								(ArrayList<? extends Parcelable>) choosedData);
+						setResult(21, personIntent);// 21只是一个返回的结果代码
 						finish();
-						
+
 					}
 
 				};
@@ -546,94 +546,87 @@ public class ContactsListActivity extends ListActivity implements
 				finish();
 			}
 		});
-		
-		btnSwitch = (ImageButton)findViewById(R.id.button_dismiss_kb);
+
+		btnSwitch = (ImageButton) findViewById(R.id.button_dismiss_kb);
 		btnSwitch.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				
+
 				AlertDialog dialog = new AlertDialog.Builder(
 						ContactsListActivity.this)
 						.setTitle("选择联系人")
 						.setIcon(R.drawable.contacts)
-						.setItems(R.array.contactsSwitch, new DialogInterface.OnClickListener() {
+						.setItems(R.array.contactsSwitch,
+								new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								switch(which){
-								case 0://所有联系人
-									mMode = MODE_DEFAULT;
-									startQuery();
-									break;
-								case 1://常用联系人
-									mMode = MODE_FREQUENT;
-									startQuery();
-									break;
-								}
-								
-							}
-							
-						}).create();
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										switch (which) {
+										case 0:// 所有联系人
+											mMode = MODE_DEFAULT;
+											startQuery();
+											break;
+										case 1:// 常用联系人
+											mMode = MODE_FREQUENT;
+											startQuery();
+											break;
+										}
+
+									}
+
+								}).create();
 				dialog.show();
 			}
 		});
 		setEditSearchListenner();
 	}
+
 	/**
 	 * 配置输入框的搜索事件
 	 */
-	public void setEditSearchListenner(){
-		if(edtSearch==null){
-			edtSearch = (EditText)findViewById(R.id.input_search_query);
+	public void setEditSearchListenner() {
+		if (edtSearch == null) {
+			edtSearch = (EditText) findViewById(R.id.input_search_query);
 		}
-		
-		
-		/*edtSearch.setOnKeyListener(new OnKeyListener() {
-			
-			@Override
-			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				mMode = MODE_PICK_CONTACT;
-				ContactsListActivity.this.mAdapter.changeCursor(null);
-				ContactsListActivity.this.mAdapter.notifyDataSetChanged();
-				if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER
-						&& event.getAction() == KeyEvent.ACTION_UP) {
-					// Hide soft keyboard, if visible.
-					InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-					inputMethodManager.hideSoftInputFromWindow(
-							edtSearch.getWindowToken(), 0);
-					input = edtSearch.getText().toString();
-					input = "l";
-					
-					// Do search
-					if (input.length() > 0) {
-						if (input.equals(edtSearch
-								.getText().toString().trim())) {
-							if (searchInfo.containsKey(input)
-									&& !searchInfo.get(input)
-											.isFinished()) {
-								return false;
-							}
-						}
-						
-						startQuery();
-						searchInfo.put(input, new SearchInfo(input, true));
 
-					}
-				}
-				
-				return false;
-			}
-		});*/
+		/*
+		 * edtSearch.setOnKeyListener(new OnKeyListener() {
+		 * 
+		 * @Override public boolean onKey(View v, int keyCode, KeyEvent event) {
+		 * mMode = MODE_PICK_CONTACT;
+		 * ContactsListActivity.this.mAdapter.changeCursor(null);
+		 * ContactsListActivity.this.mAdapter.notifyDataSetChanged(); if
+		 * (event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() ==
+		 * KeyEvent.ACTION_UP) { // Hide soft keyboard, if visible.
+		 * InputMethodManager inputMethodManager = (InputMethodManager)
+		 * getSystemService(Context.INPUT_METHOD_SERVICE);
+		 * inputMethodManager.hideSoftInputFromWindow(
+		 * edtSearch.getWindowToken(), 0); input =
+		 * edtSearch.getText().toString(); input = "l";
+		 * 
+		 * // Do search if (input.length() > 0) { if (input.equals(edtSearch
+		 * .getText().toString().trim())) { if (searchInfo.containsKey(input) &&
+		 * !searchInfo.get(input) .isFinished()) { return false; } }
+		 * 
+		 * startQuery(); searchInfo.put(input, new SearchInfo(input, true));
+		 * 
+		 * } }
+		 * 
+		 * return false; } });
+		 */
 		edtSearch.addTextChangedListener(new TextWatcher() {
 			@Override
-			public void onTextChanged(CharSequence arg0, int start, int before, int count) {
-				if(mMode == MODE_DEFAULT || mMode == MODE_PICK_CONTACT || mMode==MODE_FREQUENT){
+			public void onTextChanged(CharSequence arg0, int start, int before,
+					int count) {
+				if (mMode == MODE_DEFAULT || mMode == MODE_PICK_CONTACT
+						|| mMode == MODE_FREQUENT) {
 					mMode = MODE_PICK_CONTACT;
 				}
-				if(mMode == MODE_EMAIL || mMode == MODE_PICK_EMAIL ||  mMode==MODE_FREQUENT){
-					 mMode = MODE_PICK_EMAIL;
+				if (mMode == MODE_EMAIL || mMode == MODE_PICK_EMAIL
+						|| mMode == MODE_FREQUENT) {
+					mMode = MODE_PICK_EMAIL;
 				}
 				ContactsListActivity.this.mAdapter.changeCursor(null);
 				ContactsListActivity.this.mAdapter.notifyDataSetChanged();
@@ -647,13 +640,11 @@ public class ContactsListActivity extends ListActivity implements
 
 				input = arg0.toString().trim();
 
-				
-				
 				if (input.length() == 0) {
-					if(mMode == MODE_PICK_CONTACT){
+					if (mMode == MODE_PICK_CONTACT) {
 						mMode = MODE_DEFAULT;
 					}
-					if(mMode == MODE_PICK_EMAIL){
+					if (mMode == MODE_PICK_EMAIL) {
 						mMode = MODE_EMAIL;
 					}
 					startQuery();
@@ -664,13 +655,10 @@ public class ContactsListActivity extends ListActivity implements
 				startQuery();
 
 				if (input.length() != 1) {
-					searchInfo.put(input, new SearchInfo(
-							input, true));
+					searchInfo.put(input, new SearchInfo(input, true));
 				} else {
-					searchInfo.put(input, new SearchInfo(
-							input, false));
+					searchInfo.put(input, new SearchInfo(input, false));
 				}
-				
 
 			}
 
@@ -678,20 +666,19 @@ public class ContactsListActivity extends ListActivity implements
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-		
-		
-		
+
 	}
+
 	/** {@inheritDoc} */
 	public void onClick(View v) {
 		return;
@@ -768,8 +755,7 @@ public class ContactsListActivity extends ListActivity implements
 		// Do this before setting the filter. The filter thread relies
 		// on some state that is initialized in setDefaultMode
 		if (mMode == MODE_DEFAULT) {
-			
-			
+
 			// If we're in default mode we need to possibly reset the mode due
 			// to a change
 			// in the preferences activity while we weren't running
@@ -1043,73 +1029,74 @@ public class ContactsListActivity extends ListActivity implements
 		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(getListView()
 				.getWindowToken(), 0);
-		
-		ContactListItemCache cache =(ContactListItemCache) v.getTag();
+
+		ContactListItemCache cache = (ContactListItemCache) v.getTag();
 		String name = cache.nameView.getText().toString();
 		String phoneNumber = cache.labelView.getText().toString();
-		if(mMode==MODE_PICK_CONTACT || mMode==MODE_FREQUENT){
+		if (mMode == MODE_PICK_CONTACT || mMode == MODE_FREQUENT) {
 			position = position + 1;
 		}
 		MyPerson onePerson = this.personMap.get(position);
 		Log.i("p", personMap.hashCode() + "click");
 		boolean isCheckedNow = onePerson.isChecked();
-		
-		
-		if(!isCheckedNow){
+
+		if (!isCheckedNow) {
 			int size = personMap.get(position).getNumbers().size();
-			if(size > 1){
+			if (size > 1) {
 				SharedPreferences msp = AirenaoUtills
 						.getMySharedPreferences(ContactsListActivity.this);
-				
-				for(int i=0;i<size;i++){
+
+				for (int i = 0; i < size; i++) {
 					String phone = personMap.get(position).getNumbers().get(i);
 					String mark = msp.getString(phone, "");
 					if (Constants.IS_SUPER_PRIMARY != mark) {
 						continue;
 
-					}else{
+					} else {
 						isShow = true;
 						MyPerson person = this.personMap.get(position);
 						Log.i("p", personMap.hashCode() + "click");
 						boolean isChecked = person.isChecked();
 						this.personMap.get(position).setChecked(!isChecked);
-						if(isChecked){
+						if (isChecked) {
 							positions.remove(Integer.valueOf(position));
-						}else{
-							positions.put(position,new MyPerson(name,phoneNumber));
+						} else {
+							positions.put(position, new MyPerson(name,
+									phoneNumber));
 						}
 					}
 				}
 				if (!isShow) {
 					// Display dialog to choose a number to call.
 					PhoneDisambigDialog phoneDialog = new PhoneDisambigDialog(
-							ContactsListActivity.this, null, false, personMap.get(position).getNumbers(),position,name);
+							ContactsListActivity.this, null, false, personMap
+									.get(position).getNumbers(), position, name);
 					isShow = false;
 					phoneDialog.show();
 				}
-		}else{
+			} else {
+				MyPerson person = this.personMap.get(position);
+				Log.i("p", personMap.hashCode() + "click");
+				boolean isChecked = person.isChecked();
+				this.personMap.get(position).setChecked(!isChecked);
+				if (isChecked) {
+					positions.remove(Integer.valueOf(position));
+				} else {
+					positions.put(position, new MyPerson(name, phoneNumber));
+				}
+			}
+		} else {
 			MyPerson person = this.personMap.get(position);
 			Log.i("p", personMap.hashCode() + "click");
 			boolean isChecked = person.isChecked();
 			this.personMap.get(position).setChecked(!isChecked);
-			if(isChecked){
+			if (isChecked) {
 				positions.remove(Integer.valueOf(position));
-			}else{
-				positions.put(position,new MyPerson(name,phoneNumber));
+			} else {
+				positions.put(position, new MyPerson(name, phoneNumber));
 			}
 		}
-		}else{
-			MyPerson person = this.personMap.get(position);
-			Log.i("p", personMap.hashCode() + "click");
-			boolean isChecked = person.isChecked();
-			this.personMap.get(position).setChecked(!isChecked);
-			if(isChecked){
-				positions.remove(Integer.valueOf(position));
-			}else{
-				positions.put(position,new MyPerson(name,phoneNumber));
-			}
-		}
-		
+
 		Log.i("pos", "weizhi:" + position);
 		mAdapter.notifyDataSetChanged();
 
@@ -1257,16 +1244,18 @@ public class ContactsListActivity extends ListActivity implements
 		case MODE_CUSTOM:
 		case MODE_PICK_OR_CREATE_CONTACT: {
 			return Contacts.CONTENT_URI;
-			//return android.provider.Contacts.Phones.CONTENT_URI;
+			// return android.provider.Contacts.Phones.CONTENT_URI;
 		}
 		case MODE_EMAIL:
 			return ContactsContract.CommonDataKinds.Email.CONTENT_URI;
 		case MODE_PICK_CONTACT:
 			return Uri.withAppendedPath(
-					ContactsContract.Contacts.CONTENT_FILTER_URI, Uri.encode(input));
+					ContactsContract.Contacts.CONTENT_FILTER_URI,
+					Uri.encode(input));
 		case MODE_PICK_EMAIL:
 			return Uri.withAppendedPath(
-					ContactsContract.CommonDataKinds.Email.CONTENT_FILTER_URI, Uri.encode(input));
+					ContactsContract.CommonDataKinds.Email.CONTENT_FILTER_URI,
+					Uri.encode(input));
 		case MODE_STREQUENT: {
 			return Contacts.CONTENT_STREQUENT_URI;
 		}
@@ -1426,9 +1415,9 @@ public class ContactsListActivity extends ListActivity implements
 	@SuppressWarnings({ "JavadocReference" })
 	private String getContactSelection() {
 		if (mDisplayOnlyPhones) {
-			return CLAUSE_ONLY_VISIBLE +"=1"+ " AND " + CLAUSE_ONLY_PHONES ;
+			return CLAUSE_ONLY_VISIBLE + "=1" + " AND " + CLAUSE_ONLY_PHONES;
 		} else {
-			return CLAUSE_ONLY_VISIBLE +"=1"+ " AND " + CLAUSE_ONLY_PHONES ;
+			return CLAUSE_ONLY_VISIBLE + "=1" + " AND " + CLAUSE_ONLY_PHONES;
 		}
 	}
 
@@ -1460,8 +1449,10 @@ public class ContactsListActivity extends ListActivity implements
 		builder.appendQueryParameter("limit", String.valueOf(MAX_SUGGESTIONS));
 		return builder.build();
 	}
+
 	/**
 	 * 排序的方式
+	 * 
 	 * @param projectionType
 	 * @return
 	 */
@@ -1487,7 +1478,7 @@ public class ContactsListActivity extends ListActivity implements
 
 		String[] projection = getProjectionForQuery();
 		// String callingPackage = getCallingPackage();
-		//uri
+		// uri
 		Uri uri = getUriToQuery();
 		// if (!TextUtils.isEmpty(callingPackage)) {
 		// uri = uri.buildUpon().appendQueryParameter(
@@ -1499,7 +1490,7 @@ public class ContactsListActivity extends ListActivity implements
 			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection,
 					getContactSelection(), null, getSortOrder(projection));
 			break;
-		
+
 		case MODE_DEFAULT:
 		case MODE_PICK_OR_CREATE_CONTACT:
 		case MODE_INSERT_OR_EDIT_CONTACT:
@@ -1507,19 +1498,21 @@ public class ContactsListActivity extends ListActivity implements
 					getContactSelection(), null, getSortOrder(projection));
 			break;
 		case MODE_EMAIL:
-			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null, null, getSortOrder(projection));
+			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null,
+					null, getSortOrder(projection));
 			break;
-		case MODE_PICK_CONTACT:	
-			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection,getContactSelection(), null, ContactsContract.Contacts.TIMES_CONTACTED
-					+ ", " + ContactsContract.Contacts.STARRED
-					+ ", " + ContactsContract.Contacts.DISPLAY_NAME
-					+ " DESC");
+		case MODE_PICK_CONTACT:
+			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection,
+					getContactSelection(), null,
+					ContactsContract.Contacts.TIMES_CONTACTED + ", "
+							+ ContactsContract.Contacts.STARRED + ", "
+							+ ContactsContract.Contacts.DISPLAY_NAME + " DESC");
 			break;
 		case MODE_PICK_EMAIL:
-			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null, null, ContactsContract.Contacts.TIMES_CONTACTED
-					+ ", " + ContactsContract.Contacts.STARRED
-					+ ", " + ContactsContract.Contacts.DISPLAY_NAME
-					+ " DESC");
+			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null,
+					null, ContactsContract.Contacts.TIMES_CONTACTED + ", "
+							+ ContactsContract.Contacts.STARRED + ", "
+							+ ContactsContract.Contacts.DISPLAY_NAME + " DESC");
 		case MODE_LEGACY_PICK_PERSON:
 		case MODE_LEGACY_PICK_OR_CREATE_PERSON:
 			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null,
@@ -1565,7 +1558,6 @@ public class ContactsListActivity extends ListActivity implements
 			mQueryHandler.startQuery(QUERY_TOKEN, null, uri, projection, null,
 					null, getSortOrder(projection));
 			break;
-
 
 		case MODE_JOIN_CONTACT:
 			mQueryHandler.setLoadingJoinSuggestions(true);
@@ -1827,10 +1819,10 @@ public class ContactsListActivity extends ListActivity implements
 
 				int count = cursor.getCount();
 				personMap = new HashMap<Integer, MyPerson>();
-				positions = new HashMap<Integer,MyPerson>();
+				positions = new HashMap<Integer, MyPerson>();
 				for (int i = 1; i <= count; i++) {
 					personMap.put(i, new MyPerson());
-					//positions.add(-1);
+					// positions.add(-1);
 				}
 				/*
 				 * isSelected = new HashMap<Integer, Boolean>(); for(int i =
@@ -1864,7 +1856,7 @@ public class ContactsListActivity extends ListActivity implements
 					cursor = activity
 							.getShowAllContactsLabelCursor(CONTACTS_SUMMARY_PROJECTION);
 				}
-				
+
 				activity.mAdapter.setLoading(false);
 				activity.getListView().clearTextFilter();
 				activity.mAdapter.changeCursor(cursor);
@@ -1880,7 +1872,7 @@ public class ContactsListActivity extends ListActivity implements
 					activity.mListHasFocus = false;
 					activity.mListState = null;
 				}
-				
+
 			} else {
 				cursor.close();
 			}
@@ -1902,7 +1894,7 @@ public class ContactsListActivity extends ListActivity implements
 		public ImageView nonQuickContactPhotoView;
 		public QuickContactBadge photoView;
 		public CheckBox checkBox;
-		
+
 	}
 
 	final static class PhotoInfo {
@@ -1937,7 +1929,7 @@ public class ContactsListActivity extends ListActivity implements
 		private ImageDbFetcher mImageFetcher;
 		private static final int FETCH_IMAGE_MSG = 1;
 
-		public  ContactItemListAdapter(Context context) {
+		public ContactItemListAdapter(Context context) {
 			super(context, R.layout.contacts_list_item, null, false);
 
 			mHandler = new ImageFetchHandler();
@@ -2213,7 +2205,6 @@ public class ContactsListActivity extends ListActivity implements
 				v = convertView;
 			}
 
-
 			// to bindView
 			bindView(v, getBaseContext(), cursor);
 			// to bind the SectionHeader
@@ -2307,14 +2298,14 @@ public class ContactsListActivity extends ListActivity implements
 
 			// checkBox
 			cache.checkBox = (CheckBox) view.findViewById(R.id.cb);
-			
+
 			/*
 			 * cache.nonQuickContactPhotoView = (ImageView) view
 			 * .findViewById(R.id.noQuickContactPhoto);
 			 */
 			// cache.photoView = (QuickContactBadge)
 			// view.findViewById(R.id.photo);
-			
+
 			view.setTag(cache);
 
 			return view;
@@ -2363,21 +2354,21 @@ public class ContactsListActivity extends ListActivity implements
 				// displayAdditionalData = false;
 			}
 			}
-			
+
 			MyPerson person = personMap.get(cursor.getPosition() + 1);
-			if(cache.checkBox != null &&  person != null){
-				
-				if(person.isChecked()){
+			if (cache.checkBox != null && person != null) {
+
+				if (person.isChecked()) {
 					cache.checkBox.setChecked(true);
 				} else {
 					cache.checkBox.setChecked(false);
 				}
-				
+
 			}
-			
-			
+
 			// Set the name
-			if(mMode==MODE_PICK_CONTACT || mMode == MODE_PICK_EMAIL || mMode==MODE_FREQUENT){
+			if (mMode == MODE_PICK_CONTACT || mMode == MODE_PICK_EMAIL
+					|| mMode == MODE_FREQUENT) {
 				int columnIndex = cursor.getColumnIndex(Contacts.DISPLAY_NAME);
 				cursor.copyStringToBuffer(columnIndex, cache.nameBuffer);
 				int size = cache.nameBuffer.sizeCopied;
@@ -2386,9 +2377,8 @@ public class ContactsListActivity extends ListActivity implements
 				} else {
 					cache.nameView.setText(mUnknownNameText.toString());
 				}
-			
-			}
-			else{
+
+			} else {
 				cursor.copyStringToBuffer(nameColumnIndex, cache.nameBuffer);
 				int size = cache.nameBuffer.sizeCopied;
 				boolean isTrueLocal = false;
@@ -2398,24 +2388,24 @@ public class ContactsListActivity extends ListActivity implements
 					cache.nameView.setText(mUnknownNameText.toString());
 				}
 			}
-			
-			// Set the number and first get the number
-			
-				String myFinalNum;
-				myFinalNum = getMyFinalNumber(cursor);
-				if(personMap != null){
-					if(phoneNumbers != null){
-						personMap.get(position+1).setNumbers(phoneNumbers);
-					}
-				}
-				if(positions.containsKey(position+1)){
-					cache.labelView.setText(positions.get(position+1).getPhoneNumber());
-				}else{
 
-					cache.labelView.setText(myFinalNum);
+			// Set the number and first get the number
+
+			String myFinalNum;
+			myFinalNum = getMyFinalNumber(cursor);
+			if (personMap != null) {
+				if (phoneNumbers != null) {
+					personMap.get(position + 1).setNumbers(phoneNumbers);
 				}
-				
-			
+			}
+			if (positions.containsKey(position + 1)) {
+				cache.labelView.setText(positions.get(position + 1)
+						.getPhoneNumber());
+			} else {
+
+				cache.labelView.setText(myFinalNum);
+			}
+
 			// Make the call button visible if requested.
 			if (false) {
 				int pos = cursor.getPosition();
@@ -2426,12 +2416,12 @@ public class ContactsListActivity extends ListActivity implements
 			} else {
 				// cache.callButton.setVisibility(View.INVISIBLE);
 			}
-			if(mMode != -1){
+			if (mMode != -1) {
 				if (cursor.getInt(SUMMARY_HAS_PHONE_COLUMN_INDEX) == 0) {
-				//cache.callButton.setVisibility(View.INVISIBLE);
+					// cache.callButton.setVisibility(View.INVISIBLE);
 					cache.verDivider.setVisibility(View.INVISIBLE);
 				} else {
-				// cache.callButton.setVisibility(View.VISIBLE);
+					// cache.callButton.setVisibility(View.VISIBLE);
 					cache.verDivider.setVisibility(View.VISIBLE);
 				}
 			}
@@ -2492,7 +2482,6 @@ public class ContactsListActivity extends ListActivity implements
 					cache.nonQuickContactPhotoView.setVisibility(View.VISIBLE);
 				}
 
-				
 				// viewToUse.setTag(new PhotoInfo(position, photoId));
 
 				if (photoId == 0) {
@@ -2530,8 +2519,7 @@ public class ContactsListActivity extends ListActivity implements
 					}
 				}
 			}
-			
-			
+
 			/*
 			 * ImageView presenceView = cache.presenceView; if ((mMode &
 			 * MODE_MASK_NO_PRESENCE) == 0) { // Set the proper icon (star or
@@ -2575,55 +2563,53 @@ public class ContactsListActivity extends ListActivity implements
 			 * the the view labelView.setVisibility(View.GONE); }
 			 */
 		}
-		
-		public String getMyFinalNumber(Cursor cursor){
+
+		public String getMyFinalNumber(Cursor cursor) {
 			phoneNumbers = new ArrayList<String>();
-			String myNum="";
+			String myNum = "";
 			String contactId = cursor.getString(cursor
 					.getColumnIndex(ContactsContract.Contacts._ID));
-			if(mMode == MODE_DEFAULT || mMode == MODE_PICK_CONTACT || mMode==MODE_FREQUENT){
+			if (mMode == MODE_DEFAULT || mMode == MODE_PICK_CONTACT
+					|| mMode == MODE_FREQUENT) {
 				String hasPhone = cursor
 						.getString(cursor
 								.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
 				if (hasPhone.equals("1")) {
-					
+
 					// You now have the number so now query it like this
-					
-					Cursor phones = getContentResolver()
-							.query(
-									ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-									null,
-									ContactsContract.CommonDataKinds.Phone.CONTACT_ID
-											+ " = " + contactId, null,
-									null);
+
+					Cursor phones = getContentResolver().query(
+							ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+							null,
+							ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+									+ " = " + contactId, null, null);
 
 					while (phones.moveToNext()) {
 						String phoneNumber = phones
 								.getString(phones
 										.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-						if(phoneNumber != null){
+						if (phoneNumber != null) {
 							myNum = phoneNumber;
-							if (AirenaoUtills.phoneNumberCompare(
-									phoneNumbers, phoneNumber)) {
+							if (AirenaoUtills.phoneNumberCompare(phoneNumbers,
+									phoneNumber)) {
 								continue;
 							} else {
 								phoneNumbers.add(phoneNumber);
 							}
 						}
-						
+
 						int phoneType = phones
 								.getInt(phones
 										.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
 
 						// 1 == is primary
-						String isPrimary = phones 
+						String isPrimary = phones
 								.getString(phones
 										.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY));
 						SharedPreferences msp = AirenaoUtills
 								.getMySharedPreferences(ContactsListActivity.this);
-						
-						
-							String mark = msp.getString(phoneNumber, "");
+
+						String mark = msp.getString(phoneNumber, "");
 						if (Constants.IS_SUPER_PRIMARY.equals(mark)) {
 							myNum = phoneNumber;
 							phoneNumbers.clear();
@@ -2631,24 +2617,25 @@ public class ContactsListActivity extends ListActivity implements
 							phones.close();
 							return myNum;
 						}
-						
+
 					}
 					phones.close();
 				}
-			}
-			else{
-				 Cursor emailCursor = getContentResolver().query
-						    (android.provider.Contacts.ContactMethods.CONTENT_URI,
-						      null, "_id=?", new String[]{contactId}, null);
-						      if(emailCursor.moveToNext())
-						      {
-						       String email = emailCursor.getString(emailCursor.getColumnIndexOrThrow(android.provider.Contacts.ContactMethods.DATA));
-						       return email;
-						      }
-							
+			} else {
+				Cursor emailCursor = getContentResolver().query(
+						android.provider.Contacts.ContactMethods.CONTENT_URI,
+						null, "_id=?", new String[] { contactId }, null);
+				if (emailCursor.moveToNext()) {
+					String email = emailCursor
+							.getString(emailCursor
+									.getColumnIndexOrThrow(android.provider.Contacts.ContactMethods.DATA));
+					return email;
+				}
+
 			}
 			return myNum;
 		}
+
 		// bindSectionHeader
 		private void bindSectionHeader(View view, int position,
 				boolean displaySectionHeaders) {
@@ -2987,18 +2974,14 @@ public class ContactsListActivity extends ListActivity implements
 		}
 
 	}
-	
-	
 
-	
-	
 	/**
 	 * 
 	 * @param cursor
 	 * @param sendSms
 	 * @return
 	 */
-	public MyPerson SmsContact(Cursor cursor,String name) {
+	public MyPerson SmsContact(Cursor cursor, String name) {
 		if (cursor != null) {
 			boolean hasPhone = cursor.getInt(SUMMARY_HAS_PHONE_COLUMN_INDEX) != 0;
 			if (!hasPhone) {
@@ -3035,9 +3018,10 @@ public class ContactsListActivity extends ListActivity implements
 
 			if (phone == null) {
 				// Display dialog to choose a number to call.
-				//显示一个提示?????????
-				Toast.makeText(ContactsListActivity.this, "该用户没有电话号码", Toast.LENGTH_SHORT).show();
-				
+				// 显示一个提示?????????
+				Toast.makeText(ContactsListActivity.this, "该用户没有电话号码",
+						Toast.LENGTH_SHORT).show();
+
 				return null;
 			} else {
 				MyPerson myPerson = new MyPerson();
@@ -3048,42 +3032,47 @@ public class ContactsListActivity extends ListActivity implements
 		}
 		return null;
 	}
+
 	/**
 	 * packge the Email
+	 * 
 	 * @param cursor
 	 * @param name
 	 * @return
 	 */
-	public MyPerson EmailContact(Cursor cursor, String name){
+	public MyPerson EmailContact(Cursor cursor, String name) {
 		String email;
-		if(cursor != null){
-			email= showEmail(cursor);
+		if (cursor != null) {
+			email = showEmail(cursor);
 			MyPerson myPerson = new MyPerson();
 			myPerson.setName(name);
 			myPerson.setEmail(email);
 			return myPerson;
 		}
-		
+
 		return null;
 	}
+
 	/**
 	 * show Email
+	 * 
 	 * @param myCursor
 	 * @return
 	 */
-	 public String showEmail(Cursor myCursor)
-	   {
-	    String id = myCursor.getString(myCursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
-	    Cursor emailCursor = getContentResolver().query
-	    (android.provider.Contacts.ContactMethods.CONTENT_URI,
-	      null, "_id=?", new String[]{id}, null);
-	      if(emailCursor.moveToNext())
-	      {
-	       String email = emailCursor.getString(emailCursor.getColumnIndexOrThrow("data"));
-	       return email;
-	      }
-	    return null;
-	   }	  
+	public String showEmail(Cursor myCursor) {
+		String id = myCursor.getString(myCursor
+				.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+		Cursor emailCursor = getContentResolver().query(
+				android.provider.Contacts.ContactMethods.CONTENT_URI, null,
+				"_id=?", new String[] { id }, null);
+		if (emailCursor.moveToNext()) {
+			String email = emailCursor.getString(emailCursor
+					.getColumnIndexOrThrow("data"));
+			return email;
+		}
+		return null;
+	}
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		ProgressDialog dialog = new ProgressDialog(this);
@@ -3093,12 +3082,12 @@ public class ContactsListActivity extends ListActivity implements
 		return dialog;
 
 	}
+
 	class SearchInfo {
 		public String keyWord;
 		public boolean isFinished;
 
-		public SearchInfo(String keyWord, boolean isFinished
-				) {
+		public SearchInfo(String keyWord, boolean isFinished) {
 			this.keyWord = keyWord;
 			this.isFinished = isFinished;
 		}
@@ -3107,14 +3096,13 @@ public class ContactsListActivity extends ListActivity implements
 			return isFinished;
 		}
 	}
-	
-	
+
 	/**
-	 * Class used for displaying a dialog with a list of phone numbers of which one
-	 * will be chosen to make a call or initiate an sms message.
+	 * Class used for displaying a dialog with a list of phone numbers of which
+	 * one will be chosen to make a call or initiate an sms message.
 	 */
-	public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
-			DialogInterface.OnDismissListener,
+	public class PhoneDisambigDialog implements
+			DialogInterface.OnClickListener, DialogInterface.OnDismissListener,
 			CompoundButton.OnCheckedChangeListener {
 
 		private boolean mMakePrimary = false;
@@ -3125,17 +3113,19 @@ public class ContactsListActivity extends ListActivity implements
 		private ListAdapter mPhonesAdapter;
 		private ArrayList<PhoneItem> mPhoneItemList;
 		private int position;
-		/*private Map<Integer,MyPerson> positions;
-		private Map<Integer, MyPerson> personMap;*/
+		/*
+		 * private Map<Integer,MyPerson> positions; private Map<Integer,
+		 * MyPerson> personMap;
+		 */
 		private String name;
 		private Handler mHandler;
 
-		/*public PhoneDisambigDialog(Context context, Cursor phonesCursor) {
-			this(context, phonesCursor, false  make call , null);
-		}
-	*/
+		/*
+		 * public PhoneDisambigDialog(Context context, Cursor phonesCursor) {
+		 * this(context, phonesCursor, false make call , null); }
+		 */
 		public PhoneDisambigDialog(Context context, Cursor phonesCursor,
-				boolean sendSms, ArrayList phones,int position, String name) {
+				boolean sendSms, ArrayList phones, int position, String name) {
 			mContext = context;
 			mSendSms = sendSms;
 			mPhonesCursor = phonesCursor;
@@ -3152,16 +3142,15 @@ public class ContactsListActivity extends ListActivity implements
 
 			LayoutInflater inflater = (LayoutInflater) mContext
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			View setPrimaryView = inflater.inflate(R.layout.set_primary_checkbox,
-					null);
+			View setPrimaryView = inflater.inflate(
+					R.layout.set_primary_checkbox, null);
 			((CheckBox) setPrimaryView.findViewById(R.id.setPrimary))
 					.setOnCheckedChangeListener(this);
 
 			// Need to show disambig dialogue.
-			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext)
-					.setAdapter(mPhonesAdapter, this)
-					.setTitle("请选择电话号码")
-					.setView(setPrimaryView);
+			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+					mContext).setAdapter(mPhonesAdapter, this)
+					.setTitle("请选择电话号码").setView(setPrimaryView);
 
 			mDialog = dialogBuilder.create();
 		}
@@ -3171,8 +3160,9 @@ public class ContactsListActivity extends ListActivity implements
 		 */
 		public void show() {
 			if (mPhoneItemList.size() == 1) {
-				// If there is only one after collapse, just select it, and close;
-				
+				// If there is only one after collapse, just select it, and
+				// close;
+
 				onClick(mDialog, 0);
 			}
 			mDialog.show();
@@ -3183,32 +3173,34 @@ public class ContactsListActivity extends ListActivity implements
 				PhoneItem phoneItem = mPhoneItemList.get(which);
 				long id = phoneItem.id;
 				String phone = phoneItem.phoneNumber;
-				if(mPhonesCursor != null){
+				if (mPhonesCursor != null) {
 					if (mMakePrimary) {
 						ContentValues values = new ContentValues(1);
 						values.put(Data.IS_SUPER_PRIMARY, 1);
-						mContext.getContentResolver().update(
-								ContentUris.withAppendedId(Data.CONTENT_URI, id),
-								values, null, null);
+						mContext.getContentResolver()
+								.update(ContentUris.withAppendedId(
+										Data.CONTENT_URI, id), values, null,
+										null);
 					}
-				}else {
-					if(mMakePrimary){
-						SharedPreferences msp = AirenaoUtills.getMySharedPreferences(mContext);
+				} else {
+					if (mMakePrimary) {
+						SharedPreferences msp = AirenaoUtills
+								.getMySharedPreferences(mContext);
 						Editor myEditor = msp.edit();
 						myEditor.putString(phone, Constants.IS_SUPER_PRIMARY);
 						myEditor.commit();
 					}
 				}
-				
-			   //电话号码phone
+
+				// 电话号码phone
 				MyPerson person = personMap.get(position);
 				Log.i("p", personMap.hashCode() + "click");
 				boolean isChecked = person.isChecked();
 				personMap.get(position).setChecked(!isChecked);
-				if(isChecked){
+				if (isChecked) {
 					positions.remove(Integer.valueOf(position));
-				}else{
-					positions.put(position,new MyPerson(name,phone));
+				} else {
+					positions.put(position, new MyPerson(name, phone));
 				}
 				mAdapter.notifyDataSetChanged();
 			} else {
@@ -3216,7 +3208,8 @@ public class ContactsListActivity extends ListActivity implements
 			}
 		}
 
-		public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
 			mMakePrimary = isChecked;
 		}
 
@@ -3224,7 +3217,7 @@ public class ContactsListActivity extends ListActivity implements
 			mPhonesCursor.close();
 		}
 
-		private  class PhonesAdapter extends ArrayAdapter<PhoneItem> {
+		private class PhonesAdapter extends ArrayAdapter<PhoneItem> {
 
 			public PhonesAdapter(Context context, List<PhoneItem> objects) {
 				super(context, android.R.layout.simple_dropdown_item_1line,
@@ -3278,8 +3271,7 @@ public class ContactsListActivity extends ListActivity implements
 			return phoneList;
 		}
 
-		private ArrayList<PhoneItem> makePhoneItemsList(
-				ArrayList<String> phones) {
+		private ArrayList<PhoneItem> makePhoneItemsList(ArrayList<String> phones) {
 			ArrayList<PhoneItem> phoneList = new ArrayList<PhoneItem>();
 			for (int i = 0; i < phones.size(); i++) {
 				phoneList.add(new PhoneItem(phones.get(i), i));

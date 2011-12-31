@@ -1,8 +1,14 @@
 package com.aragoncg.apps.airenao.utills;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +81,7 @@ public class HttpHelper {
 
 	static {
 		HttpParams params = new BasicHttpParams();
+
 		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION,
 				HttpVersion.HTTP_1_1);
 		params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, HTTP.UTF_8);
@@ -176,19 +183,19 @@ public class HttpHelper {
 			HttpResponse httpResponse = new DefaultHttpClient()
 					.execute(httpRequest);
 			respondCode = httpResponse.getStatusLine().getStatusCode();
-			
+
 			if (respondCode == 200) {
 				response = EntityUtils.toString(httpResponse.getEntity());
 				return response;
 			} else {
-				
+
 				response = EntityUtils.toString(httpResponse.getEntity());
 				return response;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			//response = "服务器返回错误代码";
+			// response = "服务器返回错误代码";
 		}
 		return response;
 	}
@@ -300,7 +307,7 @@ public class HttpHelper {
 
 		try {
 			response = HttpHelper.client.execute(method, responseHandler);
-			
+
 		} catch (Exception e) {
 			// response = UNABLE_TO_RETRIEVE_INFO;
 			e.printStackTrace();
@@ -328,4 +335,61 @@ public class HttpHelper {
 			return -1;
 		}
 	}
+
+	// 未完成
+	public static String requestByPost(String path,
+			HashMap<String, String> param) throws Throwable {
+		// 请求的参数转换为byte数组
+		String resultData = "";
+		/*
+		 * if ((param != null) && (param.size() > 0)) { for (Map.Entry<String,
+		 * String> entry : param.entrySet()) {
+		 * 
+		 * } }
+		 */
+		String params = "id=" + URLEncoder.encode("helloworld", "UTF-8")
+				+ "&pwd=" + URLEncoder.encode("android", "UTF-8");
+		byte[] postData = params.getBytes();
+		// 新建一个URL对象
+		URL url = new URL(path);
+		// 打开一个HttpURLConnection连接
+		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+		// 设置连接超时时间
+		urlConn.setConnectTimeout(15 * 1000);
+		// Post请求必须设置允许输出
+		urlConn.setDoOutput(true);
+		// Post请求不能使用缓存
+		urlConn.setUseCaches(false);
+		// 设置为Post请求
+		urlConn.setRequestMethod("POST");
+		urlConn.setInstanceFollowRedirects(true);
+		// 配置请求Content-Type
+		urlConn.setRequestProperty("Content-Type",
+				"application/x-www-form-urlencode");
+		// 开始连接
+		urlConn.connect();
+		// 发送请求参数
+		DataOutputStream dos = new DataOutputStream(urlConn.getOutputStream());
+		dos.write(postData);
+		dos.flush();
+		dos.close();
+		// 判断请求是否成功
+		if (urlConn.getResponseCode() == 200) {
+			InputStreamReader inputStreamReader = new InputStreamReader(
+					urlConn.getInputStream());
+			BufferedReader bufferedReader = new BufferedReader(
+					inputStreamReader);
+			// 获取返回的数据
+			String inputLine = "";
+			while ((inputLine = bufferedReader.readLine()) != null) {
+				// 在每一行后面加上换行
+				resultData += inputLine;
+			}
+
+		} else {
+			throw new Exception("网络请求错误");
+		}
+		return resultData;
+	}
+
 }

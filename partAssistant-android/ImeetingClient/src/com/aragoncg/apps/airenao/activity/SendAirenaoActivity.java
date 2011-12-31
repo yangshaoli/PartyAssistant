@@ -57,6 +57,7 @@ import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
@@ -82,17 +83,16 @@ public class SendAirenaoActivity extends Activity {
 	private boolean ckSendLableUseOwn = true;
 	private int ckLable;
 	private Button btnSendLable;
-	private Button btnSendLableRecovery;
 	private String stringLink;
 	private String smsContent;
+	private TextView userTitle;
+	private LinearLayout userLayout;
 	private static final int MENU_SET = 0;
 	private static final int MENU_SEND_WAY = 1;
 	private boolean sendSMS = true;
 	private boolean isShow = false;
+	boolean fromPeopleInfo;
 
-	private String theTime;
-	private String thePosition;
-	private int theNumber;
 	private String theContent;
 
 	private MultiAutoCompleteTextView peopleNumbers;
@@ -131,16 +131,13 @@ public class SendAirenaoActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.send_airenao_layout);
 		AirenaoUtills.activityList.add(this);
-		SharedPreferences perferences = AirenaoUtills
-				.getMySharedPreferences(this);
-		userName = perferences.getString(Constants.AIRENAO_USER_NAME, "");
 
 		// Intent dataIntent = getIntent();
 		// getItentData(dataIntent);
 		init();
 		initHandler();
 		getContacts();
-
+		getItentData();
 		// 绑定自动提示框信息
 		final ContentApdater adapter = new ContentApdater(this, cursor);
 		peopleNumbers.setAdapter(adapter);
@@ -386,7 +383,9 @@ public class SendAirenaoActivity extends Activity {
 									progerssDialog.dismiss();
 								}
 							} else {
-								if(progerssDialog!=null){
+								Toast.makeText(SendAirenaoActivity.this,
+										"发送成功", 1000).show();
+								if (progerssDialog != null) {
 									progerssDialog.dismiss();
 								}
 							}
@@ -407,12 +406,13 @@ public class SendAirenaoActivity extends Activity {
 
 			@Override
 			public void run() {
-				
+
 				if (sendSMS) {
 					saveToPcAndSaveDicts(noContacts);
-			}
+				}
 
-		}};
+			}
+		};
 	}
 
 	/**
@@ -422,7 +422,7 @@ public class SendAirenaoActivity extends Activity {
 		smsContent = txtSendLableContent.getText().toString();
 		String name = "";
 		String dict = "";
-		JSONObject Json = new JSONObject();
+
 		JSONArray myDicts = new JSONArray();
 		Iterator<Entry<String, String>> iter = clientDicts.entrySet()
 				.iterator();
@@ -431,6 +431,7 @@ public class SendAirenaoActivity extends Activity {
 			name = (String) entry.getKey();
 			dict = (String) entry.getValue();
 			try {
+				JSONObject Json = new JSONObject();
 				Json.put("cName", name);
 				Json.put("cValue", dict);
 				myDicts.put(Json);
@@ -538,108 +539,38 @@ public class SendAirenaoActivity extends Activity {
 	 * 
 	 * @param intent
 	 */
-	public void getItentData(Intent intent) {
-		if (intent != null) {
+	public void getItentData() {
 
-			boolean fromPeopleInfo = intent.getBooleanExtra(
-					Constants.FROM_PEOPLE_INFO, false);
-			if (!fromPeopleInfo) {
-				boolean sendWithClientsTag = intent.getBooleanExtra(
-						"sendWithClientsTag", false);
-				if (sendWithClientsTag) {
-					AirenaoActivity airenao = (AirenaoActivity) intent
-							.getSerializableExtra("sendWithClients");
-					modeTag = intent.getIntExtra("mode", -2);
-					if (modeTag == -2) {
-						sendSMS = true;
-					} else {
-						sendSMS = false;
-					}
+		fromPeopleInfo = getIntent().getBooleanExtra(
+				Constants.FROM_PEOPLE_INFO, false);
+		if (fromPeopleInfo) {
+			AirenaoActivity airenao = (AirenaoActivity) getIntent()
+					.getSerializableExtra(Constants.ONE_PARTY);
+			theContent = airenao.getActivityContent();
+			txtSendLableContent.setText(theContent);
+			List<Map<String, Object>> list = airenao.getPeopleList();
+			String names = "";
+			tempContactNumbers = new ArrayList<String>();
+			for (int i = 0; i < list.size(); i++) {
+				HashMap<String, Object> map = (HashMap<String, Object>) list
+						.get(i);
 
-					// Iterator iter = map.entrySet().iterator();
-					// 　　while (iter.hasNext()) {
-					// 　　Map.Entry entry = (Map.Entry) iter.next();
-					// 　　Object key = entry.getKey();
-					// 　　Object val = entry.getValue();
-
-					HashMap<String, String> clients = (HashMap<String, String>) airenao
-							.getClients();
-					Iterator iter = null;
-					if (clients != null) {
-						iter = clients.entrySet().iterator();
-					}
-					String names = "";
-					if (iter != null) {
-						if (tempContactNumbers == null) {
-							tempContactNumbers = new ArrayList<String>();
-						}
-						tempContactNumbers.clear();
-						while (iter.hasNext()) {
-							Map.Entry entry = (Map.Entry) iter.next();
-							String name = (String) entry.getKey();
-							String number = (String) entry.getValue();
-							names = name + ";" + names;
-							tempContactNumbers.add(number);
-
-						}
-						;
-					}
-					theContent = airenao.getActivityContent();
-					if (theTime == null || "".equals(theTime)) {
-						theTime = getString(R.string.sendLableTime);
-					}
-					if (thePosition == null || "".equals(thePosition)) {
-						thePosition = getString(R.string.sendLablePosition);
-					}
-				} else {
-					Bundle dataBundle = (Bundle) intent
-							.getBundleExtra(Constants.TO_SEND_ACTIVITY);
-					modeTag = intent.getIntExtra("mode", -2);
-					if (modeTag == -2) {
-						sendSMS = true;
-					} else {
-						sendSMS = false;
-					}
-					theTime = dataBundle.getString(Constants.SEND_TIME).trim();
-					thePosition = dataBundle.getString(Constants.SEND_POSITION)
-							.trim();
-					theNumber = dataBundle.getInt(Constants.SEND_NUMBER);
-					theContent = dataBundle.getString(Constants.SEND_CONTENT)
-							.trim();
-					if (theTime == null || "".equals(theTime)) {
-						theTime = getString(R.string.sendLableTime);
-					}
-					if (thePosition == null || "".equals(thePosition)) {
-						thePosition = getString(R.string.sendLablePosition);
-					}
+				tempContactNumbers.add(String.valueOf(map
+						.get(Constants.PEOPLE_CONTACTS)));
+				String tempNames = String.valueOf(map
+						.get(Constants.PEOPLE_NAME));
+				clientDicts.put(tempNames,
+						String.valueOf(map.get(Constants.PEOPLE_CONTACTS)));
+				if (!"".equals(tempNames)) {
+					names = names + tempNames + ",";
 				}
-
-			} else {
-				AirenaoActivity airenao = (AirenaoActivity) intent
-						.getSerializableExtra(Constants.ONE_PARTY);
-				theContent = airenao.getActivityContent();
-				List<Map<String, Object>> list = airenao.getPeopleList();
-				String names = "";
-				tempContactNumbers = new ArrayList<String>();
-				for (int i = 0; i < list.size(); i++) {
-					HashMap<String, Object> map = (HashMap<String, Object>) list
-							.get(i);
-					tempContactNumbers.add(String.valueOf(map
-							.get(Constants.PEOPLE_CONTACTS)));
-					String tempNames = String.valueOf(map
-							.get(Constants.PEOPLE_CONTACTS));
-					if (!"".equals(tempNames)) {
-						names = names + tempNames + ";";
-					}
-					if (peopleNumbers == null) {
-						peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
-						peopleNumbers.setText(names);
-					}
-
+				if (peopleNumbers == null) {
+					peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
 				}
+				peopleNumbers.setText(names);
 			}
-
 		}
+
 	}
 
 	public void init() {
@@ -649,6 +580,9 @@ public class SendAirenaoActivity extends Activity {
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 				null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
+		userTitle = (TextView)findViewById(R.id.userTitle);
+		userTitle.setText(userName);
+		userLayout = (LinearLayout) findViewById(R.id.userChange);
 
 		stringLink = getString(R.string.sendLableLink);
 		btnSendReciever = (ImageButton) findViewById(R.id.btnSendReciever);
@@ -678,11 +612,42 @@ public class SendAirenaoActivity extends Activity {
 				return false;
 			}
 		});
+		userLayout.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				AlertDialog dialog = new AlertDialog.Builder(SendAirenaoActivity.this)
+						.setTitle(R.string.user_off)
+						.setMessage(R.string.user_off_message)
+						.setPositiveButton(R.string.btn_ok,
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										finish();
+										Intent intent = new Intent();
+										intent.setClass(SendAirenaoActivity.this,
+												LoginActivity.class);
+										startActivity(intent);
+									}
+								}).create();
+				dialog.show();
+
+			}
+		});
 		// 发送
 		btnSendLable.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				smsContent = txtSendLableContent.getText().toString();
+				if ("".equals(smsContent)) {
+					Toast.makeText(SendAirenaoActivity.this,
+							getString(R.string.send_lable_content_tip), 2000)
+							.show();
+					return;
+				}
 				count = 0;
 				getPhoneNumbersOrgetEmail(sendSMS);
 
@@ -715,14 +680,7 @@ public class SendAirenaoActivity extends Activity {
 												int which) {
 											initThreadSaveMessage("no");// no指的是收件人为空
 											myHandler.post(threadSaveMessage);
-											// threadSaveMessage.start();
-											/*Intent myIntent = new Intent(
-													SendAirenaoActivity.this,
-													MeetingListActivity.class);
-											myIntent.putExtra(
-													Constants.NEED_REFRESH,
-													true);
-											startActivity(myIntent);*/
+											
 											finish();
 											return;
 										}
@@ -766,15 +724,15 @@ public class SendAirenaoActivity extends Activity {
 			String inputedPhoneNumbers = peopleNumbers.getText().toString();
 			String[] phoneNumbers = inputedPhoneNumbers.split("\\,", 0);
 			for (int i = 0; i < phoneNumbers.length; i++) {
-				// if(AirenaoUtills.checkPhoneNumber(phoneNumbers[i])){
-				if (phoneNumbers[i].equals("")) {
-					continue;
+				if (AirenaoUtills.checkPhoneNumber(phoneNumbers[i])) {
+					if (phoneNumbers[i].equals("")) {
+						continue;
+					}
+					tempContactNumbers.add(phoneNumbers[i]);
+					clientDicts.put("佚名", phoneNumbers[i]);
+					// }
 				}
-				tempContactNumbers.add(phoneNumbers[i]);
-				clientDicts.put("佚名", phoneNumbers[i]);
-				// }
 			}
-
 			return tempContactNumbers;
 		} else {
 			if (tempContactNumbers == null) {
@@ -818,11 +776,13 @@ public class SendAirenaoActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						if (ok) {
 							// 跳转到meeting list 页面
-							/*Intent intent = new Intent(
-									SendAirenaoActivity.this,
-									MeetingListActivity.class);
-							intent.putExtra(Constants.NEED_REFRESH, true);
-							startActivity(intent);*/
+							/*
+							 * Intent intent = new Intent(
+							 * SendAirenaoActivity.this,
+							 * MeetingListActivity.class);
+							 * intent.putExtra(Constants.NEED_REFRESH, true);
+							 * startActivity(intent);
+							 */
 							finish();
 						} else {
 							// 还在本页
@@ -837,11 +797,13 @@ public class SendAirenaoActivity extends Activity {
 						if (ok) {
 
 						} else {
-						/*	Intent intent = new Intent(
-									SendAirenaoActivity.this,
-									MeetingListActivity.class);
-							intent.putExtra(Constants.NEED_REFRESH, true);
-							startActivity(intent);*/
+							/*
+							 * Intent intent = new Intent(
+							 * SendAirenaoActivity.this,
+							 * MeetingListActivity.class);
+							 * intent.putExtra(Constants.NEED_REFRESH, true);
+							 * startActivity(intent);
+							 */
 							finish();
 						}
 					}
@@ -935,6 +897,7 @@ public class SendAirenaoActivity extends Activity {
 					.getParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND);
 			if (personList != null && personList.size() > 0) {
 				for (int i = 0; i < personList.size(); i++) {
+					clientDicts.put(personList.get(i).getName(), personList.get(i).getPhoneNumber());
 					names += personList.get(i).getName() + ",";
 				}
 				peopleNumbers.setText(names);
@@ -1094,12 +1057,11 @@ public class SendAirenaoActivity extends Activity {
 		 * this(context, phonesCursor, false make call , null); }
 		 */
 		public PhoneDisambigDialog(Context context, Cursor phonesCursor,
-				boolean sendSms, ArrayList phones, int position, String name) {
+				boolean sendSms, ArrayList<String> phones, int position, String name) {
 			mContext = context;
 			mSendSms = sendSms;
 			mPhonesCursor = phonesCursor;
 			this.position = position;
-			this.mHandler = mHandler;
 			if (mPhonesCursor != null) {
 				mPhoneItemList = makePhoneItemsList(phonesCursor);
 			} else {
@@ -1245,45 +1207,53 @@ public class SendAirenaoActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		smsContent = txtSendLableContent.getText().toString();
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (this.smsContent != null && !"".equals(this.smsContent)) {
+			if (fromPeopleInfo) {
 
-				AlertDialog noticeDialog = new AlertDialog.Builder(
-						SendAirenaoActivity.this)
-						.setCancelable(true)
-						.setTitle(R.string.sendLableTitle)
-						.setMessage(R.string.createToList)
-						.setNegativeButton(
-								R.string.btn_cancle,
-								new android.content.DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-
-									}
-								})
-						.setPositiveButton(
-								R.string.btn_ok,
-								new android.content.DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										Intent myIntent = new Intent(
-												SendAirenaoActivity.this,
-												MeetingListActivity.class);
-										startActivity(myIntent);
-
-									}
-
-								}).create();
-				noticeDialog.show();
-				event.startTracking();
-				return false;
 			} else {
-				Intent myIntent = new Intent(SendAirenaoActivity.this,
-						MeetingListActivity.class);
-				startActivity(myIntent);
+				if (this.smsContent != null && !"".equals(this.smsContent)) {
+
+					AlertDialog noticeDialog = new AlertDialog.Builder(
+							SendAirenaoActivity.this)
+							.setCancelable(true)
+							.setTitle(R.string.sendLableTitle)
+							.setMessage(R.string.createToList)
+							.setNegativeButton(
+									R.string.btn_cancle,
+									new android.content.DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+
+										}
+									})
+							.setPositiveButton(
+									R.string.btn_ok,
+									new android.content.DialogInterface.OnClickListener() {
+
+										@Override
+										public void onClick(
+												DialogInterface dialog,
+												int which) {
+											/*Intent myIntent = new Intent(
+													SendAirenaoActivity.this,
+													MeetingListActivity.class);
+											startActivity(myIntent);*/
+											finish();
+
+										}
+
+									}).create();
+					noticeDialog.show();
+					event.startTracking();
+					return false;
+				} else {
+					/*Intent myIntent = new Intent(SendAirenaoActivity.this,
+							MeetingListActivity.class);
+					startActivity(myIntent);*/
+					finish();
+				}
 			}
 
 		}

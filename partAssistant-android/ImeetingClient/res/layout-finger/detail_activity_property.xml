@@ -25,7 +25,6 @@
         	android:paddingTop="2dip"  
             android:paddingRight="30dip"
             android:layout_gravity="right" /> 
-                
     	<TextView android:id="@+id/activity_time"  
               android:layout_width="wrap_content"  
               android:layout_height="wrap_content"  
@@ -35,7 +34,14 @@
               android:paddingRight="70dip" 
               android:layout_gravity="right"
               android:textColor="@color/black"
-             /> 
+             />
+        <ImageView
+        android:id="@+id/flagNew"
+        android:layout_width="wrap_content"
+        android:layout_marginLeft="3dip"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:src="@drawable/flag_new_red"/> 
         <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

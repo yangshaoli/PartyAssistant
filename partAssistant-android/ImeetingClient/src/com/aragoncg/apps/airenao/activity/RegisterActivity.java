@@ -64,7 +64,6 @@ public class RegisterActivity extends Activity {
 		setContentView(R.layout.register_layout);
 		myContext = getBaseContext();
 		initData();
-
 		getTheWedgit();
 
 	}
@@ -92,7 +91,7 @@ public class RegisterActivity extends Activity {
 					 */
 					userNameReg = (String) msg.getData().get(
 							Constants.AIRENAO_USER_NAME);
-					pass2Reg = (String)msg.getData().get(
+					pass2Reg = (String) msg.getData().get(
 							Constants.AIRENAO_PASSWORD);
 					String uId = (String) msg.getData().get(
 							Constants.AIRENAO_USER_ID);
@@ -131,7 +130,8 @@ public class RegisterActivity extends Activity {
 
 				JSONObject jsonObject;
 				try {
-					jsonObject = new JSONObject(result).getJSONObject(Constants.OUT_PUT);
+					jsonObject = new JSONObject(result)
+							.getJSONObject(Constants.OUT_PUT);
 					String status;
 					String description;
 					status = jsonObject.getString(Constants.STATUS);
@@ -143,15 +143,15 @@ public class RegisterActivity extends Activity {
 						String loginResult = new HttpHelper().performPost(
 								loginUrl, userNameReg, pass1Reg, null, params,
 								RegisterActivity.this);
-						
+
 						result = AirenaoUtills.linkResult(loginResult);
 						jsonObject = new JSONObject(result)
 								.getJSONObject("output");
 						status = jsonObject.getString("status");
 						description = jsonObject.getString("description");
-						
+
 						if ("ok".equals(status)) {
-							jsonObject =  jsonObject.getJSONObject("datasource");
+							jsonObject = jsonObject.getJSONObject("datasource");
 							String UserId = jsonObject.getString("uid");
 							Message message = new Message();
 							message.what = 2;
@@ -160,22 +160,22 @@ public class RegisterActivity extends Activity {
 									userNameReg);
 							bundle.putString(Constants.AIRENAO_PASSWORD,
 									pass1Reg);
-							bundle.putString(Constants.AIRENAO_USER_ID,
-									UserId);
+							bundle.putString(Constants.AIRENAO_USER_ID, UserId);
 							message.setData(bundle);
 							myHandler.sendMessage(message);
 
 							// 如果不是第一次启动
 							if (appFlag == Constants.APP_USED_FLAG_O) {
 
-								SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+								SQLiteDatabase db = DbHelper
+										.openOrCreateDatabase();
 								tempActivity = DbHelper.select(db);
 								listActivity = (ArrayList<Map<String, Object>>) DbHelper
 										.selectActivitys(db);
 								if (tempActivity != null) {
 									Intent intent = new Intent(
 											RegisterActivity.this,
-											SendAirenaoActivity.class);
+											MeetingListActivity.class);
 									intent.putExtra(Constants.TRANSFER_DATA,
 											tempActivity);
 									startActivity(intent);
@@ -190,7 +190,7 @@ public class RegisterActivity extends Activity {
 									} else {
 										Intent intent = new Intent(
 												RegisterActivity.this,
-												SendAirenaoActivity.class);
+												MeetingListActivity.class);
 										startActivity(intent);
 									}
 								}
@@ -199,7 +199,7 @@ public class RegisterActivity extends Activity {
 							if (appFlag == Constants.APP_USED_FLAG_Z) {
 								Intent intent = new Intent(
 										RegisterActivity.this,
-										SendAirenaoActivity.class);
+										MeetingListActivity.class);
 								startActivity(intent);
 							}
 
@@ -252,15 +252,6 @@ public class RegisterActivity extends Activity {
 
 				if (!userName.hasFocus()) {
 					userNameReg = userName.getText().toString();
-					// 用户名校验
-					/*
-					 * boolean isDigital =
-					 * AirenaoUtills.matchString(AirenaoUtills.regDigital,
-					 * userNameReg); boolean isEmail =
-					 * AirenaoUtills.matchString(AirenaoUtills.regEmail,
-					 * userNameReg); if(!isEmail && !isDigital){
-					 * Toast.makeText(RegisterActivity.this, R., duration) }
-					 */
 					if ("".equals(userNameReg)) {
 						Toast.makeText(RegisterActivity.this,
 								R.string.user_name_check, Toast.LENGTH_LONG)
@@ -284,7 +275,7 @@ public class RegisterActivity extends Activity {
 					return;
 				}
 				pass1Reg = pass1.getText().toString();
-				//pass2Reg = pass2.getText().toString();
+				// pass2Reg = pass2.getText().toString();
 				if (pass1Reg.length() < 6) {
 					Toast.makeText(RegisterActivity.this, R.string.pass_tip1,
 							Toast.LENGTH_SHORT).show();

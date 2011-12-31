@@ -38,6 +38,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +64,7 @@ public class MeetingListActivity extends ListActivity implements
 	private Handler handler;
 	private Context mContext;
 	private ListView myListView;
-	List<Map<String, Object>> list;
+	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private String partyListUrl;
 	private Button btnRefresh;
 	private String userName = "";
@@ -76,12 +78,15 @@ public class MeetingListActivity extends ListActivity implements
 	private Handler postHandler;
 	private boolean needRefresh;
 	private int tempCount;
+	private TextView userTitle;
+	private LinearLayout userLayout;
 	private AlertDialog deleteDilog;
 	private int lastItem;
 	private int refusedCount = 0;
 	private int registeredCount = 0;
 	private Dialog progressDialog;
 	private boolean separatePage = false;
+	private boolean showFlagNew = true;
 
 	public static final String LAST_ID = "lastID";
 	private int lastID;
@@ -97,6 +102,7 @@ public class MeetingListActivity extends ListActivity implements
 	public static final int MENU_SET = 0;
 	public static final int SHARE_SET = 3;
 	public static final int DELETE_SET = 4;
+	public static final int DELETE= 5;
 
 	private String appliedClientcount;
 	private String newAppliedClientcount;
@@ -124,7 +130,6 @@ public class MeetingListActivity extends ListActivity implements
 		footerView.setVisibility(View.GONE);
 		myDaAdapter = new MyAdapter(this);
 		setListAdapter(myDaAdapter);
-		
 
 		myListView.setOnScrollListener(this);
 		// get the ListView and add item on long press menu
@@ -165,8 +170,11 @@ public class MeetingListActivity extends ListActivity implements
 	protected void onRestart() {
 		needRefresh = true;
 		if (needRefresh) {
+			progressDialog = ProgressDialog.show(MeetingListActivity.this,
+					"刷新", getString(R.string.loadAirenao), true, true);
 			mData = getData();
-			myDaAdapter.notifyDataSetChanged();
+			/*myDaAdapter.notifyDataSetChanged();
+			myListView.requestFocusFromTouch();*/
 		}
 		super.onRestart();
 	}
@@ -180,9 +188,6 @@ public class MeetingListActivity extends ListActivity implements
 				progressDialog = ProgressDialog.show(MeetingListActivity.this,
 						"刷新", getString(R.string.loadAirenao), true, true);
 
-				if (list == null) {
-					list = new ArrayList<Map<String, Object>>();
-				}
 				list.clear();
 				startId = 0;
 				postHandler.post(firstLoadDataThread);
@@ -192,6 +197,7 @@ public class MeetingListActivity extends ListActivity implements
 
 	// 对footerView的处理
 	private void init() {
+		
 		firstLoadDataThread = initLoadThread();
 		handler = new Handler() {
 			@Override
@@ -199,13 +205,17 @@ public class MeetingListActivity extends ListActivity implements
 				switch (msg.what) {
 				case MSG_ID_SCROLL:
 					footerView.setVisibility(View.GONE);
-					myDaAdapter.notifyDataSetChanged();
+					// myDaAdapter.notifyDataSetChanged();
 					break;
 				case MSG_ID_DELETE:
 					String message = (String) msg.getData().get(
 							Constants.DESCRIPTION);
 					Toast.makeText(MeetingListActivity.this, message,
 							Toast.LENGTH_SHORT).show();
+					break;
+				case DELETE:
+					myDaAdapter.notifyDataSetChanged();
+					myListView.requestFocusFromTouch();
 					break;
 				default:
 					break;
@@ -232,6 +242,7 @@ public class MeetingListActivity extends ListActivity implements
 						progressDialog.dismiss();
 					}
 					myDaAdapter.notifyDataSetChanged();
+					myListView.requestFocusFromTouch();
 				}
 				}
 
@@ -244,7 +255,33 @@ public class MeetingListActivity extends ListActivity implements
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 				null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
+		userTitle = (TextView)findViewById(R.id.userTitle);
+		userTitle.setText(userName);
+		userLayout = (LinearLayout) findViewById(R.id.userChange);
+		userLayout.setOnClickListener(new OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				AlertDialog dialog = new AlertDialog.Builder(MeetingListActivity.this)
+						.setTitle(R.string.user_off)
+						.setMessage(R.string.user_off_message)
+						.setPositiveButton(R.string.btn_ok,
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										finish();
+										Intent intent = new Intent();
+										intent.setClass(MeetingListActivity.this,
+												LoginActivity.class);
+										startActivity(intent);
+									}
+								}).create();
+				dialog.show();
+
+			}
+		});
 	}
 
 	// every item's menu
@@ -285,22 +322,27 @@ public class MeetingListActivity extends ListActivity implements
 
 											@Override
 											public void run() {
-												// 删除后台
-												deleleOnePraty(delteUrl,
-														partyID);
-												// 删除缓存
-												removeActivity(listItemId);
-												// 删除数据库
-												SQLiteDatabase db = DbHelper
-														.openOrCreateDatabase();
-												String sql = AirenaoUtills
-														.linkSQL(partyID + "");
+												SQLiteDatabase db=null;
 												try {
+													// 删除后台
+													deleleOnePraty(delteUrl,
+															partyID);
+													// 删除缓存
+													removeActivity(listItemId);
+													// 删除数据库
+													db = DbHelper
+															.openOrCreateDatabase();
+													String sql = AirenaoUtills
+															.linkSQL(partyID + "");
 													DbHelper.delete(db, sql);
+													
+													handler.sendEmptyMessage(DELETE);
 												} catch (Exception e) {
 													e.printStackTrace();
 												} finally {
-													db.close();
+													if(db!=null){
+														db.close();
+													}
 												}
 											}
 										};
@@ -391,13 +433,11 @@ public class MeetingListActivity extends ListActivity implements
 			long id) {
 
 		super.onListItemClick(listView, v, position, id);
-		/*if (v == footerView) {
-			loadRemnantListItem();
-			listView.setSelection(position - 1);
-		}
-		System.out.println("id = " + id);
-		System.out.println("position = " + position);
-*/
+		/*
+		 * if (v == footerView) { loadRemnantListItem();
+		 * listView.setSelection(position - 1); } System.out.println("id = " +
+		 * id); System.out.println("position = " + position);
+		 */
 		// 活动对象的数据组合
 		HashMap<String, Object> dataHashMap = (HashMap<String, Object>) mData
 				.get(position);
@@ -429,14 +469,12 @@ public class MeetingListActivity extends ListActivity implements
 	 * 
 	 */
 	private List<Map<String, Object>> getData() {
-		separatePage = false;
+		
 		// 在map装配的时候，一个活动的所有属性全部装配
 		// 先从本地获得数据，如果数据为空那么在从后台取数据
-		showDialog(1);
-		if (list == null) {
-			list = new ArrayList<Map<String, Object>>();
-		}
+		list.clear();
 		if (!needRefresh) {
+			separatePage = false;
 			list = getDataFromServer();
 		}
 
@@ -458,7 +496,7 @@ public class MeetingListActivity extends ListActivity implements
 			@Override
 			public void run() {
 				// 配置url
-				list.clear();
+				// list.clear();
 				partyListUrl = getString(R.string.partyListUrl);
 				partyListUrl = partyListUrl + userId + "/" + startId + "/";
 				HttpHelper myHttpHelper = new HttpHelper();
@@ -500,6 +538,8 @@ public class MeetingListActivity extends ListActivity implements
 		public TextView activityUnJoinNum;
 
 		public TextView activityUnTakeNum;
+		
+		public ImageView activityFlagNew;
 
 	}
 
@@ -572,6 +612,9 @@ public class MeetingListActivity extends ListActivity implements
 
 				holder.activityUnTakeNum = (TextView) convertView
 						.findViewById(R.id.activity_untake_num);
+				
+				holder.activityFlagNew = (ImageView) convertView
+						.findViewById(R.id.flag_new_red);
 				convertView.setTag(holder);
 
 			} else {
@@ -616,7 +659,17 @@ public class MeetingListActivity extends ListActivity implements
 			registeredCount = Integer.valueOf(appliedClientcount)
 					+ Integer.valueOf(newAppliedClientcount);
 			holder.activityJoinNum.setText(registeredCount + "");
-
+			// flag new
+			if(!"0".equals(newAppliedClientcount) || !"0".equals(newRefusedClientcount)){
+				showFlagNew = true;
+			}else{
+				showFlagNew = false;
+			}
+			if(showFlagNew){
+				holder.activityFlagNew.setVisibility(View.VISIBLE);
+			}else{
+				holder.activityFlagNew.setVisibility(View.INVISIBLE);
+			}
 			return convertView;
 
 		}
@@ -631,8 +684,9 @@ public class MeetingListActivity extends ListActivity implements
 	 */
 	public void removeActivity(int itemId) {
 		mData.remove(itemId);
-		myDaAdapter.notifyDataSetChanged();
-		myDaAdapter.notifyDataSetInvalidated();
+		
+		//myDaAdapter.notifyDataSetChanged();
+		//myDaAdapter.notifyDataSetInvalidated();
 	}
 
 	@Override
@@ -678,8 +732,8 @@ public class MeetingListActivity extends ListActivity implements
 									partyListUrl, MeetingListActivity.this);
 							dataResult = AirenaoUtills.linkResult(dataResult);
 							analyzeJson(dataResult);
+							// mData.addAll(list);
 						}
-						 Thread.sleep(2000);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -689,7 +743,7 @@ public class MeetingListActivity extends ListActivity implements
 				}
 			};
 			mThread.start();
-			return;
+
 		}
 
 		// 动态的改变listAdapter.getCount()的返回值
@@ -741,6 +795,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * 解析Json
 	 */
 	public void analyzeJson(String result) {
+
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		try {
 			JSONObject output = new JSONObject(result)
@@ -760,23 +815,25 @@ public class MeetingListActivity extends ListActivity implements
 				myJsonArray = dataSource.getJSONArray(PARTY_LIST);
 				tempCount = myJsonArray.length();
 				if (tempCount > 0) {
-					if(!separatePage){
+					if (!separatePage) {
 						DbHelper.delete(db, DbHelper.deleteActivitySql);
 					}
 				}
-				for (int i = 0; myJsonArray.length() > 0; i++) {
+				for (int i = 0; i < myJsonArray.length(); i++) {
 					JSONObject tempActivity = myJsonArray.getJSONObject(i);
 					list.add(organizeMap(tempActivity));
+					myDaAdapter.notifyDataSetChanged();
+					myListView.requestFocusFromTouch();
 					try {
 
 						DbHelper.insert(db, organizeOneActivity(tempActivity),
 								DbHelper.ACTIVITY_TABLE_NAME);
-						myListView.requestFocusFromTouch();
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-				
+
 			} else {
 				Message message = new Message();
 				message.what = Constants.POST_MESSAGE_CASE;
@@ -784,12 +841,13 @@ public class MeetingListActivity extends ListActivity implements
 				bundle.putString(Constants.HENDLER_MESSAGE, description);
 				message.setData(bundle);
 				postHandler.sendMessage(message);
-			}	
+			}
+			myListView.requestFocusFromTouch();
+			if (tempCount > 0) {
+				myDaAdapter.notifyDataSetChanged();
 				myListView.requestFocusFromTouch();
-				if(tempCount > 0){
-					myDaAdapter.notifyDataSetChanged();
-				}
-				//异步更新完后要重新获得焦点，不然条目不能点击
+			}
+			// 异步更新完后要重新获得焦点，不然条目不能点击
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -817,6 +875,7 @@ public class MeetingListActivity extends ListActivity implements
 					.getString(Constants.REFUSED_CLIENT_COUNT);
 			newRefusedClientcount = clientsData
 					.getString(Constants.NEW_REFUSED_CLIENT_COUNT);
+			
 		} catch (JSONException e1) {
 
 			e1.printStackTrace();

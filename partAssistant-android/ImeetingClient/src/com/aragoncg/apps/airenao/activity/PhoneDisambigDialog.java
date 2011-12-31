@@ -47,8 +47,6 @@ import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.MyPerson;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 
-
-
 /**
  * Class used for displaying a dialog with a list of phone numbers of which one
  * will be chosen to make a call or initiate an sms message.
@@ -65,17 +63,19 @@ public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
 	private ListAdapter mPhonesAdapter;
 	private ArrayList<PhoneItem> mPhoneItemList;
 	private int position;
-	private Map<Integer,MyPerson> positions;
+	private Map<Integer, MyPerson> positions;
 	private Map<Integer, MyPerson> personMap;
 	private String name;
 	private Handler mHandler;
 
-	/*public PhoneDisambigDialog(Context context, Cursor phonesCursor) {
-		this(context, phonesCursor, false  make call , null);
-	}
-*/
+	/*
+	 * public PhoneDisambigDialog(Context context, Cursor phonesCursor) {
+	 * this(context, phonesCursor, false make call , null); }
+	 */
 	public PhoneDisambigDialog(Context context, Cursor phonesCursor,
-			boolean sendSms, ArrayList phones,int position, Map<Integer,MyPerson> positions,Map<Integer, MyPerson> personMap,String name,Handler mHandler) {
+			boolean sendSms, ArrayList phones, int position,
+			Map<Integer, MyPerson> positions, Map<Integer, MyPerson> personMap,
+			String name, Handler mHandler) {
 		mContext = context;
 		mSendSms = sendSms;
 		mPhonesCursor = phonesCursor;
@@ -101,8 +101,7 @@ public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
 
 		// Need to show disambig dialogue.
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(mContext)
-				.setAdapter(mPhonesAdapter, this)
-				.setTitle("请选择电话号码")
+				.setAdapter(mPhonesAdapter, this).setTitle("请选择电话号码")
 				.setView(setPrimaryView);
 
 		mDialog = dialogBuilder.create();
@@ -111,10 +110,10 @@ public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
 	/**
 	 * Show the dialog.
 	 */
-	public Map<Integer,MyPerson> show() {
+	public Map<Integer, MyPerson> show() {
 		if (mPhoneItemList.size() == 1) {
 			// If there is only one after collapse, just select it, and close;
-			
+
 			onClick(mDialog, 0);
 		}
 		mDialog.show();
@@ -126,7 +125,7 @@ public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
 			PhoneItem phoneItem = mPhoneItemList.get(which);
 			long id = phoneItem.id;
 			String phone = phoneItem.phoneNumber;
-			if(mPhonesCursor != null){
+			if (mPhonesCursor != null) {
 				if (mMakePrimary) {
 					ContentValues values = new ContentValues(1);
 					values.put(Data.IS_SUPER_PRIMARY, 1);
@@ -134,24 +133,25 @@ public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
 							ContentUris.withAppendedId(Data.CONTENT_URI, id),
 							values, null, null);
 				}
-			}else {
-				if(mMakePrimary){
-					SharedPreferences msp = AirenaoUtills.getMySharedPreferences(mContext);
+			} else {
+				if (mMakePrimary) {
+					SharedPreferences msp = AirenaoUtills
+							.getMySharedPreferences(mContext);
 					Editor myEditor = msp.edit();
 					myEditor.putString(phone, Constants.IS_SUPER_PRIMARY);
 					myEditor.commit();
 				}
 			}
-			
-		   //电话号码phone
+
+			// 电话号码phone
 			MyPerson person = this.personMap.get(position);
 			Log.i("p", personMap.hashCode() + "click");
 			boolean isChecked = person.isChecked();
 			this.personMap.get(position).setChecked(!isChecked);
-			if(isChecked){
+			if (isChecked) {
 				positions.remove(Integer.valueOf(position));
-			}else{
-				positions.put(position,new MyPerson(name,phone));
+			} else {
+				positions.put(position, new MyPerson(name, phone));
 			}
 			Message msg = new Message();
 			msg.what = 0;
@@ -223,8 +223,7 @@ public class PhoneDisambigDialog implements DialogInterface.OnClickListener,
 		return phoneList;
 	}
 
-	private ArrayList<PhoneItem> makePhoneItemsList(
-			ArrayList<String> phones) {
+	private ArrayList<PhoneItem> makePhoneItemsList(ArrayList<String> phones) {
 		ArrayList<PhoneItem> phoneList = new ArrayList<PhoneItem>();
 		for (int i = 0; i < phones.size(); i++) {
 			phoneList.add(new PhoneItem(phones.get(i), i));

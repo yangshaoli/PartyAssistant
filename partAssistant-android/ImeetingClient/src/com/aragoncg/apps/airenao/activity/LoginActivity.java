@@ -48,7 +48,7 @@ public class LoginActivity extends Activity {
 	private Handler myHandler;
 	private ProgressDialog myProgressDialog;
 	private ArrayList<Map<String, Object>> activityList;
-	
+
 	private Context myContext;
 
 	@Override
@@ -72,8 +72,8 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				myProgressDialog = AirenaoUtills.generateProgressingDialog(LoginActivity.this,
-						"",getString(R.string.logining));
+				myProgressDialog = AirenaoUtills.generateProgressingDialog(
+						LoginActivity.this, "", getString(R.string.logining));
 				myProgressDialog.setOwnerActivity(LoginActivity.this);
 				myProgressDialog.show();
 				boolean isEmail;
@@ -91,21 +91,17 @@ public class LoginActivity extends Activity {
 				}
 				isEmail = AirenaoUtills.matchString(AirenaoUtills.regEmail,
 						userName);
-				/*if (!isEmail) {
-					new AlertDialog.Builder(LoginActivity.this)
-							.setIcon(R.drawable.alert_dialog_icon)
-							.setTitle(R.string.error_email)
-							.setNegativeButton(R.string.btn_cancle,
-									new DialogInterface.OnClickListener() {
-										public void onClick(
-												DialogInterface dialog,
-												int whichButton) {
+				/*
+				 * if (!isEmail) { new AlertDialog.Builder(LoginActivity.this)
+				 * .setIcon(R.drawable.alert_dialog_icon)
+				 * .setTitle(R.string.error_email)
+				 * .setNegativeButton(R.string.btn_cancle, new
+				 * DialogInterface.OnClickListener() { public void onClick(
+				 * DialogInterface dialog, int whichButton) {
+				 * 
+				 * } }).create(); return; }
+				 */
 
-										}
-									}).create();
-					return;
-				}*/
-			
 				// 启动线程登录
 				loginThread = new Thread() {
 
@@ -115,58 +111,69 @@ public class LoginActivity extends Activity {
 						params.put("username", userName);
 						params.put("password", passWord);
 						params.put("device_token", "");
-						String loginResult = new HttpHelper().performPost(loginUrl,
-								userName, passWord, null, params, LoginActivity.this);
+						String loginResult = new HttpHelper().performPost(
+								loginUrl, userName, passWord, null, params,
+								LoginActivity.this);
 						String result = "";
 						result = AirenaoUtills.linkResult(loginResult);
 						JSONObject jsonObject;
 						try {
-							jsonObject = new JSONObject(result).getJSONObject("output");
+							jsonObject = new JSONObject(result)
+									.getJSONObject("output");
 							String status = jsonObject.getString("status");
-							String description = jsonObject.getString("description");
-							
+							String description = jsonObject
+									.getString("description");
+
 							if ("ok".equals(status)) {
-								String uId = jsonObject.getJSONObject("datasource").getString("uid");
+								String uId = jsonObject.getJSONObject(
+										"datasource").getString("uid");
 								Message message = new Message();
 								message.what = 2;
 								Bundle bundle = new Bundle();
-								bundle.putString(Constants.AIRENAO_USER_NAME, userName);
+								bundle.putString(Constants.AIRENAO_USER_NAME,
+										userName);
 								bundle.putString(Constants.AIRENAO_USER_ID, uId);
 								message.setData(bundle);
 								myHandler.sendMessage(message);
-								
-								SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+
+								SQLiteDatabase db = DbHelper
+										.openOrCreateDatabase();
 								tempActivity = DbHelper.select(db);
-								activityList = (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
+								activityList = (ArrayList<Map<String, Object>>) DbHelper
+										.selectActivitys(db);
 								if (tempActivity != null) {
-									Intent intent = new Intent(LoginActivity.this,
-											SendAirenaoActivity.class);
+									Intent intent = new Intent(
+											LoginActivity.this,
+											MeetingListActivity.class);
 									intent.putExtra(Constants.TRANSFER_DATA,
 											tempActivity);
 									startActivity(intent);
 
 								} else {
-									if(activityList.size()>0){
-										Intent intent = new Intent(LoginActivity.this,
+									if (activityList.size() > 0) {
+										Intent intent = new Intent(
+												LoginActivity.this,
 												MeetingListActivity.class);
 										startActivity(intent);
-									}else{
-										Intent intent = new Intent(LoginActivity.this,
+									} else {
+										Intent intent = new Intent(
+												LoginActivity.this,
 												SendAirenaoActivity.class);
 										startActivity(intent);
 									}
-									
+
 								}
-								
-								//myProgressDialog.cancel();
-							}else{
+
+								// myProgressDialog.cancel();
+							} else {
 								Message message = new Message();
 								message.what = 1;
 								Bundle bundle = new Bundle();
-								bundle.putString(Constants.HENDLER_MESSAGE, description);
+								bundle.putString(Constants.HENDLER_MESSAGE,
+										description);
 								message.setData(bundle);
 								myHandler.sendMessage(message);
-								//myProgressDialog.cancel();
+								// myProgressDialog.cancel();
 							}
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
@@ -214,55 +221,57 @@ public class LoginActivity extends Activity {
 
 			}
 		});
-		btnRegister = (Button)findViewById(R.id.register_button);
+		btnRegister = (Button) findViewById(R.id.register_button);
 		btnRegister.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent();
 				intent.setClass(LoginActivity.this, RegisterActivity.class);
 				startActivity(intent);
-				
+
 			}
 		});
 	}
 
 	public void initData() {
-		
-		//初始化handler
-		myHandler = new Handler(){
+
+		// 初始化handler
+		myHandler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
-				switch(msg.what){
-					case Constants.POST_MESSAGE_CASE:
-						myProgressDialog.cancel();
-						String message = (String) msg.getData().get(Constants.HENDLER_MESSAGE);
-						AlertDialog aDig = new AlertDialog.Builder(
-								LoginActivity.this).setMessage(
-										message).create();
-						aDig.show();
-					case Constants.LOGIN_SUCCESS_CASE:
+				switch (msg.what) {
+				case Constants.POST_MESSAGE_CASE:
+					myProgressDialog.cancel();
+					String message = (String) msg.getData().get(
+							Constants.HENDLER_MESSAGE);
+					AlertDialog aDig = new AlertDialog.Builder(
+							LoginActivity.this).setMessage(message).create();
+					aDig.show();
+				case Constants.LOGIN_SUCCESS_CASE:
 					/*
 					 * 保存用户名和密码
-					 */ myProgressDialog.cancel();
-						userName = (String) msg.getData().get(Constants.AIRENAO_USER_NAME);
-						String uId = (String) msg.getData().get(Constants.AIRENAO_USER_ID);
-						SharedPreferences mySharedPreferences = AirenaoUtills
-								.getMySharedPreferences(myContext);
-						Editor editor = mySharedPreferences.edit();
-						editor.putString(Constants.AIRENAO_USER_NAME, userName);
-						editor.putString(Constants.AIRENAO_USER_ID, uId);
-						editor.commit();
-					    finish();
+					 */myProgressDialog.cancel();
+					userName = (String) msg.getData().get(
+							Constants.AIRENAO_USER_NAME);
+					String uId = (String) msg.getData().get(
+							Constants.AIRENAO_USER_ID);
+					SharedPreferences mySharedPreferences = AirenaoUtills
+							.getMySharedPreferences(myContext);
+					Editor editor = mySharedPreferences.edit();
+					editor.putString(Constants.AIRENAO_USER_NAME, userName);
+					editor.putString(Constants.AIRENAO_USER_ID, uId);
+					editor.commit();
+					finish();
 				}
 				super.handleMessage(msg);
 			}
-			
+
 		};
-		
-		//初始化登录线程
+
+		// 初始化登录线程
 		loginUrl = getString(R.string.loginUrl);
-		
+
 	}
 }

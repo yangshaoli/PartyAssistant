@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/userChange"
+	android:layout_width="wrap_content"
+	android:layout_height="40sp"
+	android:padding="0dip"
+	android:orientation="horizontal"
+	android:clickable="true"
+	>
+	<ImageView
+	android:layout_width="wrap_content"
+	android:layout_height="37sp"
+	android:src="@drawable/user_icon"/>
+	<TextView
+	android:layout_width="wrap_content"
+	android:id="@+id/userTitle"
+	android:layout_height="37sp"
+	android:textStyle="bold"
+	android:layout_marginTop="9sp"
+	android:text="ad"/>
+	</LinearLayout>
