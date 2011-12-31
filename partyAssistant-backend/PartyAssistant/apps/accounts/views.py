@@ -5,7 +5,6 @@ import logging
 from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
     RegistrationForm, UserProfileForm, BuySMSForm
 from apps.accounts.models import UserAliReceipt, UserBindingTemp
-from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.db.transaction import commit_on_success
@@ -183,8 +182,8 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
     if exist:
         userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
         create_time = userbindingtemp.created_time
-        now = datetime.now()
-        dt = timedelta(minutes=1)
+        now = datetime.datetime.now()
+        dt = datetime.timedelta(minutes=1)
         if (create_time + dt) > now:
             time = (now - create_time).total_seconds()
             time= 60 - int(time)
@@ -228,8 +227,8 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     if exist:
         userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
         create_time = userbindingtemp.created_time
-        now = datetime.now()
-        dt = timedelta(minutes=1)
+        now = datetime.datetime.now()
+        dt = datetime.timedelta(minutes=1)
         
         if (create_time + dt) > now:
             time = (now - create_time).total_seconds()
