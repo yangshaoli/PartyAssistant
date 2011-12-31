@@ -9,6 +9,7 @@
 #import "SendSMSModeChooseViewController.h"
 
 @implementation SendSMSModeChooseViewController
+@synthesize delegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -105,6 +106,23 @@
             break;
     }
     
+    if (indexPath.row == 0) {
+        if ([self.delegate IsCurrentSMSSendBySelf]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    } else if (indexPath.row == 1) {
+        if ([self.delegate IsCurrentSMSSendBySelf]) {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
+    }
+    
+    
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     return cell;
 }
 
@@ -158,6 +176,13 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    if (indexPath.row == 0) {
+        [delegate changeSMSModeToSendBySelf:YES];
+    } else {
+        [delegate changeSMSModeToSendBySelf:NO];
+    }
+    
+    [self.tableView reloadData];
 }
 
 @end

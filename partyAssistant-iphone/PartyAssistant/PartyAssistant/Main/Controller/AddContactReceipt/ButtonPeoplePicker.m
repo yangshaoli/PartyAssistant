@@ -188,6 +188,9 @@
     ABMultiValueRef phoneProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
     
     NSString *phone;
+    NSString *personName;
+    
+    name = (__bridge NSString *)ABRecordCopyCompositeName(person);
     
     if (phoneProperty)
     {
@@ -205,13 +208,14 @@
         personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                           [NSNumber numberWithInt:abRecordID], @"abRecordID",
                                           [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                          phone, @"phoneNumber",nil];
+                                          phone, @"phoneNumber", personName, @"name",nil];
     } 
     else 
     {
         personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                             [NSNumber numberWithInt:abRecordID], @"abRecordID",
-                            [NSNumber numberWithInt:identifier], @"valueIdentifier", nil];
+                            [NSNumber numberWithInt:identifier], @"valueIdentifier",       
+                            @"", @"phoneNumber", @"", @"name",nil];
     }
     
 	[self removePersonFromGroup:personDictionary];
@@ -435,7 +439,31 @@
 
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary
 {
-	[group removeObject:personDictionary];	
+    NSNumber *theID = [personDictionary objectForKey:@"abRecordID"];
+    NSNumber *theIdentify = [personDictionary objectForKey:@"valueIdentifier"];
+    NSString *thePhoneString = [personDictionary objectForKey:@"phoneNumber"];
+    
+    NSDictionary *dictionary = nil;
+    for (int i=0; i<[group count]; i++) {
+        NSDictionary *personInfo = [group objectAtIndex:i];
+        NSNumber *ID = [personInfo objectForKey:@"abRecordID"];
+        NSNumber *identify = [personInfo objectForKey:@"valueIdentifier"];
+        NSString *phoneString = [personInfo objectForKey:@"phoneNumber"];
+        if (!ID) {
+            ID = [NSNumber numberWithInt:-1];
+        }
+        if (!identify) {
+            identify = [NSNumber numberWithInt:0];
+        }
+        if (!phoneString) {
+            phoneString = @"";
+        }
+        if ([ID intValue] == [theID intValue] && [theIdentify intValue] == [identify intValue] && [phoneString isEqualToString:thePhoneString]) {
+                dictionary = personInfo;
+        }
+    }
+    [group removeObject:dictionary];
+	
 	[self layoutNameButtons];
 }
 
@@ -488,10 +516,14 @@
             continue;
         }
         
-		ABRecordRef abPerson = ABAddressBookGetPersonWithRecordID(addressBook, abRecordID);
-
-		NSString *name = (__bridge_transfer NSString *)ABRecordCopyCompositeName(abPerson);
-		
+        NSString *name = nil;
+		if (abRecordID) {
+            ABRecordRef abPerson = ABAddressBookGetPersonWithRecordID(addressBook, abRecordID);
+            name = (__bridge_transfer NSString *)ABRecordCopyCompositeName(abPerson);
+        } else {
+            name = [personDictionary objectForKey:@"name"];
+        }
+        
 		ABMultiValueIdentifier identifier = [[personDictionary valueForKey:@"valueIdentifier"] intValue];
 		
         NSLog(@"identifier: %d",identifier);

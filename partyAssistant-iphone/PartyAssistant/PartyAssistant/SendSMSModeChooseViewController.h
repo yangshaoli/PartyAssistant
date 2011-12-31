@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol UserSMSModeCheckDelegate
+
+- (BOOL)IsCurrentSMSSendBySelf;
+- (void)changeSMSModeToSendBySelf:(BOOL)status;
+
+@end
+
 @interface SendSMSModeChooseViewController : UITableViewController
+
+@property (nonatomic, weak) id<UserSMSModeCheckDelegate> delegate;
 
 @end

@@ -127,7 +127,6 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self hideTabBar:self.tabBarController];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -379,6 +378,8 @@
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+    
+    [self hideTabBar:self.tabBarController];
 }
 
 #pragma mark -

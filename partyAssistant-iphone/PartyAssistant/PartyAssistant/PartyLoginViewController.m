@@ -274,52 +274,53 @@
     
     
     //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
-    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
+    
+//    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
     UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
     CreatNewPartyViaSMSViewController *creat = [[CreatNewPartyViaSMSViewController alloc] initWithNibName:nil bundle:nil];
     
-    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
+//    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
     UINavigationController *creatNav = [[UINavigationController alloc] 
         initWithRootViewController:creat];
     
     
     UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
-    UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
+    UIImage *creatPageBarImage = [UIImage imageNamed:@"new_icon"];
     UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
     
     UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:listBarImage tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:addPageBarImage tag:2];
+    UITabBarItem *creatPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:creatPageBarImage tag:2];
     UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
-    addPageNav.tabBarItem = addPageBarItem;
+    creatNav.tabBarItem = creatPageBarItem;
     settingNav.tabBarItem = settingBarItem;
     
     [listBarItem release];
-    [addPageBarItem release];
+    [creatPageBarItem release];
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
-    tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, creatNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
     [self.navigationController pushViewController:tab animated:YES];
 
     [listNav release];
-    [addPageNav release];
-    [settingNav release];
     [creatNav release];
+    [settingNav release];
+//    [creatNav release];
     
     //[list release];
     [pattyListTableVC release];
-    [addPage release];
+//    [addPage release];
     [settings release];
     [creat release];
     
      //add suggest user input name page here?
-    [self checkIfUserNameSaved];
+//    [self checkIfUserNameSaved];
     
     
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab

@@ -16,6 +16,7 @@
 #import "EditPartyTableViewController.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "ResendPartyViaSMSViewController.h"
 
 
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
@@ -381,8 +382,7 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"self.clientsArray输出>>>>%@",self.clientsArray);
-            NSLog(@"self.clientsArray在statustableVC中输出后%@",self.clientsArray);
+            NSLog(@"============self.clientsArray输出>>>>%@",self.clientsArray);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -469,7 +469,12 @@
 
 
 - (void)resentMsg{
+    NSLog(@"-----%@%@",self.clientsArray,self.partyObj.contentString);
     [self getPartyClientSeperatedList];
+    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+    [resendPartyViaSMSViewController  setReceipts:self.clientsArray];
     NSLog(@"调用再次发送");
 
 }

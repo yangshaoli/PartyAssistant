@@ -34,7 +34,7 @@
 @property(nonatomic, assign)ABRecordID contactorID;
 @property(nonatomic, assign)ABMultiValueRef phone;
 @property(nonatomic, assign)ABRecordRef card;
-@property(nonatomic, strong)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
+@property(nonatomic, assign)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 @property(nonatomic, retain)NSDictionary *clientDict;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *clientStatusFlag;
