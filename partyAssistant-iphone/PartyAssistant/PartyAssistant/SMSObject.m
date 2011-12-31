@@ -82,6 +82,9 @@
     NSMutableArray *nArray = [[NSMutableArray alloc] initWithCapacity:[self.receiversArray count]];
     for (int i=0; i<[receiversArray count]; i++) {
         ClientObject *client = [self.receiversArray objectAtIndex:i];
+        if (client.cID == -1) {
+            continue;
+        }
         NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:client.cID],@"cID",client.cName,@"cName",client.cVal,@"cValue", nil];
         [nArray addObject:dic];
     }
