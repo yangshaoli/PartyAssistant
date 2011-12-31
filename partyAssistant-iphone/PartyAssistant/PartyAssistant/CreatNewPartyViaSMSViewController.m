@@ -7,7 +7,6 @@
 //
 
 #import "CreatNewPartyViaSMSViewController.h"
-#import "SendSMSModeChooseViewController.h"
 #import "ContactsListPickerViewController.h"
 #import "PartyAssistantAppDelegate.h"
 #import "NotificationSettings.h"
@@ -404,8 +403,8 @@
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
 	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 #pragma mark -
 #pragma mark SMS delegate
@@ -519,5 +518,16 @@
 - (void)showAlertRequestFailed: (NSString *) theMessage{
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
+}
+
+#pragma mark - 
+#pragma mark UserSMSModeCheckDelegate
+
+- (BOOL)IsCurrentSMSSendBySelf {
+    return self.smsObject._isSendBySelf;
+}
+
+- (void)changeSMSModeToSendBySelf:(BOOL)status {
+    self.smsObject._isSendBySelf = status;
 }
 @end
