@@ -23,10 +23,10 @@ PAYMENT_TYPE = (
                 (u'美元', u'美元'),
                 )
 BINDING_STATUS = (
-                  (u'未绑定', 'unbind'),
-                  (u'绑定', 'bind'),
-                  (u'待验证', 'waitingbind'),
-                  (u'待解除', 'waiteunbind'),
+                  ('unbind', 'unbind'),
+                  ('bind' , 'bind'),
+                  ('waitingbind', 'waitingbind'),
+                  ('waiteunbind', 'waiteunbind'),
                   )
 
 class UserProfile(models.Model):
@@ -36,7 +36,7 @@ class UserProfile(models.Model):
     account_type = models.CharField(max_length = 16, choices = ACCOUNT_TYPE_CHOICES)
     first_login = models.BooleanField(default = True)
     phone = models.CharField(blank = True, max_length = 16)
-    phone_binding_status = models.CharField(blank = True, max_length = 16, choices = BINDING_STATUS)
+    phone_binding_status = models.CharField(default = 'unbind', max_length = 16, choices = BINDING_STATUS)
     email = models.CharField(blank = True, null = True, max_length = 16)
     email_binding_status = models.CharField(default = 'unbind', max_length = 16, choices = BINDING_STATUS)
     used_sms_count = models.IntegerField(default = 0)
