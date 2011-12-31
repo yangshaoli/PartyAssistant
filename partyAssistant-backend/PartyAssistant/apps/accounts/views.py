@@ -178,8 +178,16 @@ def bought_success(request):
 
 @login_required    
 def apply_phone_unbingding_ajax(request):#申请手机解绑定
-#    if 'phone_unbingding' in request.COOKIES:
-#        return
+    #是否延时1min
+    exist = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
+    if exist:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
+        create_time = userbindingtemp.created_time
+        now = datetime.now()
+        dt = timedelta(minutes=1)
+        if (create_time + dt) > now:
+            return HttpResponse("toomanyenter")
+        
     phone = request.user.get_profile().phone
        
     userkey = generate_phone_code()
@@ -193,19 +201,15 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
     profile.save()
     
     response = HttpResponse("success")
-    dt = datetime.now() + timedelta(minutes = 1)
-    response.set_cookie('phone_unbingding',request.user.id,expires=dt)
     
     return response
 
 @login_required    
 def apply_phone_bingding_ajax(request):#申请手机绑定
 
-    #1.收到手机号码(翻送间歇1min，重新获取/重i才能输入手机号码)cookie中,手机号码已经被使用
+    #1.收到手机号码(发送间歇1min)
     #2.产生验证码
     #3.保存到UserBindingTemp 
-#    if 'airennao_phone_bingding' in request.COOKIES:
-#        return
     phone = request.POST.get('phone','')
     phone_re = re.compile(r'1\d{10}')
     match = phone_re.search(phone)
@@ -216,6 +220,17 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
     if exist:
         return HttpResponse("used")
+    
+    #是否延时1min
+    exist = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
+    if exist:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
+        create_time = userbindingtemp.created_time
+        now = datetime.now()
+        dt = timedelta(minutes=1)
+        
+        if (create_time + dt) > now:
+            return HttpResponse("toomanyenter")
     
     userkey = generate_phone_code()
     userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
@@ -229,8 +244,6 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     profile.save()
     
     response = HttpResponse("success")
-    dt = datetime.now() + timedelta(minutes = 1)
-    response.set_cookie('phone_bingding',request.user.id,expires=dt)
     
     return response
 
@@ -239,8 +252,6 @@ def validate_phone_bingding_ajax(request, binding_status='bind'):#手机绑定�
     #1.获取验证码
     #2.是否有验证码
     #.绑定/解绑成功
-#    if 'validate_phone_bingding' in request.COOKIES:
-#        return
     
     userkey = request.POST.get('key','')
     
@@ -284,8 +295,7 @@ def validate_phone_bingding_ajax(request, binding_status='bind'):#手机绑定�
         data['status'] = 'notexist'
         
     response = HttpResponse(simplejson.dumps(data))
-    dt = datetime.now() + timedelta(minutes = 1)
-    response.set_cookie('validate_phone_bingding',request.user.id,expires=dt) 
+    
     return response
 
 def email_binding(request):

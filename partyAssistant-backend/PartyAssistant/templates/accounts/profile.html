@@ -40,11 +40,8 @@ function unbindingPhone(){
                     dom.children('a').text('[确认]').attr('onclick','validate_phone_bingding("unbind")');
                     alert('验证码已经发送到您的手机中，请注意查收');
                  }
-                 if(response=='used'){
-                 	alert('该手机号码，已经被绑定');
-                 }
-                 if(response=='invalidate'){
-                 	alert('手机号码不合法');
+                 if(response == 'toomanyenter'){
+                 	alert('点击频率过高，请稍后继续点击');
                  }
             },
             500: function(response){
@@ -98,6 +95,9 @@ function bindingPhone(){
 	                 }
 	                 if(response=='invalidate'){
 	                 	alert('手机号码不合法');
+	                 }
+	                 if(response == 'toomanyenter'){
+	                 	alert('点击频率过高，请稍后继续点击');
 	                 }
                 },
                 500: function(response){
