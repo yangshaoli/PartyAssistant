@@ -148,6 +148,7 @@
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
             SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            vc.delegate = self;
             [self.navigationController pushViewController:vc animated:YES];
         }
     }

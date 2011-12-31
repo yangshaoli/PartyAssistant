@@ -17,6 +17,6 @@
 
 @interface SendSMSModeChooseViewController : UITableViewController
 
-@property (nonatomic, strong) id<UserSMSModeCheckDelegate> delegate;
+@property (nonatomic, weak) id<UserSMSModeCheckDelegate> delegate;
 
 @end

@@ -106,11 +106,20 @@
             break;
     }
     
-    if ([self.delegate IsCurrentSMSSendBySelf]) {
-        cell.accessoryType = UITableViewCellAccessoryCheckmark;
-    } else {
-        cell.accessoryType = UITableViewCellAccessoryNone;
+    if (indexPath.row == 0) {
+        if ([self.delegate IsCurrentSMSSendBySelf]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    } else if (indexPath.row == 1) {
+        if ([self.delegate IsCurrentSMSSendBySelf]) {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
     }
+    
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
