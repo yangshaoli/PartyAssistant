@@ -37,7 +37,7 @@ def change_apply_status(request, id, applystatus):
 #受邀人员列表
 @login_required
 def invite_list(request, party_id):
-    party = get_object_or_404(Party, id=party_id)
+    party = get_object_or_404(Party, id=party_id, user=request.user)
     party_clients_list = PartiesClients.objects.filter(party=party)
     
     party_clients = {
