@@ -74,6 +74,15 @@
     // Do any additional setup after loading the view from its nib.
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.smsObject._isSendBySelf) {
+        self.sendModeNameLabel.text = @"用自己手机发送";
+    } else {
+        self.sendModeNameLabel.text = @"通过服务器发送";
+    }
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -228,15 +237,8 @@
         NSMutableString *contactNameTFContent = [[NSMutableString alloc] initWithCapacity:0];
         for (int i=0; i<[self.receipts count]; i++) {
             NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
-            ABRecordID peopleID = [[peopleInfo objectForKey:@"abRecordID"] intValue];
-            if (peopleID == -1) {
-                continue;
-            }
-            ABContact *contact = [ABContact contactWithRecordID:peopleID];
-            NSString *name = [contact compositeName];
-            if ([name length] <= 0) {
-                name = [peopleInfo objectForKey:@"phoneNumber"];
-            }
+        
+            NSString *name  = [peopleInfo objectForKey:@"name"];
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
                                      
@@ -290,12 +292,9 @@
     self.smsObject.smsContent = [editingTableViewCell.textView text];
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
     for (NSDictionary *receipt in self.receipts) {
-        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-        if (peopleID == -1) {
-            continue;
-        }
+        //need check phone format
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
-        client.cID = peopleID;
         client.cName = [receipt objectForKey:@"name"];
         client.cVal = [receipt objectForKey:@"phoneNumber"];
         [array addObject:client];
@@ -361,10 +360,6 @@
                     
                     NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-                        if (peopleID == -1) {
-                            continue;
-                        }
                         if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
                             [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
                         }
