@@ -16,7 +16,6 @@
 
 @class ButtonPeoplePicker;
 @interface CreatNewPartyViaSMSViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,MFMessageComposeViewControllerDelegate,EditableTableViewCellDelegate,ButtonPeoplePickerDelegate,MBProgressHUDDelegate,ContactsListPickerViewControllerDelegate,UserSMSModeCheckDelegate> {
-    EditableTableViewCell *editingTableViewCell;
     SMSObject *smsObject;
 }
 
@@ -36,6 +35,8 @@
 @property (nonatomic, strong) SMSObject *smsObject;
 
 @property (nonatomic, strong) MBProgressHUD *HUD;
+
+@property (nonatomic, strong) EditableTableViewCell *editingTableViewCell;
 
 - (IBAction)callContactList;
 - (void)saveSMSInfo;

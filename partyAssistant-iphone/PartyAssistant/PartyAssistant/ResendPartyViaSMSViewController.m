@@ -40,7 +40,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
     NSLog(@"%@",self.smsObject.receiversArrayJson);
-    [request setPostValue:editingTableViewCell.textView.text forKey:@"content"];
+    [request setPostValue:self.editingTableViewCell.textView.text forKey:@"content"];
     [request setPostValue:@"" forKey:@"subject"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
@@ -135,14 +135,14 @@
         NSLog(@"%@",newReceipt);
         [newReceipts addObject:newReceipt];
     }
-    NSLog(@"%@",newReceipts);
     [super setReceipts:[newReceipts mutableCopy]];
+    [self rearrangeContactNameTFContent];
 }
 
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID{
     smsContent = [newContent copy];
-    editingTableViewCell.textView.text = smsContent;
-    NSLog(@"%@",editingTableViewCell);
+    self.editingTableViewCell.textView.text = smsContent;
+    NSLog(@"%@",self.editingTableViewCell);
     groupID = newGroupID;
 }
 @end

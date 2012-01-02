@@ -62,8 +62,6 @@
 	[searchField addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
 	[searchField setDelegate:self];
     
-	[self layoutNameButtons];
-    
     UIColor * highColor = [UIColor colorWithWhite:1.000 alpha:1.000];  
     UIColor * lowColor = [UIColor colorWithRed:0.851 green:0.859 blue:0.867 alpha:1.000];  
     //    //The gradient, simply enough.  It is a rectangle  
@@ -103,6 +101,8 @@
     self.addReceiptBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
     self.addReceiptButton.center = CGPointMake(14, 14);
     [self.addReceiptBGView addSubview:self.addReceiptButton];
+    
+    [self layoutNameButtons];
 }
 
 #pragma mark - Memory management
@@ -170,7 +170,16 @@
 	return NO;
 }
 
-- (void)insertText:(NSString *)text {}
+- (void)insertText:(NSString *)text {
+    NSLog(@"input method detected!");
+    if (selectedButton) {
+        NSInteger selectedIndex = selectedButton.tag;
+        NSDictionary *selectedPeople = [self.group objectAtIndex:selectedIndex];
+        [self removePersonFromGroup:selectedPeople];
+        searchField.text = [NSString stringWithFormat:@"%@%@", @"\u200B", text];
+        [self.searchField becomeFirstResponder];
+    }
+}
 
 - (void)deleteBackward
 {	
@@ -416,6 +425,27 @@
 	}
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (searchField.text.length > 1)
+    {
+        NSString *newContactname = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        newContactname = [newContactname stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([newContactname length] == 0) {
+            searchField.text = @"\u200B";
+            return NO;
+        }
+        NSDictionary *newContact = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                       @"", @"phoneNumber", newContactname, @"name", nil];
+        searchField.text = @"\u200B";
+        [self addPersonToGroup:newContact];
+	}
+	else
+    {
+		
+	}
+    return NO;
+}
+
 #pragma mark - Add and remove a person to/from the group
 
 - (void)addPersonToGroup:(NSDictionary *)personDictionary
@@ -439,6 +469,10 @@
         
         if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
         {
+            return;
+        }
+        
+        if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
             return;
         }
     }
@@ -478,6 +512,7 @@
     CGFloat minWidth = maxWidth / 3;
     
     CGRect finalRectOfView = buttonView.frame;
+    finalRectOfView.size.height = 40.0f;
     
     CGRect originFrame = searchField.frame;
     CGRect targetFrame = originFrame;
@@ -631,14 +666,13 @@
             finalRectOfView = to;
         }
         
-        CGRect addButtonBGFrame = self.addReceiptBGView.frame;
-        addButtonBGFrame.origin.y = yPosition;
-        self.addReceiptBGView.frame = addButtonBGFrame;
-        [addReceiptBGView removeFromSuperview];
-        [buttonView addSubview:addReceiptBGView];
 	}
     
-    
+    CGRect addButtonBGFrame = self.addReceiptBGView.frame;
+    addButtonBGFrame.origin.y = yPosition;
+    self.addReceiptBGView.frame = addButtonBGFrame;
+    [addReceiptBGView removeFromSuperview];
+    [buttonView addSubview:addReceiptBGView];
     
     if (group.count > 0)
     {
