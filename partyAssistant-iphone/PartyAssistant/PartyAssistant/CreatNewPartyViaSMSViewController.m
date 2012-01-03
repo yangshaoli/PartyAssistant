@@ -244,7 +244,7 @@
 #pragma mark ButtonPickDelegate
 - (void)buttonPeoplePickerDidFinish:(ButtonPeoplePicker *)controller {
     self.receipts = [NSMutableArray arrayWithArray:controller.group];
-    NSLog(@"%@",self.receipts);
+    NSLog(@"now receipts is :%@",self.receipts);
     [self rearrangeContactNameTFContent];
     [[controller view] removeFromSuperview];
     self.navigationItem.rightBarButtonItem = self.rightItem;
@@ -329,7 +329,7 @@
         } else {
             if ([phoneNumber isEqualToString:@""]) {
                 phoneNumber = [self getCleanPhoneNumber:client.cName];
-                if (phoneNumber.length > 11) {
+                if (phoneNumber.length >= 11) {
                     client.cVal = phoneNumber;
                 } else {
                     continue;
@@ -468,8 +468,7 @@
 	
 	// Notifies users about errors associated with the interface
 	switch (result) {
-		case MessageComposeResultCancelled:{
-            [self.navigationController dismissModalViewControllerAnimated:YES];
+		case MessageComposeResultCancelled:{[self.navigationController dismissModalViewControllerAnimated:YES];
             //            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
 //            [sh showInView:self.tabBarController.view];
             break;
@@ -479,6 +478,7 @@
 			break;
 		case MessageComposeResultFailed:{
             UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            av.tag = 10011;
             [av show];
 			break;
         }
@@ -585,5 +585,13 @@
 
 - (void)changeSMSModeToSendBySelf:(BOOL)status {
     self.smsObject._isSendBySelf = status;
+}
+
+#pragma mark - 
+#pragma mark alert view delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 10011) {
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    }
 }
 @end

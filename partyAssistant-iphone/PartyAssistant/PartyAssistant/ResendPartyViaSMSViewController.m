@@ -186,7 +186,7 @@
 #pragma mark -
 #pragma mark save related data
 
-- (void)setReceipts:(NSArray *)newValues {
+- (void)setNewReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
     NSLog(@"mark:new Values===========%@",newValues);
     for (NSDictionary *value in newValues) {
