@@ -248,6 +248,7 @@
         }else{
             cell.textLabel.text=self.partyObj.contentString;
         }
+        cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     }else{
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
