@@ -393,7 +393,6 @@
      */
     
     PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
-    partyDetailTableVC.title=[[[self.partyList  objectAtIndex:[indexPath row]] contentString] substringToIndex:3]; 
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];

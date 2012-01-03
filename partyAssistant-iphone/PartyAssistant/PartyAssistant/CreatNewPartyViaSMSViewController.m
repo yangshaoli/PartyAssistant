@@ -15,6 +15,7 @@
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
+#import "PartyListTableVC.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -372,10 +373,15 @@
                     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
                     [bs clearBaseInfo];
                     EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                    [se clearEmailObject];                  
+                    [se clearEmailObject];   
+                    
                 }else{
                     NSLog(@"不能发送短信");
                     [self createPartySuc];
+                    //wxz
+                    PartyListTableVC *partyListTableVC = [[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
+                    [self.navigationController pushViewController:partyListTableVC animated:YES];
+                    //wxz
 #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                     return;
 #endif
@@ -383,7 +389,12 @@
                 
             }else{
                 [self createPartySuc];
+                //wxz
+                PartyListTableVC *partyListTableVC = [[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
+                [self.navigationController pushViewController:partyListTableVC animated:YES];
+                //wxz
             }
+                 
         }else{
             [self showAlertRequestFailed:description];		
         }
