@@ -18,6 +18,10 @@
 		7528DAF414AB1E7200236609 /* ShadowedTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAEB14AB1E7200236609 /* ShadowedTableView.m */; };
 		7528DAF514AB1E7200236609 /* ContactsListPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7528DAFB14AB22A300236609 /* ButtonPeoplePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */; };
+		7574BE9F14B2D0E3007651EE /* BindingListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7574BE9D14B2D0E3007651EE /* BindingListViewController.m */; };
+		7574BEA014B2D0E3007651EE /* BindingListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */; };
+		7574BEA714B2D7CF007651EE /* NameBindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7574BEA514B2D7CF007651EE /* NameBindingViewController.m */; };
+		7574BEA814B2D7CF007651EE /* NameBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */; };
 		75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */; };
 		75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */; };
 		75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */; };
@@ -262,6 +266,12 @@
 		7528DAED14AB1E7200236609 /* ContactsListPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactsListPickerViewController.h; sourceTree = "<group>"; };
 		7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactsListPickerViewController.m; sourceTree = "<group>"; };
 		7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonPeoplePicker.xib; sourceTree = "<group>"; };
+		7574BE9C14B2D0E3007651EE /* BindingListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BindingListViewController.h; sourceTree = "<group>"; };
+		7574BE9D14B2D0E3007651EE /* BindingListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BindingListViewController.m; sourceTree = "<group>"; };
+		7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BindingListViewController.xib; sourceTree = "<group>"; };
+		7574BEA414B2D7CF007651EE /* NameBindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NameBindingViewController.h; path = Binding/NameBindingViewController.h; sourceTree = "<group>"; };
+		7574BEA514B2D7CF007651EE /* NameBindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NameBindingViewController.m; path = Binding/NameBindingViewController.m; sourceTree = "<group>"; };
+		7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NameBindingViewController.xib; path = Binding/NameBindingViewController.xib; sourceTree = "<group>"; };
 		75A0476814AC0D9F00B2532C /* JFTextViewNoInset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JFTextViewNoInset.h; sourceTree = "<group>"; };
 		75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JFTextViewNoInset.m; sourceTree = "<group>"; };
 		75A0476B14AC0DAA00B2532C /* EditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableTableViewCell.h; sourceTree = "<group>"; };
@@ -685,6 +695,43 @@
 			path = Main/Controller/ContactList;
 			sourceTree = "<group>";
 		};
+		7574BE9A14B2D07C007651EE /* Binding */ = {
+			isa = PBXGroup;
+			children = (
+				7574BE9C14B2D0E3007651EE /* BindingListViewController.h */,
+				7574BE9D14B2D0E3007651EE /* BindingListViewController.m */,
+				7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */,
+				7574BEA314B2D72F007651EE /* NameBinding */,
+				7574BEA214B2D724007651EE /* MailBinding */,
+				7574BEA114B2D716007651EE /* TelBinding */,
+			);
+			name = Binding;
+			sourceTree = "<group>";
+		};
+		7574BEA114B2D716007651EE /* TelBinding */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = TelBinding;
+			sourceTree = "<group>";
+		};
+		7574BEA214B2D724007651EE /* MailBinding */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = MailBinding;
+			sourceTree = "<group>";
+		};
+		7574BEA314B2D72F007651EE /* NameBinding */ = {
+			isa = PBXGroup;
+			children = (
+				7574BEA414B2D7CF007651EE /* NameBindingViewController.h */,
+				7574BEA514B2D7CF007651EE /* NameBindingViewController.m */,
+				7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */,
+			);
+			name = NameBinding;
+			sourceTree = "<group>";
+		};
 		75A0476514AC0D4700B2532C /* SMS */ = {
 			isa = PBXGroup;
 			children = (
@@ -972,6 +1019,7 @@
 		891A4DC51457B18500A2CF47 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				7574BE9A14B2D07C007651EE /* Binding */,
 				8966754C147B3568007CEAF3 /* SettingsListTableViewController.h */,
 				8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */,
 				8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */,
@@ -1509,6 +1557,8 @@
 				8920895814AEF22100F31001 /* share_word.png in Resources */,
 				CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */,
 				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
+				7574BEA014B2D0E3007651EE /* BindingListViewController.xib in Resources */,
+				7574BEA814B2D7CF007651EE /* NameBindingViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1668,6 +1718,8 @@
 				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 				75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */,
 				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
+				7574BE9F14B2D0E3007651EE /* BindingListViewController.m in Sources */,
+				7574BEA714B2D7CF007651EE /* NameBindingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
