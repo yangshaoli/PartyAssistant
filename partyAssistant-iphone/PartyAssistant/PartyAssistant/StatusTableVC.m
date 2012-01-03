@@ -13,7 +13,7 @@
 #import "ASIFormDataRequest.h"
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
-
+#import "ResendPartyViaSMSViewController.h"
 
 
 @interface StatusTableVC()
@@ -152,8 +152,14 @@
 
 
 - (void)resendBtnAction{
+    
+    NSLog(@"-----%@%@",self.clientsArray,self.partyObj.contentString);
+    [self getPartyClientSeperatedList];
+    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+    [resendPartyViaSMSViewController  setReceipts:self.clientsArray];
     NSLog(@"调用再次发送");
-
 }
 #pragma mark - Table view data source
 
