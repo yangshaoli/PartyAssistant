@@ -421,10 +421,10 @@
         return;
     }
     //2.show viewController
-    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
-    vc.delegate = self;
-    [self presentModalViewController:vc animated:YES];
-    [vc release];
+//    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//    vc.delegate = self;
+//    [self presentModalViewController:vc animated:YES];
+//    [vc release];
     
 //    //wxz判断   只在用户首次登陆才执行
 //    UserObjectService *us = [UserObjectService sharedUserObjectService];
