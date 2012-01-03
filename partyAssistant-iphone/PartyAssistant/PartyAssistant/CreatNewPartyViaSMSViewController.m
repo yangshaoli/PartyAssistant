@@ -273,8 +273,11 @@
             if ((nowContentSize.width + newNameSize.width + holderSize.width) < tfWidth - 10.0f) {
                 if (i!=0) {
                     [contactNameTFContent appendString:@","];
-                } 
-                [contactNameTFContent appendString:name];
+                }
+                NSLog(@"name :%@", name);
+                if (name) {
+                    [contactNameTFContent appendString:name];
+                }
             } else {
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
