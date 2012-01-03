@@ -5,7 +5,6 @@ import logging
 from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
     RegistrationForm, UserProfileForm, BuySMSForm
 from apps.accounts.models import UserAliReceipt, UserBindingTemp
-from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 
 from django.db.transaction import commit_on_success
@@ -178,34 +177,40 @@ def bought_success(request):
 
 @login_required    
 def apply_phone_unbingding_ajax(request):#申请手机解绑定
-    if 'phone_unbingding' in request.COOKIES:
-        return
+    #是否延时1min
+    exist = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
+    if exist:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
+        create_time = userbindingtemp.created_time
+        now = datetime.datetime.now()
+        dt = datetime.timedelta(minutes=1)
+        if (create_time + dt) > now:
+            time = (now - create_time).total_seconds()
+            time= 60 - int(time)
+            return HttpResponse("time:"+str(time))
+        
     phone = request.user.get_profile().phone
-    
+       
     userkey = generate_phone_code()
-    userbindingtemp = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, bingding_type='phone')
+    userbindingtemp, create = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, binding_type='phone')
     userbindingtemp.key = userkey
     userbindingtemp.save()
     
-    profile = request.get_profile()
+    profile = request.user.get_profile()
     profile.phone = userbindingtemp.binding_address
-    profile.phone_binding_status = 'waitingunbind'
+    profile.phone_binding_status = 'waiteunbind'
     profile.save()
     
     response = HttpResponse("success")
-    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
-    response.set_cookie('phone_unbingding',request.user.id,expires=dt)
     
     return response
 
 @login_required    
 def apply_phone_bingding_ajax(request):#申请手机绑定
 
-    #1.收到手机号码(翻送间歇1min，重新获取/重i才能输入手机号码)cookie中,手机号码已经被使用
+    #1.收到手机号码(发送间歇1min)
     #2.产生验证码
     #3.保存到UserBindingTemp 
-#    if 'airennao_phone_bingding' in request.COOKIES:
-#        return
     phone = request.POST.get('phone','')
     phone_re = re.compile(r'1\d{10}')
     match = phone_re.search(phone)
@@ -216,6 +221,20 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
     if exist:
         return HttpResponse("used")
+    
+    #是否延时1min
+    exist = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
+    if exist:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
+        create_time = userbindingtemp.created_time
+        now = datetime.datetime.now()
+        dt = datetime.timedelta(minutes=1)
+        
+        if (create_time + dt) > now:
+            time = (now - create_time).total_seconds()
+            time= 60 - int(time)
+            
+            return HttpResponse("time:"+str(time))
     
     userkey = generate_phone_code()
     userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
@@ -229,55 +248,57 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     profile.save()
     
     response = HttpResponse("success")
-    dt = datetime.now() + timedelta(minutes = 1)
-    response.set_cookie('phone_bingding',request.user.id,expires=dt)
     
     return response
 
 @login_required     
-def validate_phone_bingding_ajax(request, key, binding_status='bind'):#手机绑定验证
+def validate_phone_bingding_ajax(request, binding_status='bind'):#手机绑定验证
     #1.获取验证码
     #2.是否有验证码
     #.绑定/解绑成功
-    if 'validate_phone_bingding' in request.COOKIES:
-        return
-    userkey = key
+    
+    userkey = request.POST.get('key','')
+    
     data={'status':''}
-    exists = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').count > 0
+    if userkey=='':
+        data['status']='null'
+        
+        return HttpResponse(simplejson.dumps(data))
+    
+    exists = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
     if exists:
-        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, bingding_type='phone').orderby('-id')[0]#避免有多条数据，虽然理论上不存在
-        bingding_key = userbindingtemp.key
-        if userkey == bingding_key:
+        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]#避免有多条数据，虽然理论上不存在
+        binding_key = userbindingtemp.key
+        if userkey == binding_key:
             phone = userbindingtemp.binding_address
             #是否有用户已经绑定，该手机号码
             exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
             if exist:
-                data['status'] = 'used'    
+                data['status'] = 'used'
             else:#绑定操作
-                profile = request.get_profile()
+                profile = request.user.get_profile()
                 profile.phone = userbindingtemp.binding_address
                 profile.phone_binding_status = binding_status
-                profile.save()
                 #删除临时表
                 userbindingtemp.delete()
                 #短信通知用户，绑定成功
-                message = {'phone':'' , 'content':''}
-                message['phone'] = userbindingtemp.bingding_address
+                message = {'address':'' , 'content':''}
+                message['address'] = userbindingtemp.binding_address
                 if binding_status == 'bind':
                     message['content'] = 'bindsuccess'
                 else:
                     message['content'] = 'unbindsuccess'
+                    profile.phone = ''
+                    
+                profile.save()
                 thread.start_new_thread(sendsmsMessage,(message,))
-                
                 data['status'] = 'success'
         else:
-            data['status'] = 'wrongkey'    
+            data['status'] = 'wrongkey'
     else :        
         data['status'] = 'notexist'
         
-    response = HttpResponse(simplejson.dumps(data))   
-    dt = datetime.datetime.now() + datetime.timedelta(minutes = int(1))
-    response.set_cookie('validate_phone_bingding',request.user.id,expires=dt) 
+    response = HttpResponse(simplejson.dumps(data))
     
     return response
 
