@@ -301,6 +301,7 @@
     }
     
     self.smsObject.receiversArray = array;
+    NSLog(@"receiversArray count:%d",[array count]);
     
     SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
     [s saveSMSObject];
@@ -322,7 +323,7 @@
     NSString *platform = [DeviceDetection platform];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
+    [request setPostValue:[self.smsObject setupReceiversArrayData] forKey:@"receivers"];
     NSLog(@"%@",self.smsObject.receiversArrayJson);
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
