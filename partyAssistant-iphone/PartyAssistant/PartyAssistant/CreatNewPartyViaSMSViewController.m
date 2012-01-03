@@ -25,6 +25,7 @@
 - (void)showAlertRequestSuccess;
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage;
 - (void)showAlertRequestFailed: (NSString *) theMessage;
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString;
 
 @end
 
@@ -166,7 +167,21 @@
 - (CGFloat)tableView:(UITableView *)aTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
         NSLog(@"%f",(self.editingTableViewCell.textView.frame.size.height + 11));
-        return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
+        if ([self.editingTableViewCell.textView isFirstResponder]) {
+            return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
+        } else {
+            if (self.editingTableViewCell.textView.frame.size.height < 250) {
+                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 80) {
+                    return 80 + 11;
+                } else {
+                    return self.editingTableViewCell.textView.frame.size.height + 11;
+                }
+            } else {
+                return (250 + 11);
+            }
+            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+        }
+        
     }
     return 44.0f;
 }
@@ -183,6 +198,9 @@
     self.tableView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
     
     self.navigationItem.rightBarButtonItem = nil;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 
@@ -199,8 +217,16 @@
     CGRect newFrame = oldFrame;
     if (newHeight < 80.0f) {
         newFrame.size.height = 80.0f;
-    } else if (newHeight > 120.0f) {
-        newFrame.size.height = 120.0f;
+    } else if (newHeight > 100.0f) {
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            if (newHeight > 250.0f) {
+                newFrame.size.height = 250.0f;
+            } else {
+                newFrame.size.height = newHeight;
+            }
+        } else {
+            newFrame.size.height = 100.0f;
+        }
     } else {
         newFrame.size.height = newHeight;
     }
@@ -296,7 +322,22 @@
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = [receipt objectForKey:@"name"];
-        client.cVal = [receipt objectForKey:@"phoneNumber"];
+        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        
+        if (!phoneNumber) {
+            continue;
+        } else {
+            if ([phoneNumber isEqualToString:@""]) {
+                phoneNumber = [self getCleanPhoneNumber:client.cName];
+                if (phoneNumber.length > 11) {
+                    client.cVal = phoneNumber;
+                } else {
+                    continue;
+                }
+            } else {
+                client.cVal = [self getCleanPhoneNumber:[receipt objectForKey:@"phoneNumber"]];
+            }
+        }
         [array addObject:client];
     }
     
@@ -398,6 +439,28 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    NSLog(@"strippedString : %@",strippedString);
+    return strippedString;
 }
 #pragma mark -
 #pragma mark SMS delegate

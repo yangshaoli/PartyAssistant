@@ -25,7 +25,7 @@ static UITextView *dummyTextView;
     newTextView.backgroundColor = [UIColor clearColor];
     newTextView.opaque = YES;
     newTextView.scrollEnabled = YES;
-    newTextView.showsVerticalScrollIndicator = NO;
+    newTextView.showsVerticalScrollIndicator = YES;
     newTextView.showsHorizontalScrollIndicator = NO;
     newTextView.contentInset = UIEdgeInsetsZero;
     
@@ -104,6 +104,7 @@ static UITextView *dummyTextView;
     if (newText != text) {
         textView.text = newText;
         NSLog(@"New height: %f", textView.contentSize.height);
+        [self textViewDidChange:self.textView];
     }
 }
 
@@ -113,7 +114,12 @@ static UITextView *dummyTextView;
 
 
 - (void) textViewDidBeginEditing:(UITextView *)theTextView {
+    CGFloat suggested = [self suggestedHeight];
+    
     if ([delegate respondsToSelector:@selector(editableTableViewCellDidBeginEditing:)]) {
+        if ([delegate respondsToSelector:@selector(editableTableViewCell:heightChangedTo:)]) {
+            [delegate editableTableViewCell:self heightChangedTo:suggested];
+        }
         [delegate editableTableViewCellDidBeginEditing:self];
     }
 }

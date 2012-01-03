@@ -25,6 +25,7 @@
 - (void)showAlertRequestSuccess;
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage;
 - (void)showAlertRequestFailed: (NSString *) theMessage;
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString;
 
 @end
 
@@ -78,8 +79,24 @@
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = [receipt objectForKey:@"name"];
-        client.cVal = [receipt objectForKey:@"phoneNumber"];
+        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        
+        if (!phoneNumber) {
+            continue;
+        } else {
+            if ([phoneNumber isEqualToString:@""]) {
+                phoneNumber = [self getCleanPhoneNumber:client.cName];
+                if (phoneNumber.length > 11) {
+                    client.cVal = phoneNumber;
+                } else {
+                    continue;
+                }
+            } else {
+                client.cVal = [self getCleanPhoneNumber:[receipt objectForKey:@"phoneNumber"]];
+            }
+        }
         [array addObject:client];
+
     }
     
     self.tempSMSObject.receiversArray = array;
@@ -185,7 +202,7 @@
 
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID{
     smsContent = [newContent copy];
-    self.editingTableViewCell.textView.text = smsContent;
+    [self.editingTableViewCell setText:[smsContent mutableCopy]];
     NSLog(@"%@",self.editingTableViewCell);
     groupID = newGroupID;
 }
