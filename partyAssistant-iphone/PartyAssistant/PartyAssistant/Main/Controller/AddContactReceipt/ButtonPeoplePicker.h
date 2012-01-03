@@ -18,6 +18,7 @@
 #import <AddressBook/AddressBook.h>
 #import "ShadowedTableView.h"
 #import "ContactsListPickerViewController.h"
+#import "BottomSepratorLineView.h"
 
 typedef enum {
     ButtonPeoplePickerStatusShowing,
@@ -46,7 +47,7 @@ typedef enum {
 @property (nonatomic, strong) UIView *addReceiptBGView;
 @property (nonatomic, strong) UIButton *addReceiptButton;
 @property (nonatomic, strong) IBOutlet UILabel *deleteLabel;
-@property (nonatomic, strong) IBOutlet UIScrollView *buttonView;
+@property (nonatomic, strong) IBOutlet BottomSepratorLineView *buttonView;
 @property (nonatomic, strong) IBOutlet ShadowedTableView *uiTableView;
 @property (nonatomic, strong) IBOutlet UITextField *searchField;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *doneButton;

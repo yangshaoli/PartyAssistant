@@ -22,7 +22,7 @@ static UITextView *dummyTextView;
 + (UITextView *)createTextView {
     UITextView *newTextView = [[JFTextViewNoInset alloc] initWithFrame:CGRectZero];
     newTextView.font = textViewFont;
-    newTextView.backgroundColor = [UIColor whiteColor];
+    newTextView.backgroundColor = [UIColor clearColor];
     newTextView.opaque = YES;
     newTextView.scrollEnabled = YES;
     newTextView.showsVerticalScrollIndicator = NO;

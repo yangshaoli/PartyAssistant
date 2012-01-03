@@ -15,6 +15,7 @@
 @implementation ContactorPhoneDetailsViewController
 @synthesize contactorID,phone,card,phoneDetailDelegate,clientDict,partyObj;
 @synthesize messageTextView;
+@synthesize clientStatusFlag;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,7 +39,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    NSLog(@"在最后一个页面输出状态：：%@",self.clientStatusFlag);
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
@@ -47,8 +48,6 @@
     goButton.backgroundColor=[UIColor  clearColor];
     [goButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     
-    [self.view addSubview:goButton];
-
     UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [notGoButton setFrame:CGRectMake(200, 200,80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
@@ -56,9 +55,26 @@
     notGoButton.tag=24;
     notGoButton.backgroundColor=[UIColor clearColor];
     [notGoButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:notGoButton];
-
     
+    if([self.clientStatusFlag isEqualToString:@"donothing"]||[self.clientStatusFlag  isEqualToString:@"refused"]){
+         [self.view addSubview:goButton];
+    }
+     
+    if([self.clientStatusFlag isEqualToString:@"donothing"]||[self.clientStatusFlag  isEqualToString:@"applied"]){
+        [self.view addSubview:notGoButton];
+    
+    }
+    
+    NSString *statusString=[self.clientDict objectForKey:@"status"];
+    if([self.clientStatusFlag  isEqualToString:@"all"]){
+        if([statusString  isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"reject"]){
+              [self.view addSubview:goButton];
+        }
+        if([statusString isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"apply"]){
+               [self.view addSubview:notGoButton];
+        }
+    
+    }
     
     messageTextView=[[UITextView alloc] init];
     messageTextView.frame=CGRectMake(100, 153, 200, 40);

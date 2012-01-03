@@ -83,6 +83,7 @@
 	input:{
 		"username":String(not null),
 		"password":String(not null),
+                "device_token":String(not null)
 		}
 	output:{
 		"status":"ok",
@@ -98,6 +99,7 @@
 	input:{
 		"username":String(not null),
 		"password":String(not null),
+                "device_token":String(not null)
 		}
 	output:{
 		"status":"ok",

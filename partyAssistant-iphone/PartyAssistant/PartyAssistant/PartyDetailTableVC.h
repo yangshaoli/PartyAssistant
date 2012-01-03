@@ -17,13 +17,16 @@
    NSArray* myToolbarItems;
    PartyModel *partyObj;
    NSArray* peopleCountArray; 
+   NSArray *clientsArray;
 }
 
 @property(nonatomic, retain)NSArray* myToolbarItems;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSArray* peopleCountArray;
+@property(nonatomic, retain)NSArray *clientsArray;
 - (void)loadClientCount;
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
+- (void)getPartyClientSeperatedList;
 
 @end

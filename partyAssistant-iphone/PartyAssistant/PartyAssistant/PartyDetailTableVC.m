@@ -16,12 +16,13 @@
 #import "EditPartyTableViewController.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "ResendPartyViaSMSViewController.h"
 
 
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
 @implementation PartyDetailTableVC
-@synthesize myToolbarItems,peopleCountArray;
+@synthesize myToolbarItems,peopleCountArray,clientsArray;
 @synthesize partyObj;
 - (void)didReceiveMemoryWarning
 {
@@ -42,7 +43,6 @@
     self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
     [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];
     [self.navigationController.toolbar sizeToFit];
-    
     
     
     if (!self.myToolbarItems) {
@@ -86,12 +86,6 @@
     
     [self.tableView reloadData];
 }
-
-
-
-
-
-
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -140,7 +134,7 @@
 {
     NSNumber *partIdNumber=self.partyObj.partyId;
     NSString *partIdString=[partIdNumber stringValue];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
     NSLog(@"在loadClientCount中输出partid》》》%@",self.partyObj.partyId);
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
@@ -190,8 +184,17 @@
 
 
 
-
 #pragma mark - Table view data source
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
+{
+    if(indexPath.section==0){
+        return 100;
+    }
+    return 44;
+}
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -237,10 +240,14 @@
     oldLayout = [cell viewWithTag:2];
     [oldLayout removeFromSuperview];
     if(indexPath.section==0){
-//        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
-//        [cell addSubview:contentTextField];
-        cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
-        cell.textLabel.text=self.partyObj.contentString;
+        cell.textLabel.font=[UIFont systemFontOfSize:13];
+        cell.textLabel.numberOfLines = 0;
+        if([self.partyObj.contentString length]>140){
+            NSLog(@"输出内容长度》》》%d",[self.partyObj.contentString length]);
+            cell.textLabel.text=[self.partyObj.contentString  substringToIndex:140];
+        }else{
+            cell.textLabel.text=self.partyObj.contentString;
+        }
     }else{
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
@@ -254,16 +261,17 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
+            NSInteger newAppliedInt=[[self.peopleCountArray objectAtIndex:2] intValue];
+            NSLog(@"已报名数newAppliedInt：：：：》》》%d",newAppliedInt);
             
-            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-            NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
-            NSInteger showImageInt=[isChenkDefault integerForKey:appliedKeyString];
-            NSLog(@"已报名数：：：：》》》%d",showImageInt);
-            if(showImageInt>0){
+            if(newAppliedInt>0){
+                self.partyObj.isnewApplied=YES;
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
+            }else{
+                self.partyObj.isnewApplied=NO;
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
@@ -282,15 +290,16 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
-            NSUserDefaults *isChenkDefault=[NSUserDefaults standardUserDefaults];
-            NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
-            NSInteger showImageInt=[isChenkDefault integerForKey:refusedKeyString];
-            NSLog(@"不参加数：：：：》》》%d",showImageInt);
-            if(showImageInt>0){
+            NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
+            NSLog(@"已报名数newRefusedInt：：：：》》》%d",newRefusedInt);
+            if(newRefusedInt>0){
+                self.partyObj.isnewRefused=YES;
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
+            }else{
+                self.partyObj.isnewRefused=NO;
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
@@ -347,6 +356,67 @@
 }
 */
 
+#pragma mark - resend  request
+- (void)getPartyClientSeperatedList{
+    NSLog(@"预期调用1111");
+    NSNumber *partyIdNumber=self.partyObj.partyId;
+    NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 30;
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(getPartyClientSeperatedListRequestFinished:)];
+    [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+}
+
+- (void)getPartyClientSeperatedListRequestFinished:(ASIHTTPRequest *)request{
+     NSLog(@"预期调用2222");
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dict = [result objectForKey:@"datasource"];
+            self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"============self.clientsArray输出>>>>%@",self.clientsArray);
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
+            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
+            }
+            [self.tableView reloadData];
+        }else{
+            [self showAlertRequestFailed:description];	
+            NSLog(@"self.clientsArray在1");
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+        NSLog(@"self.clientsArray在2");
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+        NSLog(@"self.clientsArray在3");
+    }
+	
+}
+
+
+- (void)getPartyClientSeperatedListRequestFailed:(ASIHTTPRequest *)request
+{
+    NSLog(@"预期调用3333");
+    NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+
+
+
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -396,7 +466,15 @@
     
 }
 
+
+
 - (void)resentMsg{
+    NSLog(@"-----%@%@",self.clientsArray,self.partyObj.contentString);
+    [self getPartyClientSeperatedList];
+    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+    [resendPartyViaSMSViewController  setReceipts:self.clientsArray];
     NSLog(@"调用再次发送");
 
 }

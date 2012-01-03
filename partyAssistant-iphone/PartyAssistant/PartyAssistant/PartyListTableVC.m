@@ -4,12 +4,15 @@
 //
 //  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
+
 #import "ContactData.h"
 #import "PartyListTableVC.h"
 #import "PartyDetailTableVC.h"
 #import "PartyListService.h"
 #import "URLSettings.h"
 #import "ClientObject.h"
+#import "NotificationSettings.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -29,7 +32,12 @@
     }
     return self;
 }
-
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    _isRefreshing = NO;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    return self;
+}
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -47,10 +55,17 @@
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
     self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
-    
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
-    
+    //自定义活动数据
+//    PartyModel *party1=[[PartyModel alloc] init];
+//    party1.contentString=@"自定义活动很好完大家一定还要去hh好好发sfjdskxkkkdfdkldflkjlkjckjxlkcjlkzxjclkzxjclkzxjclkzjxclkxjclkxzjclkjxclkjxlckjzxlkcjzlkjclkxjcxjclkxjckjcjcxkcjkxcjkxcjkxjcckxlzxkjlkxjc";
+//    PartyModel *party2=[[PartyModel alloc] init];
+//    party2.contentString=@"自定义活动2";
+//    self.partyList=[[NSMutableArray alloc] initWithObjects:party1,party2,nil];
+    if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
+        [self refreshBtnAction];
+    }
     minBottomRefreshViewY = 366.0;
 	//setup refresh tool
     if (bottomRefreshView == nil) {
@@ -112,7 +127,6 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self hideTabBar:self.tabBarController];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -217,9 +231,7 @@
     //    [request setShouldAttemptPersistentConnection:NO];
     //    [request startAsynchronous];
     //    self._isRefreshing = YES;
-    
-    int aLastID = 0;
-    [self requestDataWithLastID:aLastID];
+    [self requestDataWithLastID:0];
     
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
@@ -227,6 +239,12 @@
     
 }
 
+- (void)AddBadgeToTabbar:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
+    UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+    tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+}
 
 #pragma mark - Table view data source
 
@@ -255,13 +273,9 @@
     UIView *oldLayout2 = nil;
     oldLayout2 = [cell viewWithTag:2];
     [oldLayout2 removeFromSuperview];
-    NSInteger getPartyId=[[[self.partyList  objectAtIndex:[indexPath row]] partyId]  intValue];
-    NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",getPartyId];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
-    NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
-    NSLog(@"在list中输出getStatusChangedInt》》》》》%d",getStatusChangedInt);
-    if(1==getStatusChangedInt){
-        
+    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
+    NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+    if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){        
         UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
         cellImageView.image=[UIImage imageNamed:@"new1"];
         cellImageView.tag=2;
@@ -364,6 +378,8 @@
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+    
+    [self hideTabBar:self.tabBarController];
 }
 
 #pragma mark -
@@ -373,6 +389,7 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
+    NSLog(@"下拉  。。。。。。。。。。。。下");
     _reloading = YES;
     [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
@@ -382,8 +399,9 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
+    NSLog(@"上拉。。。。。。。。。。。上");
     _reloading = YES;
-   [self requestDataWithLastID:0];
+   [self requestDataWithLastID:self.lastID];
 	[self doneLoadingBottomRefreshTableViewData];
 }
 

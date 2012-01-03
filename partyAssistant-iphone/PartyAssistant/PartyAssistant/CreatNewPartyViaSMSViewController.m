@@ -7,7 +7,6 @@
 //
 
 #import "CreatNewPartyViaSMSViewController.h"
-#import "SendSMSModeChooseViewController.h"
 #import "ContactsListPickerViewController.h"
 #import "PartyAssistantAppDelegate.h"
 #import "NotificationSettings.h"
@@ -73,6 +72,15 @@
         self.smsObject = [smsObjectService getSMSObject];
     }
     // Do any additional setup after loading the view from its nib.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.smsObject._isSendBySelf) {
+        self.sendModeNameLabel.text = @"用自己手机发送";
+    } else {
+        self.sendModeNameLabel.text = @"通过服务器发送";
+    }
 }
 
 - (void)viewDidUnload
@@ -149,6 +157,7 @@
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
             SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            vc.delegate = self;
             [self.navigationController pushViewController:vc animated:YES];
         }
     }
@@ -228,15 +237,8 @@
         NSMutableString *contactNameTFContent = [[NSMutableString alloc] initWithCapacity:0];
         for (int i=0; i<[self.receipts count]; i++) {
             NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
-            ABRecordID peopleID = [[peopleInfo objectForKey:@"abRecordID"] intValue];
-            if (peopleID == -1) {
-                continue;
-            }
-            ABContact *contact = [ABContact contactWithRecordID:peopleID];
-            NSString *name = [contact compositeName];
-            if ([name length] <= 0) {
-                name = [peopleInfo objectForKey:@"phoneNumber"];
-            }
+        
+            NSString *name  = [peopleInfo objectForKey:@"name"];
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
                                      
@@ -290,12 +292,9 @@
     self.smsObject.smsContent = [editingTableViewCell.textView text];
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
     for (NSDictionary *receipt in self.receipts) {
-        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-        if (peopleID == -1) {
-            continue;
-        }
+        //need check phone format
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
-        client.cID = peopleID;
         client.cName = [receipt objectForKey:@"name"];
         client.cVal = [receipt objectForKey:@"phoneNumber"];
         [array addObject:client];
@@ -361,10 +360,6 @@
                     
                     NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-                        if (peopleID == -1) {
-                            continue;
-                        }
                         if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
                             [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
                         }
@@ -404,8 +399,8 @@
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
 	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 #pragma mark -
 #pragma mark SMS delegate
@@ -519,5 +514,16 @@
 - (void)showAlertRequestFailed: (NSString *) theMessage{
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
+}
+
+#pragma mark - 
+#pragma mark UserSMSModeCheckDelegate
+
+- (BOOL)IsCurrentSMSSendBySelf {
+    return self.smsObject._isSendBySelf;
+}
+
+- (void)changeSMSModeToSendBySelf:(BOOL)status {
+    self.smsObject._isSendBySelf = status;
 }
 @end

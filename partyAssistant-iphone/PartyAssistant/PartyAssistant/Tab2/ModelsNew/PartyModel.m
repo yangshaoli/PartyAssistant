@@ -12,7 +12,7 @@
 @synthesize userObject;
 @synthesize clientsArray;
 @synthesize contentString;
-@synthesize isSendByServer;
+@synthesize isSendByServer,isnewApplied,isnewRefused;
 @synthesize partyId;
 @synthesize peopleCountDict;
 - (id)init
@@ -31,6 +31,8 @@
     [encoder encodeObject: self.clientsArray forKey:@"clientsArray"];
     [encoder encodeObject: self.contentString forKey:@"contentString"];
 	[encoder encodeBool: self.isSendByServer forKey:@"isSendByServer"];
+    [encoder encodeBool: self.isnewApplied forKey:@"isnewApplied"];
+    [encoder encodeBool: self.isnewRefused forKey:@"isnewRefused"];
 	[encoder encodeObject:self.partyId forKey:@"partyId"];
     [encoder encodeObject: self.peopleCountDict forKey:@"peopleCountDict"];
 }
@@ -40,6 +42,8 @@
     self.clientsArray  = [decoder decodeObjectForKey:@"clientsArray"];
 	self.contentString = [decoder decodeObjectForKey:@"contentString"];
     self.isSendByServer = [decoder decodeBoolForKey:@"isSendByServer"];
+    self.isnewApplied = [decoder decodeBoolForKey:@"isnewApplied"];
+    self.isnewRefused = [decoder decodeBoolForKey:@"isnewRefused"];
     self.partyId = [decoder decodeObjectForKey:@"partyId"];
     self.peopleCountDict=[decoder decodeObjectForKey:@"peopleCountDict"];
 	return self;

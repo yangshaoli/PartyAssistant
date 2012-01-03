@@ -6,8 +6,8 @@
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
 
-#define DOMAIN_NAME @"http://192.168.3.151:8000"
-//#define DOMAIN_NAME @"http://www.airenao.com"
+//#define DOMAIN_NAME @"http://192.168.3.151:8000"
+#define DOMAIN_NAME @"http://www.airenao.com"
 //#define DOMAIN_NAME @"http://127.0.0.1"
 
 //#define DOMAIN_NAME @"http://192.168.1.15:43401"

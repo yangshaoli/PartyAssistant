@@ -24,6 +24,7 @@
 - (void)addPersonToGroup:(NSDictionary *)personDictionary;
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary;
 - (void)displayAddPersonViewController;
+- (NSString *)getCleanPhoneNumber:(NSString *)rawPhoneNumber;
 @end
 
 
@@ -147,11 +148,11 @@
 			((UIButton *)subview).selected = NO;
 		}
 	}
-
 	if (selectedButton.selected)
     {
 		selectedButton.selected = NO;
 		deleteLabel.hidden = YES;
+
 	}
 	else
     {
@@ -174,45 +175,53 @@
 - (void)deleteBackward
 {	
 	// Hide the delete label
-	deleteLabel.hidden = YES;
-    NSLog(@"selected button:%@",selectedButton);
-	NSString *name = selectedButton.titleLabel.text;
-	NSInteger identifier = selectedButton.tag;
-	
-	NSArray *personArray = (__bridge_transfer NSArray *)ABAddressBookCopyPeopleWithName(addressBook, (__bridge CFStringRef)name);
-	
-	ABRecordRef person = (__bridge ABRecordRef)([personArray lastObject]);
-
-	ABRecordID abRecordID = ABRecordGetRecordID(person);
-
-    ABMultiValueRef phoneProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
+//	deleteLabel.hidden = YES;
+//    NSLog(@"selected button:%@",selectedButton);
+//	NSString *name = selectedButton.titleLabel.text;
+//	NSInteger identifier = selectedButton.tag;
+//	
+//	NSArray *personArray = (__bridge_transfer NSArray *)ABAddressBookCopyPeopleWithName(addressBook, (__bridge CFStringRef)name);
+//	
+//	ABRecordRef person = (__bridge ABRecordRef)([personArray lastObject]);
+//
+//	ABRecordID abRecordID = ABRecordGetRecordID(person);
+//
+//    ABMultiValueRef phoneProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
+//    
+//    NSString *phone;
+//    NSString *personName;
+//    
+//    name = (__bridge NSString *)ABRecordCopyCompositeName(person);
+//    
+//    if (phoneProperty)
+//    {
+//        CFIndex index = ABMultiValueGetIndexForIdentifier(phoneProperty, identifier);
+//        
+//        if (index != -1)
+//        {
+//            phone = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneProperty, index);
+//        }
+//    }
+//    
+//    NSDictionary *personDictionary = nil;
+//    
+//    if (phone) {
+//        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+//                                          [NSNumber numberWithInt:abRecordID], @"abRecordID",
+//                                          [NSNumber numberWithInt:identifier], @"valueIdentifier", 
+//                                          phone, @"phoneNumber", personName, @"name",nil];
+//    } 
+//    else 
+//    {
+//        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+//                            [NSNumber numberWithInt:abRecordID], @"abRecordID",
+//                            [NSNumber numberWithInt:identifier], @"valueIdentifier",       
+//                            @"", @"phoneNumber", @"", @"name",nil];
+//    }
     
-    NSString *phone;
+    NSInteger selectedIndex = selectedButton.tag;
     
-    if (phoneProperty)
-    {
-        CFIndex index = ABMultiValueGetIndexForIdentifier(phoneProperty, identifier);
-        
-        if (index != -1)
-        {
-            phone = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phoneProperty, index);
-        }
-    }
-    
-    NSDictionary *personDictionary = nil;
-    
-    if (phone) {
-        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                          [NSNumber numberWithInt:abRecordID], @"abRecordID",
-                                          [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                          phone, @"phoneNumber",nil];
-    } 
-    else 
-    {
-        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                            [NSNumber numberWithInt:abRecordID], @"abRecordID",
-                            [NSNumber numberWithInt:identifier], @"valueIdentifier", nil];
-    }
+    NSDictionary *personDictionary = [self.group objectAtIndex:selectedIndex];
     
 	[self removePersonFromGroup:personDictionary];
 }
@@ -306,8 +315,6 @@
         NSDictionary *personDictionary = nil;
         
         personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                            [NSNumber numberWithInt:-1], @"abRecordID",
-                            [NSNumber numberWithInt:0], @"valueIdentifier", 
                             @"", @"phoneNumber", searchField.text, @"name", nil];
         [self addPersonToGroup:personDictionary];
 	}
@@ -413,19 +420,26 @@
 
 - (void)addPersonToGroup:(NSDictionary *)personDictionary
 {
-    ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
+    //ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
     
     NSString *number = [personDictionary valueForKey:@"phoneNumber"];
+    NSString *name  = [personDictionary valueForKey:@"name"];
     
     // Check for an existing entry for this person, if so remove it
     for (NSDictionary *personDict in group)
     {
+        NSString *theContactName = [personDict valueForKey:@"name"];
+        NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
         //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
-        if ([number isEqualToString:[personDict valueForKey:@"phoneNumber"]])
+        NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
+        
+        if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+            return;
+        }
+        
+        if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
         {
             return;
-            [group removeObject:personDict];
-            break;
         }
     }
     
@@ -435,7 +449,8 @@
 
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary
 {
-	[group removeObject:personDictionary];	
+    [group removeObject:personDictionary];
+	
 	[self layoutNameButtons];
 }
 
@@ -482,19 +497,23 @@
     {
 		NSDictionary *personDictionary = (NSDictionary *)[group objectAtIndex:i];
 		
-		ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
-
-        if (abRecordID == -1){
-            continue;
-        }
+//		ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
+//
+//        if (abRecordID == -1){
+//            continue;
+//        }
         
-		ABRecordRef abPerson = ABAddressBookGetPersonWithRecordID(addressBook, abRecordID);
-
-		NSString *name = (__bridge_transfer NSString *)ABRecordCopyCompositeName(abPerson);
-		
-		ABMultiValueIdentifier identifier = [[personDictionary valueForKey:@"valueIdentifier"] intValue];
-		
-        NSLog(@"identifier: %d",identifier);
+        NSString *name = nil;
+//		if (abRecordID) {
+//            ABRecordRef abPerson = ABAddressBookGetPersonWithRecordID(addressBook, abRecordID);
+//            name = (__bridge_transfer NSString *)ABRecordCopyCompositeName(abPerson);
+//        } else {
+            name = [personDictionary objectForKey:@"name"];
+//        }
+        
+//		ABMultiValueIdentifier identifier = [[personDictionary valueForKey:@"valueIdentifier"] intValue];
+//		
+//        NSLog(@"identifier: %d",identifier);
         
 		// Create the button image
 		UIImage *image = [UIImage imageNamed:@"ButtonCorners.png"];
@@ -508,7 +527,7 @@
 		[button setTitle:name forState:UIControlStateNormal];
 		
 		// Use the identifier as a tag for future reference
-		[button setTag:identifier];
+		[button setTag:i];
 		[button.titleLabel setFont:[UIFont systemFontOfSize:16.0]];
 		[button setBackgroundImage:image forState:UIControlStateNormal];
 		[button setBackgroundImage:image2 forState:UIControlStateSelected];
@@ -812,5 +831,27 @@
     } else {
         self.group = [[NSMutableArray alloc] init];
     }
+}
+
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    NSLog(@"strippedString : %@",strippedString);
+    return strippedString;
 }
 @end
