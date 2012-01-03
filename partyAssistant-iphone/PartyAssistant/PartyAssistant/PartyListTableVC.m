@@ -100,6 +100,15 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    NSLog(@"－－－在list   viewDidLoad页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
+    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
+
 }
 
 
@@ -196,6 +205,16 @@
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
+            
+            //用于判断是否登录后跳转到活动列表页面
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+            NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+            [defaults setInteger: self.partyList.count  forKey:keyString];    
+            NSLog(@"在list页面输出count  %d", self.partyList.count);
+            
+            
             [self setBottomRefreshViewYandDeltaHeight];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
