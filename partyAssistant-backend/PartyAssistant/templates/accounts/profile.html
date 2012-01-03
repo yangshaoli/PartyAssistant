@@ -4,6 +4,54 @@
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js">
 </script>
 <script type="text/javascript">
+//alert('{{userprofile.phone_binding_status}}');
+function unbindingPhone(){
+    var v = $("#id_phone").val();
+    if (!v) {
+        alert('请输入手机号码');
+        return false;
+    }
+    if (v.length!=11){
+    	alert('手机长度不合法');
+    	return false;
+    }
+    if(!v.match(/^1\d{10}/)){
+        alert('格式不合法');
+        return false;
+    }
+    $.ajax({
+        type: 'POST',
+        url: '{% url apply_phone_unbingding_ajax %}',
+        data: {
+            'phone': v
+        },
+        statusCode: {
+            200: function(response){
+                 if(response=='success'){   
+                    if($('#dom_id')){
+                    	$('#dom_id').remove();
+                    }
+                    
+                    var dom = $("#id_phone").parent().clone();
+                    $("#id_phone").parent().append(dom);
+                    dom.attr('id','dom_id');
+                    dom.attr('style','margin-top:20px;').children('label').text('验证码');
+                    dom.children('input').val(null).attr('id','phonevalidate_id').removeAttr('disabled');
+                    dom.children('a').text('[确认]').attr('onclick','validate_phone_bingding("unbind")');
+                    alert('验证码已经发送到您的手机中，请注意查收');
+                 }
+                 if(response.match(/time:/)){
+                 	alert('点击频率过高，请稍后继续点击,'+response.match(/\d+/)+'秒后可以再次点击');
+                 }
+            },
+            500: function(response){
+            
+            }
+        }
+    })
+   
+}
+
     
 function bindingPhone(){
     var v = $("#id_phone").val();
@@ -11,21 +59,46 @@ function bindingPhone(){
         alert('请输入手机号码');
         return false;
     }
+    if (v.length!=11){
+    	alert('手机长度不合法');
+    	return false;
+    }
+    if(!v.match(/^1\d{10}/)){
+        alert('格式不合法');
+        return false;
+    }
     var answer = confirm("要给" + v + "发送验证码吗？")
     if (answer) {
         $.ajax({
             type: 'POST',
-            url: '#',
+            url: '{% url apply_phone_bingding_ajax %}',
             data: {
                 'phone': v
             },
             statusCode: {
                 200: function(response){
-                    var dom = $("#id_phone").parent().clone();
-                    $("#id_phone").parent().append(dom);
-                    dom.attr('style','margin-top:20px;').children('label').text('验证码');
-                    dom.children('input').val(null).attr('id','验证码的id');
-                    dom.children('a').text('[确认]').attr('onclick','确认调用的函数')
+	                 if(response=='success'){   
+	                    if($('#dom_id')){
+	                    	$('#dom_id').remove();
+	                    }
+	                    
+	                    var dom = $("#id_phone").parent().clone();
+	                    $("#id_phone").parent().append(dom);
+	                    dom.attr('id','dom_id');
+	                    dom.attr('style','margin-top:20px;').children('label').text('验证码');
+	                    dom.children('input').val(null).attr('id','phonevalidate_id').removeAttr('disabled');;
+	                    dom.children('a').text('[确认]').attr('onclick','validate_phone_bingding("bind")');
+	                    alert('验证码已经发送到您的手机中，请注意查收');
+	                 }
+	                 if(response=='used'){
+	                 	alert('该手机号码，已经被绑定');
+	                 }
+	                 if(response=='invalidate'){
+	                 	alert('手机号码不合法');
+	                 }
+	                 if(response.match(/time:/)){
+	                 	alert('点击频率过高，请稍后继续点击,'+response.match(/\d+/)+'秒后可以再次点击');
+	                 }
                 },
                 500: function(response){
                 
@@ -34,6 +107,63 @@ function bindingPhone(){
         })
     }
 }
+    
+function validate_phone_bingding(isbind){
+    //alert(isbind);
+    var v = $("#phonevalidate_id").val();
+    if (!v) {
+        alert('请输入手机验证码');
+        return false;
+    }
+    var r_url= '';
+    var alert_success='';
+    if(isbind=='bind'){
+        r_url='{% url validate_phone_bingding_ajax %}';
+        alert_success='绑定成功';
+    }else if (isbind=='unbind'){
+        r_url='{% url validate_phone_unbingding_ajax %}';
+        alert_success='成功解除绑定';
+    }else{
+       return;
+    }   
+    $.ajax({
+        type: 'POST',
+        url: r_url,
+        data: {
+            'key': v
+        },
+        statusCode: {
+            200: function(response){
+            	 r = JSON.parse(response);
+            	 r_status = r.status;
+                 if(r_status=='success'){   
+					alert(alert_success);
+					$("#id_phone").attr('disabled','true');	
+	                if($('#dom_id')){
+	                    	$('#dom_id').remove();
+	                }
+	                window.location.href='{% url profile %}';     
+                 }
+                 if(r_status=='used'){
+                 	alert('已经被绑定');
+                 }
+                 if(r_status=='wrongkey'){
+                 	alert('验证码错误');
+                 }
+                 if(r_status=='null'){
+                 	alert('验证码不能为空');
+                 }
+                 
+            },
+            500: function(response){
+            
+            }
+        }
+    })
+   
+
+}    
+    
     
     function bindingEmail(){
         var v = $('#id_email').val();
@@ -117,8 +247,20 @@ function bindingPhone(){
                         <label for="phone">
                             手机
                         </label>
-                        <input name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}'>
-                        </input><a href="#" onclick="bindingPhone()">[绑定]</a>
+                        <input name='phone' id='id_phone' value='{{ form.phone.value|default:'' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}{%  ifequal userprofile.phone_binding_status 'waiteunbind' %}  disabled="true" {%  endifequal %}>
+                        </input>
+                        {%  ifequal userprofile.phone_binding_status  'bind' %}
+                        <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
+                        {% endifequal %}
+                        {%  ifequal userprofile.phone_binding_status  'waiteunbind' %}
+                        <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
+                        {% endifequal %}                        
+                        {%  ifequal userprofile.phone_binding_status  'unbind' %}
+                        <a href="#" onclick="bindingPhone()">[绑定]</a>
+                        {% endifequal %}
+                        {%  ifequal userprofile.phone_binding_status  'waitingbind' %}
+                        <a href="#" onclick="bindingPhone()">[绑定]</a>
+                        {% endifequal %}     
                         <font color='red'>
                         {{ form.phone.errors.0 }}
                     </red>
