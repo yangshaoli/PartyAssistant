@@ -1,22 +1,18 @@
 //
-//  NameBindingViewController.m
+//  TelUnbindingViewController.m
 //  PartyAssistant
 //
 //  Created by Wang Jun on 1/3/12.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "NameBindingViewController.h"
+#import "TelUnbindingViewController.h"
 
-@implementation NameBindingViewController
+@implementation TelUnbindingViewController
 @synthesize tableView = _tableView;
-@synthesize IDTitleLabel = _IDTitleLabel;
-@synthesize IDNameTextField = _IDNameTextField;
-//nameInput
-@synthesize inputNameCell = _inputNameCell;
-@synthesize nickNameInputTextField = _nickNameInputTextField;
-//upload
-@synthesize uploadNameCell = _uploadNameCell;
+@synthesize inputTelCell = _inputTelCell;
+@synthesize inputTelLabel = _inputTelLabel;
+@synthesize telUnBindingCell = _telUnBindingCell;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -54,21 +50,6 @@
 {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
-#pragma mark _
-#pragma mark tableView delegate
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 3;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return nil;
 }
 
 @end

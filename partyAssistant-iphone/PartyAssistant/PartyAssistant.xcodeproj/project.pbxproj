@@ -34,6 +34,12 @@
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
 		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
 		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
+		75C8282B14B2DE7C00D3FF76 /* MailBindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8282914B2DE7C00D3FF76 /* MailBindingViewController.m */; };
+		75C8282C14B2DE7C00D3FF76 /* MailBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8282A14B2DE7C00D3FF76 /* MailBindingViewController.xib */; };
+		75C8283114B2DED900D3FF76 /* MailUnbindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */; };
+		75C8283214B2DED900D3FF76 /* MailUnbindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */; };
+		75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */; };
+		75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */; };
 		75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840414AC61CF00AB950A /* bottom-button-bg.png */; };
 		75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840514AC61CF00AB950A /* ButtonCorners.png */; };
 		75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */; };
@@ -294,6 +300,15 @@
 		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
 		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
 		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
+		75C8282814B2DE7C00D3FF76 /* MailBindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailBindingViewController.h; sourceTree = "<group>"; };
+		75C8282914B2DE7C00D3FF76 /* MailBindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailBindingViewController.m; sourceTree = "<group>"; };
+		75C8282A14B2DE7C00D3FF76 /* MailBindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MailBindingViewController.xib; sourceTree = "<group>"; };
+		75C8282E14B2DED900D3FF76 /* MailUnbindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailUnbindingViewController.h; sourceTree = "<group>"; };
+		75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailUnbindingViewController.m; sourceTree = "<group>"; };
+		75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MailUnbindingViewController.xib; sourceTree = "<group>"; };
+		75C8283814B2E64F00D3FF76 /* TelUnbindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelUnbindingViewController.h; sourceTree = "<group>"; };
+		75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelUnbindingViewController.m; sourceTree = "<group>"; };
+		75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TelUnbindingViewController.xib; sourceTree = "<group>"; };
 		75E4840414AC61CF00AB950A /* bottom-button-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom-button-bg.png"; sourceTree = "<group>"; };
 		75E4840514AC61CF00AB950A /* ButtonCorners.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonCorners.png; sourceTree = "<group>"; };
 		75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonCorners@2x.png"; sourceTree = "<group>"; };
@@ -711,6 +726,9 @@
 		7574BEA114B2D716007651EE /* TelBinding */ = {
 			isa = PBXGroup;
 			children = (
+				75C8283814B2E64F00D3FF76 /* TelUnbindingViewController.h */,
+				75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */,
+				75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */,
 			);
 			name = TelBinding;
 			sourceTree = "<group>";
@@ -718,6 +736,12 @@
 		7574BEA214B2D724007651EE /* MailBinding */ = {
 			isa = PBXGroup;
 			children = (
+				75C8282814B2DE7C00D3FF76 /* MailBindingViewController.h */,
+				75C8282914B2DE7C00D3FF76 /* MailBindingViewController.m */,
+				75C8282A14B2DE7C00D3FF76 /* MailBindingViewController.xib */,
+				75C8282E14B2DED900D3FF76 /* MailUnbindingViewController.h */,
+				75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */,
+				75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */,
 			);
 			name = MailBinding;
 			sourceTree = "<group>";
@@ -1559,6 +1583,9 @@
 				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
 				7574BEA014B2D0E3007651EE /* BindingListViewController.xib in Resources */,
 				7574BEA814B2D7CF007651EE /* NameBindingViewController.xib in Resources */,
+				75C8282C14B2DE7C00D3FF76 /* MailBindingViewController.xib in Resources */,
+				75C8283214B2DED900D3FF76 /* MailUnbindingViewController.xib in Resources */,
+				75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1720,6 +1747,9 @@
 				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
 				7574BE9F14B2D0E3007651EE /* BindingListViewController.m in Sources */,
 				7574BEA714B2D7CF007651EE /* NameBindingViewController.m in Sources */,
+				75C8282B14B2DE7C00D3FF76 /* MailBindingViewController.m in Sources */,
+				75C8283114B2DED900D3FF76 /* MailUnbindingViewController.m in Sources */,
+				75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

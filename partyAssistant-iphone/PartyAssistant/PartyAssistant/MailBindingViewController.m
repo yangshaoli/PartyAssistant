@@ -1,22 +1,18 @@
 //
-//  NameBindingViewController.m
+//  MailBindingViewController.m
 //  PartyAssistant
 //
 //  Created by Wang Jun on 1/3/12.
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "NameBindingViewController.h"
+#import "MailBindingViewController.h"
 
-@implementation NameBindingViewController
+@implementation MailBindingViewController
 @synthesize tableView = _tableView;
-@synthesize IDTitleLabel = _IDTitleLabel;
-@synthesize IDNameTextField = _IDNameTextField;
-//nameInput
-@synthesize inputNameCell = _inputNameCell;
-@synthesize nickNameInputTextField = _nickNameInputTextField;
-//upload
-@synthesize uploadNameCell = _uploadNameCell;
+@synthesize inputMailCell = _inputMailCell;
+@synthesize inputMailTextField = _inputMailTextField;
+@synthesize mailBindingCell = _mailBindingCell;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -56,6 +52,7 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -70,5 +67,4 @@
     
     return nil;
 }
-
 @end
