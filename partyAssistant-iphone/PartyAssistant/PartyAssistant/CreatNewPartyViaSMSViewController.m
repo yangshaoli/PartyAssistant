@@ -353,8 +353,12 @@
 }
 
 - (void)createPartySuc{
-//    self.tabBarController.selectedIndex = 1;
-//    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+    self.editingTableViewCell.textView.text = @"";
+    self.receipts = [NSMutableArray arrayWithCapacity:10];
+    [self rearrangeContactNameTFContent];
+
+    self.tabBarController.selectedIndex = 1;
+    //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
 //    [[NSNotificationCenter defaultCenter] postNotification:notification];
 //    [self.navigationController dismissModalViewControllerAnimated:NO];
 }
@@ -419,21 +423,13 @@
                 }else{
                     NSLog(@"不能发送短信");
                     [self createPartySuc];
-                    //wxz
-                    PartyListTableVC *partyListTableVC = [[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
-                    [self.navigationController pushViewController:partyListTableVC animated:YES];
-                    //wxz
-#if TARGET_IPHONE_SIMULATOR // iPhone Simulator
+                    #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                     return;
 #endif
                 }
                 
             }else{
                 [self createPartySuc];
-                //wxz
-                PartyListTableVC *partyListTableVC = [[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
-                [self.navigationController pushViewController:partyListTableVC animated:YES];
-                //wxz
             }
                  
         }else{
@@ -489,6 +485,7 @@
         }
 		case MessageComposeResultSent:
 			//send
+            [self createPartySuc];
 			break;
 		case MessageComposeResultFailed:{
             UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
