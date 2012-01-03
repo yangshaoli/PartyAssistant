@@ -20,7 +20,10 @@
 @interface ResendPartyViaSMSViewController : CreatNewPartyViaSMSViewController {
     NSString *smsContent;
     NSInteger groupID;
+    SMSObject *tempSMSObject;
 }
+
+@property (nonatomic, strong) SMSObject *tempSMSObject;
 
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID;
 

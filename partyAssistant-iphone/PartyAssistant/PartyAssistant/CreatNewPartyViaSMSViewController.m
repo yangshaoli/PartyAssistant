@@ -14,6 +14,7 @@
 #import "ASIFormDataRequest.h"
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
+#import "DeviceDetection.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -317,19 +318,15 @@
     BaseInfoObject *baseinfo = [bs getBaseInfo];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
+    NSString *platform = [DeviceDetection platform];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
     NSLog(@"%@",self.smsObject.receiversArrayJson);
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
-    [request setPostValue:@"" forKey:@"subject"];
-    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
-    [request setPostValue:@"SMS" forKey:@"msgType"];
-    [request setPostValue:baseinfo.location forKey:@"location"];
-    [request setPostValue:baseinfo.description forKey:@"description"];
-    [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:platform forKey:@"addressType"];
     
     request.timeOutSeconds = 30;
     [request setDelegate:self];
