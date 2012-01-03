@@ -113,3 +113,13 @@ def profilePage(request, uid):
         pass
     else:
         pass
+
+@csrf_exempt
+@apis_json_response_decorator
+def getAccountRemaining(request):
+    if 'id' in request.GET:
+        id = request.GET['id']
+        user = User.objects.get(pk = id)
+        return {'remaining':user.userprofile.available_sms_count}
+    else:
+        return {'remaining':0}
