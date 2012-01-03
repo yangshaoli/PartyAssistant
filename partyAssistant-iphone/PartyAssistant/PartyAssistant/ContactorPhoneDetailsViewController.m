@@ -336,11 +336,12 @@
                           return card;
                     }else{
                         NSLog(@"找到联系人了但是没头像数据");
-                        return nil;
+            
+                        continue;
                     }
                 }else{
                     NSLog(@"》》》》没找到匹配号码");
-                    continue;
+                    return nil;
                 }
                 
             }

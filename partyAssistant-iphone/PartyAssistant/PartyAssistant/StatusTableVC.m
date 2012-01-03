@@ -190,9 +190,19 @@
     self.wordString=[clentDic objectForKey:@"msg"];
        // Configure the cell...
     //cell.textLabel.text=[self.clientsArray  objectAtIndex:[indexPath row]];
+     NSString *statusString=[clentDic objectForKey:@"status"];
     
     UILabel *statusLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
-    statusLb.text = self.title;
+    
+    if([statusString isEqualToString:@"apply"]){
+         statusLb.text = @"已报名";
+    }else if([statusString isEqualToString:@"reject"]){
+         statusLb.text = @"不参加";
+    }else if([statusString isEqualToString:@"noanswer"]){
+         statusLb.text = @"未响应";
+    }else{
+          statusLb.text = @"已邀请";
+    }
     statusLb.textAlignment = UITextAlignmentLeft;
     statusLb.textColor = [UIColor blueColor];
     statusLb.backgroundColor = [UIColor clearColor];
@@ -220,7 +230,7 @@
     phoneLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:phoneLb];
     
-    NSString *statusString=[clentDic objectForKey:@"status"];
+   
     NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
 
     
