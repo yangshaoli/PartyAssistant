@@ -20,10 +20,7 @@
 @interface ContactorPhoneDetailsViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>
 {
     ABRecordID contactorID;
-    ABMultiValueRef phone;
-    ABRecordRef card;
     id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
-    
     NSDictionary *clientDict;//服务器获得的数据
     UITextView *messageTextView;
     PartyModel *partyObj;
@@ -32,8 +29,6 @@
 }
 @property(nonatomic, retain)UITextView *messageTextView;
 @property(nonatomic, assign)ABRecordID contactorID;
-@property(nonatomic, assign)ABMultiValueRef phone;
-@property(nonatomic, assign)ABRecordRef card;
 @property(nonatomic, assign)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 @property(nonatomic, retain)NSDictionary *clientDict;
 @property(nonatomic, retain)PartyModel *partyObj;
