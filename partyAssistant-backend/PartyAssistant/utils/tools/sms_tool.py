@@ -120,7 +120,7 @@ def sms_modem_send_sms(outbox_message, message, party):
 
 def sendsmsBindingmessage(UserBindingTemp):
     phone =  UserBindingTemp.binding_address
-    content = u'【爱热闹】'+ u'您的手机绑定验证码：' + UserBindingTemp.key
+    content = u'【爱热闹】'+ u'您的手机验证码：' + UserBindingTemp.key
     data = {'Mobile':phone , 'Content':content.encode('gbk')}
     try:
         res = _post_api_request_sendSMS(data)

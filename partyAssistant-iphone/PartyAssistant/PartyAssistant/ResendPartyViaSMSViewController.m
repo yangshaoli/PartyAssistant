@@ -14,6 +14,7 @@
 #import "ASIFormDataRequest.h"
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
+#import "DeviceDetection.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -29,6 +30,59 @@
 
 
 @implementation ResendPartyViaSMSViewController
+@synthesize tempSMSObject;
+#pragma mark - View lifecycle
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.tempSMSObject = [[SMSObject alloc] init];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.tempSMSObject._isSendBySelf) {
+        self.sendModeNameLabel.text = @"用自己手机发送";
+    } else {
+        self.sendModeNameLabel.text = @"通过服务器发送";
+    }
+}
+#pragma mark -
+#pragma mark custom method
+- (void)SMSContentInputDidFinish {
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+    }else{
+        if ([self.tempSMSObject.receiversArray count] == 0) {
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            [alertV show];
+        }else{
+            [self sendCreateRequest];
+        }
+    }
+}
+
+- (void)saveSMSInfo{
+    self.tempSMSObject.smsContent = [self.editingTableViewCell.textView text];
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
+    for (NSDictionary *receipt in self.receipts) {
+        //need check phone format
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        ClientObject *client = [[ClientObject alloc] init];
+        client.cName = [receipt objectForKey:@"name"];
+        client.cVal = [receipt objectForKey:@"phoneNumber"];
+        [array addObject:client];
+    }
+    
+    self.tempSMSObject.receiversArray = array;
+}
 
 - (void)sendCreateRequest{
     [self showWaiting];
@@ -36,20 +90,15 @@
     BaseInfoObject *baseinfo = [bs getBaseInfo];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    NSURL *url = [NSURL URLWithString:CREATE_PARTY];
+    NSURL *url = [NSURL URLWithString:RESEND_MSG_TO_CLIENT];
+    NSString *platform = [DeviceDetection platform];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
-    NSLog(@"%@",self.smsObject.receiversArrayJson);
-    [request setPostValue:editingTableViewCell.textView.text forKey:@"content"];
-    [request setPostValue:@"" forKey:@"subject"];
-    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
-    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
-    [request setPostValue:@"SMS" forKey:@"msgType"];
-    [request setPostValue:[NSNumber numberWithBool:groupID] forKey:@"partyID"];
-    [request setPostValue:baseinfo.location forKey:@"location"];
-    [request setPostValue:baseinfo.description forKey:@"description"];
-    [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
+    [request setPostValue:[self.tempSMSObject setupReceiversArrayData] forKey:@"receivers"];
+    [request setPostValue:self.editingTableViewCell.textView.text forKey:@"content"];
+    [request setPostValue:[NSNumber numberWithBool:self.tempSMSObject._isSendBySelf] forKey:@"_issendbyself"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:platform forKey:@"addressType"];
+    [request setPostValue:[NSNumber numberWithInt:groupID] forKey:@"partyID"];
     
     request.timeOutSeconds = 30;
     [request setDelegate:self];
@@ -66,22 +115,18 @@
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
-            if (self.smsObject._isSendBySelf) {
+            if (self.tempSMSObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
                     NSLog(@"可以发送短信");
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
-                    if (self.smsObject._isApplyTips) {
-                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                    if (self.tempSMSObject._isApplyTips) {
+                        vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
                     }else{
-                        vc.body = self.smsObject.smsContent;
+                        vc.body = self.tempSMSObject.smsContent;
                     };
                     
                     NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-                        if (peopleID == -1) {
-                            continue;
-                        }
                         if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
                             [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
                         }
@@ -89,12 +134,7 @@
                     vc.recipients = numberArray;
                     vc.messageComposeDelegate = self;
                     [self.navigationController presentModalViewController:vc animated:YES];
-                    SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
-                    [s clearSMSObject];
-                    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-                    [bs clearBaseInfo];
-                    EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                    [se clearEmailObject];                  
+                    [self.tempSMSObject clearObject];
                 }else{
                     NSLog(@"不能发送短信");
                     [self createPartySuc];
@@ -125,24 +165,38 @@
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 
+#pragma mark -
+#pragma mark save related data
 
 - (void)setReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
-    NSLog(@"%@",newValues);
+    NSLog(@"mark:new Values===========%@",newValues);
     for (NSDictionary *value in newValues) {
         NSLog(@"%@",value);
         NSDictionary *newReceipt = [NSDictionary dictionaryWithObjectsAndKeys: [value objectForKey:@"cName"], @"name", [value objectForKey:@"cValue"], @"phoneNumber", nil];
         NSLog(@"%@",newReceipt);
         [newReceipts addObject:newReceipt];
     }
-    NSLog(@"%@",newReceipts);
     [super setReceipts:[newReceipts mutableCopy]];
+    
+    [self rearrangeContactNameTFContent];
 }
 
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID{
     smsContent = [newContent copy];
-    editingTableViewCell.textView.text = smsContent;
-    NSLog(@"%@",editingTableViewCell);
+    self.editingTableViewCell.textView.text = smsContent;
+    NSLog(@"%@",self.editingTableViewCell);
     groupID = newGroupID;
+}
+
+#pragma mark - 
+#pragma mark UserSMSModeCheckDelegate
+
+- (BOOL)IsCurrentSMSSendBySelf {
+    return self.tempSMSObject._isSendBySelf;
+}
+
+- (void)changeSMSModeToSendBySelf:(BOOL)status {
+    self.tempSMSObject._isSendBySelf = status;
 }
 @end

@@ -14,6 +14,7 @@
 #import "ASIFormDataRequest.h"
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
+#import "DeviceDetection.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -38,6 +39,7 @@
 @synthesize receipts = _receipts;
 @synthesize smsObject;
 @synthesize HUD = _HUD;
+@synthesize editingTableViewCell = _editingTableViewCell;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -71,7 +73,20 @@
         SMSObjectService *smsObjectService = [SMSObjectService sharedSMSObjectService];
         self.smsObject = [smsObjectService getSMSObject];
     }
+    
+    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    _editingTableViewCell.delegate = self;
+    _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.smsObject._isSendBySelf) {
+        self.sendModeNameLabel.text = @"用自己手机发送";
+    } else {
+        self.sendModeNameLabel.text = @"通过服务器发送";
+    }
 }
 
 - (void)viewDidUnload
@@ -106,25 +121,18 @@
         } else if (indexPath.row == 1) {
             return self.sendModelSelectCell;
         }
+    } else {
+        return self.editingTableViewCell;
     }
     
-    static NSString *CellIdentifier = @"CellIdentifier";
-    
-    // Dequeue or create a cell of the appropriate type.
-    EditableTableViewCell *cell = (EditableTableViewCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        cell.delegate = self;
-        cell.text = [NSMutableString stringWithCapacity:10];
-    }
-    return cell;
+    return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        if (editingTableViewCell) {
-            [editingTableViewCell.textView resignFirstResponder];
-            [editingTableViewCell.textView scrollRangeToVisible:NSMakeRange(0, 1)];
+        if (self.editingTableViewCell) {
+            [self.editingTableViewCell.textView resignFirstResponder];
+            [self.editingTableViewCell.textView scrollRangeToVisible:NSMakeRange(0, 1)];
         }
         if (indexPath.row == 0) {
             if (!self.picker) {
@@ -132,6 +140,10 @@
             self.picker = aPicker;
             aPicker.delegate = self;
             }
+            
+            [self.view addSubview:self.picker.view];
+            self.navigationItem.rightBarButtonItem = nil;
+            
             [self.picker resetData];
 //            CATransition *transition = [CATransition animation];
 //            transition.duration = 0.3;
@@ -141,9 +153,6 @@
 //            [UIView beginAnimations:nil context:nil];
 //            [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.picker.view cache:YES];
 //            [UIView setAnimationDuration:0.3]; //动画时长
-            
-            [self.view addSubview:self.picker.view];
-            self.navigationItem.rightBarButtonItem = nil;
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
@@ -156,8 +165,8 @@
 
 - (CGFloat)tableView:(UITableView *)aTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
-        NSLog(@"%f",(editingTableViewCell.textView.frame.size.height + 11));
-        return (editingTableViewCell.textView.frame.size.height > 80) ? (editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
+        NSLog(@"%f",(self.editingTableViewCell.textView.frame.size.height + 11));
+        return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
     }
     return 44.0f;
 }
@@ -165,10 +174,10 @@
 #pragma mark EditableTableViewCellDelegate
 
 - (void)editableTableViewCellDidBeginEditing:(EditableTableViewCell *)editableTableViewCell {
-    editingTableViewCell = editableTableViewCell;
+    self.editingTableViewCell = editableTableViewCell;
     [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-    NSRange range = NSMakeRange(editingTableViewCell.textView.text.length - 1, 1);
-    [editingTableViewCell.textView scrollRangeToVisible:range];
+    NSRange range = NSMakeRange(self.editingTableViewCell.textView.text.length - 1, 1);
+    [self.editingTableViewCell.textView scrollRangeToVisible:range];
     
     CGFloat offset = -100.0f;
     self.tableView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
@@ -178,7 +187,7 @@
 
 
 - (void)editableTableViewCellDidEndEditing:(EditableTableViewCell *)editableTableViewCell {
-    editingTableViewCell = editableTableViewCell;
+    self.editingTableViewCell = editableTableViewCell;
     self.tableView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
     self.navigationItem.rightBarButtonItem = self.rightItem;
 }
@@ -186,7 +195,7 @@
 
 - (void)editableTableViewCell:(EditableTableViewCell *)editableTableViewCell heightChangedTo:(CGFloat)newHeight {
     // Calling beginUpdates/endUpdates causes the table view to reload cell geometries
-    CGRect oldFrame = editingTableViewCell.textView.frame;
+    CGRect oldFrame = self.editingTableViewCell.textView.frame;
     CGRect newFrame = oldFrame;
     if (newHeight < 80.0f) {
         newFrame.size.height = 80.0f;
@@ -196,10 +205,10 @@
         newFrame.size.height = newHeight;
     }
     
-    editingTableViewCell.textView.frame = newFrame;
+    self.editingTableViewCell.textView.frame = newFrame;
     
-    NSRange range = NSMakeRange(editingTableViewCell.textView.text.length - 1, 1);
-    [editingTableViewCell.textView scrollRangeToVisible:range];
+    NSRange range = NSMakeRange(self.editingTableViewCell.textView.text.length - 1, 1);
+    [self.editingTableViewCell.textView scrollRangeToVisible:range];
     
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
@@ -228,15 +237,8 @@
         NSMutableString *contactNameTFContent = [[NSMutableString alloc] initWithCapacity:0];
         for (int i=0; i<[self.receipts count]; i++) {
             NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
-            ABRecordID peopleID = [[peopleInfo objectForKey:@"abRecordID"] intValue];
-            if (peopleID == -1) {
-                continue;
-            }
-            ABContact *contact = [ABContact contactWithRecordID:peopleID];
-            NSString *name = [contact compositeName];
-            if ([name length] <= 0) {
-                name = [peopleInfo objectForKey:@"phoneNumber"];
-            }
+        
+            NSString *name  = [peopleInfo objectForKey:@"name"];
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
                                      
@@ -267,7 +269,7 @@
 #pragma mark -
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
-    if(!editingTableViewCell.textView.text || [editingTableViewCell.textView.text isEqualToString:@""]){
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
         UIAlertView *alert=[[UIAlertView alloc]
                             initWithTitle:@"短信内容不可以为空"
                             message:@"内容为必填项"
@@ -287,15 +289,12 @@
 }
 
 - (void)saveSMSInfo{
-    self.smsObject.smsContent = [editingTableViewCell.textView text];
+    self.smsObject.smsContent = [self.editingTableViewCell.textView text];
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
     for (NSDictionary *receipt in self.receipts) {
-        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-        if (peopleID == -1) {
-            continue;
-        }
+        //need check phone format
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
-        client.cID = peopleID;
         client.cName = [receipt objectForKey:@"name"];
         client.cVal = [receipt objectForKey:@"phoneNumber"];
         [array addObject:client];
@@ -320,19 +319,15 @@
     BaseInfoObject *baseinfo = [bs getBaseInfo];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
+    NSString *platform = [DeviceDetection platform];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
     NSLog(@"%@",self.smsObject.receiversArrayJson);
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
-    [request setPostValue:@"" forKey:@"subject"];
-    [request setPostValue:[NSNumber numberWithBool:self.smsObject._isApplyTips] forKey:@"_isapplytips"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
-    [request setPostValue:@"SMS" forKey:@"msgType"];
-    [request setPostValue:baseinfo.location forKey:@"location"];
-    [request setPostValue:baseinfo.description forKey:@"description"];
-    [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:platform forKey:@"addressType"];
     
     request.timeOutSeconds = 30;
     [request setDelegate:self];
@@ -361,10 +356,6 @@
                     
                     NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        ABRecordID peopleID = [[receipt objectForKey:@"abRecordID"] intValue];
-                        if (peopleID == -1) {
-                            continue;
-                        }
                         if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
                             [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
                         }
