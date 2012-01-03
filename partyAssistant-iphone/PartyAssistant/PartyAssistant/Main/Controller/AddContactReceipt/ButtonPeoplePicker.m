@@ -531,7 +531,7 @@
 	for (int i = 0; i < group.count; i++)
     {
 		NSDictionary *personDictionary = (NSDictionary *)[group objectAtIndex:i];
-		
+		NSLog(@"the Dictionary :%@",personDictionary);
 //		ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
 //
 //        if (abRecordID == -1){
@@ -865,6 +865,7 @@
     } else {
         self.group = [[NSMutableArray alloc] init];
     }
+    [self layoutNameButtons];
 }
 
 - (NSString *)getCleanPhoneNumber:(NSString *)originalString {

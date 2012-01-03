@@ -140,6 +140,10 @@
             self.picker = aPicker;
             aPicker.delegate = self;
             }
+            
+            [self.view addSubview:self.picker.view];
+            self.navigationItem.rightBarButtonItem = nil;
+            
             [self.picker resetData];
 //            CATransition *transition = [CATransition animation];
 //            transition.duration = 0.3;
@@ -149,9 +153,6 @@
 //            [UIView beginAnimations:nil context:nil];
 //            [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:self.picker.view cache:YES];
 //            [UIView setAnimationDuration:0.3]; //动画时长
-            
-            [self.view addSubview:self.picker.view];
-            self.navigationItem.rightBarButtonItem = nil;
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {

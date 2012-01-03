@@ -36,16 +36,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView setScrollEnabled:NO];
-    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
-    self.navigationItem.rightBarButtonItem = right;
-    self.rightItem = right;
-    self.receipts = [NSMutableArray arrayWithCapacity:10];
-    
-    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-    self.editingTableViewCell.delegate = self;
-    self.editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
-    // Do any additional setup after loading the view from its nib.
     
     self.tempSMSObject = [[SMSObject alloc] init];
 }
@@ -180,7 +170,7 @@
 
 - (void)setReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
-    NSLog(@"%@",newValues);
+    NSLog(@"mark:new Values===========%@",newValues);
     for (NSDictionary *value in newValues) {
         NSLog(@"%@",value);
         NSDictionary *newReceipt = [NSDictionary dictionaryWithObjectsAndKeys: [value objectForKey:@"cName"], @"name", [value objectForKey:@"cValue"], @"phoneNumber", nil];
@@ -188,6 +178,7 @@
         [newReceipts addObject:newReceipt];
     }
     [super setReceipts:[newReceipts mutableCopy]];
+    
     [self rearrangeContactNameTFContent];
 }
 
