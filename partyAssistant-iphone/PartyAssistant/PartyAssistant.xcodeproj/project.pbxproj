@@ -40,6 +40,10 @@
 		75C8283214B2DED900D3FF76 /* MailUnbindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */; };
 		75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */; };
 		75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */; };
+		75DEF33C14B2FB8D00240A23 /* TelBindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DEF33A14B2FB8D00240A23 /* TelBindingViewController.m */; };
+		75DEF33D14B2FB8D00240A23 /* TelBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75DEF33B14B2FB8D00240A23 /* TelBindingViewController.xib */; };
+		75DEF34214B2FCCB00240A23 /* TelValidateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DEF34014B2FCCA00240A23 /* TelValidateViewController.m */; };
+		75DEF34314B2FCCB00240A23 /* TelValidateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75DEF34114B2FCCA00240A23 /* TelValidateViewController.xib */; };
 		75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840414AC61CF00AB950A /* bottom-button-bg.png */; };
 		75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840514AC61CF00AB950A /* ButtonCorners.png */; };
 		75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */; };
@@ -309,6 +313,12 @@
 		75C8283814B2E64F00D3FF76 /* TelUnbindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelUnbindingViewController.h; sourceTree = "<group>"; };
 		75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelUnbindingViewController.m; sourceTree = "<group>"; };
 		75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TelUnbindingViewController.xib; sourceTree = "<group>"; };
+		75DEF33914B2FB8D00240A23 /* TelBindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelBindingViewController.h; sourceTree = "<group>"; };
+		75DEF33A14B2FB8D00240A23 /* TelBindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelBindingViewController.m; sourceTree = "<group>"; };
+		75DEF33B14B2FB8D00240A23 /* TelBindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TelBindingViewController.xib; sourceTree = "<group>"; };
+		75DEF33F14B2FCCA00240A23 /* TelValidateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TelValidateViewController.h; path = Binding/TelValidateViewController.h; sourceTree = "<group>"; };
+		75DEF34014B2FCCA00240A23 /* TelValidateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TelValidateViewController.m; path = Binding/TelValidateViewController.m; sourceTree = "<group>"; };
+		75DEF34114B2FCCA00240A23 /* TelValidateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TelValidateViewController.xib; path = Binding/TelValidateViewController.xib; sourceTree = "<group>"; };
 		75E4840414AC61CF00AB950A /* bottom-button-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom-button-bg.png"; sourceTree = "<group>"; };
 		75E4840514AC61CF00AB950A /* ButtonCorners.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonCorners.png; sourceTree = "<group>"; };
 		75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonCorners@2x.png"; sourceTree = "<group>"; };
@@ -729,6 +739,12 @@
 				75C8283814B2E64F00D3FF76 /* TelUnbindingViewController.h */,
 				75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */,
 				75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */,
+				75DEF33914B2FB8D00240A23 /* TelBindingViewController.h */,
+				75DEF33A14B2FB8D00240A23 /* TelBindingViewController.m */,
+				75DEF33B14B2FB8D00240A23 /* TelBindingViewController.xib */,
+				75DEF33F14B2FCCA00240A23 /* TelValidateViewController.h */,
+				75DEF34014B2FCCA00240A23 /* TelValidateViewController.m */,
+				75DEF34114B2FCCA00240A23 /* TelValidateViewController.xib */,
 			);
 			name = TelBinding;
 			sourceTree = "<group>";
@@ -1586,6 +1602,8 @@
 				75C8282C14B2DE7C00D3FF76 /* MailBindingViewController.xib in Resources */,
 				75C8283214B2DED900D3FF76 /* MailUnbindingViewController.xib in Resources */,
 				75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */,
+				75DEF33D14B2FB8D00240A23 /* TelBindingViewController.xib in Resources */,
+				75DEF34314B2FCCB00240A23 /* TelValidateViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1750,6 +1768,8 @@
 				75C8282B14B2DE7C00D3FF76 /* MailBindingViewController.m in Sources */,
 				75C8283114B2DED900D3FF76 /* MailUnbindingViewController.m in Sources */,
 				75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */,
+				75DEF33C14B2FB8D00240A23 /* TelBindingViewController.m in Sources */,
+				75DEF34214B2FCCB00240A23 /* TelValidateViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
