@@ -60,6 +60,7 @@
                             otherButtonTitles: nil];
         [alert show];
     }else{
+        [self saveSMSInfo];
         if ([self.tempSMSObject.receiversArray count] == 0) {
             UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
             [alertV show];

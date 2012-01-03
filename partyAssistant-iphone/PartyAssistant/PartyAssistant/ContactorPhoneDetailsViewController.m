@@ -318,7 +318,7 @@
                                                                     addressBook,
                                                                     (__bridge CFStringRef)contactorNameString);
     
-  NSLog(@"先输出名字>>>>>>>>>%@",contactorNameString);
+  NSLog(@"先输出名字>>>>>>>>>%@,再输出号码》》》%@",contactorNameString,contactorPhoneString);
   if(searchResult){
     NSLog(@"按名字已找到数据－－－");
     for (int i=0; i<CFArrayGetCount(searchResult); )
@@ -327,6 +327,7 @@
             ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
             for (int j=0; j<ABMultiValueGetCount(phone); j++) {
                 NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
+                NSLog(@"找到名字后打印valstr：：：－－－%@   该联系人有%d个号码",valStr,ABMultiValueGetCount(phone));
                 if ([valStr isEqualToString:contactorPhoneString]) {
                     NSLog(@"又找到匹配号码－－");
                     //self.cID = ABRecordGetRecordID(card);
@@ -339,8 +340,7 @@
                     }
                 }else{
                     NSLog(@"》》》》没找到匹配号码");
-                    return nil;
-                
+                    continue;
                 }
                 
             }
