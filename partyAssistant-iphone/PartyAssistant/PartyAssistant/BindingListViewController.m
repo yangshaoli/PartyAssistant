@@ -39,6 +39,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.navigationItem.title = @"绑定邮箱";
     // Do any additional setup after loading the view from its nib.
 }
 
