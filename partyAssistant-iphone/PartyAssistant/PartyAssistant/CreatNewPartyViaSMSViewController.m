@@ -16,6 +16,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
 #import "PartyListTableVC.h"
+#import "ABContact.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -27,6 +28,7 @@
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage;
 - (void)showAlertRequestFailed: (NSString *) theMessage;
 - (NSString *)getCleanPhoneNumber:(NSString *)originalString;
+- (void)addPersonToGroup:(NSDictionary *)personDictionary;
 
 @end
 
@@ -500,10 +502,16 @@
 #pragma mark -
 #pragma contact list delegate
 - (void)callContactList {
-    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
-    list.contactDelegate = self;
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
-    [self.navigationController presentModalViewController:nav animated:YES];
+    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+    ppnc.peoplePickerDelegate = self;
+    [ppnc setDisplayedProperties:[NSArray
+                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+    
+    [self.navigationController presentModalViewController:ppnc animated:YES];
+//    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
+//    list.contactDelegate = self;
+//    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
+//    [self.navigationController presentModalViewController:nav animated:YES];
 }
 
 - (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
@@ -604,5 +612,75 @@
     if (alertView.tag == 10011) {
         [self.navigationController dismissModalViewControllerAnimated:YES];
     }
+}
+
+#pragma mark -
+#pragma mark people picker delegate
+- (BOOL)peoplePickerNavigationController:
+            (ABPeoplePickerNavigationController *)peoplePicker
+            shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+        
+    return YES; 
+    
+}
+// Display the selected property
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+{
+    // We are guaranteed to only be working with e-mail or phone [self dismissModalViewControllerAnimated:YES];
+    NSArray *array = [ABContact arrayForProperty:property
+                                        inRecord:person];
+    ABContact *contact = [ABContact contactWithRecord:person];
+    NSString *phone = (NSString *)[array objectAtIndex:identifier];
+    NSString *name = [contact compositeName];
+    NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                        phone, @"phoneNumber", name, @"name",nil];
+    [self addPersonToGroup:personDictionary];
+    
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+    
+    return NO;
+}
+// Handle user cancels
+- (void)peoplePickerNavigationControllerDidCancel:
+(ABPeoplePickerNavigationController *)peoplePicker {
+    
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+    
+}
+
+#pragma mark - Add and remove a person to/from the group
+
+- (void)addPersonToGroup:(NSDictionary *)personDictionary
+{
+    //ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
+    
+    NSString *number = [personDictionary valueForKey:@"phoneNumber"];
+    NSString *name  = [personDictionary valueForKey:@"name"];
+    
+    // Check for an existing entry for this person, if so remove it
+    for (NSDictionary *personDict in self.receipts)
+    {
+        NSString *theContactName = [personDict valueForKey:@"name"];
+        NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+        //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
+        NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
+        
+        if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+            return;
+        }
+        
+        if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+        {
+            return;
+        }
+        
+        if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
+            return;
+        }
+    }
+    
+    [self.receipts addObject:personDictionary];
+    [self rearrangeContactNameTFContent];
 }
 @end

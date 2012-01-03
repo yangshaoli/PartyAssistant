@@ -97,7 +97,7 @@
     self.buttonView.clipsToBounds = YES;
     
     self.addReceiptButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
-    [self.addReceiptButton addTarget:self action:@selector(callCaontactList) forControlEvents:UIControlEventTouchUpInside];
+    [self.addReceiptButton addTarget:self action:@selector(callContactList) forControlEvents:UIControlEventTouchUpInside];
     self.addReceiptBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
     self.addReceiptButton.center = CGPointMake(14, 14);
     [self.addReceiptBGView addSubview:self.addReceiptButton];
@@ -767,11 +767,16 @@
     }
 }
 
-- (void)callCaontactList {
-    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
-    list.contactDelegate = self;
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
-    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
+- (void)callContactList {
+    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+    ppnc.peoplePickerDelegate = self;
+    [ppnc setDisplayedProperties:[NSArray
+                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:ppnc animated:YES];
+//    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
+//    list.contactDelegate = self;
+//    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
+//    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
 }
 
 #pragma mark -
@@ -888,5 +893,40 @@
     }
     NSLog(@"strippedString : %@",strippedString);
     return strippedString;
+}
+
+#pragma mark -
+#pragma mark people picker delegate
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+    
+    return YES; 
+    
+}
+// Display the selected property
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+{
+    // We are guaranteed to only be working with e-mail or phone [self dismissModalViewControllerAnimated:YES];
+    NSArray *array = [ABContact arrayForProperty:property
+                                        inRecord:person];
+    ABContact *contact = [ABContact contactWithRecord:person];
+    NSString *phone = (NSString *)[array objectAtIndex:identifier];
+    NSString *name = [contact compositeName];
+    NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                      phone, @"phoneNumber", name, @"name",nil];
+    [self addPersonToGroup:personDictionary];
+    
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+    
+    return NO;
+}
+// Handle user cancels
+- (void)peoplePickerNavigationControllerDidCancel:
+(ABPeoplePickerNavigationController *)peoplePicker {
+    
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+    
 }
 @end

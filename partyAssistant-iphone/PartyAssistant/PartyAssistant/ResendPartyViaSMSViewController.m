@@ -86,7 +86,7 @@
         } else {
             if ([phoneNumber isEqualToString:@""]) {
                 phoneNumber = [self getCleanPhoneNumber:client.cName];
-                if (phoneNumber.length > 11) {
+                if (phoneNumber.length >= 11) {
                     client.cVal = phoneNumber;
                 } else {
                     continue;
