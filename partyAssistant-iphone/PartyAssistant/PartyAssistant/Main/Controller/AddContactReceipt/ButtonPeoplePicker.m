@@ -384,7 +384,7 @@
 					NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSNumber numberWithInt:abRecordID], @"abRecordID",
 													 [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                                     phoneString,
+                                                     [self getCleanPhoneNumber:phoneString],
                                                          @"phoneNumber",
                                                       name,
                                                          @"name",
