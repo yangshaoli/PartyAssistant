@@ -153,7 +153,7 @@
 
 - (void)resendBtnAction{
     
-    NSLog(@"-----%@%@",self.clientsArray,self.partyObj.contentString);
+    NSLog(@"在status中输出-----%@%@",self.clientsArray,self.partyObj.contentString);
     [self getPartyClientSeperatedList];
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
