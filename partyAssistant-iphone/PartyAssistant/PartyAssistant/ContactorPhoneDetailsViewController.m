@@ -319,12 +319,19 @@
                                                                     (__bridge CFStringRef)contactorNameString);
     
   NSLog(@"先输出名字>>>>>>>>>%@,再输出号码》》》%@",contactorNameString,contactorPhoneString);
-  if(searchResult){
+  NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
+  if(array1.count>0){
     NSLog(@"按名字已找到数据－－－");
     for (int i=0; i<CFArrayGetCount(searchResult); )
            {
             ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+            if(!card){
+                continue;
+            }
             ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+            if(!phone){
+                continue;
+            }
             for (int j=0; j<ABMultiValueGetCount(phone); j++) {
                 NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
                 NSLog(@"找到名字后打印valstr：：：－－－%@   该联系人有%d个号码",valStr,ABMultiValueGetCount(phone));
@@ -336,15 +343,16 @@
                           return card;
                     }else{
                         NSLog(@"找到联系人了但是没头像数据");
-            
-                        continue;
+                        return nil;
                     }
                 }else{
                     NSLog(@"》》》》没找到匹配号码");
-                    return nil;
+                    continue;
                 }
-                
+               
             }
+            return nil;   
+               
         }
   }else{
       NSLog(@"－名字没有匹配到数据－");
