@@ -192,9 +192,10 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
     phone = request.user.get_profile().phone
        
     userkey = generate_phone_code()
-    userbindingtemp, create = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, binding_type='phone')
-    userbindingtemp.key = userkey
-    userbindingtemp.save()
+    userbindingtemp, create = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, binding_type='phone', defaults={'key':userkey})
+    if not create:
+        userbindingtemp.key = userkey
+        userbindingtemp.save()
     
     profile = request.user.get_profile()
     profile.phone = userbindingtemp.binding_address
@@ -237,10 +238,12 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
             return HttpResponse("time:"+str(time))
     
     userkey = generate_phone_code()
-    userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone')
-    userbindingtemp.binding_address = phone
-    userbindingtemp.key = userkey
-    userbindingtemp.save()
+    userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone', defaults={'binding_address': phone, 'key':userkey})
+    if not created:
+        userbindingtemp.binding_address = phone
+        userbindingtemp.key = userkey
+        userbindingtemp.save()
+    
     profile = request.user.get_profile()
     
     profile.phone = userbindingtemp.binding_address
