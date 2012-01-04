@@ -11,4 +11,5 @@ urlpatterns = patterns('apis.accounts.views',
     url(r'^regist/$', 'accountRegist', name = 'accountRegist'),
     url(r'^logout/$', 'accountLogout', name = 'accountLogout'),
     url(r'^get_badge_num/$', 'getBadgeNum', name = 'getBadgeNum'),
+    url(r'^get_account_remaining/$', 'getAccountRemaining', name = 'getAccountRemaining'),
 )

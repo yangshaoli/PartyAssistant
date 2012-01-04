@@ -191,3 +191,27 @@
                 		'applyURL':String
                 		}
 		}
+12. GetBadgeNumber:
+        url:"/a/accounts/get_badge_num/?id=xx",
+        method:"GET",
+        input:{
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "badgeNum":Integer,
+                                }
+                }
+13. getAccountRemaining:
+        url:"/a/accounts/get_account_remaining/?id=xx",
+        method:"GET",
+        input:{
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "remaining":Integer,
+                                }
+                }
