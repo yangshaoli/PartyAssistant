@@ -22,7 +22,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(GetClientsCountService)
 }
 - (void)loadClientCount
 {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d" ,GET_PARTY_CLIENT_MAIN_COUNT,self.partyObj.partyId]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,self.partyObj.partyId]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];

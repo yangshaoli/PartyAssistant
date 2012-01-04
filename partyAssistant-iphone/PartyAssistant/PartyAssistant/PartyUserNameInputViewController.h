@@ -42,7 +42,7 @@
 @property (nonatomic, retain) IBOutlet UITableViewCell *phoneNumTableCell;
 @property (nonatomic, retain) IBOutlet UITextField *phoneNumTextField;
 
-@property (nonatomic, retain) id<PartyUserNameInputDelegate> delegate;
+@property (nonatomic, assign) id<PartyUserNameInputDelegate> delegate;
 
 - (IBAction)cancleInput;
 - (IBAction)SaveInput;

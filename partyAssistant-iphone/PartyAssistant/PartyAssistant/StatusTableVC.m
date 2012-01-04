@@ -13,14 +13,12 @@
 #import "ASIFormDataRequest.h"
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
-
+#import "ResendPartyViaSMSViewController.h"
 
 
 @interface StatusTableVC()
-
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
 -(void) showTabBar:(UITabBarController*) tabbarcontroller;
-
 @end
 
 @implementation StatusTableVC
@@ -57,6 +55,13 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self showWaiting];
+    
+    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次发送" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
+    self.navigationItem.rightBarButtonItem = resendBtn;
+    [self getPartyClientSeperatedList];
+}
+
+- (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
@@ -120,6 +125,8 @@
 {
     [super viewWillAppear:animated];
     [self hideTabBar:self.tabBarController];
+    [self getPartyClientSeperatedList];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -143,6 +150,17 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+
+- (void)resendBtnAction{
+    
+    NSLog(@"-----%@%@",self.clientsArray,self.partyObj.contentString);
+    [self getPartyClientSeperatedList];
+    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+    [resendPartyViaSMSViewController  setReceipts:self.clientsArray];
+    NSLog(@"调用再次发送");
+}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -170,33 +188,68 @@
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     NSDictionary *clentDic=[self.clientsArray objectAtIndex:[indexPath row]];
     self.wordString=[clentDic objectForKey:@"msg"];
-    // Configure the cell...
+       // Configure the cell...
     //cell.textLabel.text=[self.clientsArray  objectAtIndex:[indexPath row]];
-    UILabel *upLaterLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
-    upLaterLb.text = self.title;
-    upLaterLb.textAlignment = UITextAlignmentLeft;
-    upLaterLb.textColor = [UIColor blueColor];
-    upLaterLb.backgroundColor = [UIColor clearColor];
-    [cell addSubview:upLaterLb];
     
-    UILabel *firstLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 150, 20)];
-    firstLb.text=[clentDic objectForKey:@"cName"];
-    //firstLb.text = [self.clientsArray  objectAtIndex:[indexPath row]];
-    firstLb.textAlignment = UITextAlignmentLeft;
-    firstLb.textColor = [UIColor blueColor];
-    firstLb.backgroundColor = [UIColor clearColor];
-    [cell addSubview:firstLb];
+    UILabel *statusLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
+    statusLb.text = self.title;
+    statusLb.textAlignment = UITextAlignmentLeft;
+    statusLb.textColor = [UIColor blueColor];
+    statusLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:statusLb];
     
     
-    if([self.title isEqualToString:@"已报名"]||[self.title isEqualToString:@"不参加"]){
+    UIView *oldLayout2 = nil;
+    oldLayout2=[cell viewWithTag:5];
+    [oldLayout2 removeFromSuperview];
+    
+    
+    UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 70, 20)];
+    nameLb.text=[clentDic objectForKey:@"cName"];
+    nameLb.font=[UIFont systemFontOfSize:15];
+    nameLb.textAlignment = UITextAlignmentLeft;
+    nameLb.textColor = [UIColor blueColor];
+    nameLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:nameLb];
+    
+    UILabel *phoneLb= [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 80, 20)];
+    phoneLb.text=[clentDic objectForKey:@"cValue"];
+    phoneLb.font=[UIFont systemFontOfSize:10];
+    phoneLb.textAlignment = UITextAlignmentLeft;
+    phoneLb.textColor = [UIColor grayColor];
+    phoneLb.backgroundColor = [UIColor clearColor];
+    [cell addSubview:phoneLb];
+    
+    NSString *statusString=[clentDic objectForKey:@"status"];
+    NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
+
+    
+    
+    if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(isCheck){
+            NSLog(@"在已报名页面");
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
+            cellImageView.tag=5;
             [cell  addSubview:cellImageView];
         }
-        
-        
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        secondLb.text = [clentDic objectForKey:@"msg"];
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }else if([self.title isEqualToString:@"不参加"]){
+        BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
+        if(isCheck){
+            NSLog(@"在不参加页面");
+            UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+            cellImageView.image=[UIImage imageNamed:@"new2"];
+            cellImageView.tag=5;
+            [cell  addSubview:cellImageView];
+        }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
         secondLb.text = [clentDic objectForKey:@"msg"];
         secondLb.font=[UIFont systemFontOfSize:15];
@@ -205,7 +258,6 @@
         secondLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:secondLb];
     }
-    
     return cell;
 }
 
@@ -269,9 +321,11 @@
    
 //      contactorPhoneDetailsViewController.phoneDetailDelegate = self;
      contactorPhoneDetailsViewController.clientDict=[self.clientsArray  objectAtIndex:[indexPath row]];
-    
+     contactorPhoneDetailsViewController.partyObj=self.partyObj;
+     contactorPhoneDetailsViewController.clientStatusFlag=self.clientStatusFlag;
      [self.navigationController pushViewController:contactorPhoneDetailsViewController animated:YES];
-    contactorPhoneDetailsViewController.messageTextView.text=@"留言自造数据ddddddddddddddddddd的 点点滴滴 ddddddddddd 点点滴滴ddddd 点点滴滴 淡淡的 得到 的的额度的的的的的";//需要放在push后面才可以成功赋值
+    
+   
 }
 
 

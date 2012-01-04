@@ -56,7 +56,7 @@
         self.receiverArray = [[NSMutableArray alloc] initWithArray:smsObject.receiversArray];
     }
     if(!receiverCell){
-        //        static NSString *CellIdentifier = @"Cell";
+        //static NSString *CellIdentifier = @"Cell";
         self.receiverCell = [[ReceiverTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
         receiverCell.selectionStyle = UITableViewCellSelectionStyleNone;
         receiverCell.receiverArray = self.receiverArray;

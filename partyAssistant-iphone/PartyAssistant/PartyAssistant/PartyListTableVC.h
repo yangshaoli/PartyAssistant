@@ -5,7 +5,6 @@
 //  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
 #import <UIKit/UIKit.h>
 #import "BottomRefreshTableView.h"
 #import "TopRefreshTableView.h"
@@ -40,5 +39,6 @@
 - (void)doneLoadingTopRefreshTableViewData;
 - (void)doneLoadingBottomRefreshTableViewData;
 - (void)setBottomRefreshViewYandDeltaHeight;
+- (void)refreshBtnAction;
 
 @end
