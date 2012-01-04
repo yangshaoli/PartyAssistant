@@ -25,6 +25,7 @@
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary;
 - (void)displayAddPersonViewController;
 - (NSString *)getCleanPhoneNumber:(NSString *)rawPhoneNumber;
+- (NSString *)getCleanLetter:(NSString *)originalString;
 @end
 
 
@@ -428,14 +429,14 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (searchField.text.length > 1)
     {
-        NSString *newContactname = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
-        newContactname = [newContactname stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([newContactname length] == 0) {
+        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([newPhoneName length] == 0) {
             searchField.text = @"\u200B";
             return NO;
         }
         NSDictionary *newContact = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                       @"", @"phoneNumber", newContactname, @"name", nil];
+                                                       newPhoneName, @"phoneNumber", @"", @"name", nil];
         searchField.text = @"\u200B";
         [self addPersonToGroup:newContact];
 	}
@@ -456,27 +457,42 @@
     NSString *name  = [personDictionary valueForKey:@"name"];
     
     // Check for an existing entry for this person, if so remove it
-    for (NSDictionary *personDict in group)
-    {
-        NSString *theContactName = [personDict valueForKey:@"name"];
-        NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
-        //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
-        NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
-        
-        if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+    if ([name isEqualToString:@""]) {
+        if ([number isEqualToString:@""]) {
             return;
         }
+        NSString *cleanString = [self getCleanLetter:number];
         
-        if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+        for (NSDictionary *personDict in group)
         {
-            return;
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            if ([cleanString isEqualToString:[self getCleanLetter:thePhoneString]]) {
+                return;
+            }
         }
-        
-        if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
-            return;
+    } else {
+        for (NSDictionary *personDict in group)
+        {
+            NSString *theContactName = [personDict valueForKey:@"name"];
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
+            NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+                return;
+            }
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+            {
+                return;
+            }
+            
+            if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
+                return;
+            }
         }
     }
-    
+        
     [group addObject:personDictionary];
     [self layoutNameButtons];
 }
@@ -545,6 +561,9 @@
 //        } else {
             name = [personDictionary objectForKey:@"name"];
 //        }
+        if ([name isEqualToString:@""]) {
+            name = [personDictionary objectForKey:@"phoneNumber"];
+        }
         
 //		ABMultiValueIdentifier identifier = [[personDictionary valueForKey:@"valueIdentifier"] intValue];
 //		
@@ -881,6 +900,28 @@
     NSScanner *scanner = [NSScanner scannerWithString:originalString];
     NSCharacterSet *numbers = [NSCharacterSet 
                                characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    NSLog(@"strippedString : %@",strippedString);
+    return strippedString;
+}
+
+- (NSString *)getCleanLetter:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789abcdefghijklmnopqrestuvwxyzABCDEFGHIJKLMNOPQRESTUVWXYZ"];
     
     while ([scanner isAtEnd] == NO) {
         NSString *buffer;

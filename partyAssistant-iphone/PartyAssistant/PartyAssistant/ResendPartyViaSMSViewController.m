@@ -63,7 +63,7 @@
     }else{
         [self saveSMSInfo];
         if ([self.tempSMSObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何有效收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
             [alertV show];
         }else{
             [self sendCreateRequest];
@@ -84,19 +84,14 @@
         if (!phoneNumber) {
             continue;
         } else {
-            if ([phoneNumber isEqualToString:@""]) {
-                phoneNumber = [self getCleanPhoneNumber:client.cName];
+            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
                 if (phoneNumber.length >= 11) {
                     client.cVal = phoneNumber;
                 } else {
                     continue;
                 }
-            } else {
-                client.cVal = [self getCleanPhoneNumber:[receipt objectForKey:@"phoneNumber"]];
-            }
         }
         [array addObject:client];
-
     }
     
     self.tempSMSObject.receiversArray = array;
@@ -143,10 +138,19 @@
                         vc.body = self.tempSMSObject.smsContent;
                     };
                     
-                    NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
+                    NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
-                            [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
+                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                        
+                        if (!phoneNumber) {
+                            continue;
+                        } else {
+                            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+                            if (phoneNumber.length >= 11) {
+                                [numberArray addObject:phoneNumber];
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     vc.recipients = numberArray;

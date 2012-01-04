@@ -29,6 +29,7 @@
 - (void)showAlertRequestFailed: (NSString *) theMessage;
 - (NSString *)getCleanPhoneNumber:(NSString *)originalString;
 - (void)addPersonToGroup:(NSDictionary *)personDictionary;
+- (NSString *)getCleanLetter:(NSString *)originalString;
 
 @end
 
@@ -268,6 +269,9 @@
             NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
         
             NSString *name  = [peopleInfo objectForKey:@"name"];
+            if (!name || [name isEqualToString:@""]) {
+                name = [peopleInfo objectForKey:@"phoneNumber"];
+            }
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
                                      
@@ -284,9 +288,17 @@
             } else {
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
-                    [contactNameTFContent appendFormat:@"&%drecipient", leftCount];
+                    if (i == 0) {
+                        [contactNameTFContent appendFormat:@"%drecipient", leftCount];
+                    } else {
+                        [contactNameTFContent appendFormat:@"&%drecipient", leftCount];   
+                    }
                 } else {
-                    [contactNameTFContent appendFormat:@"&%drecipients", leftCount];
+                    if (i == 0) {
+                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];
+                    } else {
+                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
+                    }
                 }
                 break;
             }
@@ -333,15 +345,11 @@
         if (!phoneNumber) {
             continue;
         } else {
-            if ([phoneNumber isEqualToString:@""]) {
-                phoneNumber = [self getCleanPhoneNumber:client.cName];
-                if (phoneNumber.length >= 11) {
-                    client.cVal = phoneNumber;
-                } else {
-                    continue;
-                }
+            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+            if (phoneNumber.length >= 11) {
+                client.cVal = phoneNumber;
             } else {
-                client.cVal = [self getCleanPhoneNumber:[receipt objectForKey:@"phoneNumber"]];
+                continue;
             }
         }
         [array addObject:client];
@@ -360,6 +368,8 @@
     [self rearrangeContactNameTFContent];
 
     self.tabBarController.selectedIndex = 1;
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+    
     //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
 //    [[NSNotificationCenter defaultCenter] postNotification:notification];
 //    [self.navigationController dismissModalViewControllerAnimated:NO];
@@ -406,10 +416,19 @@
                         vc.body = self.smsObject.smsContent;
                     };
                     
-                    NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
+                    NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
-                            [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
+                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                        
+                        if (!phoneNumber) {
+                            continue;
+                        } else {
+                            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+                            if (phoneNumber.length >= 11) {
+                                [numberArray addObject:phoneNumber];
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     vc.recipients = numberArray;
@@ -453,6 +472,28 @@
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 
+- (NSString *)getCleanLetter:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789abcdefghijklmnopqrestuvwxyzABCDEFGHIJKLMNOPQRESTUVWXYZ"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    NSLog(@"strippedString : %@",strippedString);
+    return strippedString;
+}
+
 - (NSString *)getCleanPhoneNumber:(NSString *)originalString {
     NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
     NSMutableString *strippedString = [NSMutableString 
@@ -480,7 +521,8 @@
 	
 	// Notifies users about errors associated with the interface
 	switch (result) {
-		case MessageComposeResultCancelled:{[self.navigationController dismissModalViewControllerAnimated:YES];
+		case MessageComposeResultCancelled:{
+            [self.navigationController dismissModalViewControllerAnimated:YES];
             //            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请短信" delegate:self cancelButtonTitle:@"继续编辑短信" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
 //            [sh showInView:self.tabBarController.view];
             break;
@@ -653,30 +695,43 @@
 
 - (void)addPersonToGroup:(NSDictionary *)personDictionary
 {
-    //ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
-    
     NSString *number = [personDictionary valueForKey:@"phoneNumber"];
     NSString *name  = [personDictionary valueForKey:@"name"];
     
     // Check for an existing entry for this person, if so remove it
-    for (NSDictionary *personDict in self.receipts)
-    {
-        NSString *theContactName = [personDict valueForKey:@"name"];
-        NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
-        //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
-        NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
-        
-        if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+    if ([name isEqualToString:@""]) {
+        if ([number isEqualToString:@""]) {
             return;
         }
+        NSString *cleanString = [self getCleanLetter:number];
         
-        if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+        for (NSDictionary *personDict in self.receipts)
         {
-            return;
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            if ([cleanString isEqualToString:[self getCleanLetter:thePhoneString]]) {
+                return;
+            }
         }
-        
-        if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
-            return;
+    } else {
+        for (NSDictionary *personDict in self.receipts)
+        {
+            NSString *theContactName = [personDict valueForKey:@"name"];
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
+            NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+                return;
+            }
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+            {
+                return;
+            }
+            
+            if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
+                return;
+            }
         }
     }
     
