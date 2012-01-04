@@ -67,7 +67,21 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    switch (indexPath.row) {
+        case 0:
+            return self.nameBindingCell;
+            break;
+        case 1:    
+            return self.telBindingCell;
+            break;
+        case 2:
+            return self.mailBindingCell;
+            break;
+    }
     return nil;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
 }
 @end
