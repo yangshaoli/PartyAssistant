@@ -122,8 +122,21 @@ function ajaxChangeStatus(id, applystatus){
         <textarea name='leave_message' id='id_leave_message' cols='25' rows='4'>{{ form.leave_message.value|default:'' }}</textarea>
         <font color='red'>{{ form.leave_message.errors.0 }}</font>
         </div> 
+     {% if apply_status == 'apply' %}
+     <img src="/static/images/btn_joined.png" align="absbottom"/>     
+     {% else %}
      <input type="submit" style="background-image:url('/static/images/btn_join.png');width:103px;height:45px;" value='' name='yes' />
+     {% endif %}
+
+     {% if apply_status == 'reject' %}
+     <img src="/static/images/btn_joined_no.png" align="absbottom"/>     
+     {% else %}
      <input type="submit" style="background-image:url('/static/images/btn_join_no.png');width:103px;height:45px;" value='' name='no' />
+     {% endif %}
+     
+     
+     {% if apply_status == 'apply' %}<p>您已经报名，请记得按时参加</p>{% endif %}
+     {% if apply_status == 'reject' %}<p>您已经选择不参加该活动</p>{% endif %}
      <input id="id_action" type="hidden" name="action" value="" />
        
          {% else %}

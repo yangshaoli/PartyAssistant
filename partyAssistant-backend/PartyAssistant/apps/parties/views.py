@@ -597,14 +597,15 @@ def _invite_enroll(request, party_id, invite_key):
     else:
         userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
+        apply_status = PartiesClients.objects.get(invite_key=request.GET.get('key','')).apply_status
         data = {
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
             'form' : EnrollForm(),
-            'key' : request.GET.get('key','')
+            'key' : request.GET.get('key',''),
+            'apply_status' : apply_status
         }
-        
         return TemplateResponse(request, 'parties/enroll.html', data)
         
 def enroll(request, party_id):
