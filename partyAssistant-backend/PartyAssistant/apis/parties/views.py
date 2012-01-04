@@ -322,8 +322,8 @@ def GetPartyClientMainCount(request, pid):
                     'newRefusedClientcount':0,
                     }
     for party_client in party_clients:
-        if party_client.client.invite_type != 'public':
-            client_counts['allClientcount'] += 1
+#        if party_client.client.invite_type != 'public':
+        client_counts['allClientcount'] += 1
         if party_client.apply_status == 'apply':
             client_counts['appliedClientcount'] += 1
         if party_client.apply_status == 'apply' and party_client.is_check == False:
