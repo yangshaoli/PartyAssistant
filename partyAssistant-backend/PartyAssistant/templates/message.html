@@ -2,15 +2,25 @@
 {% block title %} 操作成功 {% endblock %}
 {% block content %}
 {% if message %}
-    {% ifequal message 'partynotexist' %}
-        该活动已删除！
-    {% endifequal %}
-    
+    	<div id="content">
+  		<div class="grid_a">
+  		 <h2 class="title">操作失败</h2>
+    	<h2>
+            {% ifequal message 'partynotexist' %}
+                该活动已删除！
+            {% endifequal %}
+    	</h2>
+		<br />
+		<button onclick="self.location='/'">返回首页</button>
+  		</div>
+	   </div>
+       
     {% ifnotequal message 'partynotexist' %}
     	<div id="content">
   		<div class="grid_a">
   		 <h2 class="title">操作成功</h2>
     	<h2>
+
     	    {% ifequal message 'publicenroll' %}
 		        报名成功！
 		    {% endifequal %}
