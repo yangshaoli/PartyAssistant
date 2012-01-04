@@ -185,15 +185,21 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
+    
+       
+    
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     NSDictionary *clentDic=[self.clientsArray objectAtIndex:[indexPath row]];
     self.wordString=[clentDic objectForKey:@"msg"];
        // Configure the cell...
     //cell.textLabel.text=[self.clientsArray  objectAtIndex:[indexPath row]];
      NSString *statusString=[clentDic objectForKey:@"status"];
-    
+    UIView *oldLayout10 = nil;
+    oldLayout10=[cell viewWithTag:10];
+    [oldLayout10 removeFromSuperview];
+
     UILabel *statusLb= [[UILabel alloc] initWithFrame:CGRectMake(230, 0, 80, 20)];
-    
+    statusLb.tag=10;
     if([statusString isEqualToString:@"apply"]){
          statusLb.text = @"已报名";
     }else if([statusString isEqualToString:@"reject"]){
@@ -209,12 +215,12 @@
     [cell addSubview:statusLb];
     
     
-    UIView *oldLayout2 = nil;
-    oldLayout2=[cell viewWithTag:5];
-    [oldLayout2 removeFromSuperview];
-    
-    
+       
+    UIView *oldLayout6 = nil;
+    oldLayout6=[cell viewWithTag:6];
+    [oldLayout6 removeFromSuperview];
     UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 70, 20)];
+    nameLb.tag=6;
     nameLb.text=[clentDic objectForKey:@"cName"];
     nameLb.font=[UIFont systemFontOfSize:15];
     nameLb.textAlignment = UITextAlignmentLeft;
@@ -222,7 +228,12 @@
     nameLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:nameLb];
     
+    
+    UIView *oldLayout7 = nil;
+    oldLayout7=[cell viewWithTag:7];
+    [oldLayout7 removeFromSuperview];
     UILabel *phoneLb= [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 80, 20)];
+    phoneLb.tag=7;
     phoneLb.text=[clentDic objectForKey:@"cValue"];
     phoneLb.font=[UIFont systemFontOfSize:10];
     phoneLb.textAlignment = UITextAlignmentLeft;
@@ -230,10 +241,16 @@
     phoneLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:phoneLb];
     
-   
-    NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
+    //8是留言
+    UIView *oldLayout8 = nil;
+    oldLayout8=[cell viewWithTag:8];
+    [oldLayout8 removeFromSuperview];
 
-    
+    NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
+    //5是图标
+    UIView *oldLayout2 = nil;
+    oldLayout2=[cell viewWithTag:5];
+    [oldLayout2 removeFromSuperview];
     
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
@@ -244,7 +261,10 @@
             cellImageView.tag=5;
             [cell  addSubview:cellImageView];
         }
+        
+        
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        secondLb.tag=8;
         secondLb.text = [clentDic objectForKey:@"msg"];
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
@@ -261,6 +281,7 @@
             [cell  addSubview:cellImageView];
         }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        secondLb.tag=8;
         secondLb.text = [clentDic objectForKey:@"msg"];
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
