@@ -323,10 +323,15 @@
     {
 		//[self displayAddPersonViewController];
         NSDictionary *personDictionary = nil;
-        
-        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"", @"phoneNumber", searchField.text, @"name", nil];
-        [self addPersonToGroup:personDictionary];
+        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([newPhoneName length] == 0) {
+            return;
+        } else {
+            personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                newPhoneName, @"phoneNumber", @"", @"name", nil];
+            [self addPersonToGroup:personDictionary];
+        }
 	}
 	else
     {
