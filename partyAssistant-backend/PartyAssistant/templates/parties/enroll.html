@@ -11,16 +11,18 @@ input[type="image"] { border:0px;height:45px;}
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
 <script>
+    var applyStatus = ['apply', 'reject', 'noanswer'];
     $(document).ready(function(){
-        ajaxGetClients('apply');//进入页面时获得[已报名]列表 
-        
-        $('a[id^="tab_"]').bind('click', function(){
+        for ( i in applyStatus) { ajaxGetClients(applyStatus[i]);} //进入页面时载入所有报名的人
+
+        /*$('a[id^="tab_"]').bind('click', function(){
             $("#"+this.id).siblings().attr('style','');
             $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');//改变样式
             
             var applystatus = this.id.split('_')[1];
             ajaxGetClients(applystatus);
         })
+        */
     })
 
 function ajaxGetClients(applystatus){
@@ -57,12 +59,14 @@ function ajaxGetClients(applystatus){
                 }else{
                 	row = "<tr><td></td><th>"+name+"</th><td>"+address+"</td><td></td></tr>"
                 }
-                $('.accordion_content table tbody').append(row);  
+                
+                $("#table_"+applystatus).append(row); 
             }//endfor
             //改变标签上的人数 
-            $('#tab_apply').html('去的<strong> ('+ client_count.apply +'人)');
+            $('#tab_apply').html('来的<strong> ('+ client_count.apply +'人)');
+            $('#tab_reject').html('不来的<strong> ('+ client_count.reject +'人)');
             $('#tab_noanswer').html('待定的<strong> ('+ client_count.noanswer +'人)');
-            $('#tab_reject').html('不去的<strong> ('+ client_count.reject +'人)');
+             
         },
         500: function(){ alert('没有获取到用户列表')}
         }
@@ -82,6 +86,7 @@ function ajaxChangeStatus(id, applystatus){
         }
     });
 }
+
 </script>
 {% endblock %}
 
@@ -174,7 +179,7 @@ function ajaxChangeStatus(id, applystatus){
 
    <div class="accordionview">
     <div class="accordion_panel">
-     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">去的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> <a id="tab_noanswer">待定的<strong> ({{client_count.noanswer}}人)</strong></a> <a href="#" id="tab_reject">不去的 <strong>({{client_count.reject}}人)</strong></a> </h2>
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_apply" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">去的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.apply}}人)</strong></a> </h2>
      <div class="accordion_content">
       <table width="100%" border="0" cellspacing="0" class="table">
       <thead>
@@ -184,11 +189,41 @@ function ajaxChangeStatus(id, applystatus){
         <th width="52%" scope="col">联系方式</th>
         <th width="18%" scope="col" class="ta_r">&nbsp;</th>
        </tr>
-       <tbody>
-
+       <tbody id="table_apply">
        </tbody>
       </table>
      </div>
+     
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_reject" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">不来的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.reject}}人)</strong></a>  </h2>
+     <div class="accordion_content">
+      <table width="100%" border="0" cellspacing="0" class="table">
+      <thead>
+       <tr>
+        <th width="7%" scope="col">&nbsp;</th>
+        <th width="23%" scope="col">姓名</th>
+        <th width="52%" scope="col">联系方式</th>
+        <th width="18%" scope="col" class="ta_r">&nbsp;</th>
+       </tr>
+       <tbody id="table_reject">
+       </tbody>
+      </table>
+     </div>
+     
+     <h2 class="accordion_toggle accordion_toggle_active"> <a id="tab_reject" style="padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;">待定的 <strong>{% if is_new %}<i class="icon_new">{% endif %}</i>({{client_count.noanswer}}人)</strong></a>  </h2>
+     <div class="accordion_content">
+      <table width="100%" border="0" cellspacing="0" class="table">
+      <thead>
+       <tr>
+        <th width="7%" scope="col">&nbsp;</th>
+        <th width="23%" scope="col">姓名</th>
+        <th width="52%" scope="col">联系方式</th>
+        <th width="18%" scope="col" class="ta_r">&nbsp;</th>
+       </tr>
+       <tbody id="table_noanswer">
+       </tbody>
+      </table>
+     </div>
+     
     </div>
    </div>
    
