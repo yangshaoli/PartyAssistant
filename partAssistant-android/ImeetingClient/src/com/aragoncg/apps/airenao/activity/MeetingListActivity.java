@@ -643,9 +643,7 @@ public class MeetingListActivity extends ListActivity implements
 			if (newRefusedClientcount == null) {
 				newRefusedClientcount = "0";
 			}
-			refusedCount = Integer.valueOf(refusedClientcount)
-					+ Integer.valueOf(newRefusedClientcount);
-
+			refusedCount = Integer.valueOf(refusedClientcount);
 			holder.activityUnTakeNum.setText(refusedCount + "");
 			appliedClientcount = (String) mData.get(position).get(
 					Constants.APPLIED_CLIENT_COUNT);
@@ -657,8 +655,7 @@ public class MeetingListActivity extends ListActivity implements
 			if (newAppliedClientcount == null) {
 				newAppliedClientcount = "0";
 			}
-			registeredCount = Integer.valueOf(appliedClientcount)
-					+ Integer.valueOf(newAppliedClientcount);
+			registeredCount = Integer.valueOf(appliedClientcount);
 			holder.activityJoinNum.setText(registeredCount + "");
 			// flag new
 			if(!"0".equals(newAppliedClientcount) || !"0".equals(newRefusedClientcount)){

@@ -419,7 +419,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			}
 			if(dataList.get(position).get("newCount")!=null){
 				if("0".equals(dataList.get(position).get("newCount"))){
-					holder.flagNew.setVisibility(View.GONE
+					holder.flagNew.setVisibility(View.INVISIBLE
 							);
 				}else{
 					holder.flagNew.setVisibility(View.VISIBLE);

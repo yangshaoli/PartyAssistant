@@ -96,7 +96,7 @@ public final class R {
         public static final int activity_join=0x7f090005;
         public static final int activity_join_num=0x7f090006;
         public static final int activity_name=0x7f090003;
-        public static final int activity_time=0x7f09002d;
+        public static final int activity_time=0x7f09002e;
         public static final int activity_unjoin=0x7f090007;
         public static final int activity_unjoin_num=0x7f090008;
         public static final int activity_untake=0x7f090009;
@@ -134,7 +134,7 @@ public final class R {
         public static final int emptyText=0x7f09000f;
         public static final int exit=0x7f090057;
         public static final int find_back=0x7f090049;
-        public static final int flagNew=0x7f09002e;
+        public static final int flagNew=0x7f09002d;
         public static final int flag_new_red=0x7f090004;
         public static final int footprogress=0x7f090041;
         public static final int header=0x7f090010;

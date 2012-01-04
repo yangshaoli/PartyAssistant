@@ -99,7 +99,6 @@ public class SendAirenaoActivity extends Activity {
 	private ArrayList<MyPerson> personList;
 	private String names = "";
 	private String tempName = "";
-	private List<String> tempContactNumbers;
 	private String oneNumber;
 	private String oneEmail;
 	private BroadcastReceiver sendMessageB;
@@ -118,6 +117,7 @@ public class SendAirenaoActivity extends Activity {
 	private Handler myHandler;
 	private Dialog oneDialog;
 	private HashMap<String, String> clientDicts = new HashMap<String, String>();
+	private HashMap<String, String> tempClientDicts = new HashMap<String, String>();
 	private int count = 0;
 	private ArrayList<String> phoneNumbers = new ArrayList<String>();
 	private ProgressDialog progerssDialog;
@@ -159,9 +159,6 @@ public class SendAirenaoActivity extends Activity {
 				// String email = showEmail(myCursor);
 
 				// 将电话或者电子邮件加入到联系列表
-				if (tempContactNumbers == null) {
-					tempContactNumbers = new ArrayList<String>();
-				}
 				if (modeTag == -2) {
 					int phoneNumberSize = phoneNumbers.size();
 					if (phoneNumberSize <= 1) {
@@ -171,8 +168,7 @@ public class SendAirenaoActivity extends Activity {
 						} else {
 							phone = phoneNumbers.get(0);
 						}
-						tempContactNumbers.add(phone);
-						clientDicts.put(name, phone);
+						clientDicts.put(phone, name);
 					} else {
 						SharedPreferences msp = AirenaoUtills
 								.getMySharedPreferences(SendAirenaoActivity.this);
@@ -185,8 +181,7 @@ public class SendAirenaoActivity extends Activity {
 
 							} else {
 								isShow = true;
-								tempContactNumbers.add(phone);
-								clientDicts.put(name, phone);
+								clientDicts.put(phone, name);
 								return;
 							}
 						}
@@ -370,12 +365,10 @@ public class SendAirenaoActivity extends Activity {
 						if (sendSMS) {
 							// 如果用自己手机发送
 							if (ckSendLableUseOwn) {
-								if (tempContactNumbers.size() > 0) {
 									sendSMSorEmail(sendSMS, ckSendLableUseOwn);
 									if(progerssDialog!=null){
 										progerssDialog.dismiss();
 									}
-								}
 							} else {
 								Toast.makeText(SendAirenaoActivity.this,
 										"发送成功", 1000).show();
@@ -418,12 +411,12 @@ public class SendAirenaoActivity extends Activity {
 		String dict = "";
 
 		JSONArray myDicts = new JSONArray();
-		Iterator<Entry<String, String>> iter = clientDicts.entrySet()
+		Iterator<Entry<String, String>> iter = tempClientDicts.entrySet()
 				.iterator();
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
-			name = (String) entry.getKey();
-			dict = (String) entry.getValue();
+			dict = (String) entry.getKey();
+			name = (String) entry.getValue();
 			try {
 				JSONObject Json = new JSONObject();
 				Json.put("cName", name);
@@ -544,19 +537,16 @@ public class SendAirenaoActivity extends Activity {
 			txtSendLableContent.setText(theContent);
 			List<Map<String, Object>> list = airenao.getPeopleList();
 			String names = "";
-			tempContactNumbers = new ArrayList<String>();
 			for (int i = 0; i < list.size(); i++) {
 				HashMap<String, Object> map = (HashMap<String, Object>) list
 						.get(i);
-
-				tempContactNumbers.add(String.valueOf(map
-						.get(Constants.PEOPLE_CONTACTS)));
 				String tempNames = String.valueOf(map
 						.get(Constants.PEOPLE_NAME));
-				clientDicts.put(tempNames,
-						String.valueOf(map.get(Constants.PEOPLE_CONTACTS)));
+				clientDicts.put(String.valueOf(map.get(Constants.PEOPLE_CONTACTS)),tempNames
+						);
 				if (!"".equals(tempNames)) {
-					names = names + tempNames + ",";
+					names = names + tempNames + "<" + String.valueOf(map
+							.get(Constants.PEOPLE_CONTACTS)) + ">" + ",";
 				}
 				if (peopleNumbers == null) {
 					peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
@@ -642,6 +632,8 @@ public class SendAirenaoActivity extends Activity {
 							.show();
 					return;
 				}
+				
+				
 				count = 0;
 				getPhoneNumbersOrgetEmail(sendSMS);
 
@@ -684,6 +676,12 @@ public class SendAirenaoActivity extends Activity {
 				} else {
 					/*progerssDialog = ProgressDialog.show(
 							SendAirenaoActivity.this, "", "发送中...", true, true);*/
+					/*String inputedPhoneNumbers = peopleNumbers.getText().toString();
+					String[] phoneNumbers = inputedPhoneNumbers.split("\\,", 0);
+					for(int j=0;j<phoneNumbers.length;j++){
+						if(){}
+					}
+					clientDicts;*/
 					initThreadSaveMessage(null);
 					myHandler.post(threadSaveMessage);
 
@@ -695,66 +693,44 @@ public class SendAirenaoActivity extends Activity {
 	}
 
 	/**
-	 * 获得电话号码或者email
+	 * 获得用户自己输入的电话号码或者email
 	 * 
 	 * @return
 	 */
-	public List<String> getPhoneNumbersOrgetEmail(boolean sendSms) {
+	public void getPhoneNumbersOrgetEmail(boolean sendSms) {
 		if (sendSms) {
-			if (tempContactNumbers == null) {
-				tempContactNumbers = new ArrayList<String>();
-			}
-			// 电话本中的电话
-			if (personList != null && personList.size() > 0) {
-				for (int i = 0; i < personList.size(); i++) {
-					oneNumber = personList.get(i).getPhoneNumber();
-					tempName = personList.get(i).getName();
-					//clientDicts.put(tempName, oneNumber);
-					tempContactNumbers.add(oneNumber);
-				}
-			}
+			
 			// 用户自己输入的电话
 
 			String inputedPhoneNumbers = peopleNumbers.getText().toString();
-			String[] phoneNumbers = inputedPhoneNumbers.split("\\,", 0);
-			for (int i = 0; i < phoneNumbers.length; i++) {
-				if (AirenaoUtills.checkPhoneNumber(phoneNumbers[i])) {
-					if (phoneNumbers[i].equals("")) {
+			String[] allContacts = inputedPhoneNumbers.split("\\,", 0);
+			for (int i = 0; i < allContacts.length; i++) {
+				if (AirenaoUtills.checkPhoneNumber(allContacts[i])) {
+					if (allContacts[i].equals("")) {
 						continue;
 					}
-					tempContactNumbers.add(phoneNumbers[i]);
-					clientDicts.put("佚名", phoneNumbers[i]);
+					clientDicts.put(allContacts[i], "佚名");
 					// }
 				}
 			}
-			return tempContactNumbers;
-		} else {
-			if (tempContactNumbers == null) {
-				tempContactNumbers = new ArrayList<String>();
-			}
-			// 电话本中email
-			if (personList != null && personList.size() > 0) {
-				for (int i = 0; i < personList.size(); i++) {
-					oneEmail = personList.get(i).getEmail();
-					clientDicts.put(personList.get(i).getName(), oneEmail);
-					tempContactNumbers.add(oneEmail);
+			
+			String onePhoneNumber = "";
+			tempClientDicts.clear();
+			int index = -1;
+			for(int j = 0; j<allContacts.length; j++){
+				index = allContacts[j].indexOf("<");
+				if(index>-1){
+					onePhoneNumber = allContacts[j].substring(index+1, allContacts[j].length()-1);
+				}else{
+					onePhoneNumber = allContacts[j];
+				}
+				
+				if(clientDicts.containsKey(onePhoneNumber)){
+					tempClientDicts.put(onePhoneNumber, clientDicts.get(onePhoneNumber));
 				}
 			}
-			// 用户自己输入的email
-
-			String inputedEmails = peopleNumbers.getText().toString();
-			String[] emailNumbers = inputedEmails.split(";", 0);
-			for (int i = 0; i < emailNumbers.length; i++) {
-
-				if (AirenaoUtills.matchString(AirenaoUtills.regEmail,
-						emailNumbers[i])) {
-					tempContactNumbers.add(emailNumbers[i]);
-					clientDicts.put("佚名", emailNumbers[i]);
-				}
-			}
-
-			return tempContactNumbers;
-		}
+			
+		} 
 
 	}
 
@@ -817,7 +793,9 @@ public class SendAirenaoActivity extends Activity {
 		if (sendSms) {
 			if (sendWithOwn) {
 				// 用自己手机发送
-				for (int i = 0; i < tempContactNumbers.size(); i++) {
+
+				for(Iterator<String> iter = tempClientDicts.keySet().iterator();iter.hasNext();){
+					String phoneNumber = iter.next();
 					try {
 						SmsManager mySmsManager = SmsManager.getDefault();
 						// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
@@ -826,12 +804,12 @@ public class SendAirenaoActivity extends Activity {
 									.divideMessage(smsContent);
 							for (String msg : msgs) {
 								mySmsManager.sendTextMessage(
-										tempContactNumbers.get(i), null, msg,
+										phoneNumber, null, msg,
 										sentPI, null);
 							}
 						} else {
 							mySmsManager.sendTextMessage(
-									tempContactNumbers.get(i), null,
+									phoneNumber, null,
 									smsContent, sentPI, null);
 						}
 
@@ -891,8 +869,8 @@ public class SendAirenaoActivity extends Activity {
 					.getParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND);
 			if (personList != null && personList.size() > 0) {
 				for (int i = 0; i < personList.size(); i++) {
-					clientDicts.put(personList.get(i).getName(), personList.get(i).getPhoneNumber());
-					names += personList.get(i).getName() + ",";
+					clientDicts.put(personList.get(i).getPhoneNumber(), personList.get(i).getName());
+					names += personList.get(i).getName() + "<" + personList.get(i).getPhoneNumber() + ">" + ",";
 				}
 				peopleNumbers.setText(names);
 			}
@@ -1117,8 +1095,7 @@ public class SendAirenaoActivity extends Activity {
 					}
 				}
 
-				tempContactNumbers.add(phone);
-				clientDicts.put(name, phone);
+				clientDicts.put(phone, name);
 			} else {
 				dialog.dismiss();
 			}
