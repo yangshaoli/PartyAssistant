@@ -66,10 +66,10 @@ function ajaxGetClients(applystatus){
 <body>
 <div data-role="page" id="home"> 
 	<div data-role="header" style="background:red; border-bottom:solid #ffffff 1px">
-	    <h1><img src="/static/images/logo1.png"></h1>
+	    <h1><img src="/static/images/logo.png"></h1>
     </div> 
 	<div data-role="content">
-		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %}{{client.name}}{%else%}您{%endif%}：
+		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %}{{client.name}}{%else%}您{%endif%}
 		<!--h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
 		<h2>{{party.address|default:"地点待定" }}--> <span style="color:#999">参加活动</span></h2>		
 		<h2>{{party.description}}</h2>
@@ -95,6 +95,7 @@ function ajaxGetClients(applystatus){
             <input type="text" name="name" id="id_name" value=""  />
             <label for="client_email_list">联系方式</label>
             {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
+            <p style="color:#999;">请填写手机号码，以免收不到活动具体通知</p>
             <div data-role="fieldcontain">
             <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
@@ -107,16 +108,16 @@ function ajaxGetClients(applystatus){
 	</div>
 
 <ul data-role="listview" class="ui-listview" data-inset="true" id="apply">
-	<li data-theme="c">已报名 <span class="ui-li-count ui-btn-down-b" style="color:#fff">{{client_count.apply}}</span></li>
+	<li data-theme="c">来的 <span class="ui-li-count ui-btn-down-b" style="color:#fff">{{client_count.apply}}</span></li>
 </ul>
-
-<ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
-	<li data-theme="c">未响应 <span class="ui-li-count" style="color:#fff">{{client_count.noanswer}}</span></li>
-</ul>
-
 <ul data-role="listview" class="ui-listview" data-inset="true" id="reject">
-	<li data-theme="c">不参加 <span class="ui-li-count" style="color:#fff">{{client_count.reject}}</span></li>
+	<li data-theme="c">不来的 <span class="ui-li-count" style="color:#fff">{{client_count.reject}}</span></li>
 </ul>	
+<ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
+	<li data-theme="c">待定的 <span class="ui-li-count" style="color:#fff">{{client_count.noanswer}}</span></li>
+</ul>
+
+
 	
     
     <!--div data-role="navbar">
