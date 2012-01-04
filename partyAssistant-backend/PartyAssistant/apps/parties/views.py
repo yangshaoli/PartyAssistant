@@ -700,7 +700,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
     content += u'。'
     return content
 
-@login_required
+
 def invite_list_ajax(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id)
     for party_client in party_clients_list:

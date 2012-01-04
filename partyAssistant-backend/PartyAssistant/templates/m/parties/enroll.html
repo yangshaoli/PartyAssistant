@@ -34,7 +34,7 @@ function ajaxGetClients(applystatus){
             clients = JSON.parse(response);
             for (i in clients){
                 row = '<li class="ui-li ui-li-static ui-body-c">'+clients[i].name+"<span>"+clients[i].address+'</span></li>';
-                $('#'+applystatus+' ul').append(row);  
+                $('#'+applystatus).append(row);  
             }
             
             //修改[再次邀请]的url
@@ -43,7 +43,6 @@ function ajaxGetClients(applystatus){
         }
     });
 }
-
 </script>
 </head>
 <body>
@@ -61,6 +60,11 @@ function ajaxGetClients(applystatus){
             <!-- 被邀请用户报名页面 -->
         	<div class="ui-block-a"><button type="submit" data-icon="check" name='yes' >参加</button></div>
         	<div class="ui-block-b"><button type="submit" data-icon="delete" data-theme="b" name='no' >不参加</button></div>
+            <div data-role="fieldcontain">
+            <label for="textarea">我要留言:</label>
+            	<textarea name="leave_message" id="id_leave_message"></textarea>
+            </div>
+
        		<input name='key' type='hidden' value='{{ key }}'></input>
         {% else %}
 
@@ -68,17 +72,30 @@ function ajaxGetClients(applystatus){
             <input type="text" name="name" id="id_name" value=""  />
             <label for="client_email_list">联系方式</label>
             {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
-    
+            <div data-role="fieldcontain">
+            <label for="textarea">我要留言:</label>
+            	<textarea name="leave_message" id="id_leave_message"></textarea>
+            </div>
+
             <div class="ui-block-a"><button type="submit" data-icon="check" data-theme="c" name='yes'>参加</button></div>
     
         {% endif %}	
         </form>
 	</div>
-	<ul data-role="listview" data-inset="true" data-theme="a">
-		<li><a href="#apply">已报名 <span class="ui-li-count">{{client_count.apply}}</span></a></li>
-		<li><a href="#noanswer">未响应 <span class="ui-li-count">{{client_count.noanswer}}</span></a></li>
-		<li><a href="#reject">不参加 <span class="ui-li-count">{{client_count.reject}}</span></a></li>
-	</ul>
+
+<ul data-role="listview" class="ui-listview" data-inset="true" id="apply">
+	<li data-theme="c">已报名 <span class="ui-li-count ui-btn-down-b" style="color:#fff">{{client_count.apply}}</span></li>
+</ul>
+
+<ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
+	<li data-theme="c">未响应 <span class="ui-li-count" style="color:#fff">{{client_count.noanswer}}</span></li>
+</ul>
+
+<ul data-role="listview" class="ui-listview" data-inset="true" id="reject">
+	<li data-theme="c">不参加 <span class="ui-li-count" style="color:#fff">{{client_count.reject}}</span></li>
+</ul>	
+	
+    
     <!--div data-role="navbar">
 	<ul>
 		<li><a href="/" data-theme="b">首页</a></li>
@@ -88,38 +105,6 @@ function ajaxGetClients(applystatus){
     </div-->    
 </div> 
 
-<div data-role="page" id="apply">
-	<div data-role="header">
-        <a href="#home" data-icon="arrow-l">返回</a>
-		<h1>已报名人员列表</h1>
-	</div>
-	<div data-role="content">
-        <ul data-role="listview" data-inset="true">
-        </ul>
-	</div>
-</div>
-
-<div data-role="page" id="noanswer">
-	<div data-role="header">
-        <a href="#home" data-icon="arrow-l">返回</a>
-		<h1>未报名人员列表</h1>
-	</div>
-	<div data-role="content">
-        <ul data-role="listview" data-inset="true">
-        </ul>
-	</div>
-</div>
-
-<div data-role="page" id="reject">
-	<div data-role="header">
-        <a href="#home" data-icon="arrow-l">返回</a>
-		<h1>不参加人员列表</h1>
-	</div>
-	<div data-role="content">
-        <ul data-role="listview" data-inset="true">
-        </ul>
-	</div>
-</div>
 
 <div data-role="page" id="yes" data-theme="c">
 	<div data-role="header">
