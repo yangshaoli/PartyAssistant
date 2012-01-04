@@ -9,7 +9,7 @@
 #import "UserObject.h"
 
 @implementation UserObject
-@synthesize uID,phoneNum,userName,nickName,emailInfo;
+@synthesize uID,phoneNum,userName,nickName,emailInfo,leftSMSCount;
 
 - (id)init
 {
@@ -19,6 +19,7 @@
         self.phoneNum = @"";
         self.userName = @"";
         self.nickName = @"";
+        self.leftSMSCount = @"";
     }
     
     return self;
@@ -29,6 +30,7 @@
 	[encoder encodeObject: self.phoneNum forKey:@"phoneNum"];
     [encoder encodeObject: self.userName forKey:@"userName"];
     [encoder encodeObject: self.nickName forKey:@"nickName"];
+    [encoder encodeObject: self.leftSMSCount forKey:@"leftSMSCount"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -36,6 +38,7 @@
 	self.phoneNum = [decoder decodeObjectForKey:@"phoneNum"];
 	self.userName = [decoder decodeObjectForKey:@"userName"];
     self.nickName = [decoder decodeObjectForKey:@"nickName"];
+    self.leftSMSCount = [decoder decodeObjectForKey:@"leftSMSCount"];
 	return self;
 }
 
@@ -44,5 +47,6 @@
     self.phoneNum = @"";
     self.userName = @"";
     self.nickName = @"";
+    self.leftSMSCount = @"";
 }
 @end
