@@ -308,7 +308,7 @@
         partyObjCell.isnewRefused=NO;
     }
     
-    NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+    //NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
     
     UIView *oldLayout2 = nil;
     oldLayout2 = [cell viewWithTag:2];

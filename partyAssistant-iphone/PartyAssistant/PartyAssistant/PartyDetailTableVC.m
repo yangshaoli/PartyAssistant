@@ -384,7 +384,7 @@
             NSInteger newAppliedInt=[[self.peopleCountArray objectAtIndex:2] intValue];
             NSLog(@"已报名数newAppliedInt：：：：》》》%d",newAppliedInt);
             
-            if(newAppliedInt>0){
+            if(self.partyObj.isnewApplied){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
@@ -409,7 +409,7 @@
             cell.textLabel.text=@"不参加";
             NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
             NSLog(@"已报名数newRefusedInt：：：：》》》%d",newRefusedInt);
-            if(newRefusedInt>0){
+            if(self.partyObj.isnewRefused){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
@@ -497,15 +497,19 @@
         if(indexPath.row==0){
             statusTableVC.title=@"已邀请";
             statusTableVC.clientStatusFlag=@"all";
+            self.partyObj.isnewApplied=NO;
+            self.partyObj.isnewRefused=NO;
         }else if(indexPath.row==1){
             statusTableVC.title=@"已报名";
             statusTableVC.clientStatusFlag=@"applied";
+            self.partyObj.isnewApplied=NO;
         }else if(indexPath.row==2){
             statusTableVC.title=@"未响应";
             statusTableVC.clientStatusFlag=@"donothing";
         }else {
             statusTableVC.title=@"不参加";
             statusTableVC.clientStatusFlag=@"refused";
+            self.partyObj.isnewRefused=NO;
         }
         [self.navigationController pushViewController:statusTableVC animated:YES];
         
