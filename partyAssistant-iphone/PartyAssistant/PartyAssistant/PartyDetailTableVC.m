@@ -532,7 +532,7 @@
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
     [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setReceipts:self.clientsArray];
+    [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
     NSLog(@"调用再次发送");
 
 }
@@ -609,7 +609,4 @@
 	[self showAlertRequestFailed: error.localizedDescription];
     NSLog(@"调用deleteRequestFailed");
 }
-
-
-
 @end
