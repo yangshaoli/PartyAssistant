@@ -385,13 +385,10 @@
             NSLog(@"已报名数newAppliedInt：：：：》》》%d",newAppliedInt);
             
             if(newAppliedInt>0){
-                self.partyObj.isnewApplied=YES;
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
-            }else{
-                self.partyObj.isnewApplied=NO;
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
@@ -413,13 +410,10 @@
             NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
             NSLog(@"已报名数newRefusedInt：：：：》》》%d",newRefusedInt);
             if(newRefusedInt>0){
-                self.partyObj.isnewRefused=YES;
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
                 [cell  addSubview:cellImageView];
-            }else{
-                self.partyObj.isnewRefused=NO;
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;

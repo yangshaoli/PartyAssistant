@@ -375,7 +375,9 @@
         if(getCard){
            NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(getCard);
             [imgV setImage:[UIImage imageWithData:imgData]];
+            
         }
+//        imgV.image=[UIImage imageNamed:@"new1"];//测试用头像
         [headV addSubview:imgV];
         UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
 //        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
