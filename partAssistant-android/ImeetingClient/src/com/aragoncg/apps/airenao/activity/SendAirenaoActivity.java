@@ -64,6 +64,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.SDKimp.MultiAutoCompleteTextImp;
+import com.aragoncg.apps.airenao.SDKimp.MyMultiAutoCompleteTextView;
 import com.aragoncg.apps.airenao.activity.Collapser.Collapsible;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
@@ -95,7 +97,7 @@ public class SendAirenaoActivity extends Activity {
 
 	private String theContent;
 
-	private MultiAutoCompleteTextView peopleNumbers;
+	private MyMultiAutoCompleteTextView peopleNumbers;
 	private ArrayList<MyPerson> personList;
 	private String names = "";
 	private String tempName = "";
@@ -142,7 +144,8 @@ public class SendAirenaoActivity extends Activity {
 		final ContentApdater adapter = new ContentApdater(this, cursor);
 		peopleNumbers.setAdapter(adapter);
 		peopleNumbers
-				.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+				.setTokenizer(new MyMultiAutoCompleteTextView.CommaTokenizer());
+		 
 		peopleNumbers.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -168,6 +171,7 @@ public class SendAirenaoActivity extends Activity {
 						} else {
 							phone = phoneNumbers.get(0);
 						}
+						peopleNumbers.replaceTextAgain(name+"<"+phone+">");
 						clientDicts.put(phone, name);
 					} else {
 						SharedPreferences msp = AirenaoUtills
@@ -182,6 +186,7 @@ public class SendAirenaoActivity extends Activity {
 							} else {
 								isShow = true;
 								clientDicts.put(phone, name);
+								peopleNumbers.replaceTextAgain(name+"<"+phone+">");
 								return;
 							}
 						}
@@ -416,6 +421,15 @@ public class SendAirenaoActivity extends Activity {
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
 			dict = (String) entry.getKey();
+			if(dict.startsWith("+86")){
+				dict = dict.substring(3);
+			}
+			if(dict.startsWith("12593")){
+				dict = dict.substring(5);
+			}
+			if(dict.startsWith("86")){
+				dict = dict.substring(2);
+			}
 			name = (String) entry.getValue();
 			try {
 				JSONObject Json = new JSONObject();
@@ -549,7 +563,7 @@ public class SendAirenaoActivity extends Activity {
 							.get(Constants.PEOPLE_CONTACTS)) + ">" + ",";
 				}
 				if (peopleNumbers == null) {
-					peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
+					peopleNumbers = (MyMultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
 				}
 				peopleNumbers.setText(names);
 			}
@@ -573,7 +587,7 @@ public class SendAirenaoActivity extends Activity {
 		btnSendLable = (Button) findViewById(R.id.btnSend);
 		txtSendLableContent = (EditText) findViewById(R.id.txtSendLable);
 
-		peopleNumbers = (MultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
+		peopleNumbers = (MyMultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
 		ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(
 				this, R.array.sendWay, android.R.layout.simple_spinner_item);
 		mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -704,25 +718,23 @@ public class SendAirenaoActivity extends Activity {
 
 			String inputedPhoneNumbers = peopleNumbers.getText().toString();
 			String[] allContacts = inputedPhoneNumbers.split("\\,", 0);
+			String onePhoneNumber = "";
+			int index = -1;
+			tempClientDicts.clear();
 			for (int i = 0; i < allContacts.length; i++) {
-				if (AirenaoUtills.checkPhoneNumber(allContacts[i])) {
+				onePhoneNumber = allContacts[i];
+				index = allContacts[i].indexOf("<");
+				if(index>-1){
+					onePhoneNumber = allContacts[i].substring(index+1, allContacts[i].length()-1);
+				}else{
+					onePhoneNumber = allContacts[i];
+				}
+				if (AirenaoUtills.checkPhoneNumber(onePhoneNumber)) {
 					if (allContacts[i].equals("")) {
 						continue;
 					}
-					clientDicts.put(allContacts[i], "佚名");
-					// }
-				}
-			}
-			
-			String onePhoneNumber = "";
-			tempClientDicts.clear();
-			int index = -1;
-			for(int j = 0; j<allContacts.length; j++){
-				index = allContacts[j].indexOf("<");
-				if(index>-1){
-					onePhoneNumber = allContacts[j].substring(index+1, allContacts[j].length()-1);
-				}else{
-					onePhoneNumber = allContacts[j];
+					clientDicts.put(onePhoneNumber, "佚名");
+					
 				}
 				
 				if(clientDicts.containsKey(onePhoneNumber)){
@@ -796,6 +808,7 @@ public class SendAirenaoActivity extends Activity {
 
 				for(Iterator<String> iter = tempClientDicts.keySet().iterator();iter.hasNext();){
 					String phoneNumber = iter.next();
+					
 					try {
 						SmsManager mySmsManager = SmsManager.getDefault();
 						// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
@@ -1034,6 +1047,7 @@ public class SendAirenaoActivity extends Activity {
 			mSendSms = sendSms;
 			mPhonesCursor = phonesCursor;
 			this.position = position;
+			this.name = name;
 			if (mPhonesCursor != null) {
 				mPhoneItemList = makePhoneItemsList(phonesCursor);
 			} else {
@@ -1096,6 +1110,7 @@ public class SendAirenaoActivity extends Activity {
 				}
 
 				clientDicts.put(phone, name);
+				peopleNumbers.replaceTextAgain(name+"<"+phone+">");
 			} else {
 				dialog.dismiss();
 			}

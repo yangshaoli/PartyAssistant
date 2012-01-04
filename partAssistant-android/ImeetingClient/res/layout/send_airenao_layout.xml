@@ -48,7 +48,7 @@
 				android:layout_centerVertical="true"
 				android:layout_centerHorizontal="true"
 				android:orientation="vertical">
-				<MultiAutoCompleteTextView android:layout_width="fill_parent"
+				<com.aragoncg.apps.airenao.SDKimp.MyMultiAutoCompleteTextView android:layout_width="fill_parent"
 				android:layout_height="wrap_content" 
 				android:layout_marginTop="15dip"
 				android:paddingRight="32dip"

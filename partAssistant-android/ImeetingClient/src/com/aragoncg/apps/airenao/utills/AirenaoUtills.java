@@ -41,7 +41,7 @@ public class AirenaoUtills {
 	/* 校验电子邮件 */
 	public static String regEmail = "^([\\w-\\.]+)@[\\w-.]+(\\.?[a-zA-Z]{2,4}$)";
 	/* 校验电话号码 */
-	public static String regPhoneNumber = "^(13|15|18)\\d{9}$";
+	public static String regPhoneNumber = "^((\\+86)|(86)|(12593))?(13|15|18)\\d{9}$";
 
 	public static List<Activity> activityList = new ArrayList<Activity>();
 
