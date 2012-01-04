@@ -714,7 +714,7 @@ def invite_list_ajax(request, party_id):
 
 def ajax_get_client_list(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id) 
-    party = get_object_or_404(Party, id = party_id, creator = request.user)
+    party = get_object_or_404(Party, id = party_id)
     client_count = _get_client_count(party)
     data = {
             'party_clients_datas' : party_clients_datas,
@@ -724,7 +724,7 @@ def ajax_get_client_list(request, party_id):
 
 def _invite_list(request, party_id):
     apply_status = request.GET.get('apply', 'all')
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id)
     
     if apply_status == 'all':
         party_clients_list = PartiesClients.objects.select_related('client').filter(party = party)
