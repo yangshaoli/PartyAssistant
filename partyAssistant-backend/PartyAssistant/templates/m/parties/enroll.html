@@ -59,7 +59,7 @@ function ajaxGetClients(applystatus){
         {% if client %}
             <!-- 被邀请用户报名页面 -->
             <div data-role="fieldcontain">
-            <label for="textarea">我要留言:</label>
+            <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
             </div>
             {% if apply_status != 'apply' %}
@@ -78,7 +78,7 @@ function ajaxGetClients(applystatus){
             <label for="client_email_list">联系方式</label>
             {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
             <div data-role="fieldcontain">
-            <label for="textarea">我要留言:</label>
+            <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
             </div>
 
