@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" /> 
+<title>报名页面 - 爱热闹</title>
+<meta name="viewport" content="user-scalable=no, width=device-width" />
+<link rel="stylesheet" href="/static/css/airenao.min.css" />
+<link rel="stylesheet" href="/static/css/jquery.mobile.structure-1.0rc2.min.css" /> 
+<script src="/static/js/jquery-1.6.4.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
+<style type="text/css">
+#apply span , #noanswer span , #reject span{ color: #999; float: right;}
+</style>
+<script>
+
+$(document).ready(function(){
+    ajaxGetClients('apply');
+    ajaxGetClients('noanswer');
+    ajaxGetClients('reject');
+});
+
+$(document).bind("mobileinit", function(){
+    $.mobile.foo = bar;
+});
+
+function ajaxGetClients(applystatus){
+    $('.accordion_content table tbody').children().remove();
+    
+    $.ajax({
+        type : 'GET',
+        url: '/m/parties/ajax_get_client_list/'+{{party.id}}+'/?apply='+applystatus,
+        statusCode : {
+        200: function(response){
+            data = JSON.parse(response);
+            client_count = data.client_count;
+            clients = data.party_clients_datas;
+            for (i in clients){
+                name = clients[i].name;
+                address = clients[i].address;
+                a_at = clients[i].address.indexOf('@');
+                if(a_at == -1){
+                	address = address.substring(0,3)+'****'+address.substring(7,11);
+                	if (name == clients[i].address){
+                		name = address;
+                	}
+                }else{
+                	if (a_at > 3){
+                		address = address.substring(0,3)+'****'+address.substring(a_at);
+                	}else{
+                		address = address.substring(0,a_at)+'****'+address.substring(a_at);
+                	}
+                	if (name == clients[i].address){
+                		name = address;
+                	}
+                }
+                if(clients[i].client_id == '{{ client.id }}'){
+                	row = '<li class="ui-li ui-li-static ui-body-c">'+'{{ client.name }}'+"<span>"+clients[i].address+'</span></li>';
+                }else{
+                	row = '<li class="ui-li ui-li-static ui-body-c">'+name+"<span>"+address+'</span></li>';
+                }
+                $('#'+applystatus).append(row);
+            }//endfor
+            //改变标签上的人数 
+            $('#s_apply').html(client_count.apply);
+            $('#s_reject').html(client_count.reject);
+            $('#s_noanswer').html(client_count.noanswer);
+        },
+        500: function(){ alert('没有获取到用户列表')}
+        }
+    });
+}
+</script>
+</head>
+<body>
+<div data-role="page" id="home"> 
+	<div data-role="header" style="background:red; border-bottom:solid #ffffff 1px">
+	    <h1><img src="/static/images/logo.png"></h1>
+    </div> 
+	<div data-role="content">
+		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %}{{client.name}}{%else%}您{%endif%}
+		<!--h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
+		<h2>{{party.address|default:"地点待定" }}--> <span style="color:#999">参加活动</span></h2>		
+		<h2>{{party.description}}</h2>
+        <form method="POST" action="/m{% url enroll party.id %}?key={{key}}" id='id_form'>
+        {% if client %}
+            <!-- 被邀请用户报名页面 -->
+            <div data-role="fieldcontain">
+            <label for="textarea" style="display:block;">我要留言:</label>
+            	<textarea name="leave_message" id="id_leave_message"></textarea>
+            </div>
+            {% if apply_status != 'apply' %}
+        	<div class="ui-block-a"><button type="submit" data-icon="check" name='yes' >参加</button></div>
+            {% endif %}
+            {% if apply_status != 'reject' %}
+            <div class="ui-block-b"><button type="submit" data-icon="delete" data-theme="b" name='no' >不参加</button></div>
+            {% endif %}
+            {% if apply_status == 'apply' %}<p>您已经报名，请记得按时参加</p>{% endif %}
+            {% if apply_status == 'reject' %}<p>您已经选择不参加该活动</p>{% endif %}
+       		<input name='key' type='hidden' value='{{ key }}'></input>
+        {% else %}
+
+            <label for="basic">姓名:</label>
+            <input type="text" name="name" id="id_name" value=""  />
+            <label for="client_email_list">联系方式</label>
+            {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
+            <p style="color:#999;">请填写手机号码，以免收不到活动具体通知</p>
+            <div data-role="fieldcontain">
+            <label for="textarea" style="display:block;">我要留言:</label>
+            	<textarea name="leave_message" id="id_leave_message"></textarea>
+            </div>
+
+            <div class="ui-block-a"><button type="submit" data-icon="check" data-theme="c" name='yes'>参加</button></div>
+    
+        {% endif %}	
+        </form>
+	</div>
+
+<ul data-role="listview" class="ui-listview" data-inset="true" id="apply">
+	<li data-theme="c">来的 <span class="ui-li-count ui-btn-down-b" style="color:#fff" id='s_apply'>{{client_count.apply}}</span></li>
+</ul>
+<ul data-role="listview" class="ui-listview" data-inset="true" id="reject">
+	<li data-theme="c">不来的 <span class="ui-li-count" style="color:#fff" id='s_reject'>{{client_count.reject}}</span></li>
+</ul>	
+<ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
+	<li data-theme="c">待定的 <span class="ui-li-count" style="color:#fff" id='s_noanswer'>{{client_count.noanswer}}</span></li>
+</ul>
+
+
+	
+    
+    <!--div data-role="navbar">
+	<ul>
+		<li><a href="/" data-theme="b">首页</a></li>
+		<li><a href="{%url login %}" data-theme="b">登录</a></li>
+        <li><a href="{%url register %}" data-theme="b">注册</a></li>
+	</ul>
+    </div-->    
+</div> 
+
+
+<div data-role="page" id="yes" data-theme="c">
+	<div data-role="header">
+        <a href="#home" data-icon="arrow-l">返回</a>
+		<h1>报名成功！</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<p>您已经成功报名，请记得按时参加。</p>		
+		<p><a href="#enroll">已报名列表</a></p>	
+	</div><!-- /content -->
+</div>
+
+
+<div data-role="page" id="no"  data-theme="a">
+	<div data-role="header">
+        <a href="#home" data-icon="arrow-l">返回</a>
+		<h1>不参加本次活动</h1>
+	</div><!-- /header -->
+
+	<div data-role="content">	
+		<p>您已经选择不参加本次活动，感谢您的关注。</p>		
+		<p><a href="#enroll">已报名列表</a></p>	
+	</div><!-- /content -->
+</div>
+
+</body>
+</html>
