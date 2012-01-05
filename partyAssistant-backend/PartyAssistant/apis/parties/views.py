@@ -24,6 +24,7 @@ from ERROR_MSG_SETTINGS import *
 
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
+from utils.tools.short_link_tool import transfer_to_shortlink
 
 
 
@@ -153,10 +154,9 @@ def createParty(request):
                 if addressArray:
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
-
         return {
                 'partyId':party.id,
-                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id]))
                 }
 
 @csrf_exempt
@@ -225,6 +225,7 @@ def PartyList(request, uid, start_id = 0):
         partyObject = {}
         partyObject['description'] = party.description
         partyObject['partyId'] = party.id
+        partyObject['shortURL'] = transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id]))
         
         #各个活动的人数情况
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)

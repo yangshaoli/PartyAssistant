@@ -15,6 +15,7 @@
 @synthesize isSendByServer,isnewApplied,isnewRefused;
 @synthesize partyId;
 @synthesize peopleCountDict;
+@synthesize shortURL;
 - (id)init
 {
     self = [super init];
@@ -35,6 +36,7 @@
     [encoder encodeBool: self.isnewRefused forKey:@"isnewRefused"];
 	[encoder encodeObject:self.partyId forKey:@"partyId"];
     [encoder encodeObject: self.peopleCountDict forKey:@"peopleCountDict"];
+    [encoder encodeObject: self.shortURL forKey:@"shortURL"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -46,6 +48,7 @@
     self.isnewRefused = [decoder decodeBoolForKey:@"isnewRefused"];
     self.partyId = [decoder decodeObjectForKey:@"partyId"];
     self.peopleCountDict=[decoder decodeObjectForKey:@"peopleCountDict"];
+    self.shortURL=[decoder decodeObjectForKey:@"shortURL"];
 	return self;
 }
 

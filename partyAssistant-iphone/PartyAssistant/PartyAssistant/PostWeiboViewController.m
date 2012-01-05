@@ -12,7 +12,7 @@
 #define SEND_SUCCESS_ALERT_TAG 11
 
 @implementation PostWeiboViewController
-@synthesize sendV,baseinfo,partyObj;
+@synthesize sendV,partyObj;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -41,8 +41,10 @@
     self.navigationItem.rightBarButtonItem = _sendWeiboButton;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStylePlain target:self action:@selector(cancelBtnTouched:)];
     NSString *default_text = WEIBO_DEFAULT_CONTENT;
+    NSLog(@"here:%@",partyObj.shortURL);
     //NSLog(@"baseinfo:%@",baseinfo);
-    default_text = [default_text stringByReplacingOccurrencesOfString:@"party_id" withString:[partyObj.partyId stringValue]];
+    default_text = [default_text stringByReplacingOccurrencesOfString:@"报名短链接" withString:partyObj.shortURL];
+    NSLog(@"here");
     self.sendV = [[WBSendView alloc] initWithWeiboText:default_text withImage:nil andDelegate:self];
     sendV.delegate = self;
     [self.view addSubview:sendV];
