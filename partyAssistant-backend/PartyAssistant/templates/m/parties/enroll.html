@@ -7,25 +7,43 @@
 <link rel="stylesheet" href="/static/css/airenao.min.css" />
 <link rel="stylesheet" href="/static/css/jquery.mobile.structure-1.0rc2.min.css" /> 
 <script src="/static/js/jquery-1.6.4.min.js"></script>
-<script src="http://code.jquery.com/mobile/1.0rc2/jquery.mobile-1.0rc2.min.js"></script>
+<script src="/static/js/jquery.mobile-1.0rc2.min.js"></script>
 <style type="text/css">
 #apply span , #noanswer span , #reject span{ color: #999; float: right;}
 </style>
 <script>
-
+var applyStatus = ['apply', 'reject', 'noanswer'];
 $(document).ready(function(){
-    ajaxGetClients('apply');
-    ajaxGetClients('noanswer');
-    ajaxGetClients('reject');
+    for ( i in applyStatus) { ajaxGetClients(applyStatus[i]);}
 });
 
 $(document).bind("mobileinit", function(){
     $.mobile.foo = bar;
 });
 
+function maskAddress(v){
+    if (v.indexOf('@') == -1 && (v.length != 11 || isNaN(v))) {
+        return v;
+    } else {
+        var addressType = '';
+        if (v.indexOf('@') == -1){
+            addressType = 'phone';
+        } else { addressType = 'email' ;}
+        
+        if (addressType == 'email') {
+            var atPos = clients[i].address.indexOf('@');
+            var value = v.substring(0,3)+'******'+v.substring(atPos);
+            return value;
+        }
+        
+        if (addressType == 'phone') {
+            var value = v.substring(0, 3) + '****' + v.substring(7, 11);
+            return value;
+        }
+    }
+}
+
 function ajaxGetClients(applystatus){
-    $('.accordion_content table tbody').children().remove();
-    
     $.ajax({
         type : 'GET',
         url: '/m/parties/ajax_get_client_list/'+{{party.id}}+'/?apply='+applystatus,
@@ -64,6 +82,15 @@ function ajaxGetClients(applystatus){
             $('#s_apply').html(client_count.apply);
             $('#s_reject').html(client_count.reject);
             $('#s_noanswer').html(client_count.noanswer);
+/**
+                var name = maskAddress(clients[i].name);
+                var address = maskAddress(clients[i].address);
+                var row = '<li class="ui-li ui-li-static ui-body-c">'+name+"<span>"+address+'</span></li>';
+                $('#'+applystatus).append(row);  
+            }
+            
+            //修改[再次邀请]的url
+*/
         },
         500: function(){ alert('没有获取到用户列表')}
         }
