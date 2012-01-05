@@ -13,7 +13,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj;
+@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj,quest;
 @synthesize messageTextView;
 @synthesize clientStatusFlag;
 
@@ -178,6 +178,10 @@
 //    }
     
     NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
     [request setPostValue:statusAction forKey:@"cpAction"];
@@ -193,6 +197,7 @@
     [request setDidFinishSelector:nil];
     [request setDidFailSelector:nil];
     [request startSynchronous];
+    self.quest=request;
     NSError *error = [request error];
     if (!error) {
         //[activity removeFromSuperview];
@@ -538,16 +543,19 @@
               return;
               
           }
-
-      
       
       }
         
             
     }
     return;
-      
-        
 }
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest  clearDelegatesAndCancel];
+    self.quest = nil;
+}
+
 
 @end

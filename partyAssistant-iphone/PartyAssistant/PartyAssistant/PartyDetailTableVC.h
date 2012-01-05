@@ -18,12 +18,18 @@
    PartyModel *partyObj;
    NSArray* peopleCountArray; 
    NSArray *clientsArray;
+   ASIHTTPRequest *quest;
+   ASIHTTPRequest *seperatedListQuest; 
+   ASIHTTPRequest *deleteQuest;
 }
 
 @property(nonatomic, retain)NSArray* myToolbarItems;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSArray* peopleCountArray;
 @property(nonatomic, retain)NSArray *clientsArray;
+@property(nonatomic, retain)ASIHTTPRequest *quest;
+@property(nonatomic, retain)ASIHTTPRequest *seperatedListQuest;
+@property(nonatomic, retain)ASIHTTPRequest *deleteQuest;
 - (void)loadClientCount;
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

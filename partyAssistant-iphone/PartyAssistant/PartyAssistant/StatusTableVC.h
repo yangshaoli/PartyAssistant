@@ -15,11 +15,13 @@
     NSString *clientStatusFlag;
     PartyModel *partyObj;
     NSString *wordString;
+    ASIHTTPRequest *quest;
 }
 @property(nonatomic, retain)NSArray *clientsArray;
 @property(nonatomic, retain)NSString *clientStatusFlag;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *wordString;
+@property(nonatomic, retain)ASIHTTPRequest *quest;
 
 - (void)getPartyClientSeperatedList;
 @end

@@ -25,16 +25,17 @@
     BOOL _isRefreshing;
     NSInteger lastID;
     BOOL _isAppend;
+    ASIHTTPRequest *quest;
 }
 @property(nonatomic, assign)BOOL _isNeedRefresh;
 @property(nonatomic, assign)BOOL _isRefreshing;
 @property(nonatomic, assign)NSInteger lastID;
-
-
+@property(nonatomic, retain)ASIHTTPRequest *quest;
 @property(nonatomic, retain)NSMutableArray *partyList;
 @property(nonatomic, retain) BottomRefreshTableView *bottomRefreshView;
 @property(nonatomic, retain) TopRefreshTableView *topRefreshView;
 @property(nonatomic, retain)NSArray* peopleCountArray;
+
 - (void)reloadTableViewDataSource;
 - (void)doneLoadingTopRefreshTableViewData;
 - (void)doneLoadingBottomRefreshTableViewData;

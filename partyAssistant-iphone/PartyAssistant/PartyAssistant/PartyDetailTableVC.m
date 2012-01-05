@@ -23,7 +23,7 @@
 
 @implementation PartyDetailTableVC
 @synthesize myToolbarItems,peopleCountArray,clientsArray;
-@synthesize partyObj;
+@synthesize partyObj,quest,seperatedListQuest,deleteQuest;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -138,13 +138,17 @@
     NSString *partIdString=[partIdNumber stringValue];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
     NSLog(@"在loadClientCount中输出partid》》》%@",self.partyObj.partyId);
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+    
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
     
-    
+    self.quest = request;
 //    NSLog(@"loadClientCount预期调用1111");
 //    NSNumber *partyIdNumber=self.partyObj.partyId;
 //    NSLog(@"loadClientCount输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
@@ -250,6 +254,10 @@
     NSLog(@"预期调用1111");
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
+    if (self.seperatedListQuest) {
+        [self.seperatedListQuest clearDelegatesAndCancel];
+    }
+    
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
@@ -258,6 +266,7 @@
     [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.seperatedListQuest = request;
 }
 
 - (void)getPartyClientSeperatedListRequestFinished:(ASIHTTPRequest *)request{
@@ -524,13 +533,12 @@
     rootVC.partyObj=self.partyObj;
     WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
     [self presentModalViewController:vc animated:YES];
-    
 }
 
 
 
 - (void)resentMsg{
-     //[self getPartyClientSeperatedList];
+    
     NSLog(@"在detail中输出-----%@%@",self.clientsArray,self.partyObj.contentString);
    
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
@@ -566,6 +574,10 @@
             UserObjectService *us = [UserObjectService sharedUserObjectService];
             UserObject *user = [us getUserObject];
             NSURL *url = [NSURL URLWithString:DELETE_PARTY];
+            if (self.deleteQuest) {
+                [self.deleteQuest clearDelegatesAndCancel];
+            }
+            
             ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
             [request setPostValue:self.partyObj.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
@@ -576,7 +588,8 @@
             [request setDidFailSelector:@selector(deleteRequestFailed:)];
             [request setShouldAttemptPersistentConnection:NO];
             [request startAsynchronous];
-            NSLog(@"调用alert");
+            self.deleteQuest=request;
+          
         }
     }
 }
@@ -612,5 +625,14 @@
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
     NSLog(@"调用deleteRequestFailed");
+}
+
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    [self.seperatedListQuest  clearDelegatesAndCancel];
+    self.quest = nil;
+    self.seperatedListQuest=nil;
 }
 @end

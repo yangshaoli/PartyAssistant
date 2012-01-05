@@ -26,6 +26,7 @@
 @synthesize clientStatusFlag;
 @synthesize partyObj;
 @synthesize wordString;
+@synthesize quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -65,11 +66,17 @@
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.quest=request;
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -430,6 +437,12 @@
 //    }
 //    
 //}
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
+}
 
 
 @end

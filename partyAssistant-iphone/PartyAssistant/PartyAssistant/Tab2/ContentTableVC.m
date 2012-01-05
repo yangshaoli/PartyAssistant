@@ -22,7 +22,7 @@
 @end
 @implementation ContentTableVC
 @synthesize  contentTextView;
-@synthesize partyObj;
+@synthesize partyObj,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -121,15 +121,21 @@
         UserObjectService *us = [UserObjectService sharedUserObjectService];
         UserObject *user = [us getUserObject];
         NSURL *url = [NSURL URLWithString:EDIT_PARTY];
+        
+        if (self.quest) {
+            [self.quest clearDelegatesAndCancel];
+        }
+
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:self.partyObj.contentString forKey:@"description"];
         [request setPostValue:self.partyObj.partyId forKey:@"partyID"];
         [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
-        
         request.timeOutSeconds = 30;
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
+        
+        self.quest=request;
         NSLog(@"调用doneBtnAction");
     }
 }
@@ -304,5 +310,11 @@
 //    
 //}
 
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
+}
 
 @end

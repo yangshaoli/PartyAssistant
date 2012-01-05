@@ -23,7 +23,7 @@
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
 @synthesize peopleCountArray;
-@synthesize lastID,_isRefreshing,_isNeedRefresh;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -63,9 +63,11 @@
 //    PartyModel *party2=[[PartyModel alloc] init];
 //    party2.contentString=@"自定义活动2";
 //    self.partyList=[[NSMutableArray alloc] initWithObjects:party1,party2,nil];
+    NSLog(@"在list页面viewDidLoad中打印BadgeNumber::::%d",[UIApplication sharedApplication].applicationIconBadgeNumber);
     if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
         [self refreshBtnAction];
     }
+    
     minBottomRefreshViewY = 366.0;
 	//setup refresh tool
     if (bottomRefreshView == nil) {
@@ -108,7 +110,7 @@
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     NSLog(@"－－－在list   viewDidLoad页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
     NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
-    
+     NSLog(@"在list页面viewDidLoad中打印self.lastID：：：：%d",self.lastID);
     [self refreshBtnAction];
     [self.tableView reloadData];
 
@@ -159,6 +161,11 @@
     UserObject *user = [us getUserObject];
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
@@ -170,6 +177,8 @@
         _isAppend = NO;
     }
     [request startAsynchronous];
+    
+    self.quest=request;
     //self._isRefreshing = YES;
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
@@ -190,6 +199,7 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
+            NSLog(@"在list页面requestfinish中打印self.lastID：：：：%d",self.lastID);
             if (lastID < 0) {
                 lastID = 0;
             }
@@ -562,6 +572,12 @@
         }
     }
     
+}
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
 }
 
 
