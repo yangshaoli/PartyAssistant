@@ -140,7 +140,6 @@
 		//			[contactNameArray addObject:[NSString stringWithFormat:@" %@",phone]];
 		
 		//NSString *string = [contactNameArray objectAtIndex:i]
-        NSLog(@"%@",contact.contactName);;
 		NSString *string = [contact.contactName length] > 0 ? contact.contactName : [NSString stringWithFormat:@" %@",phone];
 		sectionName = [[NSString stringWithFormat:@"%c",pinyinFirstLetter([[string uppercaseString] characterAtIndex:0])] uppercaseString];
 		//[self.contactNameDic setObject:[string substringFromIndex:2] forKey:sectionName];
@@ -308,12 +307,10 @@
 }
 #pragma mark button custom method 
 - (void)cancelBtn:(id)sender {
-    NSLog(@"cancel button pressed!");
     [contactDelegate contactList:self cancelAction:YES];
 }
 
 - (void)refreshBtn:(id)sender {
-    NSLog(@"refresh button pressed!");
     [self.tableView reloadData];
 }
 @end

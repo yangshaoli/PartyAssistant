@@ -134,9 +134,9 @@
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
-        
         self.quest=request;
-        NSLog(@"调用doneBtnAction");
+       
+
     }
 }
 
@@ -160,7 +160,6 @@
     }else{
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
-	NSLog(@"调用requestFinished");
 }
 
 
@@ -169,7 +168,6 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
-    NSLog(@"调用requestFailed");
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -304,7 +302,7 @@
 //        }
 //        else
 //        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
 //        }
 //    }
 //    

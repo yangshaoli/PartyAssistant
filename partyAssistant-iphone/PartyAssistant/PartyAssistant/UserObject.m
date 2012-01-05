@@ -7,9 +7,12 @@
 //
 
 #import "UserObject.h"
+#import "ASIHTTPRequest.h"
+#import "URLSettings.h"
+#import "SBJsonParser.h"
 
 @implementation UserObject
-@synthesize uID,phoneNum,userName,nickName,emailInfo;
+@synthesize uID,phoneNum,userName,nickName,emailInfo,leftSMSCount;
 
 - (id)init
 {
@@ -19,6 +22,7 @@
         self.phoneNum = @"";
         self.userName = @"";
         self.nickName = @"";
+        self.leftSMSCount = @"";
     }
     
     return self;
@@ -29,6 +33,7 @@
 	[encoder encodeObject: self.phoneNum forKey:@"phoneNum"];
     [encoder encodeObject: self.userName forKey:@"userName"];
     [encoder encodeObject: self.nickName forKey:@"nickName"];
+    [encoder encodeObject: self.leftSMSCount forKey:@"leftSMSCount"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -36,6 +41,7 @@
 	self.phoneNum = [decoder decodeObjectForKey:@"phoneNum"];
 	self.userName = [decoder decodeObjectForKey:@"userName"];
     self.nickName = [decoder decodeObjectForKey:@"nickName"];
+    self.leftSMSCount = [decoder decodeObjectForKey:@"leftSMSCount"];
 	return self;
 }
 
@@ -44,5 +50,34 @@
     self.phoneNum = @"";
     self.userName = @"";
     self.nickName = @"";
+    self.leftSMSCount = @"";
+}
+
+- (void)updateRemaining {
+    if (self.uID == -1) {
+        return;
+    } else {
+        NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,self.uID];
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+        [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
+        [request startSynchronous];
+    }
+} 
+
+- (void)remainCountRequestDidFinish:(ASIHTTPRequest *)request {
+    NSString *response = [request responseString];
+    SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    if ([request responseStatusCode] == 200) {
+        NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
+        self.leftSMSCount = [remainCount stringValue];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"RefreshSMSLeftCount" object:nil]];
+    }
+}
+
+- (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
 }
 @end

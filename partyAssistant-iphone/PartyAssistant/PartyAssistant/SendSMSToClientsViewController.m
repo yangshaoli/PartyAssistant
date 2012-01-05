@@ -147,7 +147,6 @@
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.smsObject.smsContent;
-            NSLog(@"调用cell");
             contentTextView.backgroundColor = [UIColor clearColor];
             contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
@@ -168,7 +167,6 @@
                     cell.textLabel.text = @"通过自己的手机发送：";
                     [cell addSubview:sendBySelfSwitch];
                 }
-                NSLog(@"手机发送开关");
             }
         }else if (indexPath.section == 3){
             UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -369,7 +367,6 @@
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
               if([MFMessageComposeViewController canSendText]==YES){
-                  NSLog(@"可以发送短信");
                   MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                   if (self.smsObject._isApplyTips) {
                       vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -390,7 +387,6 @@
                   EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
                   [se clearEmailObject];                  
               }else{
-                    NSLog(@"不能发送短信");
                     [self createPartySuc];
                     #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                          return;

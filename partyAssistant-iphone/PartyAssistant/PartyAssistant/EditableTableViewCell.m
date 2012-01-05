@@ -103,7 +103,6 @@ static UITextView *dummyTextView;
 - (void)setText:(NSMutableString *)newText {
     if (newText != text) {
         textView.text = newText;
-        NSLog(@"New height: %f", textView.contentSize.height);
         [self textViewDidChange:self.textView];
     }
 }
@@ -138,7 +137,6 @@ static UITextView *dummyTextView;
     CGFloat suggested = [self suggestedHeight];
     
     if (fabs(suggested - self.frame.size.height) > 0.01) {
-        NSLog(@"Difference requires change");
         if ([delegate respondsToSelector:@selector(editableTableViewCell:heightChangedTo:)]) {
             [delegate editableTableViewCell:self heightChangedTo:suggested];
         }

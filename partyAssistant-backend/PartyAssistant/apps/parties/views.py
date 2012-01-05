@@ -447,7 +447,7 @@ def list_party(request):
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
 
 def _public_enroll(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id)
     creator = party.creator
     
     if request.method == 'POST':
@@ -534,7 +534,7 @@ def _public_enroll(request, party_id):
         return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):
-    party = get_object_or_404(Party, id = party_id, creator = request.user)
+    party = get_object_or_404(Party, id = party_id)
     party_client = get_object_or_404(PartiesClients, invite_key = invite_key)
     party_client.is_check = False
     client = party_client.client
@@ -597,19 +597,20 @@ def _invite_enroll(request, party_id, invite_key):
     else:
         userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
+        apply_status = PartiesClients.objects.get(invite_key=request.GET.get('key','')).apply_status
         data = {
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
             'form' : EnrollForm(),
-            'key' : request.GET.get('key','')
+            'key' : request.GET.get('key',''),
+            'apply_status' : apply_status
         }
-        
         return TemplateResponse(request, 'parties/enroll.html', data)
         
 def enroll(request, party_id):
     try:
-        get_object_or_404(Party, id = party_id, creator=request.user)
+        get_object_or_404(Party, id = party_id)
     except :
         return TemplateResponse(request, 'message.html', {'message':u'partynotexist'}) 
     invite_key = request.GET.get('key', '')
@@ -703,7 +704,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
     content += u'。'
     return content
 
-@login_required
+
 def invite_list_ajax(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id)
     for party_client in party_clients_list:
@@ -715,7 +716,7 @@ def invite_list_ajax(request, party_id):
 
 def ajax_get_client_list(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id) 
-    party = get_object_or_404(Party, id = party_id, creator = request.user)
+    party = get_object_or_404(Party, id = party_id)
     client_count = _get_client_count(party)
     data = {
             'party_clients_datas' : party_clients_datas,
@@ -725,7 +726,7 @@ def ajax_get_client_list(request, party_id):
 
 def _invite_list(request, party_id):
     apply_status = request.GET.get('apply', 'all')
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id)
     
     if apply_status == 'all':
         party_clients_list = PartiesClients.objects.select_related('client').filter(party = party)

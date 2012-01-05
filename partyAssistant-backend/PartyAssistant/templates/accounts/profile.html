@@ -97,7 +97,10 @@ function bindingPhone(){
 	                 	alert('手机号码不合法');
 	                 }
 	                 if(response.match(/time:/)){
-	                 	alert('点击频率过高，请稍后继续点击,'+response.match(/\d+/)+'秒后可以再次点击');
+                         for (var i =1; i < response.match(/\d+/); i++ ){
+                             //window.setTimeout( function() { document.getElementById("countdown").innerText = i; console.log(i)}, i*1000);
+                         }
+	                 	alert('验证码已经发送，请'+response.match(/\d+/)+'秒后再次点击');
 	                 }
                 },
                 500: function(response){
@@ -260,7 +263,8 @@ function validate_phone_bingding(isbind){
                         {% endifequal %}
                         {%  ifequal userprofile.phone_binding_status  'waitingbind' %}
                         <a href="#" onclick="bindingPhone()">[绑定]</a>
-                        {% endifequal %}     
+                        {% endifequal %}
+                        <span id="countdown"></span>     
                         <font color='red'>
                         {{ form.phone.errors.0 }}
                     </red>

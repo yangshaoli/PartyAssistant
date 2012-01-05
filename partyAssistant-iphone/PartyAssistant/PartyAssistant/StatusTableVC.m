@@ -64,7 +64,6 @@
 
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
-    NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
     
     if (self.quest) {
@@ -89,7 +88,6 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"self.clientsArray在statustableVC中输出后%@",self.clientsArray);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -100,14 +98,11 @@
             [self.tableView reloadData];
         }else{
             [self showAlertRequestFailed:description];	
-              NSLog(@"self.clientsArray在1");
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-         NSLog(@"self.clientsArray在2");
     }else{
         [self showAlertRequestFailed:REQUEST_ERROR_500];
-         NSLog(@"self.clientsArray在3");
     }
 	
 }
@@ -160,13 +155,11 @@
 
 - (void)resendBtnAction{
     
-    NSLog(@"在status中输出-----%@%@",self.clientsArray,self.partyObj.contentString);
     [self getPartyClientSeperatedList];
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
-    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+     [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
     [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
-    NSLog(@"调用再次发送");
 }
 #pragma mark - Table view data source
 
@@ -253,7 +246,6 @@
     oldLayout8=[cell viewWithTag:8];
     [oldLayout8 removeFromSuperview];
 
-    NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
     //5是图标
     UIView *oldLayout2 = nil;
     oldLayout2=[cell viewWithTag:5];
@@ -262,7 +254,6 @@
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(isCheck){
-            NSLog(@"在已报名页面");
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -282,12 +273,10 @@
             
             
         }else{
-            NSLog(@"留言为空");
             
         }
         
         
-        NSLog(@"secondLb.text>>>>>>>%@",secondLb.text);
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -296,7 +285,6 @@
     }else if([self.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(isCheck){
-            NSLog(@"在不参加页面");
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -315,7 +303,6 @@
 
         
         }else{
-            NSLog(@"留言为空");
         
         }
         
@@ -432,7 +419,7 @@
 //        }
 //        else
 //        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,310)];
 //        }
 //    }
 //    

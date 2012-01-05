@@ -108,9 +108,6 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-    NSLog(@"－－－在list   viewDidLoad页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
-    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
-     NSLog(@"在list页面viewDidLoad中打印self.lastID：：：：%d",self.lastID);
     [self refreshBtnAction];
     [self.tableView reloadData];
 
@@ -183,7 +180,6 @@
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
     self.navigationItem.rightBarButtonItem.customView = acv;
-    NSLog(@"在list页面输出user.uID》》》》%d",user.uID);
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -214,6 +210,7 @@
                 partyModel.contentString = [partyDict objectForKey:@"description"];
                 partyModel.partyId =[partyDict  objectForKey:@"partyId"];
                 partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
+                partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
                 [self.partyList addObject:partyModel];
                 
             }
@@ -226,7 +223,6 @@
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
             NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
             [defaults setInteger: self.partyList.count  forKey:keyString];    
-            NSLog(@"在list页面输出count  %d", self.partyList.count);
             
             
             [self setBottomRefreshViewYandDeltaHeight];
@@ -274,7 +270,6 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
-    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
     
@@ -447,7 +442,6 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
-    NSLog(@"下拉  。。。。。。。。。。。。下");
     _reloading = YES;
     [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
@@ -457,7 +451,6 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
-    NSLog(@"上拉。。。。。。。。。。。上");
     _reloading = YES;
    [self requestDataWithLastID:self.lastID];
 	[self doneLoadingBottomRefreshTableViewData];
@@ -542,11 +535,11 @@
     {
         if([view isKindOfClass:[UITabBar class]])
         {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
         }
         else
         {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
         }
         
     }
@@ -556,19 +549,15 @@
 
 -(void) showTabBar:(UITabBarController*) tabbarcontroller {
     
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
     
     for(UIView*view in tabbarcontroller.view.subviews)
     {
+        
         if([view isKindOfClass:[UITabBar class]])
         {
             [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+        }else{
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
         }
     }
     

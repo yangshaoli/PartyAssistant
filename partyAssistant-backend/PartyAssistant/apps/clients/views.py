@@ -29,7 +29,7 @@ from apps.clients.models import Client
 '''
 @login_required
 def change_apply_status(request, id, applystatus):
-    client_party = PartiesClients.objects.get(pk = id, creator = request.user)
+    client_party = PartiesClients.objects.get(pk = id, client__creator = request.user)
     client_party.apply_status = applystatus
     client_party.save()        
     return HttpResponse('ok') 

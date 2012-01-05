@@ -86,10 +86,10 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 	}
 	
 	//Then we should listen whether the user authorizes correctly when the app is reactive.
-	[[NSNotificationCenter defaultCenter]addObserver:self
-											selector:@selector(applicationLauched:)
-												name:UIApplicationDidBecomeActiveNotification
-											  object:nil];
+//	[[NSNotificationCenter defaultCenter]addObserver:self
+//											selector:@selector(applicationLauched:)
+//												name:UIApplicationDidBecomeActiveNotification
+//											  object:nil];
 
 	//Finally, an object of WBAuthorize is created and started.
 	_authorize = [[WBAuthorize alloc]initWithAppKey:_appKey withAppSecret:_appSecret withWeiBoInstance:self];
@@ -107,7 +107,7 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 			[_delegate weiboLoginFailed:YES withError:nil];
 	}
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+//	[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (BOOL)handleOpenURL:(NSURL *)url
@@ -137,9 +137,9 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 	[SFHFKeychainUtils storeUsername:kKeyChainAccessTokenForWeiBo andPassword:_accessToken forServiceName:serviceName updateExisting:YES error:nil];
 	[SFHFKeychainUtils storeUsername:kKeyChainAccessSecretForWeiBo andPassword:_accessTokenSecret forServiceName:serviceName updateExisting:YES error:nil];
 	
-	//and then tell the delegate.
-	if( [_delegate respondsToSelector:@selector(weiboDidLogin)] )
-		[_delegate weiboDidLogin];
+    if (!_userNickName && [self isUserLoggedin]) {
+        [self performSelectorOnMainThread:@selector(requestToGetUserNickName) withObject:nil waitUntilDone:NO];
+    }
 }
 
 - (void)authorizeFailed:(WBAuthorize*)auth withError:(NSError*)error
@@ -184,8 +184,6 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 
 - (void)requestToGetUserNickName
 {
-    NSLog(@"getLogined:");
-    NSLog(@"key:%@ token:%@ id:%@",_appKey,_accessToken,_userID);
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:_userID,@"user_id", _accessToken,@"access_token",_appKey,@"source", nil];
     [self requestWithMethodName:@"users/show.json" andParams:params andHttpMethod:@"GET" andDelegate:self];
 }
@@ -199,21 +197,23 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 }
 - (void)requestLoading:(WBRequest *)request
 {
-    NSLog(@"here");
 }
 - (void)request:(WBRequest *)request didFailWithError:(NSError *)error
 {
-    NSLog(@"error:%@",error);
+    if( [_delegate respondsToSelector:@selector(weiboDidLogin)] )
+		[_delegate weiboDidLogin];
 }
 - (void)request:(WBRequest *)request didLoadRawResponse:(NSData *)data
 {
     NSString *responseData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"data:%@",responseData);
     SBJsonParser *parser = [[SBJsonParser alloc] init];
     NSDictionary *result = [parser objectWithString:responseData];
     NSString *nickname = [result objectForKey:@"screen_name"];
     WeiboService *s = [WeiboService sharedWeiboService];
     [s saveNickName:nickname];
+    //and then tell the delegate.
+	if( [_delegate respondsToSelector:@selector(weiboDidLogin)] )
+		[_delegate weiboDidLogin];
     
 }
 #pragma mark -
@@ -300,13 +300,11 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 							  andImage:(UIImage*)image 
 						   andDelegate:(id <WBRequestDelegate>)delegate
 {
-    NSLog(@"PostRequesthere");
 	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:2];
 	[params setObject:text?text:@"" forKey:@"status"];
 	if( image )
 		[params setObject:image forKey:@"pic"];
 	
-	NSLog(@"PostRequesthere");
 	if( image )
 		return [self postRequestWithMethodName:@"statuses/upload.json" 
 									 andParams:params 

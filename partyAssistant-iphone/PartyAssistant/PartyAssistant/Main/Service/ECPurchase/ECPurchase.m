@@ -125,7 +125,6 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 -(void)completeTransaction:(NSNotification *)note{
 	SKPaymentTransaction *trans = [[note userInfo] objectForKey:@"transaction"];
 	
-    NSLog(@"%@",trans.transactionIdentifier);
     UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
     NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
     NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID",
@@ -235,10 +234,8 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 }
 -(void)didFailedVerify:(ECPurchaseFormDataRequest *)request {
     NSString *response = [request responseString];
-	NSLog(@"%@",response);
     SBJsonParser *parser = [SBJsonParser new];
 	NSDictionary* jsonData = [parser objectWithString: response];
-    NSLog(@"%@",jsonData);
 	[parser release];
 }
 
@@ -246,7 +243,6 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     _networkQueue = [ASINetworkQueue queue];
 	[_networkQueue retain];
 	NSURL *verifyURL = [NSURL URLWithString:VAILDATING_RECEIPTS_URL];
-    NSLog(@"%@",VAILDATING_RECEIPTS_URL);
     
     NSString *userID = [productInfo objectForKey:@"userID"];
     
@@ -331,7 +327,6 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     */
     NSDictionary *tempDic = [[NSUserDefaults standardUserDefaults] objectForKey:@"LocalReceipts"];
     NSMutableDictionary *mutableDic = [tempDic mutableCopy];
-    NSLog(@"%@",mutableDic);
     return [mutableDic autorelease];
 }
 
@@ -385,11 +380,8 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
     NSMutableDictionary *localStoredReceipt = [self getLocalStoredReceipt];
-    NSLog(@"local receipt:%@",localStoredReceipt);
-    NSLog(@"User Id is:%@",userID);
     NSMutableDictionary *theUserReceipts = [[localStoredReceipt objectForKey:userID] mutableCopy];
     [theUserReceipts removeObjectForKey:identifier];
-    NSLog(@"theUserReceipt:%@",theUserReceipts);
     if (!theUserReceipts) {
         [localStoredReceipt removeObjectForKey:userID];
         [theUserReceipts release];

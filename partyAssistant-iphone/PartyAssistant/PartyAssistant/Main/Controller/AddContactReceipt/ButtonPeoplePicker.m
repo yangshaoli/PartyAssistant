@@ -172,7 +172,6 @@
 }
 
 - (void)insertText:(NSString *)text {
-    NSLog(@"input method detected!");
     if (selectedButton) {
         NSInteger selectedIndex = selectedButton.tag;
         NSDictionary *selectedPeople = [self.group objectAtIndex:selectedIndex];
@@ -481,7 +480,6 @@
             NSString *theContactName = [personDict valueForKey:@"name"];
             NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
             //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
-            NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
             
             if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
                 return;
@@ -552,7 +550,7 @@
 	for (int i = 0; i < group.count; i++)
     {
 		NSDictionary *personDictionary = (NSDictionary *)[group objectAtIndex:i];
-		NSLog(@"the Dictionary :%@",personDictionary);
+
 //		ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
 //
 //        if (abRecordID == -1){
@@ -664,7 +662,6 @@
             searchField.frame = to;
         }
         
-        NSLog(@"search field: %f",searchField.frame.size.width);
         
         [searchField removeFromSuperview];
         [buttonView addSubview:searchField];
@@ -674,7 +671,6 @@
 		[deleteLabel setFrame:labelFrame];
 		
         self.buttonView.contentSize = CGSizeMake(buttonView.frame.size.width, yPosition + button.frame.size.height + Ver_PADDING);
-        NSLog(@"button view height : %f content view height : %f", self.buttonView.frame.size.height, self.buttonView.contentSize.height);
         
         if ((yPosition + button.frame.size.height + Ver_PADDING) > 160) {
             CGRect from = self.buttonView.frame;
@@ -771,7 +767,6 @@
 }
 
 - (void)touchButton {
-    NSLog(@"test");
 }
 
 - (void)findLastButton {
@@ -864,7 +859,6 @@
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.2f];
         CGFloat offset = currentTableViewYPosition - 40.0f;
-        NSLog(@"origin y :%f",newButtonViewFrame.origin.y);
         newTableViewFrame.origin.y = newTableViewFrame.origin.y - offset;
         newButtonViewFrame.origin.y = newButtonViewFrame.origin.y - offset;
         self.buttonView.frame = newButtonViewFrame;
@@ -915,7 +909,6 @@
             [scanner setScanLocation:([scanner scanLocation] + 1)];
         }
     }
-    NSLog(@"strippedString : %@",strippedString);
     return strippedString;
 }
 
@@ -937,7 +930,6 @@
             [scanner setScanLocation:([scanner scanLocation] + 1)];
         }
     }
-    NSLog(@"strippedString : %@",strippedString);
     return strippedString;
 }
 
