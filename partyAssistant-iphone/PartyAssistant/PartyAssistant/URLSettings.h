@@ -31,3 +31,5 @@
 #define ACCOUNT_SET_EMAILINFO [NSString stringWithFormat:@"%@/a/accounts/emailInfo/",DOMAIN_NAME]
 //wxz
 #define ACCOUNT_SET_CHANGEINFO [NSString stringWithFormat:@"%@/a/accounts/changeInfo/",DOMAIN_NAME]
+//wj
+#define ACCOUNT_REMAINING_COUNT [NSString stringWithFormat:@"%@/a/accounts/get_account_remaining/?id=",DOMAIN_NAME]
