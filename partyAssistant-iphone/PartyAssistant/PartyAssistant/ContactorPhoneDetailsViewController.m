@@ -43,6 +43,7 @@
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
+    
 //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
     goButton.tag=23;
     goButton.backgroundColor=[UIColor  clearColor];
@@ -136,6 +137,8 @@
 - (void)changeClientStatus:(UIButton *)btn
 {
     [self performSelectorOnMainThread:@selector(sendChangeClientRequest:) withObject:btn waitUntilDone:NO];
+//    [btn setTintColor:[UIColor grayColor]];
+//    [btn  setBackgroundColor:[UIColor grayColor]];
 }
 
 - (void)sendChangeClientRequest:(UIButton *)btn
@@ -301,8 +304,12 @@
         wordsLabel.textAlignment = UITextAlignmentRight;
         wordsLabel.textColor = [UIColor blueColor];
         wordsLabel.backgroundColor = [UIColor clearColor];
-        messageTextView.text=[self.clientDict objectForKey:@"msg"];
-       //messageTextView.text=@"留言自造数据ddddddddddddddddddd的 点点滴滴 ddddddddddd 点点滴滴ddddd 点点滴滴 淡淡的 得到 的的额度的的的的的";//需要放在push后面才可以成功赋值
+        NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+        if(detailWordString.length>1){
+             messageTextView.text=[detailWordString substringFromIndex:1];
+        }else{
+            NSLog(@"Detail页面留言为空");
+        }
         [cell addSubview:wordsLabel];
     }
         

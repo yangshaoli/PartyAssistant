@@ -108,6 +108,10 @@
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     NSLog(@"－－－在list   viewDidLoad页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
     NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
+    
+    [self refreshBtnAction];
+    [self.tableView reloadData];
+
 
 }
 
@@ -124,8 +128,8 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
-    [self refreshBtnAction];
-    [self.tableView reloadData];
+//    [self refreshBtnAction];
+//    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -343,6 +347,7 @@
     UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 50, 40)];    
     lb_1.tag = 6;
     lb_1.text = [NSString stringWithFormat:@"%@/",applyString];
+    lb_1.textColor=[UIColor greenColor];
     lb_1.textAlignment = UITextAlignmentRight;
     lb_1.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb_1];
@@ -354,7 +359,6 @@
     UILabel *lb_7 = [[UILabel alloc] initWithFrame:CGRectMake(250, 0, 45, 40)];    
     lb_7.tag = 7;
     lb_7.text = [NSString stringWithFormat:@"%d",allNumbers];
-    lb_7.textColor=[UIColor greenColor];
     lb_7.textAlignment = UITextAlignmentLeft;
     lb_7.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb_7];

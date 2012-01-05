@@ -166,7 +166,13 @@
     NSLog(@"调用requestFailed");
 }
 
-
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        return @"活动内容";
+    }
+    return nil;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -191,12 +197,12 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     if (!contentTextView) {
-        self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
+        self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(10, 10, 300,160)];
     }
     contentTextView.backgroundColor = [UIColor clearColor];
     contentTextView.text=self.partyObj.contentString;
     [cell addSubview:contentTextView];
-    cell.textLabel.text  = @"活动内容";
+    [contentTextView becomeFirstResponder];
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
     // Configure the cell...
     
