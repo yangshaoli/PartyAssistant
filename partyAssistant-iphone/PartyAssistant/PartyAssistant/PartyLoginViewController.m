@@ -9,6 +9,7 @@
 
 
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "CreatNewPartyViaSMSViewController.h"
 #import "DataManager.h"
 #import "GlossyButton.h"
 #import "PartyListTableViewController.h"
@@ -18,7 +19,10 @@
 #import "PartyListService.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
-
+#import "HTTPRequestErrorMSG.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "URLSettings.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -48,7 +52,7 @@
 @synthesize pwdTextField = _pwdTextField;
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
-
+@synthesize partyList;
 - (void)dealloc {
     [super dealloc];
     
@@ -112,7 +116,11 @@
     
     [tableFooterView release];
    
+    
+    
     //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
+    
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
 //    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
@@ -273,45 +281,53 @@
     
     
     //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
-    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
+    
+//    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
     UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
-    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
+    CreatNewPartyViaSMSViewController *creat = [[CreatNewPartyViaSMSViewController alloc] initWithNibName:nil bundle:nil];
+    
+//    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
     UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
+    UINavigationController *creatNav = [[UINavigationController alloc] 
+        initWithRootViewController:creat];
+    
     
     UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
-    UIImage *addPageBarImage = [UIImage imageNamed:@"new_icon"];
+    UIImage *creatPageBarImage = [UIImage imageNamed:@"new_icon"];
     UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:listBarImage tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:addPageBarImage tag:2];
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:listBarImage tag:1];
+    UITabBarItem *creatPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:creatPageBarImage tag:2];
     UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
-    addPageNav.tabBarItem = addPageBarItem;
+    creatNav.tabBarItem = creatPageBarItem;
     settingNav.tabBarItem = settingBarItem;
     
     [listBarItem release];
-    [addPageBarItem release];
+    [creatPageBarItem release];
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
-    tab.viewControllers = [NSArray arrayWithObjects:addPageNav,listNav,settingNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
     [self.navigationController pushViewController:tab animated:YES];
 
     [listNav release];
-    [addPageNav release];
+    [creatNav release];
     [settingNav release];
+//    [creatNav release];
     
     //[list release];
     [pattyListTableVC release];
-    [addPage release];
+//    [addPage release];
     [settings release];
+    [creat release];
     
      //add suggest user input name page here?
-    [self checkIfUserNameSaved];
+//    [self checkIfUserNameSaved];
     
     
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
@@ -320,10 +336,9 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-   //NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
+   NSLog(@"－－－在login页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
     NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
-    if(getDefaultCountNumber!=0){  
-        NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
+    if(getDefaultCountNumber){  
         tab.selectedIndex=1;
         NSLog(@"有趴列表");
     }else{
@@ -333,6 +348,14 @@
     }
     [keyString release];
 }
+
+
+
+
+
+
+
+
 //wxz
 - (void)autoLogin{
     [self pushToContentVC];
@@ -398,10 +421,10 @@
         return;
     }
     //2.show viewController
-    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
-    vc.delegate = self;
-    [self presentModalViewController:vc animated:YES];
-    [vc release];
+//    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//    vc.delegate = self;
+//    [self presentModalViewController:vc animated:YES];
+//    [vc release];
     
 //    //wxz判断   只在用户首次登陆才执行
 //    UserObjectService *us = [UserObjectService sharedUserObjectService];

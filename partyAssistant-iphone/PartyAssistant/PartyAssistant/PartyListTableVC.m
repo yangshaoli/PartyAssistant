@@ -4,12 +4,15 @@
 //
 //  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
+
 #import "ContactData.h"
 #import "PartyListTableVC.h"
 #import "PartyDetailTableVC.h"
 #import "PartyListService.h"
 #import "URLSettings.h"
 #import "ClientObject.h"
+#import "NotificationSettings.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -29,7 +32,12 @@
     }
     return self;
 }
-
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    _isRefreshing = NO;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    return self;
+}
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -46,34 +54,18 @@
     self.title=@"活动列表";
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
-   
-        
-    
-//    PartyModel *partyObj2=[[PartyModel alloc] init];
-//    ClientObject *client1=[[ClientObject alloc] init];
-//    client1.cName=@"收件人1";
-//    
-//    partyObj2.clientsArray=[[ContactData   contactsArray] mutableCopy];
-//    partyObj2.contentString=@"唱歌嗨一把";
-//    partyObj2.isSendByServer=NO;
-//    partyObj2.partyId=[NSNumber numberWithInt:1];
-//    partyObj2.userObject.uID=1;
-//    //partyObj2.peopleCountDict=
-//    NSLog(@"self.partyList打印出来：：%@",self.partyList);
-//    self.title=@"活动列表";
-//    
-//    PartyModel *partyObj1=[[PartyModel alloc] init];
-//    //partyObj1.receiversArray=[[ContactData   contactsArray] mutableCopy];
-//    partyObj1.contentString=@"跳舞爽";
-//    partyObj1.isSendByServer=NO;
-//    partyObj1.partyId=[NSNumber numberWithInt:10];
-    //self.partyList=[[PartyListService sharedPartyListService] addPartyList:partyObj2];
-    //[PartyListService sharedPartyListService].partyList=[[NSMutableArray alloc] initWithObjects:partyObj2, nil];
-//    NSString *lastString2=[[NSString alloc] initWithString:@"最后吃饭"];
-   //[[PartyListService sharedPartyListService].partyList  addObject:partyObj1];
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
-    
+    //自定义活动数据
+//    PartyModel *party1=[[PartyModel alloc] init];
+//    party1.contentString=@"自定义活动很好完大家一定还要去hh好好发sfjdskxkkkdfdkldflkjlkjckjxlkcjlkzxjclkzxjclkzxjclkzjxclkxjclkxzjclkjxclkjxlckjzxlkcjzlkjclkxjcxjclkxjckjcjcxkcjkxcjkxcjkxjcckxlzxkjlkxjc";
+//    PartyModel *party2=[[PartyModel alloc] init];
+//    party2.contentString=@"自定义活动2";
+//    self.partyList=[[NSMutableArray alloc] initWithObjects:party1,party2,nil];
+    if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
+        [self refreshBtnAction];
+    }
     minBottomRefreshViewY = 366.0;
 	//setup refresh tool
     if (bottomRefreshView == nil) {
@@ -103,12 +95,24 @@
 	//  update the last update date
 	[bottomRefreshView refreshLastUpdatedDate];
     [topRefreshView refreshLastUpdatedDate];
-    //self.partyList=[[NSArray alloc] initWithObjects:@"踢球1",@"唱歌2",@"聚餐3", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    NSLog(@"－－－在list   viewDidLoad页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
+    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
+    
+    [self refreshBtnAction];
+    [self.tableView reloadData];
+
+
 }
 
 
@@ -124,7 +128,8 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
-    [self.tableView reloadData];
+//    [self refreshBtnAction];
+//    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -199,11 +204,22 @@
                 partyModel.contentString = [partyDict objectForKey:@"description"];
                 partyModel.partyId =[partyDict  objectForKey:@"partyId"];
                 partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
+                partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
                 [self.partyList addObject:partyModel];
                 
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
+            
+            //用于判断是否登录后跳转到活动列表页面
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+            NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+            [defaults setInteger: self.partyList.count  forKey:keyString];    
+            NSLog(@"在list页面输出count  %d", self.partyList.count);
+            
+            
             [self setBottomRefreshViewYandDeltaHeight];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
@@ -239,9 +255,7 @@
     //    [request setShouldAttemptPersistentConnection:NO];
     //    [request startAsynchronous];
     //    self._isRefreshing = YES;
-    
-    int aLastID = 0;
-    [self requestDataWithLastID:aLastID];
+    [self requestDataWithLastID:0];
     
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
@@ -249,6 +263,13 @@
     
 }
 
+- (void)AddBadgeToTabbar:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
+    UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+    tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    
+}
 
 #pragma mark - Table view data source
 
@@ -273,29 +294,75 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     NSInteger row=[indexPath row];
-    UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
-    cellImageView.image=[UIImage imageNamed:@"new1"];
-    [cell  addSubview:cellImageView];
     
+        
+    NSString *newAppliedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newAppliedClientcount"]];
+    
+    NSString *newRefusedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newRefusedClientcount"]];
+    
+    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
+    if([newAppliedString intValue]>0){
+       partyObjCell.isnewApplied=YES;
+    }else{
+       partyObjCell.isnewApplied=NO;
+    }
+    
+    if([newRefusedString intValue]>0){
+        partyObjCell.isnewRefused=YES;
+    }else{
+        partyObjCell.isnewRefused=NO;
+    }
+    
+    //NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+    
+    UIView *oldLayout2 = nil;
+    oldLayout2 = [cell viewWithTag:2];
+    [oldLayout2 removeFromSuperview];
+
+    if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){        
+        UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+        cellImageView.image=[UIImage imageNamed:@"new1"];
+        cellImageView.tag=2;
+        [cell  addSubview:cellImageView];
+    
+    }
+    
+    
+    UIView *oldLayout3 = nil;
+    oldLayout3 = [cell viewWithTag:3];
+    [oldLayout3 removeFromSuperview];
     UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 175, 40)];
+    contentLabel.tag=3;
     contentLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     contentLabel.font=[UIFont systemFontOfSize:15];
     [cell  addSubview:contentLabel];
      
-    UIView *oldLayout = nil;
-    oldLayout = [cell viewWithTag:2];
-    [oldLayout removeFromSuperview];
-
-    UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 90, 40)];    
-    lb_1.tag = 2;
     NSString *applyString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"appliedClientcount"]];
     NSString *donothingString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"donothingClientcount"]];
     NSString *refuseString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"refusedClientcount"]];
     NSInteger allNumbers=[applyString intValue]+[donothingString intValue]+[refuseString intValue];
-    lb_1.text = [NSString stringWithFormat:@"%@/%d",applyString,allNumbers];
+    //已报名人数label
+    UIView *oldLayout6 = nil;
+    oldLayout6 = [cell viewWithTag:6];
+    [oldLayout6 removeFromSuperview];
+    UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 50, 40)];    
+    lb_1.tag = 6;
+    lb_1.text = [NSString stringWithFormat:@"%@/",applyString];
+    lb_1.textColor=[UIColor greenColor];
     lb_1.textAlignment = UITextAlignmentRight;
     lb_1.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb_1];
+    
+    //所有邀请人label
+    UIView *oldLayout7 = nil;
+    oldLayout7 = [cell viewWithTag:7];
+    [oldLayout7 removeFromSuperview];
+    UILabel *lb_7 = [[UILabel alloc] initWithFrame:CGRectMake(250, 0, 45, 40)];    
+    lb_7.tag = 7;
+    lb_7.text = [NSString stringWithFormat:@"%d",allNumbers];
+    lb_7.textAlignment = UITextAlignmentLeft;
+    lb_7.backgroundColor = [UIColor clearColor];
+    [cell addSubview:lb_7];
     
     //cell.textLabel.text=[self.partyList  objectAtIndex:row];
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
@@ -357,10 +424,11 @@
      */
     
     PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
-    partyDetailTableVC.title=[[[self.partyList  objectAtIndex:[indexPath row]] contentString] substringToIndex:3]; 
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+    
+    //
 }
 
 #pragma mark -
@@ -370,6 +438,7 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
+    NSLog(@"下拉  。。。。。。。。。。。。下");
     _reloading = YES;
     [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
@@ -379,8 +448,9 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
+    NSLog(@"上拉。。。。。。。。。。。上");
     _reloading = YES;
-   [self requestDataWithLastID:0];
+   [self requestDataWithLastID:self.lastID];
 	[self doneLoadingBottomRefreshTableViewData];
 }
 

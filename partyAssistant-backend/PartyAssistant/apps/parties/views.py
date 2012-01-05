@@ -58,14 +58,14 @@ def create_party(request):
 
 @login_required
 def delete_party(request, party_id):
-    party = get_object_or_404(Party, pk = party_id)
+    party = get_object_or_404(Party, pk = party_id, creator=request.user)
     party.delete()
     
     return redirect('list_party')
 
 @login_required
 def edit_party(request, party_id):
-    party = get_object_or_404(Party, id = party_id)
+    party = get_object_or_404(Party, id = party_id, creator=request.user)
     
     if request.method == 'POST':
         form = PartyForm(request.POST, instance = party)
@@ -98,7 +98,7 @@ def edit_party(request, party_id):
 @login_required
 @transaction.commit_on_success
 def email_invite(request, party_id):
-    party = get_object_or_404(Party, id = party_id)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     #取得最近20个活动，用来从中获取好友
     recent_parties = Party.objects.filter(invite_type='email').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
     
@@ -242,7 +242,7 @@ def email_invite(request, party_id):
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
-    party = get_object_or_404(Party, id = party_id)
+    party = get_object_or_404(Party, id = party_id, creator=request.user)
     #取得最近20个活动，用来从中获取好友
     recent_parties = Party.objects.filter(invite_type='phone').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
     
@@ -298,7 +298,7 @@ def sms_invite(request, party_id):
             with transaction.commit_on_success():
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 client_phone_list_len = len(client_phone_list)
-                userprofile = UserProfile.objects.get(user = request.user) 
+                userprofile = request.user.get_profile() 
                 sms_count = userprofile.available_sms_count
                 will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
                 if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
@@ -523,7 +523,7 @@ def _public_enroll(request, party_id):
             invite_message = 'email'
         else:
             invite_message = 'phone'
-        userprofile = UserProfile.objects.get(user = party.creator)
+        userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username    
         data = {
             'party': party,
@@ -595,16 +595,17 @@ def _invite_enroll(request, party_id, invite_key):
              }
             return TemplateResponse(request, 'parties/enroll.html', data)
     else:
-        userprofile = UserProfile.objects.get(user = party.creator)
+        userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
+        apply_status = PartiesClients.objects.get(invite_key=request.GET.get('key','')).apply_status
         data = {
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
             'form' : EnrollForm(),
-            'key' : request.GET.get('key','')
+            'key' : request.GET.get('key',''),
+            'apply_status' : apply_status
         }
-        
         return TemplateResponse(request, 'parties/enroll.html', data)
         
 def enroll(request, party_id):
@@ -640,14 +641,17 @@ def _get_client_count(party):
 
 @login_required
 def change_apply_status(request, party_client_id, applystatus):
-    client_party = PartiesClients.objects.get(pk = party_client_id)      
-    client_party.apply_status = applystatus
-    client_party.save()        
-    return HttpResponse('ok') 
+    if applystatus == 'reject' or applystatus == 'noanswere' or applystatus == 'apply':
+        client_party = PartiesClients.objects.get(pk = party_client_id)      
+        client_party.apply_status = applystatus
+        client_party.save()        
+        return HttpResponse('ok') 
+    else :
+        return HttpResponse('badstatus')
 
 @login_required
 def invite_list(request, party_id):
-    party = get_object_or_404(Party, id = party_id)
+    party = get_object_or_404(Party, id = party_id, creator=request.user)
     party_clients_list = PartiesClients.objects.filter(party = party)
     
     party_clients = {
@@ -700,7 +704,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
     content += u'。'
     return content
 
-@login_required
+
 def invite_list_ajax(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id)
     for party_client in party_clients_list:
