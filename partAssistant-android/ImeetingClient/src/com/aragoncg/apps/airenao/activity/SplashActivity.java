@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
@@ -49,6 +50,7 @@ public class SplashActivity extends Activity {
 	private static final int MSG_ID_NET_DOWN = 6;
 	private static final int MSG_ID_SDCARD_DOWN = 7;
 	private static final int MSG_ID_NET_UP = 8;
+	private static final int EXCEPTION = 9;
 
 	Handler mHandler = new Handler() {
 
@@ -157,7 +159,17 @@ public class SplashActivity extends Activity {
 
 				sdcardDig.show();
 				break;
-
+			case EXCEPTION:
+				Toast.makeText(SplashActivity.this,"后台出现异常",2000).show();
+				mHandler.postDelayed(new Runnable() {
+					
+					@Override
+					public void run() {
+						System.exit(0);
+						
+					}
+				}, 3000);
+				break;
 			}
 			super.handleMessage(msg);
 		}
@@ -167,6 +179,7 @@ public class SplashActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		mHandler.removeMessages(MSG_ID_CLOSE);
+		
 		super.onBackPressed();
 	}
 
@@ -184,14 +197,23 @@ public class SplashActivity extends Activity {
 		if (!netLinking) {
 			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_DOWN, 3000);
 		} else {
-			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_UP, 3000);
+			mHandler.sendEmptyMessageDelayed(MSG_ID_NET_UP, 0);
 		}
 
 	}
 
 	public void createDb() {
-		DbHelper.getInstance(SplashActivity.this);
-
+		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(SplashActivity.this);
+		boolean dbCreate = mySharedPreferences.getBoolean("dbCreate", false);
+		if(!dbCreate){
+			DbHelper.getInstance(SplashActivity.this);
+			Editor myEditor = mySharedPreferences.edit();
+			myEditor.putBoolean("dbCreate", true);
+			myEditor.commit();
+		}
+		
+		
+		
 	}
 
 	@Override
@@ -262,8 +284,7 @@ public class SplashActivity extends Activity {
 						// myProgressDialog.cancel();
 					}
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					mHandler.sendEmptyMessage(EXCEPTION);
 				}
 
 			}

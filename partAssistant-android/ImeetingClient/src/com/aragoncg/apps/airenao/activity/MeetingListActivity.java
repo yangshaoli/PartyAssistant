@@ -122,8 +122,9 @@ public class MeetingListActivity extends ListActivity implements
 		mContext = getBaseContext();
 		init();
 		needRefresh = getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
-		mData = getData();
 		myListView = getListView();
+		getData();
+		
 		footerView = LayoutInflater.from(this).inflate(R.layout.load_layout,
 				null);
 		myListView.addFooterView(footerView);
@@ -171,9 +172,8 @@ public class MeetingListActivity extends ListActivity implements
 		startId = 0;
 		needRefresh = true;
 		if (needRefresh) {
-			progressDialog = ProgressDialog.show(MeetingListActivity.this,
-					"刷新", getString(R.string.loadAirenao), true, true);
-			mData = getData();
+			
+			getData();
 			/*myDaAdapter.notifyDataSetChanged();
 			myListView.requestFocusFromTouch();*/
 		}
@@ -191,7 +191,7 @@ public class MeetingListActivity extends ListActivity implements
 
 				list.clear();
 				startId = 0;
-				postHandler.post(firstLoadDataThread);
+				postHandler.postDelayed(firstLoadDataThread,1000);
 			}
 		});
 	}
@@ -469,7 +469,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * @throws
 	 * 
 	 */
-	private List<Map<String, Object>> getData() {
+	private void getData() {
 		
 		// 在map装配的时候，一个活动的所有属性全部装配
 		// 先从本地获得数据，如果数据为空那么在从后台取数据
@@ -480,13 +480,19 @@ public class MeetingListActivity extends ListActivity implements
 		}
 
 		if (list.size() > 0) {
-			return list;
+			mData = list;
+			if(myDaAdapter!=null){
+				myDaAdapter.notifyDataSetChanged();
+				myListView.requestFocusFromTouch();
+			}
+			return;
 		} else {
 			if (firstLoadDataThread == null) {
 				firstLoadDataThread = initLoadThread();
 			}
-			postHandler.post(firstLoadDataThread);
-			return list;
+			progressDialog = ProgressDialog.show(MeetingListActivity.this, "", "loading...",true,true);
+			postHandler.postDelayed(firstLoadDataThread,1000);
+			//return list;
 		}
 
 	}
@@ -801,12 +807,6 @@ public class MeetingListActivity extends ListActivity implements
 			status = output.getString(Constants.STATUS);
 			description = output.getString(Constants.DESCRIPTION);
 			if ("ok".equals(status)) {
-				Message message = new Message();
-				message.what = Constants.POST_MESSAGE_SUCCESS;
-				Bundle bundle = new Bundle();
-				bundle.putString(Constants.HENDLER_MESSAGE, description);
-				message.setData(bundle);
-				postHandler.sendMessage(message);
 
 				dataSource = output.getJSONObject(Constants.DATA_SOURCE);
 				lastID = Integer.valueOf(dataSource.getString(LAST_ID));
@@ -820,8 +820,8 @@ public class MeetingListActivity extends ListActivity implements
 				for (int i = 0; i < myJsonArray.length(); i++) {
 					JSONObject tempActivity = myJsonArray.getJSONObject(i);
 					list.add(organizeMap(tempActivity));
-					myDaAdapter.notifyDataSetChanged();
-					myListView.requestFocusFromTouch();
+					/*myDaAdapter.notifyDataSetChanged();
+					myListView.requestFocusFromTouch();*/
 					try {
 
 						DbHelper.insert(db, organizeOneActivity(tempActivity),
@@ -831,7 +831,13 @@ public class MeetingListActivity extends ListActivity implements
 						e.printStackTrace();
 					}
 				}
-
+				mData = list;
+				Message message = new Message();
+				message.what = Constants.POST_MESSAGE_SUCCESS;
+				Bundle bundle = new Bundle();
+				bundle.putString(Constants.HENDLER_MESSAGE, description);
+				message.setData(bundle);
+				postHandler.sendMessage(message);
 			} else {
 				Message message = new Message();
 				message.what = Constants.POST_MESSAGE_CASE;
@@ -840,18 +846,14 @@ public class MeetingListActivity extends ListActivity implements
 				message.setData(bundle);
 				postHandler.sendMessage(message);
 			}
-			myListView.requestFocusFromTouch();
-			if (tempCount > 0) {
-				myDaAdapter.notifyDataSetChanged();
-				myListView.requestFocusFromTouch();
-			}
-			// 异步更新完后要重新获得焦点，不然条目不能点击
 		} catch (JSONException e) {
 			e.printStackTrace();
+		}finally{
+			if (db != null) {
+				db.close();
+			}
 		}
-		if (db != null) {
-			db.close();
-		}
+		
 	}
 
 	/**

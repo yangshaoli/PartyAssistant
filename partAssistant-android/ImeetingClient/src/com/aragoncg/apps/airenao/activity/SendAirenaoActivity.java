@@ -228,6 +228,9 @@ public class SendAirenaoActivity extends Activity {
 				String phoneNumber = phones
 						.getString(phones
 								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+				if(phoneNumber.contains("-")){
+					phoneNumber = phoneNumber.replace("-", "");
+				}
 				if (phoneNumber != null) {
 
 					if (AirenaoUtills.phoneNumberCompare(phoneNumbers,
@@ -376,7 +379,7 @@ public class SendAirenaoActivity extends Activity {
 									}
 							} else {
 								Toast.makeText(SendAirenaoActivity.this,
-										"发送成功", 1000).show();
+										"消息已发送", 1000).show();
 								if (progerssDialog != null) {
 									progerssDialog.dismiss();
 								}
@@ -688,16 +691,10 @@ public class SendAirenaoActivity extends Activity {
 									}).create();
 					noticeDialog.show();
 				} else {
-					/*progerssDialog = ProgressDialog.show(
-							SendAirenaoActivity.this, "", "发送中...", true, true);*/
-					/*String inputedPhoneNumbers = peopleNumbers.getText().toString();
-					String[] phoneNumbers = inputedPhoneNumbers.split("\\,", 0);
-					for(int j=0;j<phoneNumbers.length;j++){
-						if(){}
-					}
-					clientDicts;*/
+					progerssDialog = ProgressDialog.show(
+							SendAirenaoActivity.this, "", "发送中...", true, true);
 					initThreadSaveMessage(null);
-					myHandler.post(threadSaveMessage);
+					myHandler.postDelayed(threadSaveMessage,1000);
 
 				}
 
@@ -733,7 +730,9 @@ public class SendAirenaoActivity extends Activity {
 					if (allContacts[i].equals("")) {
 						continue;
 					}
-					clientDicts.put(onePhoneNumber, "佚名");
+					if(!clientDicts.containsKey(onePhoneNumber)){
+						clientDicts.put(onePhoneNumber, "佚名");
+					}
 					
 				}
 				
@@ -880,10 +879,16 @@ public class SendAirenaoActivity extends Activity {
 			}
 			personList = data
 					.getParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND);
+			String onePhoneNumber="";
 			if (personList != null && personList.size() > 0) {
 				for (int i = 0; i < personList.size(); i++) {
-					clientDicts.put(personList.get(i).getPhoneNumber(), personList.get(i).getName());
-					names += personList.get(i).getName() + "<" + personList.get(i).getPhoneNumber() + ">" + ",";
+					onePhoneNumber = personList.get(i).getPhoneNumber();
+					if(onePhoneNumber.contains("-")){
+						onePhoneNumber = onePhoneNumber.replace("-", "");
+					}
+					clientDicts.put(onePhoneNumber, personList.get(i).getName());
+					names += personList.get(i).getName() + "<" + onePhoneNumber + ">" + ",";
+					
 				}
 				peopleNumbers.setText(names);
 			}
