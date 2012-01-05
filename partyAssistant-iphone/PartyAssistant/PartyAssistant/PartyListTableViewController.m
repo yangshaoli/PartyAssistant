@@ -315,6 +315,7 @@
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
                 
+                
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];

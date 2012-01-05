@@ -13,7 +13,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phone,card,phoneDetailDelegate,clientDict,partyObj;
+@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj;
 @synthesize messageTextView;
 @synthesize clientStatusFlag;
 
@@ -309,18 +309,74 @@
     return cell;
 }
 
+//通过姓名和电话找出此联系人的头像数据
+- (ABRecordRef)getContactorImageData{
+    NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
+    NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
+        ABAddressBookRef addressBook = ABAddressBookCreate();
+        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
+                                                                    addressBook,
+                                                                    (__bridge CFStringRef)contactorNameString);
+    
+  NSLog(@"先输出名字>>>>>>>>>%@,再输出号码》》》%@",contactorNameString,contactorPhoneString);
+  NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
+  if(array1.count>0){
+    NSLog(@"按名字已找到数据－－－");
+    for (int i=0; i<CFArrayGetCount(searchResult); )
+           {
+            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+            if(!card){
+                continue;
+            }
+            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+            if(!phone){
+                continue;
+            }
+            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
+                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
+                NSLog(@"找到名字后打印valstr：：：－－－%@   该联系人有%d个号码",valStr,ABMultiValueGetCount(phone));
+                if ([valStr isEqualToString:contactorPhoneString]) {
+                    NSLog(@"又找到匹配号码－－");
+                    //self.cID = ABRecordGetRecordID(card);
+                    if(ABPersonHasImageData(card)){
+                          NSLog(@"找到匹配联系人头像数据");
+                          return card;
+                    }else{
+                        NSLog(@"找到联系人了但是没头像数据");
+                        return nil;
+                    }
+                }else{
+                    NSLog(@"》》》》没找到匹配号码");
+                    continue;
+                }
+               
+            }
+            return nil;   
+               
+        }
+  }else{
+      NSLog(@"－名字没有匹配到数据－");
+      return nil;
+  }
+    NSLog(@"－－－－调用找头像方法－－－");
+    return nil;
+}
+
+
+
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if(section==0){
         UIView *headV = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 85.0f)];
-        
-         //NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
+        ABRecordRef getCard=[self getContactorImageData];
         
         UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
-        //[imgV setImage:[UIImage imageWithData:imgData]];
         imgV.backgroundColor = [UIColor whiteColor];
+        if(getCard){
+           NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(getCard);
+            [imgV setImage:[UIImage imageWithData:imgData]];
+        }
         [headV addSubview:imgV];
-        
         UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
 //        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
 //        if (personFName == nil) {

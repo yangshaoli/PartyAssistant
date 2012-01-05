@@ -19,7 +19,10 @@
 #import "PartyListService.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
-
+#import "HTTPRequestErrorMSG.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "URLSettings.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -49,7 +52,7 @@
 @synthesize pwdTextField = _pwdTextField;
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
-
+@synthesize partyList;
 - (void)dealloc {
     [super dealloc];
     
@@ -113,7 +116,11 @@
     
     [tableFooterView release];
    
+    
+    
     //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
+    
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
 //    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
@@ -329,10 +336,9 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-   //NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
+   NSLog(@"－－－在login页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
     NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
-    if(getDefaultCountNumber!=0){  
-        NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
+    if(getDefaultCountNumber){  
         tab.selectedIndex=1;
         NSLog(@"有趴列表");
     }else{
@@ -342,6 +348,14 @@
     }
     [keyString release];
 }
+
+
+
+
+
+
+
+
 //wxz
 - (void)autoLogin{
     [self pushToContentVC];
@@ -407,10 +421,10 @@
         return;
     }
     //2.show viewController
-    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
-    vc.delegate = self;
-    [self presentModalViewController:vc animated:YES];
-    [vc release];
+//    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//    vc.delegate = self;
+//    [self presentModalViewController:vc animated:YES];
+//    [vc release];
     
 //    //wxz判断   只在用户首次登陆才执行
 //    UserObjectService *us = [UserObjectService sharedUserObjectService];

@@ -25,6 +25,7 @@
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary;
 - (void)displayAddPersonViewController;
 - (NSString *)getCleanPhoneNumber:(NSString *)rawPhoneNumber;
+- (NSString *)getCleanLetter:(NSString *)originalString;
 @end
 
 
@@ -97,7 +98,7 @@
     self.buttonView.clipsToBounds = YES;
     
     self.addReceiptButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
-    [self.addReceiptButton addTarget:self action:@selector(callCaontactList) forControlEvents:UIControlEventTouchUpInside];
+    [self.addReceiptButton addTarget:self action:@selector(callContactList) forControlEvents:UIControlEventTouchUpInside];
     self.addReceiptBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
     self.addReceiptButton.center = CGPointMake(14, 14);
     [self.addReceiptBGView addSubview:self.addReceiptButton];
@@ -322,10 +323,15 @@
     {
 		//[self displayAddPersonViewController];
         NSDictionary *personDictionary = nil;
-        
-        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"", @"phoneNumber", searchField.text, @"name", nil];
-        [self addPersonToGroup:personDictionary];
+        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([newPhoneName length] == 0) {
+            return;
+        } else {
+            personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                newPhoneName, @"phoneNumber", @"", @"name", nil];
+            [self addPersonToGroup:personDictionary];
+        }
 	}
 	else
     {
@@ -428,14 +434,14 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (searchField.text.length > 1)
     {
-        NSString *newContactname = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
-        newContactname = [newContactname stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([newContactname length] == 0) {
+        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([newPhoneName length] == 0) {
             searchField.text = @"\u200B";
             return NO;
         }
         NSDictionary *newContact = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                       @"", @"phoneNumber", newContactname, @"name", nil];
+                                                       newPhoneName, @"phoneNumber", @"", @"name", nil];
         searchField.text = @"\u200B";
         [self addPersonToGroup:newContact];
 	}
@@ -456,27 +462,42 @@
     NSString *name  = [personDictionary valueForKey:@"name"];
     
     // Check for an existing entry for this person, if so remove it
-    for (NSDictionary *personDict in group)
-    {
-        NSString *theContactName = [personDict valueForKey:@"name"];
-        NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
-        //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
-        NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
-        
-        if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+    if ([name isEqualToString:@""]) {
+        if ([number isEqualToString:@""]) {
             return;
         }
+        NSString *cleanString = [self getCleanLetter:number];
         
-        if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+        for (NSDictionary *personDict in group)
         {
-            return;
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            if ([cleanString isEqualToString:[self getCleanLetter:thePhoneString]]) {
+                return;
+            }
         }
-        
-        if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
-            return;
+    } else {
+        for (NSDictionary *personDict in group)
+        {
+            NSString *theContactName = [personDict valueForKey:@"name"];
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
+            NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+                return;
+            }
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+            {
+                return;
+            }
+            
+            if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
+                return;
+            }
         }
     }
-    
+        
     [group addObject:personDictionary];
     [self layoutNameButtons];
 }
@@ -545,6 +566,9 @@
 //        } else {
             name = [personDictionary objectForKey:@"name"];
 //        }
+        if ([name isEqualToString:@""]) {
+            name = [personDictionary objectForKey:@"phoneNumber"];
+        }
         
 //		ABMultiValueIdentifier identifier = [[personDictionary valueForKey:@"valueIdentifier"] intValue];
 //		
@@ -767,11 +791,16 @@
     }
 }
 
-- (void)callCaontactList {
-    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
-    list.contactDelegate = self;
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
-    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
+- (void)callContactList {
+    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+    ppnc.peoplePickerDelegate = self;
+    [ppnc setDisplayedProperties:[NSArray
+                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:ppnc animated:YES];
+//    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
+//    list.contactDelegate = self;
+//    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
+//    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
 }
 
 #pragma mark -
@@ -888,5 +917,62 @@
     }
     NSLog(@"strippedString : %@",strippedString);
     return strippedString;
+}
+
+- (NSString *)getCleanLetter:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789abcdefghijklmnopqrestuvwxyzABCDEFGHIJKLMNOPQRESTUVWXYZ"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    NSLog(@"strippedString : %@",strippedString);
+    return strippedString;
+}
+
+#pragma mark -
+#pragma mark people picker delegate
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker
+      shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+    
+    return YES; 
+    
+}
+// Display the selected property
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+{
+    // We are guaranteed to only be working with e-mail or phone [self dismissModalViewControllerAnimated:YES];
+    NSArray *array = [ABContact arrayForProperty:property
+                                        inRecord:person];
+    ABContact *contact = [ABContact contactWithRecord:person];
+    NSString *phone = (NSString *)[array objectAtIndex:identifier];
+    NSString *name = [contact compositeName];
+    NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                      phone, @"phoneNumber", name, @"name",nil];
+    [self addPersonToGroup:personDictionary];
+    
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+    
+    return NO;
+}
+// Handle user cancels
+- (void)peoplePickerNavigationControllerDidCancel:
+(ABPeoplePickerNavigationController *)peoplePicker {
+    
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+    
 }
 @end

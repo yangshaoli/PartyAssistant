@@ -25,6 +25,7 @@
 - (void)showAlertRequestSuccess;
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage;
 - (void)showAlertRequestFailed: (NSString *) theMessage;
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString;
 
 @end
 
@@ -60,8 +61,9 @@
                             otherButtonTitles: nil];
         [alert show];
     }else{
+        [self saveSMSInfo];
         if ([self.tempSMSObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何有效收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
             [alertV show];
         }else{
             [self sendCreateRequest];
@@ -77,7 +79,18 @@
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = [receipt objectForKey:@"name"];
-        client.cVal = [receipt objectForKey:@"phoneNumber"];
+        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        
+        if (!phoneNumber) {
+            continue;
+        } else {
+            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+                if (phoneNumber.length >= 11) {
+                    client.cVal = phoneNumber;
+                } else {
+                    continue;
+                }
+        }
         [array addObject:client];
     }
     
@@ -125,10 +138,19 @@
                         vc.body = self.tempSMSObject.smsContent;
                     };
                     
-                    NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
+                    NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
-                            [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
+                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                        
+                        if (!phoneNumber) {
+                            continue;
+                        } else {
+                            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+                            if (phoneNumber.length >= 11) {
+                                [numberArray addObject:phoneNumber];
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     vc.recipients = numberArray;
@@ -168,7 +190,7 @@
 #pragma mark -
 #pragma mark save related data
 
-- (void)setReceipts:(NSArray *)newValues {
+- (void)setNewReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
     NSLog(@"mark:new Values===========%@",newValues);
     for (NSDictionary *value in newValues) {
@@ -184,7 +206,7 @@
 
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID{
     smsContent = [newContent copy];
-    self.editingTableViewCell.textView.text = smsContent;
+    [self.editingTableViewCell setText:[smsContent mutableCopy]];
     NSLog(@"%@",self.editingTableViewCell);
     groupID = newGroupID;
 }

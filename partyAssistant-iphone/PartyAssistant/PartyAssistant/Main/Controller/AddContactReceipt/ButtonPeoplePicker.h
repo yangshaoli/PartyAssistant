@@ -30,7 +30,9 @@ typedef enum {
 @interface ButtonPeoplePicker : UIViewController <AddPersonViewControllerDelegate,
 												  UITableViewDataSource,
 												  UITableViewDelegate,
-												  UIKeyInput,ContactsListPickerViewControllerDelegate>
+												  UIKeyInput,
+                                                  ABPeoplePickerNavigationControllerDelegate,
+                                                  ContactsListPickerViewControllerDelegate>
 {
 	UIButton *selectedButton;
     UIButton *lastButton;
