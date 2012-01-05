@@ -263,6 +263,7 @@
     NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    
 }
 
 #pragma mark - Table view data source
@@ -289,11 +290,30 @@
     }
     NSInteger row=[indexPath row];
     
+        
+    NSString *newAppliedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newAppliedClientcount"]];
+    
+    NSString *newRefusedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newRefusedClientcount"]];
+    
+    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
+    if([newAppliedString intValue]>0){
+       partyObjCell.isnewApplied=YES;
+    }else{
+       partyObjCell.isnewApplied=NO;
+    }
+    
+    if([newRefusedString intValue]>0){
+        partyObjCell.isnewRefused=YES;
+    }else{
+        partyObjCell.isnewRefused=NO;
+    }
+    
+    //NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+    
     UIView *oldLayout2 = nil;
     oldLayout2 = [cell viewWithTag:2];
     [oldLayout2 removeFromSuperview];
-    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
-    NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+
     if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){        
         UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
         cellImageView.image=[UIImage imageNamed:@"new1"];
@@ -301,7 +321,13 @@
         [cell  addSubview:cellImageView];
     
     }
+    
+    
+    UIView *oldLayout3 = nil;
+    oldLayout3 = [cell viewWithTag:3];
+    [oldLayout3 removeFromSuperview];
     UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 175, 40)];
+    contentLabel.tag=3;
     contentLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     contentLabel.font=[UIFont systemFontOfSize:15];
     [cell  addSubview:contentLabel];

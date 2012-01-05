@@ -309,6 +309,29 @@
     return cell;
 }
 
+
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    NSLog(@"strippedString : %@",strippedString);
+    return strippedString;
+}
+
 //通过姓名和电话找出此联系人的头像数据
 - (ABRecordRef)getContactorImageData{
     NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
@@ -318,7 +341,7 @@
                                                                     addressBook,
                                                                     (__bridge CFStringRef)contactorNameString);
     
-  NSLog(@"先输出名字>>>>>>>>>%@,再输出号码》》》%@",contactorNameString,contactorPhoneString);
+  NSLog(@"后台数据先输出名字>>>>>>>>>%@,再输出号码》》》%@",contactorNameString,contactorPhoneString);
   NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
   if(array1.count>0){
     NSLog(@"按名字已找到数据－－－");
@@ -335,7 +358,9 @@
             for (int j=0; j<ABMultiValueGetCount(phone); j++) {
                 NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
                 NSLog(@"找到名字后打印valstr：：：－－－%@   该联系人有%d个号码",valStr,ABMultiValueGetCount(phone));
-                if ([valStr isEqualToString:contactorPhoneString]) {
+                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
+                NSLog(@"清空无用符后的电话－－－getCleanPhoneString>>>%@",getCleanPhoneString);
+                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
                     NSLog(@"又找到匹配号码－－");
                     //self.cID = ABRecordGetRecordID(card);
                     if(ABPersonHasImageData(card)){
@@ -372,10 +397,15 @@
         
         UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
         imgV.backgroundColor = [UIColor whiteColor];
+        UIImage *person = nil;
         if(getCard){
-           NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(getCard);
-            [imgV setImage:[UIImage imageWithData:imgData]];
+            CFDataRef imgData = ABPersonCopyImageData(getCard);
+            UIGraphicsBeginImageContext(CGSizeMake(62, 62));
+            [[UIImage imageWithData:(NSData *)imgData] drawInRect:CGRectMake(0, 0, 65, 65)];
+            person  = UIGraphicsGetImageFromCurrentImageContext();
+            CFRelease(imgData);
         }
+        [imgV setImage:person];
         [headV addSubview:imgV];
         UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
 //        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
@@ -512,6 +542,5 @@
       
         
 }
-
 
 @end
