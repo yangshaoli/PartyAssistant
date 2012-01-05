@@ -130,7 +130,6 @@
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
-        NSLog(@"调用doneBtnAction");
     }
 }
 
@@ -154,7 +153,6 @@
     }else{
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
-	NSLog(@"调用requestFinished");
 }
 
 
@@ -163,7 +161,6 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
-    NSLog(@"调用requestFailed");
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section

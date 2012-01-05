@@ -47,7 +47,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     } else {
         self.partyList = [[NSMutableArray alloc] initWithCapacity:0];
     }
-    NSLog(@"self.partyList打印》》》%@",self.partyList);
     return self.partyList;
 }
 

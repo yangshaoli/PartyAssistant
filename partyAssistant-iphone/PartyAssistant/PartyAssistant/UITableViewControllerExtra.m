@@ -33,11 +33,8 @@
 
 - (void)showWaiting {
 	
-	NSLog(@"111");
 	IndicatorMessageView *waitingView = [[IndicatorMessageView alloc] initWithFrame:CGRectMake(80, 110+self.tableView.contentOffset.y, 160, 60)];
-	NSLog(@"222");
 	[self.view addSubview:waitingView];
-    NSLog(@"333");
 	self.view.userInteractionEnabled = NO;
 	
 }

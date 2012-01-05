@@ -130,7 +130,6 @@
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.tempSMSObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
-                    NSLog(@"可以发送短信");
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.tempSMSObject._isApplyTips) {
                         vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -158,7 +157,6 @@
                     [self.navigationController presentModalViewController:vc animated:YES];
                     [self.tempSMSObject clearObject];
                 }else{
-                    NSLog(@"不能发送短信");
                     [self createPartySuc];
 #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                     return;
@@ -192,11 +190,8 @@
 
 - (void)setNewReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
-    NSLog(@"mark:new Values===========%@",newValues);
     for (NSDictionary *value in newValues) {
-        NSLog(@"%@",value);
         NSDictionary *newReceipt = [NSDictionary dictionaryWithObjectsAndKeys: [value objectForKey:@"cName"], @"name", [value objectForKey:@"cValue"], @"phoneNumber", nil];
-        NSLog(@"%@",newReceipt);
         [newReceipts addObject:newReceipt];
     }
     [super setReceipts:[newReceipts mutableCopy]];
@@ -207,7 +202,6 @@
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID{
     smsContent = [newContent copy];
     [self.editingTableViewCell setText:[smsContent mutableCopy]];
-    NSLog(@"%@",self.editingTableViewCell);
     groupID = newGroupID;
 }
 

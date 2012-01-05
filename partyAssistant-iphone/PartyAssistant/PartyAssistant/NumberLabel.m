@@ -22,7 +22,6 @@
 {
     self = [self initWithFrame:lbFrame];
     //if ([receiver.cName ]) {
-    NSLog(@"strValue:%@",strValue);
     //}
     self.text = strValue;
     self.font = [UIFont systemFontOfSize:16.0f];

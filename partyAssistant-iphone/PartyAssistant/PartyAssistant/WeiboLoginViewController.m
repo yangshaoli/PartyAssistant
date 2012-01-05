@@ -41,7 +41,6 @@
     UIBarButtonItem *cancelBtn = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStyleBordered target:self action:@selector(cancelBtnAction:)];
     self.navigationItem.leftBarButtonItem = cancelBtn;
     if ([self.weibo isUserLoggedin]) {
-        NSLog(@"logined:%@",weibo.userID);
         //        [weibo LogOut];
         if (isOnlyLogin) {
             UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"您已经登录了" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
@@ -81,7 +80,6 @@
 
 - (void)showLoginPage:(NSNotification *)notification{
     NSString *urlStr = [[notification userInfo] objectForKey:@"url"];
-    NSLog(@"url微博%@",urlStr);
     NSURL *url = [NSURL URLWithString:urlStr];
     [self.childView loadRequest:[NSURLRequest requestWithURL:url]];
 }
@@ -92,9 +90,7 @@
         
         NSString *queryStr = [[request URL] query];
         NSString *verifier = [queryStr substringFromIndex:(queryStr.length-6)];
-        NSLog(@"verifier:%@",verifier);
         NSNotification *notification = [NSNotification notificationWithName:@"testNotification1" object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:verifier,@"verifier", nil]];
-        NSLog(@"notification:%@",notification);
         [[NSNotificationCenter defaultCenter] postNotification:notification];
         return NO;
     }

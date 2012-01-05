@@ -39,7 +39,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"在最后一个页面输出状态：：%@",self.clientStatusFlag);
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
@@ -109,7 +108,6 @@
    
     
     NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
-    NSLog(@"在viewWillAppear中调用  输出keyString:::%@     值:%d",keyString,getStatusChangedInt);
     
 }
 
@@ -210,9 +208,7 @@
 //                            l.text = @"已拒绝";
 //                        }else if([l.text isEqualToString:@"已拒绝" ] || [l.text isEqualToString:@"未报名" ]){
 //                            l.text = @"已报名";
-                NSLog(@"改变状态成功");
                 
-                NSLog(@"输出self.partyObj.id>>>>%@",self.partyObj.partyId);
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
                 NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
                 [defaults setInteger:1  forKey:keyString];    //wxz
@@ -308,7 +304,6 @@
         if(detailWordString.length>1){
              messageTextView.text=[detailWordString substringFromIndex:1];
         }else{
-            NSLog(@"Detail页面留言为空");
         }
         [cell addSubview:wordsLabel];
     }
@@ -335,7 +330,6 @@
             [scanner setScanLocation:([scanner scanLocation] + 1)];
         }
     }
-    NSLog(@"strippedString : %@",strippedString);
     return strippedString;
 }
 
@@ -348,10 +342,8 @@
                                                                     addressBook,
                                                                     (__bridge CFStringRef)contactorNameString);
     
-  NSLog(@"后台数据先输出名字>>>>>>>>>%@,再输出号码》》》%@",contactorNameString,contactorPhoneString);
   NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
   if(array1.count>0){
-    NSLog(@"按名字已找到数据－－－");
     for (int i=0; i<CFArrayGetCount(searchResult); )
            {
             ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
@@ -364,21 +356,15 @@
             }
             for (int j=0; j<ABMultiValueGetCount(phone); j++) {
                 NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
-                NSLog(@"找到名字后打印valstr：：：－－－%@   该联系人有%d个号码",valStr,ABMultiValueGetCount(phone));
                 NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
-                NSLog(@"清空无用符后的电话－－－getCleanPhoneString>>>%@",getCleanPhoneString);
                 if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
-                    NSLog(@"又找到匹配号码－－");
                     //self.cID = ABRecordGetRecordID(card);
                     if(ABPersonHasImageData(card)){
-                          NSLog(@"找到匹配联系人头像数据");
                           return card;
                     }else{
-                        NSLog(@"找到联系人了但是没头像数据");
                         return nil;
                     }
                 }else{
-                    NSLog(@"》》》》没找到匹配号码");
                     continue;
                 }
                
@@ -387,10 +373,8 @@
                
         }
   }else{
-      NSLog(@"－名字没有匹配到数据－");
       return nil;
   }
-    NSLog(@"－－－－调用找头像方法－－－");
     return nil;
 }
 
@@ -519,17 +503,14 @@
     if(actionSheet.tag==5){
       if([[[UIDevice alloc] init]userInterfaceIdiom]!=UIUserInterfaceIdiomPhone){
             
-          NSLog(@"不用iphone发送短信与拨打电话");   
           UIAlertView *cannotAlertView=[[UIAlertView alloc] initWithTitle:@"设备类型不符合" message:@"该设备不能发送短信与拨打电话" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
           [cannotAlertView show];
       }else { 
           if(buttonIndex==0){
-              NSLog(@"用iphone发送短信"); 
               NSString *shotMegString=[[NSString alloc]initWithFormat:@"sms://%@",[clientDict objectForKey:@"cValue"]];
               [[UIApplication sharedApplication]openURL:[NSURL URLWithString:shotMegString]];
               
           }else if(buttonIndex==1){
-              NSLog(@">>>>>phoneConnect");
               NSString *phoneString=[[NSString alloc]initWithFormat:@"tel://%@",[clientDict objectForKey:@"cValue"]];
               [[UIApplication sharedApplication]openURL:[NSURL URLWithString:phoneString]];
               
