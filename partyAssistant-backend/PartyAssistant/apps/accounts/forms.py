@@ -24,7 +24,7 @@ class LoginForm(AuthenticationForm):
         return self.cleaned_data
 
 class RegistrationForm(forms.Form):
-    username = forms.RegexField(error_messages = {'required': u'用户名不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'regex':u'用户名不规范'}, regex = '^[a-zA-Z0-9]\w*$', min_length = 6, max_length = 14)
+    username = forms.RegexField(error_messages = {'required': u'用户名不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是14个字符', 'invalid':u'用户名请以字母开头'}, regex = '^[a-zA-Z]\w*$', min_length = 6, max_length = 14)
     password = forms.CharField(error_messages = {'required': u'密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length = 6, max_length = 16)
     confirm_password = forms.CharField(error_messages = {'required': u'确认密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, max_length = 16)
     
@@ -33,8 +33,8 @@ class RegistrationForm(forms.Form):
         exists = User.objects.filter(username = username).count() > 0
         if exists:
             raise forms.ValidationError(u'该用户名已存在，请重新输入')
-        if username[0].isdigit():
-            raise forms.ValidationError(u'用户名不能以数字开头')
+#        if username[0].isdigit():
+#            raise forms.ValidationError(u'用户名不能以数字开头')
         return username
     
     def clean(self):
