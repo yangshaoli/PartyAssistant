@@ -6,6 +6,9 @@ PROJECT_ROOT = os.path.dirname(__file__)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+SESSION_COOKIE_AGE = 1800#30*60s
+SESSION_SAVE_EVERY_REQUEST = True
+
 ADMINS = (
     ('airenao', 'airenao@cn-acg.com'),
 )
