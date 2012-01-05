@@ -56,7 +56,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self showWaiting];
     
-    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次发送" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
+    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次邀请" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
     self.navigationItem.rightBarButtonItem = resendBtn;
     [self getPartyClientSeperatedList];
 }
@@ -219,7 +219,7 @@
     UIView *oldLayout6 = nil;
     oldLayout6=[cell viewWithTag:6];
     [oldLayout6 removeFromSuperview];
-    UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 70, 20)];
+    UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 0, 70, 20)];
     nameLb.tag=6;
     nameLb.text=[clentDic objectForKey:@"cName"];
     nameLb.font=[UIFont systemFontOfSize:15];
@@ -263,9 +263,24 @@
         }
         
         
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        secondLb.text = [clentDic objectForKey:@"msg"];
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+            
+            
+        }else{
+            NSLog(@"留言为空");
+            
+        }
+        
+        
+        NSLog(@"secondLb.text>>>>>>>%@",secondLb.text);
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -280,9 +295,23 @@
             cellImageView.tag=5;
             [cell  addSubview:cellImageView];
         }
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        secondLb.text = [clentDic objectForKey:@"msg"];
+        
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+
+        
+        }else{
+            NSLog(@"留言为空");
+        
+        }
+        
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
