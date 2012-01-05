@@ -7,6 +7,9 @@
 //
 
 #import "UserObject.h"
+#import "ASIHTTPRequest.h"
+#import "URLSettings.h"
+#import "SBJsonParser.h"
 
 @implementation UserObject
 @synthesize uID,phoneNum,userName,nickName,emailInfo,leftSMSCount;
@@ -48,5 +51,33 @@
     self.userName = @"";
     self.nickName = @"";
     self.leftSMSCount = @"";
+}
+
+- (void)updateRemaining {
+    if (self.uID == -1) {
+        return;
+    } else {
+        NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,self.uID];
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+        [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
+        [request startSynchronous];
+    }
+} 
+
+- (void)remainCountRequestDidFinish:(ASIHTTPRequest *)request {
+    NSString *response = [request responseString];
+    SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    if ([request responseStatusCode] == 200) {
+        NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
+        self.leftSMSCount = [remainCount stringValue];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"RefreshSMSLeftCount" object:nil]];
+    }
+}
+
+- (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
 }
 @end
