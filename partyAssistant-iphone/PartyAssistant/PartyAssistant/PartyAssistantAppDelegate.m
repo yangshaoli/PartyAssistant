@@ -8,6 +8,7 @@
 
 #import "PartyAssistantAppDelegate.h"
 #import "ECPurchase.h"
+#import "AddressBookDataManager.h"
 
 @implementation PartyAssistantAppDelegate
 
@@ -134,10 +135,7 @@
 }
 
 void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
-    //	DialerAppDelegate *dialerDelegate = context;
-    //	[dialerDelegate refreshServices];
-    //	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
-    //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
+	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
 }
 
 #pragma mark -

@@ -901,7 +901,7 @@
         newButtonViewFrame.origin.y = newButtonViewFrame.origin.y - offset;
         self.buttonView.frame = newButtonViewFrame;
         self.uiTableView.frame = newTableViewFrame;
-        [self.toolbar setHidden:YES];
+        //[self.toolbar setHidden:YES];
         [UIView commitAnimations];
         
         pickerStatus = ButtonPeoplePickerStatusSearching;

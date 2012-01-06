@@ -82,7 +82,7 @@
     NSMutableArray *nArray = [[NSMutableArray alloc] initWithCapacity:[self.receiversArray count]];
     for (int i=0; i<[receiversArray count]; i++) {
         ClientObject *client = [self.receiversArray objectAtIndex:i];
-        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:client.cName,@"cName",client.cVal,@"cValue", nil];
+        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:client.cID],@"cId",client.cName,@"cName",client.cVal,@"cValue", nil];
         [nArray addObject:dic];
     }
     return [nArray JSONRepresentation];

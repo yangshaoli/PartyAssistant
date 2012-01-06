@@ -87,55 +87,6 @@
 	self.contactNameDic = dic;
 	//[dic release];
     
-    ABAddressBookRef tempAddressBook = ABAddressBookCreate();
-    self.contactorsArrayRef = ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(tempAddressBook,nil,1);
-    //实例化数组很耗资
-    //    NSArray *array1=(__bridge_transfer NSArray*)self.contactorsArrayRef;
-    //    
-    //    for(int i=0;i<array1.count;i++){
-    //        ABRecordRef card = CFArrayGetValueAtIndex(self.contactorsArrayRef,i);
-    //        ABRecordID recordID = ABRecordGetRecordID(card);
-    //        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonFirstNameProperty);
-    //        if (personFName == nil) {
-    //            personFName = @"";
-    //        }
-    //        NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonLastNameProperty);
-    //        if (personLName == nil) {
-    //            personLName = @"";
-    //        }
-    //        NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonMiddleNameProperty);
-    //        if (personMName == nil) {
-    //            personMName = @"";
-    //        }
-    //        //NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
-    //        NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];      [contactNameArray addObject:cellString];
-    //        
-    //    }
-    
-    for (CFIndex i = CFArrayGetCount(self.contactorsArrayRef)-1; i >= 0; i--){
-        
-        ABRecordRef card = CFArrayGetValueAtIndex(self.contactorsArrayRef,i);
-        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonFirstNameProperty);
-        if (personFName == nil) {
-            personFName = @"";
-        }
-        NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonLastNameProperty);
-        if (personLName == nil) {
-            personLName = @"";
-        }
-        NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonMiddleNameProperty);
-        if (personMName == nil) {
-            personMName = @"";
-        }
-        //NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
-        NSString  *cellString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];      [contactNameArray addObject:cellString];
-    }
-    // NSLog(@"新方法打印数组%@",contactNameArray);
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectContactor:) name:SELECT_CONTACT_MANNER object:nil];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"返回" style:UIBarButtonItemStyleBordered target:self action:@selector(cancleBtnAction)];
     

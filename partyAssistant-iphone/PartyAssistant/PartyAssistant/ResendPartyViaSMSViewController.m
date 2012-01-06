@@ -15,6 +15,7 @@
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
+#import "AddressBookDataManager.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -193,11 +194,65 @@
 - (void)setNewReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
     NSLog(@"mark:new Values===========%@",newValues);
+    NSDictionary *contactPhoneDic = [[AddressBookDataManager sharedAddressBookDataManager] getCallLogContactData];
     for (NSDictionary *value in newValues) {
         NSLog(@"%@",value);
         NSDictionary *newReceipt = [NSDictionary dictionaryWithObjectsAndKeys: [value objectForKey:@"cName"], @"name", [value objectForKey:@"cValue"], @"phoneNumber", nil];
         NSLog(@"%@",newReceipt);
-        [newReceipts addObject:newReceipt];
+        
+        NSString *phoneNumber = [value objectForKey:@"cValue"];
+        
+        ClientObject *newClient = [[ClientObject alloc] init];
+        newClient.cName = [value objectForKey:@"cName"];
+        newClient.cVal = [value objectForKey:@"cValue"];
+        
+        BOOL isNeedNewName = NO;
+        
+        if ([[value objectForKey:@"cName"] isEqualToString:@""]) {
+            isNeedNewName = YES;
+        }
+        
+        ABContact *theContact = [contactPhoneDic objectForKey:phoneNumber];
+        
+        if (theContact) {
+            
+            ABRecordID contactID = theContact.recordID;
+            ABRecordRef theSelectContact = ABAddressBookGetPersonWithRecordID(addressBook, contactID);
+            ABMultiValueRef phone = ABRecordCopyValue(theSelectContact, kABPersonPhoneProperty);
+
+            
+            NSString *aNumber = nil;
+            NSInteger selectIndex = -1;
+            for (int i=0; i<ABMultiValueGetCount(phone); i++) {
+                NSString *number = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, i);
+                aNumber = [number stringByReplacingOccurrencesOfString:@"+" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"+" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"#" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"-" withString:@""];
+                
+                if ([aNumber isEqualToString:phoneNumber]) {
+                    selectIndex = i;
+                    if (isNeedNewName) {
+                        newClient.cName = [theContact contactName];
+                    }
+                    break;
+                }
+            }
+            
+            if (selectIndex == -1) {
+                
+            } else {
+                ABMultiValueIdentifier indentifier = ABMultiValueGetIdentifierAtIndex(phone, selectIndex);
+                NSString *label = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phone, selectIndex);
+                newClient.phoneIdentifier = indentifier;
+                newClient.cID = contactID;
+                newClient.phoneLabel = label;
+            }
+        }
+        [newReceipts addObject:newClient];
     }
     [super setReceipts:[newReceipts mutableCopy]];
     
