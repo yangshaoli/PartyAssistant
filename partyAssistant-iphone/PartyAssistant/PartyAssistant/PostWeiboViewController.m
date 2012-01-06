@@ -41,7 +41,7 @@
     self.navigationItem.rightBarButtonItem = _sendWeiboButton;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStylePlain target:self action:@selector(cancelBtnTouched:)];
     NSString *default_text = WEIBO_DEFAULT_CONTENT;
-    default_text = [default_text stringByReplacingOccurrencesOfString:@"报名短链接" withString:partyObj.shortURL];
+    default_text = [default_text stringByAppendingString:partyObj.shortURL];
     self.sendV = [[WBSendView alloc] initWithWeiboText:default_text withImage:nil andDelegate:self];
     sendV.delegate = self;
     [self.view addSubview:sendV];

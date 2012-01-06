@@ -10,6 +10,9 @@
 #import "WBUtil.h"
 #import "SFHFKeychainUtils.h"
 
+#import "WeiboService.h"
+#import "WeiboPersonalProfile.h"
+
 #define WeiBoSchemePre				@"wb"
 
 #define kKeyChainServiceNameForWeiBo		@"_WeiBoUserInfo"
@@ -47,7 +50,11 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 		_accessToken = [[SFHFKeychainUtils getPasswordForUsername:kKeyChainAccessTokenForWeiBo andServiceName:serviceName error:nil]retain];
 		_accessTokenSecret = [[SFHFKeychainUtils getPasswordForUsername:kKeyChainAccessSecretForWeiBo andServiceName:serviceName error:nil]retain];
 	}
-    if (!_userNickName && [self isUserLoggedin]) {
+    
+    WeiboPersonalProfile *p = [[WeiboService sharedWeiboService] getWeiboPersonalProfile];
+    _userNickName = p.nickname;
+    
+    if ([_userNickName isEqualToString:@""] && [self isUserLoggedin]) {
         [self performSelectorOnMainThread:@selector(requestToGetUserNickName) withObject:nil waitUntilDone:NO];
     }
 	return self;
@@ -137,7 +144,7 @@ static NSString* weiboHttpRequestDomain		= @"http://api.t.sina.com.cn/";
 	[SFHFKeychainUtils storeUsername:kKeyChainAccessTokenForWeiBo andPassword:_accessToken forServiceName:serviceName updateExisting:YES error:nil];
 	[SFHFKeychainUtils storeUsername:kKeyChainAccessSecretForWeiBo andPassword:_accessTokenSecret forServiceName:serviceName updateExisting:YES error:nil];
 	
-    if (!_userNickName && [self isUserLoggedin]) {
+    if ([_userNickName isEqualToString:@""] && [self isUserLoggedin]) {
         [self performSelectorOnMainThread:@selector(requestToGetUserNickName) withObject:nil waitUntilDone:NO];
     }
 }

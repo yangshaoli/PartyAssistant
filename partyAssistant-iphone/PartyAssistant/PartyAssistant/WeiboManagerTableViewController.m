@@ -206,7 +206,6 @@
     [loginBtn removeFromSuperview];
     WeiboService *s = [WeiboService sharedWeiboService];
     WeiboPersonalProfile *p = [s getWeiboPersonalProfile];
-    NSLog(@"nickname:%@",p.nickname);
     UILabel *lb = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 44)];
     lb.text = p.nickname;
     lb.textAlignment = UITextAlignmentRight;
