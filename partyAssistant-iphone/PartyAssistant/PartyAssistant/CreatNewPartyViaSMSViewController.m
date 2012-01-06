@@ -763,7 +763,7 @@
     }else{
         [self saveSMSInfo];
         if ([self.smsObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
             [alertV show];
             return;
         }
