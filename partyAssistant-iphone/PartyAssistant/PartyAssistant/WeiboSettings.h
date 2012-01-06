@@ -11,5 +11,5 @@
 #define WEIBOPRIVATEAPPSECRETE @"8ebb477102459b3387da43686b21c963"
 
 #define WEIBO_DEFAULT_URL [NSString stringWithFormat:@"%@/parties/party_id/enroll/", DOMAIN_NAME]
-#define WEIBO_DEFAULT_CONTENT [NSString stringWithFormat:@"我使用@我们爱热闹 发布了一个活动！大家快来报名：报名短链接"]
+#define WEIBO_DEFAULT_CONTENT [NSString stringWithFormat:@"我使用@我们爱热闹 发布了一个活动！大家快来报名："]
 

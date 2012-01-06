@@ -106,6 +106,7 @@
 
 - (void)weiboDidLogin
 {
+    NSLog(@"login?");
 	if (isOnlyLogin) {
         UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"用户验证成功" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
         alertV.delegate = self;
