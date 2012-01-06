@@ -15,6 +15,8 @@
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
+#import "PartyListTableVC.h"
+#import "ABContact.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -25,6 +27,9 @@
 - (void)showAlertRequestSuccess;
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage;
 - (void)showAlertRequestFailed: (NSString *) theMessage;
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString;
+- (void)addPersonToGroup:(NSDictionary *)personDictionary;
+- (NSString *)getCleanLetter:(NSString *)originalString;
 
 @end
 
@@ -64,7 +69,7 @@
 {
     [super viewDidLoad];
     [self.tableView setScrollEnabled:NO];
-    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
+    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(updateRemainCount)];
     self.navigationItem.rightBarButtonItem = right;
     self.rightItem = right;
     self.receipts = [NSMutableArray arrayWithCapacity:10];
@@ -165,8 +170,21 @@
 
 - (CGFloat)tableView:(UITableView *)aTableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
-        NSLog(@"%f",(self.editingTableViewCell.textView.frame.size.height + 11));
-        return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
+        if ([self.editingTableViewCell.textView isFirstResponder]) {
+            return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
+        } else {
+            if (self.editingTableViewCell.textView.frame.size.height < 250) {
+                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 80) {
+                    return 80 + 11;
+                } else {
+                    return self.editingTableViewCell.textView.frame.size.height + 11;
+                }
+            } else {
+                return (250 + 11);
+            }
+            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+        }
+        
     }
     return 44.0f;
 }
@@ -183,6 +201,9 @@
     self.tableView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
     
     self.navigationItem.rightBarButtonItem = nil;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 
@@ -199,8 +220,16 @@
     CGRect newFrame = oldFrame;
     if (newHeight < 80.0f) {
         newFrame.size.height = 80.0f;
-    } else if (newHeight > 120.0f) {
-        newFrame.size.height = 120.0f;
+    } else if (newHeight > 100.0f) {
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            if (newHeight > 250.0f) {
+                newFrame.size.height = 250.0f;
+            } else {
+                newFrame.size.height = newHeight;
+            }
+        } else {
+            newFrame.size.height = 100.0f;
+        }
     } else {
         newFrame.size.height = newHeight;
     }
@@ -218,11 +247,9 @@
 #pragma mark ButtonPickDelegate
 - (void)buttonPeoplePickerDidFinish:(ButtonPeoplePicker *)controller {
     self.receipts = [NSMutableArray arrayWithArray:controller.group];
-    NSLog(@"%@",self.receipts);
     [self rearrangeContactNameTFContent];
     [[controller view] removeFromSuperview];
     self.navigationItem.rightBarButtonItem = self.rightItem;
-    NSLog(@"receipts:%@",self.receipts);
 }
 
 - (void)rearrangeContactNameTFContent {
@@ -239,6 +266,9 @@
             NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
         
             NSString *name  = [peopleInfo objectForKey:@"name"];
+            if (!name || [name isEqualToString:@""]) {
+                name = [peopleInfo objectForKey:@"phoneNumber"];
+            }
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
                                      
@@ -247,14 +277,24 @@
             if ((nowContentSize.width + newNameSize.width + holderSize.width) < tfWidth - 10.0f) {
                 if (i!=0) {
                     [contactNameTFContent appendString:@","];
-                } 
-                [contactNameTFContent appendString:name];
+                }
+                if (name) {
+                    [contactNameTFContent appendString:name];
+                }
             } else {
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
-                    [contactNameTFContent appendFormat:@"&%drecipient", leftCount];
+                    if (i == 0) {
+                        [contactNameTFContent appendFormat:@"%drecipient", leftCount];
+                    } else {
+                        [contactNameTFContent appendFormat:@"&%drecipient", leftCount];   
+                    }
                 } else {
-                    [contactNameTFContent appendFormat:@"&%drecipients", leftCount];
+                    if (i == 0) {
+                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];
+                    } else {
+                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
+                    }
                 }
                 break;
             }
@@ -269,23 +309,40 @@
 #pragma mark -
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
-    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
-        UIAlertView *alert=[[UIAlertView alloc]
-                            initWithTitle:@"短信内容不可以为空"
-                            message:@"内容为必填项"
-                            delegate:self
-                            cancelButtonTitle:@"请点击输入内容"
-                            otherButtonTitles: nil];
-        [alert show];
-    }else{
-        [self saveSMSInfo];
-        if ([self.smsObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-            [alertV show];
-        }else{
-            [self sendCreateRequest];
+//    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+//        UIAlertView *alert=[[UIAlertView alloc]
+//                            initWithTitle:@"短信内容不可以为空"
+//                            message:@"内容为必填项"
+//                            delegate:self
+//                            cancelButtonTitle:@"请点击输入内容"
+//                            otherButtonTitles: nil];
+//        [alert show];
+//    }else{
+//        [self saveSMSInfo];
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    if (self.smsObject._isSendBySelf) {
+        
+    } else {
+        if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+            UIAlertView *alert=[[UIAlertView alloc]
+                                initWithTitle:@"需要充值"
+                                message:@"余额不足，不能通过服务器端发送！"
+                                delegate:nil
+                                cancelButtonTitle:@"确定"
+                                otherButtonTitles: nil];
+            [alert show];
+            return;
         }
     }
+                
+//        if ([self.smsObject.receiversArray count] == 0) {
+//            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+//            [alertV show];
+//        }else{
+            [self sendCreateRequest];
+//        }
+//    }
 }
 
 - (void)saveSMSInfo{
@@ -296,7 +353,18 @@
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = [receipt objectForKey:@"name"];
-        client.cVal = [receipt objectForKey:@"phoneNumber"];
+        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        
+        if (!phoneNumber) {
+            continue;
+        } else {
+            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+            if (phoneNumber.length >= 11) {
+                client.cVal = phoneNumber;
+            } else {
+                continue;
+            }
+        }
         [array addObject:client];
     }
     
@@ -307,8 +375,14 @@
 }
 
 - (void)createPartySuc{
-//    self.tabBarController.selectedIndex = 1;
-//    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+    self.editingTableViewCell.textView.text = @"";
+    self.receipts = [NSMutableArray arrayWithCapacity:10];
+    [self rearrangeContactNameTFContent];
+
+    self.tabBarController.selectedIndex = 1;
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+    
+    //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
 //    [[NSNotificationCenter defaultCenter] postNotification:notification];
 //    [self.navigationController dismissModalViewControllerAnimated:NO];
 }
@@ -322,8 +396,7 @@
     NSString *platform = [DeviceDetection platform];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:self.smsObject.receiversArrayJson forKey:@"receivers"];
-    NSLog(@"%@",self.smsObject.receiversArrayJson);
+    [request setPostValue:[self.smsObject setupReceiversArrayData] forKey:@"receivers"];
     [request setPostValue:self.smsObject.smsContent forKey:@"content"];
     [request setPostValue:[NSNumber numberWithBool:self.smsObject._isSendBySelf] forKey:@"_issendbyself"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
@@ -346,7 +419,6 @@
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
-                    NSLog(@"可以发送短信");
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.smsObject._isApplyTips) {
                         vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -354,10 +426,19 @@
                         vc.body = self.smsObject.smsContent;
                     };
                     
-                    NSMutableArray *numberArray = [[NSMutableArray alloc] initWithCapacity:10];
+                    NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
                     for (NSDictionary *receipt in self.receipts) {
-                        if (![[receipt objectForKey:@"phoneNumber"] isEqualToString:@""]) {
-                            [numberArray addObject:[receipt objectForKey:@"phoneNumber"]];
+                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                        
+                        if (!phoneNumber) {
+                            continue;
+                        } else {
+                            phoneNumber = [self getCleanPhoneNumber:phoneNumber];
+                            if (phoneNumber.length >= 11) {
+                                [numberArray addObject:phoneNumber];
+                            } else {
+                                continue;
+                            }
                         }
                     }
                     vc.recipients = numberArray;
@@ -368,18 +449,22 @@
                     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
                     [bs clearBaseInfo];
                     EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                    [se clearEmailObject];                  
+                    [se clearEmailObject];   
+                    
                 }else{
-                    NSLog(@"不能发送短信");
                     [self createPartySuc];
-#if TARGET_IPHONE_SIMULATOR // iPhone Simulator
+                    #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                     return;
 #endif
                 }
                 
             }else{
+                UserObjectService *us = [UserObjectService sharedUserObjectService];
+                UserObject *user = [us getUserObject];
+                user.leftSMSCount = [[NSNumber numberWithInt:([user.leftSMSCount intValue] - [self.smsObject.receiversArray count])] stringValue];
                 [self createPartySuc];
             }
+                 
         }else{
             [self showAlertRequestFailed:description];		
         }
@@ -398,6 +483,48 @@
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
 }
+
+- (NSString *)getCleanLetter:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789abcdefghijklmnopqrestuvwxyzABCDEFGHIJKLMNOPQRESTUVWXYZ"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    return strippedString;
+}
+
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    return strippedString;
+}
 #pragma mark -
 #pragma mark SMS delegate
 - (void)messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result {
@@ -412,9 +539,11 @@
         }
 		case MessageComposeResultSent:
 			//send
+            [self createPartySuc];
 			break;
 		case MessageComposeResultFailed:{
             UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"错误" message:@"发送失败，请重新发送" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+            av.tag = 10011;
             [av show];
 			break;
         }
@@ -425,10 +554,16 @@
 #pragma mark -
 #pragma contact list delegate
 - (void)callContactList {
-    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
-    list.contactDelegate = self;
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
-    [self.navigationController presentModalViewController:nav animated:YES];
+    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+    ppnc.peoplePickerDelegate = self;
+    [ppnc setDisplayedProperties:[NSArray
+                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+    
+    [self.navigationController presentModalViewController:ppnc animated:YES];
+//    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
+//    list.contactDelegate = self;
+//    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
+//    [self.navigationController presentModalViewController:nav animated:YES];
 }
 
 - (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
@@ -522,4 +657,157 @@
 - (void)changeSMSModeToSendBySelf:(BOOL)status {
     self.smsObject._isSendBySelf = status;
 }
+
+#pragma mark - 
+#pragma mark alert view delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 10011) {
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    }
+}
+
+#pragma mark -
+#pragma mark people picker delegate
+- (BOOL)peoplePickerNavigationController:
+            (ABPeoplePickerNavigationController *)peoplePicker
+            shouldContinueAfterSelectingPerson:(ABRecordRef)person {
+        
+    return YES; 
+    
+}
+// Display the selected property
+- (BOOL)peoplePickerNavigationController:
+(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
+{
+    // We are guaranteed to only be working with e-mail or phone [self dismissModalViewControllerAnimated:YES];
+    NSArray *array = [ABContact arrayForProperty:property
+                                        inRecord:person];
+    ABContact *contact = [ABContact contactWithRecord:person];
+    NSString *phone = (NSString *)[array objectAtIndex:identifier];
+    NSString *name = [contact compositeName];
+    NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                        phone, @"phoneNumber", name, @"name",nil];
+    [self addPersonToGroup:personDictionary];
+    
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+    
+    return NO;
+}
+// Handle user cancels
+- (void)peoplePickerNavigationControllerDidCancel:
+(ABPeoplePickerNavigationController *)peoplePicker {
+    
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+    
+}
+
+#pragma mark - Add and remove a person to/from the group
+
+- (void)addPersonToGroup:(NSDictionary *)personDictionary
+{
+    NSString *number = [personDictionary valueForKey:@"phoneNumber"];
+    NSString *name  = [personDictionary valueForKey:@"name"];
+    
+    // Check for an existing entry for this person, if so remove it
+    if ([name isEqualToString:@""]) {
+        if ([number isEqualToString:@""]) {
+            return;
+        }
+        NSString *cleanString = [self getCleanLetter:number];
+        
+        for (NSDictionary *personDict in self.receipts)
+        {
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            if ([cleanString isEqualToString:[self getCleanLetter:thePhoneString]]) {
+                return;
+            }
+        }
+    } else {
+        for (NSDictionary *personDict in self.receipts)
+        {
+            NSString *theContactName = [personDict valueForKey:@"name"];
+            NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
+            //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+                return;
+            }
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+            {
+                return;
+            }
+            
+            if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
+                return;
+            }
+        }
+    }
+    
+    [self.receipts addObject:personDictionary];
+    [self rearrangeContactNameTFContent];
+}
+
+#pragma mark -
+#pragma mark update remain count
+- (void)updateRemainCount {
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
+    }else{
+        [self saveSMSInfo];
+        if ([self.smsObject.receiversArray count] == 0) {
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            [alertV show];
+            return;
+        }
+    }
+    
+    if (self.smsObject._isSendBySelf) {
+        [self SMSContentInputDidFinish];
+    } else {
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+        [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
+        [request startSynchronous];
+        [self showWaiting];
+    }
+} 
+
+- (void)remainCountRequestDidFinish:(ASIHTTPRequest *)request {
+    [self dismissWaiting];
+    NSString *response = [request responseString];
+    SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    if ([request responseStatusCode] == 200) {
+        NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        user.leftSMSCount = [remainCount stringValue];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"RefreshSMSLeftCount" object:nil]];
+        [self SMSContentInputDidFinish];
+    } else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    } else {
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }
+
+    
+}
+
+- (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
+    [self dismissWaiting];
+    NSError *error = [request error];
+}
+
 @end

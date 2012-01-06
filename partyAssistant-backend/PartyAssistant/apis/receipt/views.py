@@ -34,8 +34,6 @@ def verify_receipt(request):
         
         data = json.loads(resp)
         status = data['status']
-        print status
-        print type(status)
         if str(status) == "0":
             receipt = data["receipt"]
             receipt_str = json.dumps(receipt)

@@ -14,7 +14,7 @@
 #define UserNameTextFieldTag        101
 #define PwdTextFieldTag             102
 #define PwdCheckTextFieldTag        103
-#define NickNameTextFieldTag        104
+
 
 #define NotLegalTag                 1
 #define NotPassTag                  2
@@ -43,11 +43,11 @@
 @synthesize userNameCell = _userNameCell;
 @synthesize pwdCell = _pwdCell;
 @synthesize pwdCheckCell = _pwdCheckCell;
-@synthesize nickNameCell = _nickNameCell;
+
 @synthesize userNameTextField = _userNameTextField;
 @synthesize pwdTextField = _pwdTextField;
 @synthesize pwdCheckTextField = _pwdCheckTextField;
-@synthesize nickNameTextField = _nickNameTextField;
+
 @synthesize delegate;
 - (void)dealloc {
     [super dealloc];
@@ -57,12 +57,12 @@
     [_userNameCell release];
     [_pwdCell release];
     [_pwdCheckCell release];
-    [_nickNameCell release];
+ 
     
     [_userNameTextField release];
     [_pwdTextField release];
     [_pwdCheckTextField release];
-    [_nickNameTextField release];
+  
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -166,8 +166,6 @@
         [_pwdTextField resignFirstResponder];
     } else if ([_pwdCheckTextField isFirstResponder]) {
         [_pwdCheckTextField resignFirstResponder];
-    } else {
-        [_nickNameTextField resignFirstResponder];
     }
 }
 
@@ -186,10 +184,7 @@
             case PwdCheckTextFieldTag:
                 _pwdCheckTextField.text = @"";
                 break;
-            case NickNameTextFieldTag:
-                _nickNameTextField.text = @"";
-                break;
-        }
+         }
         [self showNotLegalInput];
         return NO;
     }
@@ -203,9 +198,6 @@
     } else if (!_pwdCheckTextField.text || [_pwdCheckTextField.text isEqualToString:@""]) {
         return PwdCheckTextFieldTag;
     } 
-//    else if (!_nickNameTextField.text || [_nickNameTextField.text isEqualToString:@""]) {
-//        return NickNameTextFieldTag;
-//    }
     
     return NullTextFieldTag;
 }
@@ -253,7 +245,6 @@
                                                 [NSArray arrayWithObjects:
                                                     self.userNameTextField.text, 
                                                     self.pwdTextField.text,
-                                                    //self.nickNameTextField.text,
                                                     nil
                                                 ] 
                                                          
@@ -261,7 +252,6 @@
                                                 [NSArray arrayWithObjects:
                                                     @"username",
                                                     @"password",
-                                                    //@"nickname",
                                                     nil
                                                 ]
                               ];
@@ -290,7 +280,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 4;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -302,8 +292,6 @@
         return _pwdCell;
     } else if (indexPath.row == 2) {
         return _pwdCheckCell;
-    } else if (indexPath.row == 3) {
-        return _nickNameCell;
     }
     return nil;
 }
@@ -324,8 +312,6 @@
     if (alertView.tag == SuccessfulTag) {
        //[self.navigationController popViewControllerAnimated:YES];
         [delegate  autoLogin];
-        NSLog(@"%@",self.userNameTextField.text);
-        NSLog(@"%@",self.pwdTextField.text);
         
          
     } else {

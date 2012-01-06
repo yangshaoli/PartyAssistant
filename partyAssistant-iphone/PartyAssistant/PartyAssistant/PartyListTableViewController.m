@@ -191,7 +191,6 @@
     PeopleCountInPartyListCellSubView *v = [[PeopleCountInPartyListCellSubView alloc] initWithPeopleCount:baseinfo.peopleCountDict];
     [cell addSubview:v];
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-    NSLog(@"list cell init");
     return cell;
 }
 
@@ -314,6 +313,7 @@
                 biObj.peopleCountDict = [party objectForKey:@"clientsData"];
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
+                
                 
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
@@ -458,7 +458,6 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
-    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }

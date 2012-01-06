@@ -13,7 +13,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phone,card,phoneDetailDelegate,clientDict,partyObj;
+@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj;
 @synthesize messageTextView;
 @synthesize clientStatusFlag;
 
@@ -39,10 +39,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"在最后一个页面输出状态：：%@",self.clientStatusFlag);
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
+    
 //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
     goButton.tag=23;
     goButton.backgroundColor=[UIColor  clearColor];
@@ -108,7 +108,6 @@
    
     
     NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
-    NSLog(@"在viewWillAppear中调用  输出keyString:::%@     值:%d",keyString,getStatusChangedInt);
     
 }
 
@@ -136,6 +135,8 @@
 - (void)changeClientStatus:(UIButton *)btn
 {
     [self performSelectorOnMainThread:@selector(sendChangeClientRequest:) withObject:btn waitUntilDone:NO];
+//    [btn setTintColor:[UIColor grayColor]];
+//    [btn  setBackgroundColor:[UIColor grayColor]];
 }
 
 - (void)sendChangeClientRequest:(UIButton *)btn
@@ -207,9 +208,7 @@
 //                            l.text = @"已拒绝";
 //                        }else if([l.text isEqualToString:@"已拒绝" ] || [l.text isEqualToString:@"未报名" ]){
 //                            l.text = @"已报名";
-                NSLog(@"改变状态成功");
                 
-                NSLog(@"输出self.partyObj.id>>>>%@",self.partyObj.partyId);
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
                 NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
                 [defaults setInteger:1  forKey:keyString];    //wxz
@@ -301,26 +300,104 @@
         wordsLabel.textAlignment = UITextAlignmentRight;
         wordsLabel.textColor = [UIColor blueColor];
         wordsLabel.backgroundColor = [UIColor clearColor];
-        messageTextView.text=[self.clientDict objectForKey:@"msg"];
-       //messageTextView.text=@"留言自造数据ddddddddddddddddddd的 点点滴滴 ddddddddddd 点点滴滴ddddd 点点滴滴 淡淡的 得到 的的额度的的的的的";//需要放在push后面才可以成功赋值
+        NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+        if(detailWordString.length>1){
+             messageTextView.text=[detailWordString substringFromIndex:1];
+        }else{
+        }
         [cell addSubview:wordsLabel];
     }
         
     return cell;
 }
 
+
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    return strippedString;
+}
+
+//通过姓名和电话找出此联系人的头像数据
+- (ABRecordRef)getContactorImageData{
+    NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
+    NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
+        ABAddressBookRef addressBook = ABAddressBookCreate();
+        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
+                                                                    addressBook,
+                                                                    (__bridge CFStringRef)contactorNameString);
+    
+  NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
+  if(array1.count>0){
+    for (int i=0; i<CFArrayGetCount(searchResult); )
+           {
+            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+            if(!card){
+                continue;
+            }
+            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+            if(!phone){
+                continue;
+            }
+            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
+                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
+                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
+                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
+                    //self.cID = ABRecordGetRecordID(card);
+                    if(ABPersonHasImageData(card)){
+                          return card;
+                    }else{
+                        return nil;
+                    }
+                }else{
+                    continue;
+                }
+               
+            }
+            return nil;   
+               
+        }
+  }else{
+      return nil;
+  }
+    return nil;
+}
+
+
+
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if(section==0){
         UIView *headV = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 85.0f)];
-        
-         //NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
+        ABRecordRef getCard=[self getContactorImageData];
         
         UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
-        //[imgV setImage:[UIImage imageWithData:imgData]];
         imgV.backgroundColor = [UIColor whiteColor];
+        UIImage *person = nil;
+        if(getCard){
+            CFDataRef imgData = ABPersonCopyImageData(getCard);
+            UIGraphicsBeginImageContext(CGSizeMake(62, 62));
+            [[UIImage imageWithData:(NSData *)imgData] drawInRect:CGRectMake(0, 0, 65, 65)];
+            person  = UIGraphicsGetImageFromCurrentImageContext();
+            CFRelease(imgData);
+        }
+        [imgV setImage:person];
         [headV addSubview:imgV];
-        
         UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
 //        NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(self.card, kABPersonFirstNameProperty);
 //        if (personFName == nil) {
@@ -426,17 +503,14 @@
     if(actionSheet.tag==5){
       if([[[UIDevice alloc] init]userInterfaceIdiom]!=UIUserInterfaceIdiomPhone){
             
-          NSLog(@"不用iphone发送短信与拨打电话");   
           UIAlertView *cannotAlertView=[[UIAlertView alloc] initWithTitle:@"设备类型不符合" message:@"该设备不能发送短信与拨打电话" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
           [cannotAlertView show];
       }else { 
           if(buttonIndex==0){
-              NSLog(@"用iphone发送短信"); 
               NSString *shotMegString=[[NSString alloc]initWithFormat:@"sms://%@",[clientDict objectForKey:@"cValue"]];
               [[UIApplication sharedApplication]openURL:[NSURL URLWithString:shotMegString]];
               
           }else if(buttonIndex==1){
-              NSLog(@">>>>>phoneConnect");
               NSString *phoneString=[[NSString alloc]initWithFormat:@"tel://%@",[clientDict objectForKey:@"cValue"]];
               [[UIApplication sharedApplication]openURL:[NSURL URLWithString:phoneString]];
               
@@ -456,6 +530,5 @@
       
         
 }
-
 
 @end

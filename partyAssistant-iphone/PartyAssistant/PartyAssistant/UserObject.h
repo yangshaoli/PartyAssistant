@@ -15,6 +15,7 @@
     NSString *userName;
     NSString *nickName;
     NSString *emailInfo;//wxz
+    NSString *leftSMSCount;
 }
 
 @property(nonatomic, assign)NSInteger uID;
@@ -22,6 +23,7 @@
 @property(nonatomic, retain)NSString *userName;
 @property(nonatomic, retain)NSString *nickName;
 @property(nonatomic, retain)NSString *emailInfo;//wxz
+@property(nonatomic, retain)NSString *leftSMSCount;
 - (void)clearObject;
 
 @end

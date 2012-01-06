@@ -15,7 +15,7 @@
 #import "SendSMSModeChooseViewController.h"
 
 @class ButtonPeoplePicker;
-@interface CreatNewPartyViaSMSViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,MFMessageComposeViewControllerDelegate,EditableTableViewCellDelegate,ButtonPeoplePickerDelegate,MBProgressHUDDelegate,ContactsListPickerViewControllerDelegate,UserSMSModeCheckDelegate> {
+@interface CreatNewPartyViaSMSViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,MFMessageComposeViewControllerDelegate,ABPeoplePickerNavigationControllerDelegate,EditableTableViewCellDelegate,ButtonPeoplePickerDelegate,MBProgressHUDDelegate,ContactsListPickerViewControllerDelegate,UserSMSModeCheckDelegate,UIAlertViewDelegate> {
     SMSObject *smsObject;
 }
 

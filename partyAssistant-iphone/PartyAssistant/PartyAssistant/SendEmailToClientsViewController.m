@@ -350,7 +350,6 @@
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
               if([MFMailComposeViewController canSendMail]==YES){//wxz
-                    NSLog(@"可以发送邮件");
                     MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
                   if (self.emailObject._isApplyTips) {
                       NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -376,7 +375,6 @@
                   [bs clearBaseInfo];
                   
               }else{
-                    NSLog(@"不能发送邮件");
                     [self createPartySuc];
                     return;
               }
@@ -428,7 +426,6 @@
             break;
         }
         case MFMailComposeResultSaved:{
-            NSLog(@"保存。。。。。。。");
             [self.navigationController dismissModalViewControllerAnimated:YES];
             [self.navigationController popToRootViewControllerAnimated:NO];
             break;
