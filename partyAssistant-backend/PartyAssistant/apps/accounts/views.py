@@ -305,9 +305,13 @@ def validate_phone_bingding_ajax(request, binding_status='bind'):#手机绑定�
     
     return response
 
+@login_required
+@commit_on_success
 def email_binding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
+        if UserProfile.objects.filter(email=email).count() != 0:
+            return HttpResponse("email_already_exist")
         if email:
             key =  hashlib.md5(email).hexdigest()
             if UserBindingTemp.objects.filter(key=key).count() == 0:
