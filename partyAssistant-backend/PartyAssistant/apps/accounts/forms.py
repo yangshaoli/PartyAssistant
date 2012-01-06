@@ -90,7 +90,7 @@ class BuySMSForm(forms.Form):
     sms_count = forms.IntegerField()
     
     def clean_sms_count(self):
-        if self.cleaned_data['sms_count'] == None or self.cleaned_data['sms_count'] == 0:
+        if self.cleaned_data['sms_count'] == None or self.cleaned_data['sms_count'] <= 0:
             self._errors['sms_count'] = ErrorList([u'购买信息数量至少为1条'])
         if self.cleaned_data['sms_count'] > 999999999:
             self._errors['sms_count'] = ErrorList([u'一次性最大购买数量不可超过999,999,999条'])    
