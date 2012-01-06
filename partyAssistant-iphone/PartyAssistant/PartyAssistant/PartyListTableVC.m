@@ -57,13 +57,7 @@
     self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
-    //自定义活动数据
-//    PartyModel *party1=[[PartyModel alloc] init];
-//    party1.contentString=@"自定义活动很好完大家一定还要去hh好好发sfjdskxkkkdfdkldflkjlkjckjxlkcjlkzxjclkzxjclkzxjclkzjxclkxjclkxzjclkjxclkjxlckjzxlkcjzlkjclkxjcxjclkxjckjcjcxkcjkxcjkxcjkxjcckxlzxkjlkxjc";
-//    PartyModel *party2=[[PartyModel alloc] init];
-//    party2.contentString=@"自定义活动2";
-//    self.partyList=[[NSMutableArray alloc] initWithObjects:party1,party2,nil];
-    NSLog(@"在list页面viewDidLoad中打印BadgeNumber::::%d",[UIApplication sharedApplication].applicationIconBadgeNumber);
+    
     if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
         [self refreshBtnAction];
     }

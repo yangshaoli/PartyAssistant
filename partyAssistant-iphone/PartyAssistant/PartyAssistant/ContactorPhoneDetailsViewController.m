@@ -386,6 +386,51 @@
   }
     return nil;
 }
+////通过电话找出此联系人的名字
+//- (ABRecordRef)getContactorNameDataByPhoneString:(NSString *)phoneString{
+////    NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
+////    NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
+//    ABAddressBookRef addressBook = ABAddressBookCreate();
+//    CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
+//                                                                addressBook,
+//                                                                (__bridge CFStringRef)contactorNameString);
+//    
+//    NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
+//    if(array1.count>0){
+//        for (int i=0; i<CFArrayGetCount(searchResult); )
+//        {
+//            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+//            if(!card){
+//                continue;
+//            }
+//            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+//            if(!phone){
+//                continue;
+//            }
+//            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
+//                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
+//                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
+//                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
+//                    //self.cID = ABRecordGetRecordID(card);
+//                    if(ABPersonHasImageData(card)){
+//                        return card;
+//                    }else{
+//                        return nil;
+//                    }
+//                }else{
+//                    continue;
+//                }
+//                
+//            }
+//            return nil;   
+//            
+//        }
+//    }else{
+//        return nil;
+//    }
+//    return nil;
+//}
+
 
 
 

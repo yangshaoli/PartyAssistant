@@ -261,7 +261,7 @@
         }
         
         
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 290, 20)];
         secondLb.tag=8;
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
