@@ -30,6 +30,10 @@
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
 		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
 		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
+		75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */; };
+		75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */; };
+		75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394914B596780071BF1D /* NSArray+PerformSelector.m */; };
+		75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */; };
 		75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840414AC61CF00AB950A /* bottom-button-bg.png */; };
 		75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840514AC61CF00AB950A /* ButtonCorners.png */; };
 		75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */; };
@@ -284,6 +288,14 @@
 		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
 		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
 		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
+		75E0393A14B5388D0071BF1D /* MultiContactsPickerListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiContactsPickerListViewController.h; sourceTree = "<group>"; };
+		75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiContactsPickerListViewController.m; sourceTree = "<group>"; };
+		75E0394514B595DF0071BF1D /* SegmentManagingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentManagingViewController.h; sourceTree = "<group>"; };
+		75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SegmentManagingViewController.m; sourceTree = "<group>"; };
+		75E0394814B596780071BF1D /* NSArray+PerformSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PerformSelector.h"; sourceTree = "<group>"; };
+		75E0394914B596780071BF1D /* NSArray+PerformSelector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PerformSelector.m"; sourceTree = "<group>"; };
+		75E0394B14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiContactsPhoneDetailViewController.h; sourceTree = "<group>"; };
+		75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiContactsPhoneDetailViewController.m; sourceTree = "<group>"; };
 		75E4840414AC61CF00AB950A /* bottom-button-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom-button-bg.png"; sourceTree = "<group>"; };
 		75E4840514AC61CF00AB950A /* ButtonCorners.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonCorners.png; sourceTree = "<group>"; };
 		75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonCorners@2x.png"; sourceTree = "<group>"; };
@@ -680,6 +692,10 @@
 			children = (
 				7528DAED14AB1E7200236609 /* ContactsListPickerViewController.h */,
 				7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */,
+				75E0393A14B5388D0071BF1D /* MultiContactsPickerListViewController.h */,
+				75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */,
+				75E0394B14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.h */,
+				75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */,
 			);
 			name = ContactList;
 			path = Main/Controller/ContactList;
@@ -735,6 +751,17 @@
 				75C02938149459FE00067730 /* ECStoreObserver.m */,
 			);
 			name = Purchase;
+			sourceTree = "<group>";
+		};
+		75E0394414B5959F0071BF1D /* SegmentController */ = {
+			isa = PBXGroup;
+			children = (
+				75E0394814B596780071BF1D /* NSArray+PerformSelector.h */,
+				75E0394914B596780071BF1D /* NSArray+PerformSelector.m */,
+				75E0394514B595DF0071BF1D /* SegmentManagingViewController.h */,
+				75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */,
+			);
+			name = SegmentController;
 			sourceTree = "<group>";
 		};
 		75E4840314AC61CF00AB950A /* ButtonPicker */ = {
@@ -1008,6 +1035,7 @@
 		89326531145E7440006E827D /* CustomClass */ = {
 			isa = PBXGroup;
 			children = (
+				75E0394414B5959F0071BF1D /* SegmentController */,
 				7A2CDD8514A207C20054B723 /* RefreshTableView */,
 				CE81DA4514847B5800E5BFA7 /* SearchIndex */,
 				899D8C6E146B6DD300B48698 /* MBProgressHUD.h */,
@@ -1668,6 +1696,10 @@
 				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 				75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */,
 				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
+				75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */,
+				75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */,
+				75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */,
+				75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

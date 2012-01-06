@@ -11,6 +11,8 @@
 @implementation ClientObject
 
 @synthesize cID,cName,cVal,backendID;
+@synthesize phoneIdentifier;
+@synthesize phoneLabel;
 - (id)init
 {
     self = [super init];
@@ -20,6 +22,8 @@
         self.cName = @"";
         self.cVal = @"";
         self.backendID = -1;
+        self.phoneIdentifier = -1;
+        self.phoneLabel = @"";
     }
     
     return self;
@@ -30,6 +34,9 @@
 	[encoder encodeObject: self.cName forKey:@"cName"];
 	[encoder encodeObject: self.cVal forKey:@"cVal"];
     [encoder encodeObject: [NSNumber numberWithInteger:self.backendID] forKey:@"backendID"];
+    [encoder encodeObject: [NSNumber numberWithInteger:self.phoneIdentifier] forKey:@"phoneIdentifier"];
+    [encoder encodeObject: self.phoneLabel forKey:@"phoneLabel"];
+    
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -37,7 +44,9 @@
 	self.cName = [decoder decodeObjectForKey:@"cName"];
 	self.cVal = [decoder decodeObjectForKey:@"cVal"];
     self.backendID = [[decoder decodeObjectForKey:@"backendID"] integerValue];
-	
+	self.phoneIdentifier = [[decoder decodeObjectForKey:@"phoneIdentifier"] integerValue];
+    self.phoneLabel = [decoder decodeObjectForKey:@"phoneLabel"];
+    
 	return self;
 }
 
@@ -46,15 +55,20 @@
     self.cName = @"";
     self.cVal = @"";
     self.backendID = -1;
+    self.phoneIdentifier = -1;
+    self.phoneLabel = @"";
 }
 
 - (void)searchClientIDByPhone{
     if (self.cID == -1) {    
-        ABAddressBookRef addressBook = ABAddressBookCreate();
+        ABAddressBookRef tempAddressBook = ABAddressBookCreate();
         CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
-                                                                    addressBook,
+                                                                    tempAddressBook,
                                                                     (__bridge CFStringRef)self.cName
                                                                     );
+        if (!searchResult) {
+            return;
+        }
         for (int i=0; i<CFArrayGetCount(searchResult); i++) {
             ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
             ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
@@ -63,6 +77,8 @@
                 if ([valStr isEqualToString:self.cVal]) {
                     NSLog(@"isEqual");
                     self.cID = ABRecordGetRecordID(card);
+                    self.phoneIdentifier = ABMultiValueGetIdentifierAtIndex(phone, j);
+                    self.phoneLabel = (__bridge_transfer NSString*)ABMultiValueCopyLabelAtIndex(phone, j);
                     break;
                 }
                 if (self.cID != -1) {
@@ -70,6 +86,7 @@
                 }
             }
         }
+        CFRelease(tempAddressBook);
     }
 }
 
@@ -98,4 +115,8 @@
     }
 }
 
+- (NSString *)phoneLabel {
+    CFStringRef label = (__bridge CFStringRef)phoneLabel;
+    return (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(label);
+}
 @end

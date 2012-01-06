@@ -17,6 +17,7 @@
 #import "DeviceDetection.h"
 #import "PartyListTableVC.h"
 #import "ABContact.h"
+#import "SegmentManagingViewController.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -266,11 +267,11 @@
         
         NSMutableString *contactNameTFContent = [[NSMutableString alloc] initWithCapacity:0];
         for (int i=0; i<[self.receipts count]; i++) {
-            NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
+            ClientObject *clientInfo = [self.receipts objectAtIndex:i];
         
-            NSString *name  = [peopleInfo objectForKey:@"name"];
+            NSString *name  = clientInfo.cName;
             if (!name || [name isEqualToString:@""]) {
-                name = [peopleInfo objectForKey:@"phoneNumber"];
+                name = clientInfo.cVal;
             }
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
@@ -352,12 +353,12 @@
 - (void)saveSMSInfo{
     self.smsObject.smsContent = [self.editingTableViewCell.textView text];
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
-    for (NSDictionary *receipt in self.receipts) {
+    for (ClientObject *receipt in self.receipts) {
         //need check phone format
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
-        client.cName = [receipt objectForKey:@"name"];
-        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        client.cName = receipt.cName;
+        NSString *phoneNumber = receipt.cVal;
         
         if (!phoneNumber) {
             continue;
@@ -434,8 +435,8 @@
                     };
                     
                     NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
-                    for (NSDictionary *receipt in self.receipts) {
-                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                    for (ClientObject *receipt in self.receipts) {
+                        NSString *phoneNumber = receipt.cVal;
                         
                         if (!phoneNumber) {
                             continue;
@@ -564,16 +565,22 @@
 #pragma mark -
 #pragma contact list delegate
 - (void)callContactList {
-    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
-    ppnc.peoplePickerDelegate = self;
-    [ppnc setDisplayedProperties:[NSArray
-                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
-    
-    [self.navigationController presentModalViewController:ppnc animated:YES];
+//    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+//    ppnc.peoplePickerDelegate = self;
+//    [ppnc setDisplayedProperties:[NSArray
+//                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+//    
+//    [self.navigationController presentModalViewController:ppnc animated:YES];
+
 //    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
 //    list.contactDelegate = self;
 //    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
 //    [self.navigationController presentModalViewController:nav animated:YES];
+    
+    SegmentManagingViewController * segmentManagingViewController = [[SegmentManagingViewController alloc] init];
+    segmentManagingViewController.contactDataDelegate = self;
+    UINavigationController *pickersNav = [[UINavigationController alloc] initWithRootViewController:segmentManagingViewController];
+    [self.navigationController presentModalViewController:pickersNav animated:YES];
 }
 
 - (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
@@ -824,4 +831,19 @@
     NSError *error = [request error];
 }
 
+#pragma mark -
+#pragma mark segment contact delegate
+- (NSArray *)getCurrentContactData {
+    NSLog(@"%@",self.receipts);
+    return self.receipts;
+}
+
+- (void)setNewContactData : (NSArray *)newData {
+    self.receipts = [NSMutableArray arrayWithArray:newData];
+    [self rearrangeContactNameTFContent];
+}
+
+- (void)selectedFinishedInController:(UIViewController *)vc {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
 @end

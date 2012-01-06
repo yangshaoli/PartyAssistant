@@ -19,6 +19,7 @@
 #import "ShadowedTableView.h"
 #import "ContactsListPickerViewController.h"
 #import "BottomSepratorLineView.h"
+#import "SegmentManagingViewController.h"
 
 typedef enum {
     ButtonPeoplePickerStatusShowing,
@@ -27,12 +28,14 @@ typedef enum {
 
 @protocol ButtonPeoplePickerDelegate;
 
+@class ClientObject;
 @interface ButtonPeoplePicker : UIViewController <AddPersonViewControllerDelegate,
 												  UITableViewDataSource,
 												  UITableViewDelegate,
 												  UIKeyInput,
                                                   ABPeoplePickerNavigationControllerDelegate,
-                                                  ContactsListPickerViewControllerDelegate>
+                                                  ContactsListPickerViewControllerDelegate,
+                                                  ContactDataDelegate>
 {
 	UIButton *selectedButton;
     UIButton *lastButton;
@@ -62,6 +65,7 @@ typedef enum {
 - (void)changePickerViewToStatus:(ButtonPeoplePickerStatus)newStatus;
 - (IBAction)peopleReciptsInputFinish;
 - (void)resetData;
+- (ClientObject *)scanAddressBookAndSearch:(ClientObject *)client;
 
 @end
 
