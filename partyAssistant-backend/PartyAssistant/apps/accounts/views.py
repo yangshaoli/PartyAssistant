@@ -91,8 +91,11 @@ def profile(request, template_name = 'accounts/profile.html', redirected = 'prof
               }
         form = UserProfileForm(data)
         profile_status = ''
-        
-        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status})
+        password_status = ''
+        if 'password_status' in request.session:
+            password_status = request.session['password_status']
+            del request.session['password_status']          
+        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status, 'password_status':password_status})
 
 @login_required
 @commit_on_success
@@ -102,6 +105,7 @@ def change_password(request):
         if form.is_valid():
             request.user.set_password(form.cleaned_data['new_password'])
             request.user.save()
+            request.session['password_status'] = 'success'
             return redirect('profile')
     else:
         form = ChangePasswordForm(request, None)
