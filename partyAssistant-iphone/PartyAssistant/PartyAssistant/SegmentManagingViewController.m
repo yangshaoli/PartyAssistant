@@ -9,6 +9,7 @@
 #import "SegmentManagingViewController.h"
 #import "NSArray+PerformSelector.h"
 #import "MultiContactsPickerListViewController.h"
+#import "MultiFavoritesContactsList.h"
 //#import "AustraliaViewController.h"
 
 @interface SegmentManagingViewController ()
@@ -59,11 +60,13 @@
 
 - (NSArray *)segmentedViewControllerContent {
 
-    MultiContactsPickerListViewController * controller1 = [[MultiContactsPickerListViewController alloc] initWithParentViewController:self];
+    MultiFavoritesContactsList * controller1 = [[MultiFavoritesContactsList alloc] initWithParentViewController:self];
     controller1.contactListDelegate = self;
-    //UIViewController * controller2 = [[AustraliaViewController alloc] initWithParentViewController:self];
-
-    NSArray * controllers = [NSArray arrayWithObjects:controller1, nil];
+    MultiContactsPickerListViewController * controller2 = [[MultiContactsPickerListViewController alloc] initWithParentViewController:self];
+    controller2.contactListDelegate = self;
+    
+    
+    NSArray * controllers = [NSArray arrayWithObjects:controller1, controller2, nil];
 
     return controllers;
 }

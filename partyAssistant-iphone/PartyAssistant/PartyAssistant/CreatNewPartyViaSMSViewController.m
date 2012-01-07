@@ -19,6 +19,7 @@
 #import "ABContact.h"
 #import "SegmentManagingViewController.h"
 #import "NotificationSettings.h"
+#import "AddressBookDBService.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -433,6 +434,11 @@
                         vc.body = self.smsObject.smsContent;
                     };
                     
+                    AddressBookDBService *favourite = [AddressBookDBService sharedAddressBookDBService];
+                    for (ClientObject *client in self.smsObject.receiversArray) {
+                        [favourite useContact:client];
+                    }
+                    
                     NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
                     for (ClientObject *receipt in self.receipts) {
                         NSString *phoneNumber = receipt.cVal;
@@ -768,6 +774,11 @@
 #pragma mark -
 #pragma mark update remain count
 - (void)updateRemainCount {
+    AddressBookDBService *fav = [AddressBookDBService sharedAddressBookDBService];
+    for (ClientObject *client in self.receipts){
+        [fav useContact:client];
+    }
+    return;
     if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
         UIAlertView *alert=[[UIAlertView alloc]
                             initWithTitle:@"短信内容不可以为空"

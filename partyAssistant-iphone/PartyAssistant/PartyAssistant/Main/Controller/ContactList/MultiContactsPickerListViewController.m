@@ -75,6 +75,7 @@
 	self.searchDC = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
 	self.searchDC.searchResultsDataSource = self;
 	self.searchDC.searchResultsDelegate = self;	
+    self.searchDC.delegate = self;
     self.searchDC.searchResultsTableView.sectionHeaderHeight = 0.0f;
 	NSMutableArray *filterearray =  [[NSMutableArray alloc] init];
 	self.filteredArray = filterearray;
@@ -531,7 +532,7 @@
         }else if(ABMultiValueGetCount(phone) == 1){
             ClientObject *client = [self loadSingleNumberContact : recordID];
             [self showOrCancleSelectedMark:client mutableMSGValue:nil];
-            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
+            [aTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
         }else{
             if (ABMultiValueGetCount(phone) >= 1) {//wxz
                 MultiContactsPhoneDetailViewController *contactorPhoneDetailsViewController = [[MultiContactsPhoneDetailViewController alloc] initWithNibName:@"ContactorPhoneDetailsViewController" bundle:[NSBundle mainBundle]];
@@ -552,7 +553,7 @@
             }else{
                 ClientObject *client = [self loadSingleNumberContact : recordID];
                 [self showOrCancleSelectedMark:client mutableMSGValue:nil];
-                [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
+                [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             }
             
         }
@@ -601,6 +602,12 @@
 //        }
 //    }
     
+}
+
+#pragma mark - 
+#pragma mark search DC delegate
+- (void) searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
+    [self.tableView reloadData];
 }
 
 - (void)alertError:(NSString *)errorStr{
@@ -699,9 +706,9 @@
     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:section];
     if (self.searchDC.isActive) {
-        [self.searchDC.searchResultsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self.searchDC.searchResultsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
     } else {
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }
 }
 

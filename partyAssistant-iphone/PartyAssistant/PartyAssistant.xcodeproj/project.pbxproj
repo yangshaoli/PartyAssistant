@@ -31,6 +31,7 @@
 		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
 		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
 		75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */; };
+		75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */; };
 		75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */; };
 		75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */; };
 		75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394914B596780071BF1D /* NSArray+PerformSelector.m */; };
@@ -290,6 +291,8 @@
 		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
 		75CEB1AE14B71B1500C45A3B /* AddressBookDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDataManager.h; sourceTree = "<group>"; };
 		75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDataManager.m; sourceTree = "<group>"; };
+		75DB0D0814B83803004F19C9 /* MultiFavoritesContactsList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiFavoritesContactsList.h; sourceTree = "<group>"; };
+		75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiFavoritesContactsList.m; sourceTree = "<group>"; };
 		75E0393A14B5388D0071BF1D /* MultiContactsPickerListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiContactsPickerListViewController.h; sourceTree = "<group>"; };
 		75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiContactsPickerListViewController.m; sourceTree = "<group>"; };
 		75E0394514B595DF0071BF1D /* SegmentManagingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentManagingViewController.h; sourceTree = "<group>"; };
@@ -660,8 +663,8 @@
 		7528DADE14AB1E4000236609 /* AddContactReceipt */ = {
 			isa = PBXGroup;
 			children = (
+				75DB0D0614B8375D004F19C9 /* FavoritesList */,
 				7528DADF14AB1E7200236609 /* AddContactReceipt */,
-				7528DAEC14AB1E7200236609 /* ContactList */,
 			);
 			name = AddContactReceipt;
 			sourceTree = "<group>";
@@ -761,6 +764,16 @@
 			);
 			name = AddressBookManagement;
 			path = Main/Service/AddressBookManagement;
+			sourceTree = "<group>";
+		};
+		75DB0D0614B8375D004F19C9 /* FavoritesList */ = {
+			isa = PBXGroup;
+			children = (
+				75DB0D0814B83803004F19C9 /* MultiFavoritesContactsList.h */,
+				75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */,
+				7528DAEC14AB1E7200236609 /* ContactList */,
+			);
+			name = FavoritesList;
 			sourceTree = "<group>";
 		};
 		75E0394414B5959F0071BF1D /* SegmentController */ = {
@@ -1709,6 +1722,7 @@
 				75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */,
 				75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */,
 				75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */,
+				75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
