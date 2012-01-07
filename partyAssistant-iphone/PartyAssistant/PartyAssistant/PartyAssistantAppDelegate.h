@@ -20,14 +20,16 @@
 #import "UserObjectService.h"
 #import <AddressBook/AddressBook.h>
 #import "MBProgressHUD.h"
+#import "ASIHTTPRequest.h"
 
 ABAddressBookRef addressBook;
 @interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate> {
     MBProgressHUD *_HUD;
+    ASIHTTPRequest *remainCountRequest;
 }
 
 @property (strong, nonatomic) UIWindow *window;
-
+@property (strong, nonatomic) ASIHTTPRequest *remainCountRequest;
 
 void addressBookChanged (ABAddressBookRef addressBook,
                          CFDictionaryRef info,

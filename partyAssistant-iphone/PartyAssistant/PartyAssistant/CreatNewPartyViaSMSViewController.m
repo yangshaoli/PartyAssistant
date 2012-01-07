@@ -18,6 +18,7 @@
 #import "PartyListTableVC.h"
 #import "ABContact.h"
 #import "SegmentManagingViewController.h"
+#import "NotificationSettings.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -323,31 +324,30 @@
 //                            otherButtonTitles: nil];
 //        [alert show];
 //    }else{
-//        [self saveSMSInfo];
-    UserObjectService *us = [UserObjectService sharedUserObjectService];
-    UserObject *user = [us getUserObject];
-    if (self.smsObject._isSendBySelf) {
-        
-    } else {
-        if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
-            UIAlertView *alert=[[UIAlertView alloc]
-                                initWithTitle:@"需要充值"
-                                message:@"余额不足，不能通过服务器端发送！"
-                                delegate:nil
-                                cancelButtonTitle:@"确定"
-                                otherButtonTitles: nil];
-            [alert show];
-            return;
+//    [self saveSMSInfo];
+    if ([self.smsObject.receiversArray count] == 0) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            [alertV show];
+    }else{
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        if (self.smsObject._isSendBySelf) {
+            
+        } else {
+            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+                UIAlertView *alert=[[UIAlertView alloc]
+                                    initWithTitle:@"需要充值"
+                                    message:@"余额不足，不能通过服务器端发送！"
+                                    delegate:nil
+                                    cancelButtonTitle:@"确定"
+                                    otherButtonTitles: nil];
+                [alert show];
+                return;
+            }
         }
+        
+        [self sendCreateRequest];
     }
-                
-//        if ([self.smsObject.receiversArray count] == 0) {
-//            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-//            [alertV show];
-//        }else{
-            [self sendCreateRequest];
-//        }
-//    }
 }
 
 - (void)saveSMSInfo{
@@ -387,7 +387,6 @@
 
     self.tabBarController.selectedIndex = 1;
     [self.navigationController dismissModalViewControllerAnimated:YES];
-    
     //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
 //    [[NSNotificationCenter defaultCenter] postNotification:notification];
 //    [self.navigationController dismissModalViewControllerAnimated:NO];
@@ -815,15 +814,13 @@
         UserObject *user = [us getUserObject];
         user.leftSMSCount = [remainCount stringValue];
         NSLog(@"%@", user.leftSMSCount);
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"RefreshSMSLeftCount" object:nil]];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:remainCount]];
         [self SMSContentInputDidFinish];
     } else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     } else {
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
-
-    
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {

@@ -53,23 +53,49 @@
 #pragma mark -
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
-    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
-        UIAlertView *alert=[[UIAlertView alloc]
-                            initWithTitle:@"短信内容不可以为空"
-                            message:@"内容为必填项"
-                            delegate:self
-                            cancelButtonTitle:@"请点击输入内容"
-                            otherButtonTitles: nil];
-        [alert show];
+//    [self saveSMSInfo];
+    if ([self.tempSMSObject.receiversArray count] == 0) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+        [alertV show];
     }else{
-        [self saveSMSInfo];
-        if ([self.tempSMSObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何有效收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-            [alertV show];
-        }else{
-            [self sendCreateRequest];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        if (self.tempSMSObject._isSendBySelf) {
+            
+        } else {
+            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+                UIAlertView *alert=[[UIAlertView alloc]
+                                    initWithTitle:@"需要充值"
+                                    message:@"余额不足，不能通过服务器端发送！"
+                                    delegate:nil
+                                    cancelButtonTitle:@"确定"
+                                    otherButtonTitles: nil];
+                [alert show];
+                return;
+            }
         }
+        
+        [self sendCreateRequest];
     }
+//
+//    
+//    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+//        UIAlertView *alert=[[UIAlertView alloc]
+//                            initWithTitle:@"短信内容不可以为空"
+//                            message:@"内容为必填项"
+//                            delegate:self
+//                            cancelButtonTitle:@"请点击输入内容"
+//                            otherButtonTitles: nil];
+//        [alert show];
+//    }else{
+//        [self saveSMSInfo];
+//        if ([self.tempSMSObject.receiversArray count] == 0) {
+//            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何有效收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+//            [alertV show];
+//        }else{
+//            [self sendCreateRequest];
+//        }
+//    }
 }
 
 - (void)saveSMSInfo{
@@ -276,4 +302,41 @@
 - (void)changeSMSModeToSendBySelf:(BOOL)status {
     self.tempSMSObject._isSendBySelf = status;
 }
+
+#pragma mark -
+#pragma mark update remain count
+- (void)updateRemainCount {
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
+    }else{
+        [self saveSMSInfo];
+        if ([self.tempSMSObject.receiversArray count] == 0) {
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            [alertV show];
+            return;
+        }
+    }
+    
+    if (self.tempSMSObject._isSendBySelf) {
+        [self SMSContentInputDidFinish];
+    } else {
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
+        NSLog(@"result:%@",requestURL);
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+        [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
+        [request startSynchronous];
+        [self showWaiting];
+    }
+} 
 @end

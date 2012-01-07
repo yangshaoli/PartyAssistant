@@ -7,6 +7,9 @@
 //
 
 #import "ClientObject.h"
+#import "ABContact.h"
+#import "AddressBookDataManager.h"
+#import "PartyAssistantAppDelegate.h"
 
 @implementation ClientObject
 
@@ -60,33 +63,57 @@
 }
 
 - (void)searchClientIDByPhone{
-    if (self.cID == -1) {    
-        ABAddressBookRef tempAddressBook = ABAddressBookCreate();
-        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
-                                                                    tempAddressBook,
-                                                                    (__bridge CFStringRef)self.cName
-                                                                    );
-        if (!searchResult) {
-            return;
+    if (self.cID == -1) {  
+        NSDictionary *contactPhoneDic = [[AddressBookDataManager sharedAddressBookDataManager] getCallLogContactData];
+            
+        NSString *phoneNumber = self.cVal;
+        
+        BOOL isNeedNewName = NO;
+        
+        if ([self.cName isEqualToString:@""]) {
+            isNeedNewName = YES;
         }
-        for (int i=0; i<CFArrayGetCount(searchResult); i++) {
-            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
-            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
-            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
-                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
-                if ([valStr isEqualToString:self.cVal]) {
-                    NSLog(@"isEqual");
-                    self.cID = ABRecordGetRecordID(card);
-                    self.phoneIdentifier = ABMultiValueGetIdentifierAtIndex(phone, j);
-                    self.phoneLabel = (__bridge_transfer NSString*)ABMultiValueCopyLabelAtIndex(phone, j);
-                    break;
-                }
-                if (self.cID != -1) {
+        
+        ABContact *theContact = [contactPhoneDic objectForKey:phoneNumber];
+        
+        if (theContact) {
+            
+            ABRecordID contactID = theContact.recordID;
+            ABRecordRef theSelectContact = ABAddressBookGetPersonWithRecordID(addressBook, contactID);
+            ABMultiValueRef phone = ABRecordCopyValue(theSelectContact, kABPersonPhoneProperty);
+            
+            
+            NSString *aNumber = nil;
+            NSInteger selectIndex = -1;
+            for (int i=0; i<ABMultiValueGetCount(phone); i++) {
+                NSString *number = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, i);
+                aNumber = [number stringByReplacingOccurrencesOfString:@"+" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"+" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"#" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"-" withString:@""];
+                
+                if ([aNumber isEqualToString:phoneNumber]) {
+                    selectIndex = i;
+                    if (isNeedNewName) {
+                        self.cName = [theContact contactName];
+                    }
                     break;
                 }
             }
+            
+            if (selectIndex == -1) {
+                
+            } else {
+                ABMultiValueIdentifier indentifier = ABMultiValueGetIdentifierAtIndex(phone, selectIndex);
+                NSString *label = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phone, selectIndex);
+                self.phoneIdentifier = indentifier;
+                self.cID = contactID;
+                self.phoneLabel = label;
+            }
         }
-        CFRelease(tempAddressBook);
     }
 }
 

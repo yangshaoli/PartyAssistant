@@ -13,6 +13,7 @@
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
+@synthesize remainCountRequest = _remainCountRequest;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
     NSLog(@"Luanch");
@@ -87,6 +88,8 @@
     [[ECPurchase shared] setProductDelegate:self];
     [[ECPurchase shared] setTransactionDelegate:self];
     [[ECPurchase shared] setVerifyRecepitMode:ECVerifyRecepitModeServer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateRemainCount) name:UpdateReMainCount object:nil];
     
     return YES;  
 }  
@@ -243,5 +246,52 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
 
+}
+
+#pragma mark -
+#pragma mark update remain count
+- (void)updateRemainCount {
+    if (self.remainCountRequest) {
+        if (![self.remainCountRequest isFinished]) {
+            return;
+        }
+    }
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
+    if (!self.remainCountRequest) {
+        self.remainCountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+    } else {
+        [self.remainCountRequest setURL:[NSURL URLWithString:requestURL]]; 
+    }
+    [_remainCountRequest setDelegate:self];
+    [_remainCountRequest setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+    [_remainCountRequest setDidFailSelector:@selector(remainCountRequestDidFail:)];
+    [_remainCountRequest startSynchronous];
+    return;
+} 
+
+- (void)remainCountRequestDidFinish:(ASIHTTPRequest *)request {
+    NSString *response = [request responseString];
+    SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    NSLog(@"response : %d",[request responseStatusCode]);
+    
+    if ([request responseStatusCode] == 200) {
+        NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        user.leftSMSCount = [remainCount stringValue];
+        NSLog(@"%@", user.leftSMSCount);
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[remainCount intValue]]]];
+    } else if([request responseStatusCode] == 404){
+        
+    } else {
+        
+    }
+}
+
+- (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
 }
 @end
