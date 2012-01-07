@@ -29,5 +29,8 @@
 - (void)searchClientIDByPhone;
 - (void)searchClientIDByEmail;
 - (void)clearObject;
+- (BOOL)isClientValid;
+- (void)searchClientIDByName;
+- (BOOL)isClientPhoneNumberValid; 
 
 @end

@@ -45,6 +45,7 @@
 @synthesize searchField;
 @synthesize doneButton;
 @synthesize toolbar;
+@synthesize footerView;
 #pragma mark - View lifecycle methods
 
 // Perform additional initialization after the nib file is loaded
@@ -94,6 +95,7 @@
     self.uiTableView.backgroundView = [[UIView alloc] initWithFrame:self.uiTableView.backgroundView.bounds];
     [self.uiTableView.backgroundView.layer insertSublayer:gradient atIndex:0];
     [self.uiTableView.backgroundView.layer insertSublayer:newShadow atIndex:1];
+    self.uiTableView.tableFooterView = self.footerView;
     
     self.searchField.text = @"\u200B";
     
@@ -450,18 +452,37 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (searchField.text.length > 1)
     {
-        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
-        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([newPhoneName length] == 0) {
+        NSString *newName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        if ([newName length] == 0) {
             searchField.text = @"\u200B";
             return NO;
         }
         ClientObject *newClient = nil;
         newClient = [[ClientObject alloc] init];
-        newClient.cVal = newPhoneName;
-        newClient.cName = @"";
+        newClient.cVal = @"";
+        newClient.cName = newName;
         searchField.text = @"\u200B";
-        [self addPersonToGroup:[self scanAddressBookAndSearch:newClient]];
+        
+        [newClient searchClientIDByName];
+        
+        if (![newClient isClientValid]) {
+            newName = [newName stringByReplacingOccurrencesOfString:@" " withString:@""];
+            newClient.cVal = newName;
+            newClient.cName = @"";
+            [newClient searchClientIDByPhone];
+            
+            if ([newClient isClientValid]) {
+                [self addPersonToGroup:newClient];
+            } else {
+                if ([newClient isClientPhoneNumberValid]) {
+                    [self addPersonToGroup:newClient];
+                } else {
+                    return NO;
+                }
+            }
+        } else {
+            [self addPersonToGroup:newClient];
+        }
 	}
 	else
     {
@@ -901,13 +922,18 @@
         newButtonViewFrame.origin.y = newButtonViewFrame.origin.y - offset;
         self.buttonView.frame = newButtonViewFrame;
         self.uiTableView.frame = newTableViewFrame;
-        //[self.toolbar setHidden:YES];
+
         [UIView commitAnimations];
         
         pickerStatus = ButtonPeoplePickerStatusSearching;
+        
+        [self.buttonView reloadInputViews];
+        self.searchField.inputAccessoryView = nil;
+        [self.searchField reloadInputViews];
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
+        self.toolbar.exclusiveTouch = YES;
         
         CGRect oldButtonViewFrame = self.buttonView.frame;
         CGRect newButtonViewFrame = oldButtonViewFrame;
@@ -915,6 +941,10 @@
         self.buttonView.frame = newButtonViewFrame;
         
         pickerStatus = ButtonPeoplePickerStatusShowing;
+        
+        [self.buttonView reloadInputViews];
+        self.searchField.inputAccessoryView = self.toolbar;
+        [self.searchField reloadInputViews];
     }
 }
 
@@ -1075,6 +1105,9 @@
 
 #pragma input accessory view
 - (UIView *)inputAccessoryView {
+    if (pickerStatus == ButtonPeoplePickerStatusSearching) {
+        return nil;
+    }
     return self.toolbar;
 }
 @end

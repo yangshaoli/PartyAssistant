@@ -10,6 +10,7 @@
 #import "ABContact.h"
 #import "AddressBookDataManager.h"
 #import "PartyAssistantAppDelegate.h"
+#import "ABContactsHelper.h"
 
 @implementation ClientObject
 
@@ -60,6 +61,46 @@
     self.backendID = -1;
     self.phoneIdentifier = -1;
     self.phoneLabel = @"";
+}
+
+- (void)searchClientIDByName {
+    if (self.cID == -1) {
+        NSArray *contacts = [ABContactsHelper contactsEqualsName:self.cName];
+        NSLog(@"%@",self.cName);
+        if ([contacts count] == 0) {
+            return;
+        } else {
+            ABContact *theContact = [contacts lastObject];
+            
+            if (theContact) {
+                ABRecordID contactID = theContact.recordID;
+                ABRecordRef theSelectContact = ABAddressBookGetPersonWithRecordID(addressBook, contactID);
+                ABMultiValueRef phone = ABRecordCopyValue(theSelectContact, kABPersonPhoneProperty);
+
+                NSInteger selectIndex = -1;
+                for (int i=0; i<ABMultiValueGetCount(phone); i++) {
+                    NSString *number = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, i);
+                    
+                    self.cVal = number;
+                    
+                    selectIndex = i;
+                    
+                    break;
+                }
+                
+                if (selectIndex == -1) {
+                    
+                } else {
+                    ABMultiValueIdentifier indentifier = ABMultiValueGetIdentifierAtIndex(phone, selectIndex);
+                    NSString *label = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phone, selectIndex);
+                    self.phoneIdentifier = indentifier;
+                    self.cID = contactID;
+                    self.phoneLabel = label;
+                }
+            }
+
+        }
+    }
 }
 
 - (void)searchClientIDByPhone{
@@ -145,5 +186,13 @@
 - (NSString *)phoneLabel {
     CFStringRef label = (__bridge CFStringRef)phoneLabel;
     return (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(label);
+}
+
+- (BOOL)isClientValid {
+    return self.cID == -1 ? NO : YES;
+}
+
+- (BOOL)isClientPhoneNumberValid {
+    return YES;
 }
 @end

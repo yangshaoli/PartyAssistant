@@ -58,6 +58,7 @@ typedef enum {
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *doneButton;
 
 @property (nonatomic, strong) IBOutlet UIToolbar *toolbar;
+@property (nonatomic, strong) IBOutlet UIView *footerView;
 
 - (IBAction)cancelClick:(id)sender;
 - (IBAction)doneClick:(id)sender;
