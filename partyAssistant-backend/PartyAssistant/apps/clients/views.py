@@ -29,10 +29,13 @@ from apps.clients.models import Client
 '''
 @login_required
 def change_apply_status(request, id, applystatus):
-    client_party = PartiesClients.objects.get(pk = id, client__creator = request.user)
-    client_party.apply_status = applystatus
-    client_party.save()        
-    return HttpResponse('ok') 
+    if applystatus == 'reject' or applystatus == 'noanswere' or applystatus == 'apply':
+        client_party = PartiesClients.objects.get(pk = id, client__creator = request.user)
+        client_party.apply_status = applystatus
+        client_party.save()        
+        return HttpResponse('ok') 
+    else:
+        return HttpResponse('badstatus')
 
 
 #受邀人员列表

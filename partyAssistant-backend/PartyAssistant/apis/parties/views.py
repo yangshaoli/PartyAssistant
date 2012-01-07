@@ -77,6 +77,7 @@ def createParty(request):
                                          description = description,
                                          creator = user,
                                          limit_count = peopleMaximum,
+                                         invite_type = (msgType == "SMS" and 'phone' or 'email')
                                          )
             addressArray = []
             for i in range(len(receivers)):
