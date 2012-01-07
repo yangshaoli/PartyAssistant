@@ -274,6 +274,9 @@ function validate_phone_bingding(isbind){
                         {%  ifequal userprofile.phone_binding_status  'unbind' %}
                         <a href="#" onclick="bindingPhone()">[绑定]</a>
                         {% endifequal %}
+                        {%  ifequal userprofile.phone_binding_status  '' %}
+                        <a href="#" onclick="bindingPhone()">[绑定]</a>
+                        {% endifequal %}
                         {%  ifequal userprofile.phone_binding_status  'waitingbind' %}
                         <a href="#" onclick="bindingPhone()">[绑定]</a>
                         {% endifequal %}
