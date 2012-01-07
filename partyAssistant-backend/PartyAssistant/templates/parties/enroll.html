@@ -1,6 +1,6 @@
 {% extends 'login_base.html' %}
 
-{% block title %}报名页面 - 爱热闹{% endblock %}
+{% block title %}报名页面 {% endblock %}
 
 {% block style %}
 <style>
@@ -25,7 +25,7 @@ input[type="image"] { border:0px;height:45px;}
     })
 
 function maskAddress(v){
-    if (v.indexOf('@') == -1 && (v.length != 11 || isNaN(v))) {
+    if (v.indexOf('@') == -1 && (v.length != 11 || !isNaN(v))) {
         return v;
     } else {
         var addressType = '';

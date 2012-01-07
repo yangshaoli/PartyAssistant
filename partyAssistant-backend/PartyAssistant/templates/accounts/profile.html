@@ -184,11 +184,19 @@ function validate_phone_bingding(isbind){
                 },
                 statusCode: {
                     200: function(response){
-                        if (response == 'record_already_exist') {
-                            alert('确认邮件已经发送，请查看您的邮箱')
-                        }
-                        else {
-                            alert('发送成功，请查看您的确认邮件')
+                        switch(response) {
+    		                case 'record_already_exist': {
+                                alert('确认邮件已经发送，请查看您的邮箱')
+                                break;
+                            }
+                            case 'email_already_exist': {
+                                alert('邮箱已经被绑定，请使用其他邮箱')
+                                break;
+                            }
+    	                    default :{
+                                alert('发送成功，请查看您的确认邮件')
+                                break;
+                            }
                         }
                     },
                     500: function(response){
