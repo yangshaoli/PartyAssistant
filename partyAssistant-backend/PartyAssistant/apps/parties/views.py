@@ -469,9 +469,9 @@ def _public_enroll(request, party_id):
             if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
                 client, create = Client.objects.get_or_create(name = name, creator = creator, email = email, phone = phone)
             elif BOOL_EMAIL_NONE and (not BOOL_PHONE_NONE) : #存在 phone 记录 ，但无 Email 记录
-                client = get_object_or_404(Client, phone = phone)  
+                client = get_object_or_404(Client, phone = phone, creator = creator)  
             elif (not BOOL_EMAIL_NONE) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
-                client = get_object_or_404(Client, email = email)
+                client = get_object_or_404(Client, email = email, creator = creator)
             else:
                 logger.exception('public enroll exception!')
             #有人数限制
