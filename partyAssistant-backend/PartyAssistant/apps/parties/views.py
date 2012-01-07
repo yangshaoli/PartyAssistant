@@ -729,9 +729,9 @@ def _invite_list(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     
     if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party)
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('is_check','client__name')
     else:
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status)
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status).order_by('is_check','client__name')
     
     party_clients_datas = []
     for party_client in party_clients_list:
