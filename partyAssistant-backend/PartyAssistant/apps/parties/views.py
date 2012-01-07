@@ -4,7 +4,7 @@ Created on 2011-10-27
 
 @author: liuxue
 '''
-
+from django.db.transaction import commit_on_success
 from apps.accounts.models import UserProfile
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
