@@ -52,7 +52,7 @@ class PublicEnrollForm(forms.Form):
                         invalid_phone = phone
         
                 if invalid_phone:
-                    raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
+                    raise forms.ValidationError(u'手机号码 %s 格式错误' % invalid_phone)
         
             else:
                 invalid_email = ''
