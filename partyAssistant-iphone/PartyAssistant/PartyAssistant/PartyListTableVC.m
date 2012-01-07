@@ -23,7 +23,7 @@
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
 @synthesize peopleCountArray;
-@synthesize lastID,_isRefreshing,_isNeedRefresh;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -57,15 +57,11 @@
     self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
-    //自定义活动数据
-//    PartyModel *party1=[[PartyModel alloc] init];
-//    party1.contentString=@"自定义活动很好完大家一定还要去hh好好发sfjdskxkkkdfdkldflkjlkjckjxlkcjlkzxjclkzxjclkzxjclkzjxclkxjclkxzjclkjxclkjxlckjzxlkcjzlkjclkxjcxjclkxjckjcjcxkcjkxcjkxcjkxjcckxlzxkjlkxjc";
-//    PartyModel *party2=[[PartyModel alloc] init];
-//    party2.contentString=@"自定义活动2";
-//    self.partyList=[[NSMutableArray alloc] initWithObjects:party1,party2,nil];
+    
     if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
         [self refreshBtnAction];
     }
+    
     minBottomRefreshViewY = 366.0;
 	//setup refresh tool
     if (bottomRefreshView == nil) {
@@ -106,7 +102,6 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-    
     [self refreshBtnAction];
     [self.tableView reloadData];
 
@@ -157,6 +152,11 @@
     UserObject *user = [us getUserObject];
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
@@ -168,6 +168,8 @@
         _isAppend = NO;
     }
     [request startAsynchronous];
+    
+    self.quest=request;
     //self._isRefreshing = YES;
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
@@ -187,6 +189,7 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
+            NSLog(@"在list页面requestfinish中打印self.lastID：：：：%d",self.lastID);
             if (lastID < 0) {
                 lastID = 0;
             }
@@ -526,11 +529,11 @@
     {
         if([view isKindOfClass:[UITabBar class]])
         {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
         }
         else
         {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
         }
         
     }
@@ -540,22 +543,24 @@
 
 -(void) showTabBar:(UITabBarController*) tabbarcontroller {
     
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
     
     for(UIView*view in tabbarcontroller.view.subviews)
     {
+        
         if([view isKindOfClass:[UITabBar class]])
         {
             [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+        }else{
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
         }
     }
     
+}
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
 }
 
 

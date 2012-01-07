@@ -26,6 +26,7 @@
 @synthesize clientStatusFlag;
 @synthesize partyObj;
 @synthesize wordString;
+@synthesize quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -64,11 +65,17 @@
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.quest=request;
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -145,14 +152,36 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
 
 - (void)resendBtnAction{
     
     [self getPartyClientSeperatedList];
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:@"再次发送时会过滤掉联系方式为邮箱的人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+    [alertV show];
+
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+    for(NSDictionary  *clientDic in self.clientsArray){
+        NSString *cValueString=[clientDic objectForKey:@"cValue"];
+        if([self  isEmailAddress:cValueString]){
+            [clientDicArray removeObject:clientDic];
+        }
+    }
+    
+    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
     [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 }
 #pragma mark - Table view data source
 
@@ -254,7 +283,7 @@
         }
         
         
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 290, 20)];
         secondLb.tag=8;
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
@@ -412,11 +441,17 @@
 //        }
 //        else
 //        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,310)];
 //        }
 //    }
 //    
 //}
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
+}
 
 
 @end

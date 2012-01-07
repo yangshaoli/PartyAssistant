@@ -49,6 +49,21 @@
         self.sendModeNameLabel.text = @"通过服务器发送";
     }
 }
+
+- (void)createPartySuc{
+    self.editingTableViewCell.textView.text = @"";
+    self.receipts = [NSMutableArray arrayWithCapacity:10];
+    [self rearrangeContactNameTFContent];
+    
+    self.tabBarController.selectedIndex = 1;
+   [self.navigationController dismissModalViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
+    
+    //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+    //    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    //    [self.navigationController dismissModalViewControllerAnimated:NO];
+}
+
 #pragma mark -
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
@@ -63,7 +78,7 @@
     }else{
         [self saveSMSInfo];
         if ([self.tempSMSObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何有效收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+           UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
             [alertV show];
         }else{
             [self sendCreateRequest];
@@ -158,14 +173,14 @@
                     [self.tempSMSObject clearObject];
                 }else{
                     [self createPartySuc];
-#if TARGET_IPHONE_SIMULATOR // iPhone Simulator
+                #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                     return;
-#endif
+                #endif
                 }
                 
             }else{
                 [self createPartySuc];
-            }
+                }
         }else{
             [self showAlertRequestFailed:description];		
         }

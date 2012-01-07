@@ -13,7 +13,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj;
+@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj,quest;
 @synthesize messageTextView;
 @synthesize clientStatusFlag;
 
@@ -42,6 +42,7 @@
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
+    [goButton setImage:[UIImage imageNamed:@"apply"] forState:UIControlStateNormal];
     
 //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
     goButton.tag=23;
@@ -51,6 +52,7 @@
     UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [notGoButton setFrame:CGRectMake(200, 200,80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
+    [notGoButton setImage:[UIImage imageNamed:@"reject"] forState:UIControlStateNormal];
     //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
     notGoButton.tag=24;
     notGoButton.backgroundColor=[UIColor clearColor];
@@ -152,6 +154,7 @@
         NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
         NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
         [isChenkDefault  setInteger:currentInt+1  forKey:appliedKeyString]; 
+        [btn setImage:[UIImage imageNamed:@"apply_gray"] forState:UIControlStateNormal];
     
     }else if(btn.tag==24){
         statusAction=@"reject";
@@ -159,6 +162,7 @@
         NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
         NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
         [isChenkDefault setInteger:currentInt-1 forKey:refusedKeyString];
+        [btn setImage:[UIImage imageNamed:@"reject_gray"] forState:UIControlStateNormal];
     
     }
 //    if ([self.clientStatusFlag isEqualToString:@"all"]) {
@@ -176,6 +180,10 @@
 //    }
     
     NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
     [request setPostValue:statusAction forKey:@"cpAction"];
@@ -191,6 +199,7 @@
     [request setDidFinishSelector:nil];
     [request setDidFailSelector:nil];
     [request startSynchronous];
+    self.quest=request;
     NSError *error = [request error];
     if (!error) {
         //[activity removeFromSuperview];
@@ -377,6 +386,51 @@
   }
     return nil;
 }
+////通过电话找出此联系人的名字
+//- (ABRecordRef)getContactorNameDataByPhoneString:(NSString *)phoneString{
+////    NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
+////    NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
+//    ABAddressBookRef addressBook = ABAddressBookCreate();
+//    CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
+//                                                                addressBook,
+//                                                                (__bridge CFStringRef)contactorNameString);
+//    
+//    NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
+//    if(array1.count>0){
+//        for (int i=0; i<CFArrayGetCount(searchResult); )
+//        {
+//            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+//            if(!card){
+//                continue;
+//            }
+//            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+//            if(!phone){
+//                continue;
+//            }
+//            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
+//                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
+//                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
+//                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
+//                    //self.cID = ABRecordGetRecordID(card);
+//                    if(ABPersonHasImageData(card)){
+//                        return card;
+//                    }else{
+//                        return nil;
+//                    }
+//                }else{
+//                    continue;
+//                }
+//                
+//            }
+//            return nil;   
+//            
+//        }
+//    }else{
+//        return nil;
+//    }
+//    return nil;
+//}
+
 
 
 
@@ -519,16 +573,19 @@
               return;
               
           }
-
-      
       
       }
         
             
     }
     return;
-      
-        
 }
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest  clearDelegatesAndCancel];
+    self.quest = nil;
+}
+
 
 @end
