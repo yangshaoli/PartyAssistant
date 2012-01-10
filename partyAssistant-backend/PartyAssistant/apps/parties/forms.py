@@ -33,6 +33,7 @@ class PublicEnrollForm(forms.Form):
     
     def clean_leave_message(self):
         if 'leave_message' in self.cleaned_data:
+            self.cleaned_data['leave_message'] = self.cleaned_data['leave_message'].replace('\r\n','<br/>') #Ticket 1169
             leave_message = self.cleaned_data['leave_message']
             if len(leave_message) > 100:
                 raise forms.ValidationError(u'留言超过100字符')
