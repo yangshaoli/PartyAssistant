@@ -35,7 +35,6 @@ def accountLogin(request):
         user = authenticate(username = request.POST['username'], password = request.POST['password'])
         if user:
             device_token = request.POST['device_token']
-            print device_token
             if device_token:
 #                if request.POST['device_type'] == 'iphone':
                 usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
