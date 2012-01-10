@@ -60,9 +60,8 @@ function ajaxGetClients(applystatus){
             clients = data.party_clients_datas;
             for (i in clients){
                 address = maskAddress(clients[i].address);
-                if (clients[i].name == clients[i].address){
-                    name = maskAddress(clients[i].name);
-                    row = "<tr><td></td><th>"+name+"</th><td>"+address+"</td><td></td></tr>";
+                if (clients[i].name == clients[i].address || clients[i].name == ''){
+                    row = "<tr><td></td><th>"+address+"</th><td>"+address+"</td><td></td></tr>";
                 } else {
                     row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+address+"</td><td></td></tr>";
                 }
