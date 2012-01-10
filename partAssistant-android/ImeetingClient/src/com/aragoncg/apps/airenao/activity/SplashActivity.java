@@ -7,13 +7,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.aragoncg.apps.airenao.R;
-import com.aragoncg.apps.airenao.DB.DbHelper;
-import com.aragoncg.apps.airenao.constans.Constants;
-import com.aragoncg.apps.airenao.model.AirenaoActivity;
-import com.aragoncg.apps.airenao.utills.AirenaoUtills;
-import com.aragoncg.apps.airenao.utills.HttpHelper;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,11 +18,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.SlidingDrawer;
 import android.widget.Toast;
+
+import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.constans.Constants;
+import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.utills.AirenaoUtills;
+import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class SplashActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -296,7 +294,7 @@ public class SplashActivity extends Activity {
 	private void closeMe() {
 		if (!isFinished) {
 			finish();
-			Intent intent = new Intent(this, RegisterActivity.class);
+			Intent intent = new Intent(this, LoginActivity.class);
 			startActivity(intent);
 			isFinished = true;
 		}

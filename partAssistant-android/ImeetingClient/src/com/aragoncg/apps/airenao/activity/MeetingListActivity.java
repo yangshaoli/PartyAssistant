@@ -54,7 +54,7 @@ import com.aragoncg.apps.airenao.utills.HttpHelper;
 public class MeetingListActivity extends ListActivity implements
 		OnScrollListener {
 
-	private List<Map<String, Object>> mData;
+	private List<Map<String, Object>> mData = new ArrayList<Map<String,Object>>();
 	private MyAdapter myDaAdapter;
 
 	private ImageButton btnAddOneActivity;

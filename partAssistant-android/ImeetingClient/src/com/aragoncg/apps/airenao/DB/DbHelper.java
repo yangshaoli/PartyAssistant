@@ -71,7 +71,6 @@ public class DbHelper {
 	private DbHelper(Context context) {
 		SQLiteDatabase db = openOrCreateDatabase();
 		try {
-			
 			createTables(db, createSql);
 			createTables(db, createSql1);
 

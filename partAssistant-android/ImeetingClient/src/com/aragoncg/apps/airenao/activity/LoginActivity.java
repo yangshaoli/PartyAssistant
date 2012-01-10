@@ -132,6 +132,7 @@ public class LoginActivity extends Activity {
 								Bundle bundle = new Bundle();
 								bundle.putString(Constants.AIRENAO_USER_NAME,
 										userName);
+								bundle.putString(Constants.AIRENAO_PASSWORD, passWord);
 								bundle.putString(Constants.AIRENAO_USER_ID, uId);
 								message.setData(bundle);
 								myHandler.sendMessage(message);
@@ -158,7 +159,7 @@ public class LoginActivity extends Activity {
 									} else {
 										Intent intent = new Intent(
 												LoginActivity.this,
-												SendAirenaoActivity.class);
+												MeetingListActivity.class);
 										startActivity(intent);
 									}
 
@@ -255,12 +256,14 @@ public class LoginActivity extends Activity {
 					 */myProgressDialog.cancel();
 					userName = (String) msg.getData().get(
 							Constants.AIRENAO_USER_NAME);
+					passWord = (String) msg.getData().get(Constants.AIRENAO_PASSWORD);
 					String uId = (String) msg.getData().get(
 							Constants.AIRENAO_USER_ID);
 					SharedPreferences mySharedPreferences = AirenaoUtills
 							.getMySharedPreferences(myContext);
 					Editor editor = mySharedPreferences.edit();
 					editor.putString(Constants.AIRENAO_USER_NAME, userName);
+					editor.putString(Constants.AIRENAO_PASSWORD, passWord);
 					editor.putString(Constants.AIRENAO_USER_ID, uId);
 					editor.commit();
 					finish();
