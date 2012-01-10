@@ -29,6 +29,8 @@
     UIViewController *_parentVC;
     
     NSMutableArray *partyList;
+    
+    UITabBarController *appTab;
 }
 
 @property (nonatomic, retain) IBOutlet UITableView  *tableView;
@@ -40,6 +42,6 @@
 @property (nonatomic, getter = isModal) BOOL modal;
 @property (nonatomic, retain) UIViewController *parentVC;
 @property (nonatomic, retain) NSMutableArray *partyList;
-
+@property (nonatomic, assign) UITabBarController *appTab;
 
 @end
