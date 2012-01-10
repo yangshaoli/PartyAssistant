@@ -71,6 +71,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
     UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(updateRemainCount)];
     self.navigationItem.rightBarButtonItem = right;
@@ -298,7 +299,7 @@
                     }
                 } else {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];
+                        [contactNameTFContent appendFormat:@"%drecipients", leftCount];
                     } else {
                         [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
                     }
@@ -416,11 +417,11 @@
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
+    [self dismissWaiting];
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
 	NSString *description = [result objectForKey:@"description"];
-	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
@@ -493,8 +494,8 @@
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    [self dismissWaiting];
 	NSError *error = [request error];
-	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 

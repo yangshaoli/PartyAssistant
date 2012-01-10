@@ -21,9 +21,10 @@
 #import <AddressBook/AddressBook.h>
 #import "MBProgressHUD.h"
 #import "ASIHTTPRequest.h"
+#import "ECPurchase.h"
 
 ABAddressBookRef addressBook;
-@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate> {
+@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate,ECPurchaseProductDelegate,ECPurchaseTransactionDelegate> {
     MBProgressHUD *_HUD;
     ASIHTTPRequest *remainCountRequest;
 }

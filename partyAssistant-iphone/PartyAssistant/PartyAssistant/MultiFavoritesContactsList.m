@@ -111,11 +111,11 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
+    static NSString *CellIdentifier = @"LabelCell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
     //    NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(card, kABPersonFirstNameProperty);
@@ -147,7 +147,10 @@
     
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    cell.accessoryType = UITableViewCellAccessoryNone;
+    
     for (int i=0; i<[self.selectedContactorsArray count]; i++) {
+        NSLog(@"selected contact ID:%d",[[self.selectedContactorsArray objectAtIndex:i] cID]);
         if ([[self.selectedContactorsArray objectAtIndex:i] cID] == recordID && [[self.selectedContactorsArray objectAtIndex:i] phoneIdentifier] == phoneIdentifier) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
             break;
@@ -204,10 +207,12 @@
     self.currentSelectedRowIndex = indexPath.row;
     [self showOrCancleSelectedMark:client mutableMSGValue:nil];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:self.currentSelectedRowIndex inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+//    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 
 - (void)initDataSource {
+    [[AddressBookDBService sharedAddressBookDBService] loadMyFavorites];
     self.dataSource = [[AddressBookDBService sharedAddressBookDBService] myFavorites];
 }
 

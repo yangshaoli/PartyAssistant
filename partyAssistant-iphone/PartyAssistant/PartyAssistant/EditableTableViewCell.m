@@ -28,6 +28,7 @@ static UITextView *dummyTextView;
     newTextView.showsVerticalScrollIndicator = YES;
     newTextView.showsHorizontalScrollIndicator = NO;
     newTextView.contentInset = UIEdgeInsetsZero;
+    newTextView.autocorrectionType = UITextAutocorrectionTypeNo;
     
     return newTextView;
 }

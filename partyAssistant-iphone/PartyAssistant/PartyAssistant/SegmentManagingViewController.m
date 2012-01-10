@@ -32,6 +32,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
+    
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.currentContactData = [NSMutableArray arrayWithArray:[self.contactDataDelegate getCurrentContactData]];
@@ -49,6 +51,8 @@
                               action:@selector(didChangeSegmentControl:)
                     forControlEvents:UIControlEventValueChanged];
 
+    self.segmentedControl.tintColor = [UIColor redColor];
+    
     self.navigationItem.titleView = self.segmentedControl;
 
     [self didChangeSegmentControl:self.segmentedControl]; // kick everything off

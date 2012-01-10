@@ -7,7 +7,6 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
-#import "ECPurchase.h"
 #import "AddressBookDataManager.h"
 
 @implementation PartyAssistantAppDelegate
@@ -82,7 +81,8 @@
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     _nav = [[UINavigationController alloc] initWithRootViewController:login];
     [self.window addSubview:_nav.view];
-
+    [login release];
+    
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     
     [[ECPurchase shared] addTransactionObserver];

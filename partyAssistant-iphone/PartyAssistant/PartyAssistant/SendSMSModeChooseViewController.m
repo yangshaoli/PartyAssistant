@@ -31,7 +31,7 @@
     [super viewDidLoad];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    self.leftCountLabel.text = [NSString stringWithFormat:@"剩余帐户:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
 
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
@@ -205,7 +205,7 @@
 - (void)leftCountRefreshed:(NSNotification *)notify {
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    self.leftCountLabel.text = [NSString stringWithFormat:@"剩余%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
 }
 
 - (void)dealloc {
