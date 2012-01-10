@@ -366,12 +366,13 @@ def GetPartyClientSeperatedList(request, pid, type):
             cValue = clientparty.client.email
         else:
             cValue = clientparty.client.phone
-        if not clientparty.is_check:
-            clientparty.is_check = True
-            clientparty.save()
-            is_checked = False
-        else:
-            is_checked = True
+        if 'read' in request.GET:
+            if not clientparty.is_check:
+                clientparty.is_check = True
+                clientparty.save()
+                is_checked = False
+            else:
+                is_checked = True
         dic = {
                'cName':clientparty.client.name,
                'cValue':cValue,
