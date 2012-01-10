@@ -6,7 +6,7 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 #import "PartyListTableVC.h"
-
+#import "ForgetPassword.h"
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "CreatNewPartyViaSMSViewController.h"
@@ -110,10 +110,17 @@
     
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
-    self.navigationItem.rightBarButtonItem = registerButton;
+    self.navigationItem.leftBarButtonItem = registerButton;
+    
+    
+    UIBarButtonItem *forgetPasswordButton = [[UIBarButtonItem alloc] initWithTitle:@"忘记密码" style:UIBarButtonItemStylePlain target:self action:@selector(forgetPassword)];
+    
+    self.navigationItem.rightBarButtonItem = forgetPasswordButton;
+
+    
     
     [registerButton release];
-    
+    [forgetPasswordButton release];
     [tableFooterView release];
    
     
@@ -267,6 +274,11 @@
     registerVC.delegate=self;
     [self.navigationController pushViewController:registerVC animated:YES];
     [registerVC release];
+}
+
+- (void)forgetPassword{
+    ForgetPassword *forgetPasswordVC=[[ForgetPassword alloc] initWithNibName:@"ForgetPassword" bundle:nil];
+    [self.navigationController  pushViewController:forgetPasswordVC animated:YES];
 }
 
 - (void)pushToContentVC {

@@ -10,7 +10,7 @@
 #import "TopRefreshTableView.h"
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
-#import "HTTPRequestErrorMSG.h"
+
 #import "UserObjectService.h"
 @interface PartyListTableVC : UITableViewController <RefreshTableHeaderDelegate>{
      

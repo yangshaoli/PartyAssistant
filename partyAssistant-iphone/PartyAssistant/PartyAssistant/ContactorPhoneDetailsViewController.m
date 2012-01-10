@@ -233,10 +233,18 @@
             [self showAlertRequestFailed:REQUEST_ERROR_404];
             btn.hidden = NO;
             btn.enabled = YES;
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            btn.hidden = NO;
+            btn.enabled = YES;
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+            btn.hidden = NO;
+            btn.enabled = YES;
         }else{
             btn.hidden = NO;
             btn.enabled = YES;
-            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
         }
     } else {
         //[activity removeFromSuperview];
@@ -249,13 +257,27 @@
 }
 
 
-
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
+    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
+    if([self isEmailAddress:cvalueString]){
+        return 1;
+    }
+
     return 2;
 }
 
@@ -285,38 +307,57 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
-    // Configure the cell...
-    if(indexPath.section==0){
-        //NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
-       // NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
-        UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-        typeLb.text = @"联系方式";
-        typeLb.textAlignment = UITextAlignmentRight;
-        typeLb.textColor = [UIColor blueColor];
-        typeLb.backgroundColor = [UIColor clearColor];
-        [cell addSubview:typeLb];
-        UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
-        valLb.text = [clientDict objectForKey:@"cValue"];
-        valLb.backgroundColor = [UIColor clearColor];
-        cell.selectionStyle=UITableViewCellSelectionStyleNone;
-        [cell addSubview:valLb];
-    }
-    if(indexPath.section==1){
-        cell.selectionStyle= UITableViewCellSelectionStyleNone;
-        UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-        wordsLabel.text=@"留言";
-        wordsLabel.textAlignment = UITextAlignmentRight;
-        wordsLabel.textColor = [UIColor blueColor];
-        wordsLabel.backgroundColor = [UIColor clearColor];
-        NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
-        if(detailWordString.length>1){
-             messageTextView.text=[detailWordString substringFromIndex:1];
-        }else{
+    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
+    if([self isEmailAddress:cvalueString]){
+        if(indexPath.section==0){
+            cell.selectionStyle= UITableViewCellSelectionStyleNone;
+            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+            wordsLabel.text=@"留言";
+            wordsLabel.textAlignment = UITextAlignmentRight;
+            wordsLabel.textColor = [UIColor blueColor];
+            wordsLabel.backgroundColor = [UIColor clearColor];
+            NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+            if(detailWordString.length>1){
+                messageTextView.text=[detailWordString substringFromIndex:1];
+            }else{
+            }
+            [cell addSubview:wordsLabel];
         }
-        [cell addSubview:wordsLabel];
+    
+    }else{
+        if(indexPath.section==0){
+            //NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
+            // NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
+            UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+            typeLb.text = @"联系方式";
+            typeLb.textAlignment = UITextAlignmentRight;
+            typeLb.textColor = [UIColor blueColor];
+            typeLb.backgroundColor = [UIColor clearColor];
+            [cell addSubview:typeLb];
+            UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
+            valLb.text = [clientDict objectForKey:@"cValue"];
+            valLb.backgroundColor = [UIColor clearColor];
+            cell.selectionStyle=UITableViewCellSelectionStyleNone;
+            [cell addSubview:valLb];
+        }
+        if(indexPath.section==1){
+            cell.selectionStyle= UITableViewCellSelectionStyleNone;
+            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+            wordsLabel.text=@"留言";
+            wordsLabel.textAlignment = UITextAlignmentRight;
+            wordsLabel.textColor = [UIColor blueColor];
+            wordsLabel.backgroundColor = [UIColor clearColor];
+            NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+            if(detailWordString.length>1){
+                messageTextView.text=[detailWordString substringFromIndex:1];
+            }else{
+            }
+            [cell addSubview:wordsLabel];
+        }
+
     }
-        
+    // Configure the cell...
+            
     return cell;
 }
 
@@ -386,54 +427,6 @@
   }
     return nil;
 }
-////通过电话找出此联系人的名字
-//- (ABRecordRef)getContactorNameDataByPhoneString:(NSString *)phoneString{
-////    NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
-////    NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
-//    ABAddressBookRef addressBook = ABAddressBookCreate();
-//    CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
-//                                                                addressBook,
-//                                                                (__bridge CFStringRef)contactorNameString);
-//    
-//    NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
-//    if(array1.count>0){
-//        for (int i=0; i<CFArrayGetCount(searchResult); )
-//        {
-//            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
-//            if(!card){
-//                continue;
-//            }
-//            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
-//            if(!phone){
-//                continue;
-//            }
-//            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
-//                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
-//                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
-//                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
-//                    //self.cID = ABRecordGetRecordID(card);
-//                    if(ABPersonHasImageData(card)){
-//                        return card;
-//                    }else{
-//                        return nil;
-//                    }
-//                }else{
-//                    continue;
-//                }
-//                
-//            }
-//            return nil;   
-//            
-//        }
-//    }else{
-//        return nil;
-//    }
-//    return nil;
-//}
-
-
-
-
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if(section==0){

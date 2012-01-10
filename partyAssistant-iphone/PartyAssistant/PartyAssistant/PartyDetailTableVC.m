@@ -186,46 +186,17 @@
             self.peopleCountArray = countArray;
             [self.tableView reloadData];
         }else{
-            // [self showAlertRequestFailed:description];		
+             [self showAlertRequestFailed:description];		
         }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
-    
-    
-//    NSLog(@"requestFinished预期调用2222");
-//	NSString *response = [request responseString];
-//	SBJsonParser *parser = [[SBJsonParser alloc] init];
-//	NSDictionary *result = [parser objectWithString:response];
-//	NSString *description = [result objectForKey:@"description"];
-//	[self dismissWaiting];
-//    if ([request responseStatusCode] == 200) {
-//        if ([description isEqualToString:@"ok"]) {
-//            NSDictionary *dict = [result objectForKey:@"datasource"];
-//            self.clientsArray = [dict objectForKey:@"clientList"];
-//            NSLog(@"requestFinished============self.clientsArray输出>>>>%@",self.clientsArray);
-//            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
-//            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
-//            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
-//                tbi.badgeValue = nil;
-//            }else{
-//                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
-//            }
-//            [self.tableView reloadData];
-//        }else{
-//            [self showAlertRequestFailed:description];	
-//            NSLog(@"self.clientsArray在1");
-//        }
-//    }else if([request responseStatusCode] == 404){
-//        [self showAlertRequestFailed:REQUEST_ERROR_404];
-//        NSLog(@"self.clientsArray在2");
-//    }else{
-//        [self showAlertRequestFailed:REQUEST_ERROR_500];
-//        NSLog(@"self.clientsArray在3");
-//    }
-//	
-//
-    
-    
-    
     
     
 }
@@ -235,12 +206,6 @@
     //	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];
-    
-    
-    
-    
-    
-    
 }
 
 
@@ -286,8 +251,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -611,9 +580,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
-       
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

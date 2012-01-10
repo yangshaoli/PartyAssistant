@@ -208,6 +208,8 @@
 		89E7D93B146378CD0059ADF4 /* UserObjectService.m in Sources */ = {isa = PBXBuildFile; fileRef = 89E7D93A146378CD0059ADF4 /* UserObjectService.m */; };
 		89F05AE6146E028A00EBA2CB /* EditPartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */; };
 		89F05AE7146E028A00EBA2CB /* EditPartyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */; };
+		CE0B288C14BBDE57001EAEE8 /* ForgetPassword.m in Sources */ = {isa = PBXBuildFile; fileRef = CE0B288A14BBDE57001EAEE8 /* ForgetPassword.m */; };
+		CE0B288D14BBDE57001EAEE8 /* ForgetPassword.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE0B288B14BBDE57001EAEE8 /* ForgetPassword.xib */; };
 		CE295D4814A3492F00C73505 /* ContentTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CE295D4614A3492E00C73505 /* ContentTableVC.m */; };
 		CE295D4914A3492F00C73505 /* ContentTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE295D4714A3492E00C73505 /* ContentTableVC.xib */; };
 		CE472E9F148DB53E00E24742 /* pinyin.c in Sources */ = {isa = PBXBuildFile; fileRef = CE472E9D148DB53E00E24742 /* pinyin.c */; };
@@ -583,6 +585,9 @@
 		89F05AE3146E028A00EBA2CB /* EditPartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPartyTableViewController.h; sourceTree = "<group>"; };
 		89F05AE4146E028A00EBA2CB /* EditPartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPartyTableViewController.m; sourceTree = "<group>"; };
 		89F05AE5146E028A00EBA2CB /* EditPartyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditPartyTableViewController.xib; sourceTree = "<group>"; };
+		CE0B288914BBDE57001EAEE8 /* ForgetPassword.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgetPassword.h; sourceTree = "<group>"; };
+		CE0B288A14BBDE57001EAEE8 /* ForgetPassword.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForgetPassword.m; sourceTree = "<group>"; };
+		CE0B288B14BBDE57001EAEE8 /* ForgetPassword.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ForgetPassword.xib; sourceTree = "<group>"; };
 		CE295D4514A3492E00C73505 /* ContentTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTableVC.h; sourceTree = "<group>"; };
 		CE295D4614A3492E00C73505 /* ContentTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentTableVC.m; sourceTree = "<group>"; };
 		CE295D4714A3492E00C73505 /* ContentTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContentTableVC.xib; sourceTree = "<group>"; };
@@ -1315,6 +1320,9 @@
 				8944F6FB14735D81001E30C6 /* PartyUserNameInputViewController.h */,
 				8944F6FC14735D81001E30C6 /* PartyUserNameInputViewController.m */,
 				8944F6FD14735D81001E30C6 /* PartyUserNameInputViewController.xib */,
+				CE0B288914BBDE57001EAEE8 /* ForgetPassword.h */,
+				CE0B288A14BBDE57001EAEE8 /* ForgetPassword.m */,
+				CE0B288B14BBDE57001EAEE8 /* ForgetPassword.xib */,
 			);
 			name = Accounts;
 			sourceTree = "<group>";
@@ -1557,6 +1565,7 @@
 				CE5B255C14B5D06900FBBDDA /* apply_gray@2x.png in Resources */,
 				CE5B255D14B5D06900FBBDDA /* apply.png in Resources */,
 				CE5B255E14B5D06900FBBDDA /* apply@2x.png in Resources */,
+				CE0B288D14BBDE57001EAEE8 /* ForgetPassword.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1716,6 +1725,7 @@
 				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 				75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */,
 				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
+				CE0B288C14BBDE57001EAEE8 /* ForgetPassword.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
