@@ -23,6 +23,8 @@ from ERROR_MSG_SETTINGS import *
 re_username_string = re.compile(r'^[a-zA-Z]+')
 re_username = re.compile(r'^[a-zA-Z]+\w+$')
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
+re_email = re.compile(r'')
+re_phone = re.compile(r'')
 SMS_APPLY_TIPS_CONTENT = u'(报名点击:aaa, 不报名点击:bbb)'        
 
 @csrf_exempt
@@ -124,3 +126,10 @@ def getAccountRemaining(request):
         return {'remaining':user.userprofile.available_sms_count}
     else:
         return {'remaining':0}
+
+@csrf_exempt
+@apis_json_response_decorator
+def forgetPassword(request):
+    if request.method == 'POST' and 'value' in request.POST:
+        value = request.POST['value']
+        if 
