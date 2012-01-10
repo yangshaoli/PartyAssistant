@@ -13,3 +13,4 @@
 #define ADD_BADGE_TO_TABBAR @"AddBadgeToTabbar"
 #define UpdateReMainCount @"kUpdateSMSSendViaServerRemainCount"
 #define UpdateRemainCountFinished @"kUpdateSMSSendViaServerRemainCount"
+#define TOP_PRESENT_VIEW_APPEAR @"kViewWillAppearWhenAppBecomeActive"

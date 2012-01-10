@@ -28,6 +28,7 @@
 - (void)displayAddPersonViewController;
 - (NSString *)getCleanPhoneNumber:(NSString *)rawPhoneNumber;
 - (NSString *)getCleanLetter:(NSString *)originalString;
+- (void)filterContentForSearchText:(NSString*)searchText;
 @end
 
 
@@ -56,6 +57,8 @@
     addressBook = ABAddressBookCreate();
     
 	self.people = (__bridge_transfer NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
+    
+    ABAddressBookRegisterExternalChangeCallback(addressBook, pickerAddressBookChanged,  (__bridge void*)self);
     
     self.group = [[NSMutableArray alloc] init];
 	
@@ -115,6 +118,7 @@
 - (void)dealloc
 {
 	delegate = nil;
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, pickerAddressBookChanged,  (__bridge void*)self);
 	CFRelease(addressBook);
 }
 
@@ -1109,5 +1113,13 @@
         return nil;
     }
     return self.toolbar;
+}
+
+void pickerAddressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
+    if ([[[(__bridge ButtonPeoplePicker *)context searchField] text] length] > 1) {
+        [(__bridge ButtonPeoplePicker *)context setPeople:(__bridge_transfer NSArray *)ABAddressBookCopyArrayOfAllPeople(reference)];
+        [(__bridge ButtonPeoplePicker *)context filterContentForSearchText:[[[(__bridge ButtonPeoplePicker *)context searchField] text] stringByReplacingOccurrencesOfString:@"\u200B" withString:@""]];
+        [[(__bridge ButtonPeoplePicker *)context uiTableView] reloadData];
+    }
 }
 @end

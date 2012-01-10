@@ -22,7 +22,7 @@
         self.phoneNum = @"";
         self.userName = @"";
         self.nickName = @"";
-        self.leftSMSCount = @"";
+        self.leftSMSCount = @"0";
     }
     
     return self;
@@ -50,7 +50,7 @@
     self.phoneNum = @"";
     self.userName = @"";
     self.nickName = @"";
-    self.leftSMSCount = @"";
+    self.leftSMSCount = @"0";
 }
 
 - (void)updateRemaining {

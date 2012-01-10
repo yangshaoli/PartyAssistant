@@ -14,6 +14,7 @@
 
 @synthesize window = _window;
 @synthesize remainCountRequest = _remainCountRequest;
+@synthesize nav = _nav;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
     NSLog(@"Luanch");
@@ -72,15 +73,15 @@
 #pragma Push Notification
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
     NSLog(@"Luanch Option");
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
     if(addressBook == nil) {
         addressBook = ABAddressBookCreate();
         ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
     }
-    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
-    [_window addSubview:nav.view];
+    _nav = [[UINavigationController alloc] initWithRootViewController:login];
+    [self.window addSubview:_nav.view];
 
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     
@@ -90,6 +91,8 @@
     [[ECPurchase shared] setVerifyRecepitMode:ECVerifyRecepitModeServer];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateRemainCount) name:UpdateReMainCount object:nil];
+    
+    [self.window makeKeyAndVisible];
     
     return YES;  
 }  
@@ -293,5 +296,11 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
     NSError *error = [request error];
+}
+
+- (void)dealloc {
+    [super dealloc];
+    self.nav = nil;
+    [_nav release];
 }
 @end

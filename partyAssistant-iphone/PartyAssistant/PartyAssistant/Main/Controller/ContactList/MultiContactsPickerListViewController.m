@@ -166,7 +166,7 @@
 -(void)initData{
 	self.abData = [[AddressBookDataManager sharedAddressBookDataManager] getContactListData];
     
-    self.contacts = contactorsArray; 
+    //self.contacts = contactorsArray; 
     
     if([self.abData count] <1)
 	{
@@ -198,7 +198,8 @@
 		
 		//NSString *string = [contactNameArray objectAtIndex:i];
         //        NSLog(@"%@",contact.contactName);
-		NSString *string = [contact.contactName length] > 0 ? contact.contactName : [NSString stringWithFormat:@" %@",phone];
+		NSString *string = [contact.contactName length] > 0 ? contact.contactName : [NSString stringWithFormat:@"%@",phone];
+        NSLog(@"%@",string);
 		if([self searchResult:string searchText:@"曾"])
             sectionName = @"Z";
 		else if([self searchResult:string searchText:@"解"])

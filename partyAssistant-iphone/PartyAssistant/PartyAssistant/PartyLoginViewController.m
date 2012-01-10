@@ -23,6 +23,7 @@
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
 #import "URLSettings.h"
+#import "NotificationSettings.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -53,6 +54,8 @@
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
 @synthesize partyList;
+@synthesize appTab;
+
 - (void)dealloc {
     [super dealloc];
     
@@ -141,12 +144,22 @@
         return;
     }
     
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive) name: UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.navigationController.navigationBarHidden = NO;
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    if(user){
+        if(user.uID > 0){
+        } else {
+            self.navigationController.navigationBarHidden = NO;
+        }
+    }
+
+    
+    self.appTab = nil;
 }
 
 - (void)viewDidUnload
@@ -311,6 +324,7 @@
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
+    self.appTab = tab;
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
     tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
     [self.navigationController pushViewController:tab animated:YES];
@@ -465,5 +479,14 @@
 - (void)saveInputFailed {
     [_HUD hide:YES];
     [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)appBecomeActive {
+    if (self.appTab) {
+        UINavigationController *nav = [[self.appTab viewControllers] objectAtIndex:self.appTab.selectedIndex];
+        if (nav.presentedViewController) {
+            [nav.presentedViewController viewWillAppear:YES];
+        }
+    }
 }
 @end

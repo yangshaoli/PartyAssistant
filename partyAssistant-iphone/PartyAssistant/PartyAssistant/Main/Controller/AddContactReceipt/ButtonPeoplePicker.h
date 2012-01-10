@@ -68,6 +68,9 @@ typedef enum {
 - (void)resetData;
 - (ClientObject *)scanAddressBookAndSearch:(ClientObject *)client;
 
+void pickerAddressBookChanged (ABAddressBookRef addressBook,
+                         CFDictionaryRef info,
+                         void *context);
 @end
 
 @protocol ButtonPeoplePickerDelegate

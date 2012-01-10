@@ -28,8 +28,9 @@ ABAddressBookRef addressBook;
     ASIHTTPRequest *remainCountRequest;
 }
 
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) ASIHTTPRequest *remainCountRequest;
+@property (retain, nonatomic) UIWindow *window;
+@property (retain, nonatomic) UINavigationController *nav;
+@property (retain, nonatomic) ASIHTTPRequest *remainCountRequest;
 
 void addressBookChanged (ABAddressBookRef addressBook,
                          CFDictionaryRef info,

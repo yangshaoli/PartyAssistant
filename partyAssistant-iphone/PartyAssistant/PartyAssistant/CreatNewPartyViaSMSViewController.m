@@ -164,7 +164,7 @@
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
-            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
             vc.delegate = self;
             [self.navigationController pushViewController:vc animated:YES];
         }
@@ -774,11 +774,6 @@
 #pragma mark -
 #pragma mark update remain count
 - (void)updateRemainCount {
-    AddressBookDBService *fav = [AddressBookDBService sharedAddressBookDBService];
-    for (ClientObject *client in self.receipts){
-        [fav useContact:client];
-    }
-    return;
     if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
         UIAlertView *alert=[[UIAlertView alloc]
                             initWithTitle:@"短信内容不可以为空"
@@ -824,7 +819,6 @@
         UserObjectService *us = [UserObjectService sharedUserObjectService];
         UserObject *user = [us getUserObject];
         user.leftSMSCount = [remainCount stringValue];
-        NSLog(@"%@", user.leftSMSCount);
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:remainCount]];
         [self SMSContentInputDidFinish];
     } else if([request responseStatusCode] == 404){
