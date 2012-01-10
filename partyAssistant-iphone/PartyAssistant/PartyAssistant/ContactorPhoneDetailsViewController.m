@@ -107,10 +107,6 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
     [defaults setInteger:5  forKey:keyString]; 
-   
-    
-    NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated
