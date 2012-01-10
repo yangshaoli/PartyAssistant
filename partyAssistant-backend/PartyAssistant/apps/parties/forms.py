@@ -27,7 +27,7 @@ class InviteForm(forms.Form):
     content = forms.CharField(widget=forms.TextInput(), required=True)   
             
 class PublicEnrollForm(forms.Form):
-    name = forms.CharField(error_messages={'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required=True, max_length='14')  
+    name = forms.CharField(error_messages={'required':u'姓名必填', 'max_length':u'姓名限制在16个字符以内'}, required=True, max_length=14)  
     phone_or_email = forms.CharField(error_messages={'required':u'联系方式必填'}, required=True)
     leave_message = forms.CharField(error_messages={'max_length':u'留言长度不能超过100字符'}, max_length=100, required=False)
     
