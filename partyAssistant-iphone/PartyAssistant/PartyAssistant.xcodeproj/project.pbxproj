@@ -30,6 +30,12 @@
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
 		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
 		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
+		75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */; };
+		75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */; };
+		75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */; };
+		75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */; };
+		75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394914B596780071BF1D /* NSArray+PerformSelector.m */; };
+		75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */; };
 		75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840414AC61CF00AB950A /* bottom-button-bg.png */; };
 		75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840514AC61CF00AB950A /* ButtonCorners.png */; };
 		75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */; };
@@ -238,7 +244,6 @@
 		CEB28899148E17A300B7E3B7 /* ABContact.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28890148E17A300B7E3B7 /* ABContact.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28894148E17A300B7E3B7 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		CEB2889C148E17A300B7E3B7 /* AddressBookDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28896148E17A300B7E3B7 /* AddressBookDataManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28898148E17A300B7E3B7 /* ContactData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750614ADCDA000348263 /* reinvite_word@2x.png */; };
 		CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750714ADCDA000348263 /* reinvite@2x.png */; };
@@ -296,6 +301,18 @@
 		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
 		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
 		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
+		75CEB1AE14B71B1500C45A3B /* AddressBookDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDataManager.h; sourceTree = "<group>"; };
+		75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDataManager.m; sourceTree = "<group>"; };
+		75DB0D0814B83803004F19C9 /* MultiFavoritesContactsList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiFavoritesContactsList.h; sourceTree = "<group>"; };
+		75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiFavoritesContactsList.m; sourceTree = "<group>"; };
+		75E0393A14B5388D0071BF1D /* MultiContactsPickerListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiContactsPickerListViewController.h; sourceTree = "<group>"; };
+		75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiContactsPickerListViewController.m; sourceTree = "<group>"; };
+		75E0394514B595DF0071BF1D /* SegmentManagingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentManagingViewController.h; sourceTree = "<group>"; };
+		75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SegmentManagingViewController.m; sourceTree = "<group>"; };
+		75E0394814B596780071BF1D /* NSArray+PerformSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PerformSelector.h"; sourceTree = "<group>"; };
+		75E0394914B596780071BF1D /* NSArray+PerformSelector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+PerformSelector.m"; sourceTree = "<group>"; };
+		75E0394B14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiContactsPhoneDetailViewController.h; sourceTree = "<group>"; };
+		75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiContactsPhoneDetailViewController.m; sourceTree = "<group>"; };
 		75E4840414AC61CF00AB950A /* bottom-button-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom-button-bg.png"; sourceTree = "<group>"; };
 		75E4840514AC61CF00AB950A /* ButtonCorners.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonCorners.png; sourceTree = "<group>"; };
 		75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonCorners@2x.png"; sourceTree = "<group>"; };
@@ -623,8 +640,6 @@
 		CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABContactsHelper.m; sourceTree = "<group>"; };
 		CEB28893148E17A300B7E3B7 /* ABGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ABGroup.h; sourceTree = "<group>"; };
 		CEB28894148E17A300B7E3B7 /* ABGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ABGroup.m; sourceTree = "<group>"; };
-		CEB28895148E17A300B7E3B7 /* AddressBookDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDataManager.h; sourceTree = "<group>"; };
-		CEB28896148E17A300B7E3B7 /* AddressBookDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDataManager.m; sourceTree = "<group>"; };
 		CEB28897148E17A300B7E3B7 /* ContactData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContactData.h; sourceTree = "<group>"; };
 		CEB28898148E17A300B7E3B7 /* ContactData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContactData.m; sourceTree = "<group>"; };
 		CEC0750614ADCDA000348263 /* reinvite_word@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reinvite_word@2x.png"; sourceTree = "<group>"; };
@@ -672,8 +687,8 @@
 		7528DADE14AB1E4000236609 /* AddContactReceipt */ = {
 			isa = PBXGroup;
 			children = (
+				75DB0D0614B8375D004F19C9 /* FavoritesList */,
 				7528DADF14AB1E7200236609 /* AddContactReceipt */,
-				7528DAEC14AB1E7200236609 /* ContactList */,
 			);
 			name = AddContactReceipt;
 			sourceTree = "<group>";
@@ -704,6 +719,10 @@
 			children = (
 				7528DAED14AB1E7200236609 /* ContactsListPickerViewController.h */,
 				7528DAEE14AB1E7200236609 /* ContactsListPickerViewController.m */,
+				75E0393A14B5388D0071BF1D /* MultiContactsPickerListViewController.h */,
+				75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */,
+				75E0394B14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.h */,
+				75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */,
 			);
 			name = ContactList;
 			path = Main/Controller/ContactList;
@@ -759,6 +778,37 @@
 				75C02938149459FE00067730 /* ECStoreObserver.m */,
 			);
 			name = Purchase;
+			sourceTree = "<group>";
+		};
+		75CEB1AD14B71B1500C45A3B /* AddressBookManagement */ = {
+			isa = PBXGroup;
+			children = (
+				75CEB1AE14B71B1500C45A3B /* AddressBookDataManager.h */,
+				75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */,
+			);
+			name = AddressBookManagement;
+			path = Main/Service/AddressBookManagement;
+			sourceTree = "<group>";
+		};
+		75DB0D0614B8375D004F19C9 /* FavoritesList */ = {
+			isa = PBXGroup;
+			children = (
+				75DB0D0814B83803004F19C9 /* MultiFavoritesContactsList.h */,
+				75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */,
+				7528DAEC14AB1E7200236609 /* ContactList */,
+			);
+			name = FavoritesList;
+			sourceTree = "<group>";
+		};
+		75E0394414B5959F0071BF1D /* SegmentController */ = {
+			isa = PBXGroup;
+			children = (
+				75E0394814B596780071BF1D /* NSArray+PerformSelector.h */,
+				75E0394914B596780071BF1D /* NSArray+PerformSelector.m */,
+				75E0394514B595DF0071BF1D /* SegmentManagingViewController.h */,
+				75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */,
+			);
+			name = SegmentController;
 			sourceTree = "<group>";
 		};
 		75E4840314AC61CF00AB950A /* ButtonPicker */ = {
@@ -1044,6 +1094,7 @@
 		89326531145E7440006E827D /* CustomClass */ = {
 			isa = PBXGroup;
 			children = (
+				75E0394414B5959F0071BF1D /* SegmentController */,
 				7A2CDD8514A207C20054B723 /* RefreshTableView */,
 				CE81DA4514847B5800E5BFA7 /* SearchIndex */,
 				899D8C6E146B6DD300B48698 /* MBProgressHUD.h */,
@@ -1281,6 +1332,7 @@
 		8947F027145803CE00017ED1 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				75CEB1AD14B71B1500C45A3B /* AddressBookManagement */,
 				75BC083514987DE3007B39CB /* DeviceDetection */,
 				75C02933149459D000067730 /* Purchase */,
 				899D8C6B146B6DB000B48698 /* DataManager.h */,
@@ -1388,8 +1440,6 @@
 				CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */,
 				CEB28893148E17A300B7E3B7 /* ABGroup.h */,
 				CEB28894148E17A300B7E3B7 /* ABGroup.m */,
-				CEB28895148E17A300B7E3B7 /* AddressBookDataManager.h */,
-				CEB28896148E17A300B7E3B7 /* AddressBookDataManager.m */,
 				CEB28897148E17A300B7E3B7 /* ContactData.h */,
 				CEB28898148E17A300B7E3B7 /* ContactData.m */,
 			);
@@ -1684,7 +1734,6 @@
 				CEB28899148E17A300B7E3B7 /* ABContact.m in Sources */,
 				CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */,
 				CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */,
-				CEB2889C148E17A300B7E3B7 /* AddressBookDataManager.m in Sources */,
 				CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */,
 				89C709C114908E0D00699AE0 /* DeviceTokenService.m in Sources */,
 				89CC34641491F27C0074E898 /* NumberLabel.m in Sources */,
@@ -1716,6 +1765,12 @@
 				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 				75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */,
 				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
+				75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */,
+				75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */,
+				75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */,
+				75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */,
+				75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */,
+				75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1847,7 +1902,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;
@@ -1864,7 +1919,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "${SDK_DIR}/usr/include/libxml2";
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;
