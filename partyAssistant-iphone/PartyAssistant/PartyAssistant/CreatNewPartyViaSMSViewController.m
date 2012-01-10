@@ -804,8 +804,8 @@
         [request setDelegate:self];
         [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
         [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
-        [request startSynchronous];
         [self showWaiting];
+        [request startSynchronous];
     }
 } 
 

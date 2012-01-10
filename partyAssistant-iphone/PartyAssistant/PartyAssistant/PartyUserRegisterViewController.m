@@ -16,10 +16,11 @@
 #define PwdCheckTextFieldTag        103
 
 
-#define NotLegalTag                 1
-#define NotPassTag                  2
-#define SuccessfulTag               3
-#define InvalidateNetwork           4
+#define NotLegalTag                         1
+#define NotPassTag                          2
+#define SuccessfulTag                       3
+#define InvalidateNetwork                   4
+#define PasswordAndPasswordCheckNotEqual    5
 
 @interface PartyUserRegisterViewController ()
 
@@ -140,6 +141,7 @@
     isOk = [self pwdEqualToPwdCheck];
     
     if (!isOk) {
+        [self showAlertWithMessage:@"密码和确认密码内容不一致！" buttonTitle:@"OK" tag:NotLegalTag];
         return;
     }
     
