@@ -53,13 +53,12 @@ def accountLogin(request):
 @commit_on_success
 def accountLogout(request):
     if request.method == 'POST':
-        user = request.user
+        device_token = request.POST['device_token']
+        user_token_list = UserIPhoneToken.objects.filter(device_token = device_token)
+        for user_token in user_token_list:
+            user_token.delete()
         if user:
-            device_token = request.POST['device_token']
-            user_token_list = UserIPhoneToken.objects.filter(user = user, device_token = device_token)
-            for user_token in user_token_list:
-                user_token.delete()
-        logout(request)
+            logout(request)
         
 @csrf_exempt
 @apis_json_response_decorator
@@ -76,7 +75,7 @@ def accountRegist(request):
             raise myException(ERROR_ACCOUNTREGIST_USERNAME_LENTH_WRONG)
         if len(password) > 16 or len(password) < 6:
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
-        if not re_username_head.match(username):
+        if not re_username_string.match(username):
             raise myException(ERROR_ACCOUNTREGIST_USERNAME_INVALID_FORMAT_HEAD)
         if not re_username.match(username):
             raise myException(ERROR_ACCOUNTREGIST_USERNAME_INVALID_FORMAT_STRING)
