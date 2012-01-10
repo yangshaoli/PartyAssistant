@@ -273,15 +273,17 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
         user.leftSMSCount = [remainCount stringValue];
         NSLog(@"%@", user.leftSMSCount);
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[remainCount intValue]]]];
+        return;
     } else if([request responseStatusCode] == 404){
-        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
     } else {
-        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
     }
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
     NSError *error = [request error];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
 }
 
 - (void)dealloc {

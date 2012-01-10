@@ -120,10 +120,12 @@ static DataManager *sharedDataManager = nil;
     if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
+        NSLog(@"%@",[request responseString]);
         if ([request responseStatusCode] == 200) {
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
             NSString *description = [dic objectForKey:@"description"];
+            NSLog(@"%@",description);
             if ([description isEqualToString:@"ok"]) {
                 [self saveUsrData:dic];
                 [pool release];
