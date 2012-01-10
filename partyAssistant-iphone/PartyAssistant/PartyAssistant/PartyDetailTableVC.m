@@ -487,36 +487,47 @@
     [self presentModalViewController:vc animated:YES];
 }
 
-//正则判断是否Email地址
-- (BOOL) isEmailAddress:(NSString*)email { 
-    
-    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-    
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-    
-    return [emailTest evaluateWithObject:email]; 
-    
-} 
+////正则判断是否Email地址
+//- (BOOL) isEmailAddress:(NSString*)email { 
+//    
+//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+//    
+//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+//    
+//    return [emailTest evaluateWithObject:email]; 
+//    
+//} 
 
 
 - (void)resentMsg{
-    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:@"再次发送时会过滤掉联系方式为邮箱的人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
-    [alertV show];
+//    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+//    [alertV show];
+//
+//    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+//    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+//    NSLog(@"打印type：：：%@",self.partyObj.type);
+//    for(NSDictionary  *clientDic in self.clientsArray){
+//        if([self.partyObj.type isEqualToString:@"email"]){
+//            [clientDicArray removeObject:clientDic];
+//        }
+//    }
+//    
+//    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
+//    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+//    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+//    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 
-    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
-    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
-    for(NSDictionary  *clientDic in self.clientsArray){
-        NSString *cValueString=[clientDic objectForKey:@"cValue"];
-        if([self  isEmailAddress:cValueString]){
-            [clientDicArray removeObject:clientDic];
-        }
-    }
     
-    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
-    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
-    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
-
+    [self getPartyClientSeperatedList];
+    if([self.partyObj.type isEqualToString:@"email"]){
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+        [alertV show];
+    }else{
+        ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+        [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+        [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+        [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    }
 }
 - (void)editBtnAction{
     ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];

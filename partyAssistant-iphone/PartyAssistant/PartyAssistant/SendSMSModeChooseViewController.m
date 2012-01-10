@@ -7,18 +7,14 @@
 //
 
 #import "SendSMSModeChooseViewController.h"
+#import "UserObjectService.h"
+#import "UserObject.h"
+#import "NotificationSettings.h"
 
 @implementation SendSMSModeChooseViewController
+@synthesize tableView = _tableView;
 @synthesize delegate;
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
+@synthesize leftCountLabel;
 
 - (void)didReceiveMemoryWarning
 {
@@ -33,7 +29,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
 
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -51,6 +52,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -88,13 +90,28 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell = nil;
+    static NSString *Cell1Identifier = @"Cell1";
+    static NSString *Cell2Identifier = @"Cell2";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    if (indexPath.row == 0) {
+        cell = [tableView dequeueReusableCellWithIdentifier:Cell1Identifier];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:Cell1Identifier];
+        }
+    } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:Cell2Identifier];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:Cell2Identifier];
+            CGRect labelFrame = leftCountLabel.frame;
+            CGFloat centerY = cell.contentView.frame.size.height / 2;
+            CGFloat centerX = cell.contentView.frame.size.width / 2 + labelFrame.size.width / 2;
+            leftCountLabel.center = CGPointMake(centerX, centerY);
+            [cell addSubview:leftCountLabel];
+        }
     }
     
+           
     switch (indexPath.row) {
         case 0:
             cell.textLabel.text = @"用自己手机发送";
@@ -185,4 +202,13 @@
     [self.tableView reloadData];
 }
 
+- (void)leftCountRefreshed:(NSNotification *)notify {
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 @end

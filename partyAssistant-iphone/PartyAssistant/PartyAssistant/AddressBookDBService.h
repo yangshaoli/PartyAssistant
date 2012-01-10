@@ -20,7 +20,7 @@
 #import <Foundation/Foundation.h>
 #import <sqlite3.h>
 
-@class ABContact;
+@class ClientObject;
 
 @interface AddressBookDBService : NSObject {
     NSMutableArray *myFavorites;
@@ -31,8 +31,8 @@
 + (AddressBookDBService *)sharedAddressBookDBService;
 - (void)loadMyFavorites;
 - (void)loadMyFavoritesByDB:(sqlite3 *)database;
-- (int)getFavoriteRecordCount:(ABContact *)contact;
-- (void)addFavoriteRecord:(ABContact *)contact;
-- (void)useContact:(ABContact *)contact;
+- (int)getFavoriteRecordCount:(ClientObject *)contact;
+- (void)addFavoriteRecord:(ClientObject *)contact;
+- (void)useContact:(ClientObject *)contact;
 
 @end

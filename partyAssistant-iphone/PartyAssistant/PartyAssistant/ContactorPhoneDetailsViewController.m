@@ -79,7 +79,14 @@
     }
     
     messageTextView=[[UITextView alloc] init];
-    messageTextView.frame=CGRectMake(100, 153, 200, 40);
+    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
+    if([self.partyObj.type isEqualToString:@"email"]){
+       messageTextView.frame=CGRectMake(100, 85, 200, 40);
+    }else{
+       messageTextView.frame=CGRectMake(100, 153, 200, 40);
+    
+    }
+    
     messageTextView.font=[UIFont systemFontOfSize:15];
     messageTextView.backgroundColor=[UIColor clearColor];
     messageTextView.editable=NO;
@@ -257,16 +264,16 @@
 }
 
 
-//正则判断是否Email地址
-- (BOOL) isEmailAddress:(NSString*)email { 
-    
-    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-    
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-    
-    return [emailTest evaluateWithObject:email]; 
-    
-} 
+////正则判断是否Email地址
+//- (BOOL) isEmailAddress:(NSString*)email { 
+//    
+//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+//    
+//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+//    
+//    return [emailTest evaluateWithObject:email]; 
+//    
+//} 
 
 #pragma mark - Table view data source
 
@@ -274,7 +281,7 @@
 {
     // Return the number of sections.
     NSString *cvalueString=[clientDict objectForKey:@"cValue"];
-    if([self isEmailAddress:cvalueString]){
+    if([self.partyObj.type isEqualToString:@"email"]){
         return 1;
     }
 
@@ -308,10 +315,11 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     NSString *cvalueString=[clientDict objectForKey:@"cValue"];
-    if([self isEmailAddress:cvalueString]){
+    
+    if([self.partyObj.type isEqualToString:@"email"]){
         if(indexPath.section==0){
             cell.selectionStyle= UITableViewCellSelectionStyleNone;
-            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 40, 44)];
             wordsLabel.text=@"留言";
             wordsLabel.textAlignment = UITextAlignmentRight;
             wordsLabel.textColor = [UIColor blueColor];
@@ -322,6 +330,7 @@
             }else{
             }
             [cell addSubview:wordsLabel];
+           
         }
     
     }else{
@@ -535,11 +544,17 @@
 //    [phoneDetailDelegate contactDetailSelectedWithUserInfo:userinfo];
 //   
 //    [self.navigationController popViewControllerAnimated:YES];
-    if(indexPath.section==0){
+    if([self.partyObj.type isEqualToString:@"email"]){
+        return;
+    }else{
+        if(indexPath.section==0){
             //NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"发送短信" otherButtonTitles:@"拨打电话", nil];
             actionSheet.tag = 5;
             [actionSheet showInView:self.tabBarController.view];
+        }
+
+    
     }
 }
 

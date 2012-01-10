@@ -13,7 +13,8 @@
 			"description":"ok",
 			"data":{
                 		'partyId':Integer,
-                		'applyURL':String
+                		'applyURL':String,
+				'sms_count_remaining':Integer,
                 		}
 			}
 		Error - {
@@ -44,7 +45,8 @@
 	PartyDict:{
 			"clientsData":Dict
 			"description":String,
-			"partyId":int
+			"partyId":int,
+			"type":"phone"/"email"
 			}
 
 #1	start_id is the ID of the start query id, it will return the parties whose id is smaller than the start_id
@@ -188,7 +190,8 @@
 		"description":"ok",
 		"datasource":{
                 		'partyId':Integer,
-                		'applyURL':String
+                		'applyURL':String,
+				'sms_count_remaining':Integer,
                 		}
 		}
 12. GetBadgeNumber:
@@ -215,7 +218,6 @@
                                 "remaining":Integer,
                                 }
                 }
-
 14. forgetPassword:
 	url:"/a/accounts/forget_password/",
 	method:"POST",
@@ -227,5 +229,16 @@
 		"description":"ok",
 		"datasource":{}
 		}
-
-
+15. AccountLogout:
+        url:"/a/accounts/logout/",
+        method:"POST",
+        input:{
+		"id":Integer
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "remaining":Integer,
+                                }
+                }

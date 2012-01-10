@@ -128,8 +128,9 @@ function ajaxGetClients(applystatus){
 
             <label for="basic">姓名:</label>
             <input type="text" name="name" id="id_name" value=""  />
+            <font color='red'>{{ form.name.errors.0 }}</font>
             <label for="client_email_list">联系方式</label>
-            {{ form.phone_or_email }}{{ form.phone_or_email.errors.0 }}
+            {{ form.phone_or_email }}<font color='red'>{{ form.phone_or_email.errors.0 }}</font>
             <p style="color:#999;">请填写手机号码，以免收不到活动具体通知</p>
             <div data-role="fieldcontain">
             <label for="textarea" style="display:block;">我要留言:</label>
@@ -153,7 +154,10 @@ function ajaxGetClients(applystatus){
 </ul>
 
 
-	
+<div data-role="footer" class="ui-bar"> 
+	<a href="http://airenao.com/download/" data-role="button" data-icon="arrow-d">下载Android版</a>
+    <a href="#" data-role="button" data-icon="arrow-d">下载iPhone版</a>
+</div> 
     
     <!--div data-role="navbar">
 	<ul>
@@ -162,7 +166,7 @@ function ajaxGetClients(applystatus){
         <li><a href="{%url register %}" data-theme="b">注册</a></li>
 	</ul>
     </div-->    
-</div> 
+</div>
 
 
 <div data-role="page" id="yes" data-theme="c">
@@ -189,6 +193,8 @@ function ajaxGetClients(applystatus){
 		<p><a href="#enroll">已报名列表</a></p>	
 	</div><!-- /content -->
 </div>
+
+
 
 </body>
 </html>

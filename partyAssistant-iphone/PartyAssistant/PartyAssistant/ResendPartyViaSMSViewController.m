@@ -15,6 +15,7 @@
 #import "SMSObjectService.h"
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
+#import "AddressBookDataManager.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -67,23 +68,49 @@
 #pragma mark -
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
-    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
-        UIAlertView *alert=[[UIAlertView alloc]
-                            initWithTitle:@"短信内容不可以为空"
-                            message:@"内容为必填项"
-                            delegate:self
-                            cancelButtonTitle:@"请点击输入内容"
-                            otherButtonTitles: nil];
-        [alert show];
+//    [self saveSMSInfo];
+    if ([self.tempSMSObject.receiversArray count] == 0) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+        [alertV show];
     }else{
-        [self saveSMSInfo];
-        if ([self.tempSMSObject.receiversArray count] == 0) {
-           UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
-            [alertV show];
-        }else{
-            [self sendCreateRequest];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        if (self.tempSMSObject._isSendBySelf) {
+            
+        } else {
+            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+                UIAlertView *alert=[[UIAlertView alloc]
+                                    initWithTitle:@"需要充值"
+                                    message:@"余额不足，不能通过服务器端发送！"
+                                    delegate:nil
+                                    cancelButtonTitle:@"确定"
+                                    otherButtonTitles: nil];
+                [alert show];
+                return;
+            }
         }
+        
+        [self sendCreateRequest];
     }
+//
+//    
+//    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+//        UIAlertView *alert=[[UIAlertView alloc]
+//                            initWithTitle:@"短信内容不可以为空"
+//                            message:@"内容为必填项"
+//                            delegate:self
+//                            cancelButtonTitle:@"请点击输入内容"
+//                            otherButtonTitles: nil];
+//        [alert show];
+//    }else{
+//        [self saveSMSInfo];
+//        if ([self.tempSMSObject.receiversArray count] == 0) {
+//            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何有效收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+//            [alertV show];
+//        }else{
+//            [self sendCreateRequest];
+//        }
+//    }
 }
 
 - (void)saveSMSInfo{
@@ -209,9 +236,65 @@
 
 - (void)setNewReceipts:(NSArray *)newValues {
     NSMutableArray *newReceipts = [NSMutableArray arrayWithCapacity:10];
+    NSLog(@"mark:new Values===========%@",newValues);
+    NSDictionary *contactPhoneDic = [[AddressBookDataManager sharedAddressBookDataManager] getCallLogContactData];
     for (NSDictionary *value in newValues) {
         NSDictionary *newReceipt = [NSDictionary dictionaryWithObjectsAndKeys: [value objectForKey:@"cName"], @"name", [value objectForKey:@"cValue"], @"phoneNumber", nil];
-        [newReceipts addObject:newReceipt];
+        NSLog(@"%@",newReceipt);
+        
+        NSString *phoneNumber = [value objectForKey:@"cValue"];
+        
+        ClientObject *newClient = [[ClientObject alloc] init];
+        newClient.cName = [value objectForKey:@"cName"];
+        newClient.cVal = [value objectForKey:@"cValue"];
+        
+        BOOL isNeedNewName = NO;
+        
+        if ([[value objectForKey:@"cName"] isEqualToString:@""]) {
+            isNeedNewName = YES;
+        }
+        
+        ABContact *theContact = [contactPhoneDic objectForKey:phoneNumber];
+        
+        if (theContact) {
+            
+            ABRecordID contactID = theContact.recordID;
+            ABRecordRef theSelectContact = ABAddressBookGetPersonWithRecordID(addressBook, contactID);
+            ABMultiValueRef phone = ABRecordCopyValue(theSelectContact, kABPersonPhoneProperty);
+
+            
+            NSString *aNumber = nil;
+            NSInteger selectIndex = -1;
+            for (int i=0; i<ABMultiValueGetCount(phone); i++) {
+                NSString *number = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, i);
+                aNumber = [number stringByReplacingOccurrencesOfString:@"+" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"+" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"#" withString:@""];
+                aNumber = [aNumber stringByReplacingOccurrencesOfString:@"-" withString:@""];
+                
+                if ([aNumber isEqualToString:phoneNumber]) {
+                    selectIndex = i;
+                    if (isNeedNewName) {
+                        newClient.cName = [theContact contactName];
+                    }
+                    break;
+                }
+            }
+            
+            if (selectIndex == -1) {
+                
+            } else {
+                ABMultiValueIdentifier indentifier = ABMultiValueGetIdentifierAtIndex(phone, selectIndex);
+                NSString *label = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phone, selectIndex);
+                newClient.phoneIdentifier = indentifier;
+                newClient.cID = contactID;
+                newClient.phoneLabel = label;
+            }
+        }
+        [newReceipts addObject:newClient];
     }
     [super setReceipts:[newReceipts mutableCopy]];
     
@@ -234,4 +317,41 @@
 - (void)changeSMSModeToSendBySelf:(BOOL)status {
     self.tempSMSObject._isSendBySelf = status;
 }
+
+#pragma mark -
+#pragma mark update remain count
+- (void)updateRemainCount {
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
+    }else{
+        [self saveSMSInfo];
+        if ([self.tempSMSObject.receiversArray count] == 0) {
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            [alertV show];
+            return;
+        }
+    }
+    
+    if (self.tempSMSObject._isSendBySelf) {
+        [self SMSContentInputDidFinish];
+    } else {
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
+        NSLog(@"result:%@",requestURL);
+        ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+        [request setDelegate:self];
+        [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+        [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
+        [request startSynchronous];
+        [self showWaiting];
+    }
+} 
 @end

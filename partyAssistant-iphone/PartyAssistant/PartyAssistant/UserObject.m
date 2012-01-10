@@ -22,7 +22,7 @@
         self.phoneNum = @"";
         self.userName = @"";
         self.nickName = @"";
-        self.leftSMSCount = @"";
+        self.leftSMSCount = @"0";
     }
     
     return self;
@@ -50,7 +50,7 @@
     self.phoneNum = @"";
     self.userName = @"";
     self.nickName = @"";
-    self.leftSMSCount = @"";
+    self.leftSMSCount = @"0";
 }
 
 - (void)updateRemaining {
@@ -78,6 +78,6 @@
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+    //NSError *error = [request error];
 }
 @end

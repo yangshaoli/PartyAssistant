@@ -32,7 +32,7 @@ class RegistrationForm(forms.Form):
         username = self.cleaned_data['username']
         exists = User.objects.filter(username = username).count() > 0
         if exists:
-            raise forms.ValidationError(u'该用户名已存在，请重新输入')
+            raise forms.ValidationError(u'该用户名已被使用，请重新输入')
 #        if username[0].isdigit():
 #            raise forms.ValidationError(u'用户名不能以数字开头')
         return username
@@ -90,7 +90,7 @@ class BuySMSForm(forms.Form):
     sms_count = forms.IntegerField()
     
     def clean_sms_count(self):
-        if self.cleaned_data['sms_count'] == None or self.cleaned_data['sms_count'] == 0:
+        if self.cleaned_data['sms_count'] == None or self.cleaned_data['sms_count'] <= 0:
             self._errors['sms_count'] = ErrorList([u'购买信息数量至少为1条'])
         if self.cleaned_data['sms_count'] > 999999999:
             self._errors['sms_count'] = ErrorList([u'一次性最大购买数量不可超过999,999,999条'])    

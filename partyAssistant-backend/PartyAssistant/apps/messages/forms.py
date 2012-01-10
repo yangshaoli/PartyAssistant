@@ -50,7 +50,7 @@ class SMSInviteForm(forms.Form):
         for phone in phone_list:
             phone = phone.strip()
             if phone != '':
-                if not re.search(phone_re, phone):
+                if (not re.search(phone_re, phone)) or  len(phone) != 11:
                     invalid_phone = phone
                 else:
                     if not phone in valid_phone_list:
@@ -58,6 +58,10 @@ class SMSInviteForm(forms.Form):
         
         if invalid_phone:
             raise forms.ValidationError(u'手机号码 %s 格式错误' % invalid_phone)
+        
+        if len(valid_phone_list) == 0:
+            raise forms.ValidationError(u'手机号码序列 %s 格式有错误,请注意书写格式及分隔标点' % self.cleaned_data['client_phone_list'])
+        
         
         self.cleaned_data['client_phone_list'] = ','.join(valid_phone_list)
         

@@ -1,6 +1,6 @@
 {% extends 'login_base.html' %}
 
-{% block title %}报名页面 - 爱热闹{% endblock %}
+{% block title %}报名页面 {% endblock %}
 
 {% block style %}
 <style>
@@ -14,6 +14,12 @@ input[type="image"] { border:0px;height:45px;}
     var applyStatus = ['apply', 'reject', 'noanswer'];
     $(document).ready(function(){
         for ( i in applyStatus) { ajaxGetClients(applyStatus[i]);} //进入页面时载入所有报名的人
+        {% if party.invite_type == 'email' %}
+        var errorMessage = $("#id_phone_or_email_error").text().replace('手机号码','邮件地址');
+        {% else %}
+        var errorMessage = $("#id_phone_or_email_error").text().replace('邮件地址','手机号码');
+        {% endif %}
+        $("#id_phone_or_email_error").text(errorMessage)
         /*$('a[id^="tab_"]').bind('click', function(){
             $("#"+this.id).siblings().attr('style','');
             $("#"+this.id).attr('style','padding:7px;border:solid #ccc 1px;background: -webkit-linear-gradient(top,#fff,#eee);border-bottom:solid #fff 1px;');//改变样式
@@ -25,7 +31,7 @@ input[type="image"] { border:0px;height:45px;}
     })
 
 function maskAddress(v){
-    if (v.indexOf('@') == -1 && (v.length != 11 || isNaN(v))) {
+    if (v.indexOf('@') == -1 && (v.length != 11 || !isNaN(v))) {
         return v;
     } else {
         var addressType = '';
@@ -158,15 +164,15 @@ function ajaxChangeStatus(id, applystatus){
             <div class="field">
              <label for="client_email_list">姓名<font color='red'>*</font></label>
              <input type='text' name='name' id='id_name' value='{{ form.name.value|default:'' }}'></input>
-             <font color='red'>{{ form.name.errors.0 }}<font>
+             <font color='red'>{{ form.name.errors.0 }}</font>
              </div>
             <div class="field">
              <label for="client_email_list">联系方式<font color='red'>*</font></label>
              <input type='text' name='phone_or_email' id='id_phone_or_email' value='{{ form.phone_or_email.value|default:'' }}' ></input>
-             <font color='red'>{{ form.phone_or_email.errors.0 }}</font>
+             <font id="id_phone_or_email_error" color='red'>{{ form.phone_or_email.errors.0 }}</font>
              <br/>
-             {% ifequal invite_message 'email' %} 请填写邮件地址，以免收不到活动具体通知  {% endifequal %}      
-             {% ifequal invite_message 'phone' %} 请填写手机号码，以免收不到活动具体通知  {% endifequal %}
+             {% if party.invite_type == 'email' %} 请填写邮件地址，以免收不到活动具体通知  {% endif %}      
+             {% if party.invite_type == 'phone' %} 请填写手机号码，以免收不到活动具体通知  {% endif %}
              </div>
             <div class="field">
              <label for="client_email_list">我要留言</label>

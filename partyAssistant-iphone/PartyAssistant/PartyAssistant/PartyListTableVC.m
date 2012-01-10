@@ -206,6 +206,8 @@
                 partyModel.partyId =[partyDict  objectForKey:@"partyId"];
                 partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
                 partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
+                partyModel.type=[partyDict objectForKey:@"type"];
+                
                 [self.partyList addObject:partyModel];
                 
             }

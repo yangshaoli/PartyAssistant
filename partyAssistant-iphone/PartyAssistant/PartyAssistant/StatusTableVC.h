@@ -24,5 +24,5 @@
 @property(nonatomic, retain)ASIHTTPRequest *quest;
 
 - (void)getPartyClientSeperatedList;
-- (BOOL) isEmailAddress:(NSString*)email;
+//- (BOOL) isEmailAddress:(NSString*)email;
 @end

@@ -159,7 +159,7 @@ function validate_phone_bingding(isbind){
                  
             },
             500: function(response){
-            
+                 alert('服务器正忙，请稍后重试');
             }
         }
     })
@@ -184,11 +184,19 @@ function validate_phone_bingding(isbind){
                 },
                 statusCode: {
                     200: function(response){
-                        if (response == 'record_already_exist') {
-                            alert('确认邮件已经发送，请查看您的邮箱')
-                        }
-                        else {
-                            alert('发送成功，请查看您的确认邮件')
+                        switch(response) {
+    		                case 'record_already_exist': {
+                                alert('确认邮件已经发送，请查看您的邮箱')
+                                break;
+                            }
+                            case 'email_already_exist': {
+                                alert('邮箱已经被绑定，请使用其他邮箱')
+                                break;
+                            }
+    	                    default :{
+                                alert('发送成功，请查看您的确认邮件')
+                                break;
+                            }
                         }
                     },
                     500: function(response){
@@ -213,6 +221,11 @@ function validate_phone_bingding(isbind){
 {% ifequal profile_status 'success' %}
 <div id="tips" style="color:#000;   background:#ffff00; padding:5px; width:400px; border-radius:5px;text-align:center; margin:20px; position:absolute;  margin-left:150px;">
     保存成功 
+</div>
+{% endifequal %}
+{% ifequal password_status 'success' %}
+<div id="tips" style="color:#000;   background:#ffff00; padding:5px; width:400px; border-radius:5px;text-align:center; margin:20px; position:absolute;  margin-left:150px;">
+    密码修改成功 
 </div>
 {% endifequal %}
 <div id="content">
@@ -259,6 +272,9 @@ function validate_phone_bingding(isbind){
                         <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
                         {% endifequal %}                        
                         {%  ifequal userprofile.phone_binding_status  'unbind' %}
+                        <a href="#" onclick="bindingPhone()">[绑定]</a>
+                        {% endifequal %}
+                        {%  ifequal userprofile.phone_binding_status  '' %}
                         <a href="#" onclick="bindingPhone()">[绑定]</a>
                         {% endifequal %}
                         {%  ifequal userprofile.phone_binding_status  'waitingbind' %}

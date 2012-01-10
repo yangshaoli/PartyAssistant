@@ -23,6 +23,7 @@
 + (NSArray *) contactsMatchingName: (NSString *) fname InGroup:(ABRecordRef)aRecord;
 + (NSArray *) contactsMatchingName: (NSString *) fname andName: (NSString *) lname;
 + (NSArray *) contactsMatchingPhone: (NSString *) number;
++ (NSArray *) contactsEqualsName: (NSString *) name;
 
 @end
 
