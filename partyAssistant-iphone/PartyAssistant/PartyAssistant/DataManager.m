@@ -152,9 +152,10 @@ static DataManager *sharedDataManager = nil;
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
                                    [NSURL URLWithString:ACCOUNT_LOGOUT]];
-    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
+    //暂时不需要UID
+//    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
     
-    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
+//    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
     [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     NSError *error = [request error];

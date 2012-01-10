@@ -215,3 +215,16 @@
                                 "remaining":Integer,
                                 }
                 }
+14. AccountLogout:
+        url:"/a/accounts/logout/",
+        method:"POST",
+        input:{
+		"id":Integer
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "remaining":Integer,
+                                }
+                }
