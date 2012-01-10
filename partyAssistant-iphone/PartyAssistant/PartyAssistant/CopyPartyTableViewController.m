@@ -327,7 +327,6 @@
                 vc.receiverArray = receiverObjectsArray;
                 SMSObject *sobj = [[SMSObject alloc] init];
                 sobj.receiversArray = receiverObjectsArray;
-                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
                 sobj.smsContent = [dataSource objectForKey:@"content"];
                 sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
                 sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];

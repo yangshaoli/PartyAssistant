@@ -469,9 +469,9 @@ def _public_enroll(request, party_id):
             if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
                 client, create = Client.objects.get_or_create(name = name, creator = creator, email = email, phone = phone)
             elif BOOL_EMAIL_NONE and (not BOOL_PHONE_NONE) : #存在 phone 记录 ，但无 Email 记录
-                client = get_object_or_404(Client, phone = phone)  
+                client = get_object_or_404(Client, phone = phone, creator = creator)  
             elif (not BOOL_EMAIL_NONE) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
-                client = get_object_or_404(Client, email = email)
+                client = get_object_or_404(Client, email = email, creator = creator)
             else:
                 logger.exception('public enroll exception!')
             #有人数限制
@@ -694,7 +694,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
         if address == "":
             content += u'，' + u'具体安排待定'
         else:
-            content += address_content
+            content += address_content + u'，' + u'日期暂定，地点待定'
     if start_date != None and start_time == None:
         content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间暂定'
     if start_date == None and start_time != None:
@@ -729,9 +729,9 @@ def _invite_list(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     
     if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party)
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('is_check','client__name')
     else:
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status)
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status).order_by('is_check','client__name')
     
     party_clients_datas = []
     for party_client in party_clients_list:

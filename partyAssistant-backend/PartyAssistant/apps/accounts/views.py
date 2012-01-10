@@ -51,7 +51,7 @@ def register(request):
 
 @login_required
 @commit_on_success
-def profile(request, template_name='accounts/profile.html', redirected='profile'):
+def profile(request, template_name = 'accounts/profile.html', redirected = 'profile'):
     if request.method == 'POST':
         if 'ignore' in request.POST:
             return redirect('list_party')
@@ -75,7 +75,7 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
             user = request.user
             userprofile = user.get_profile()
             sms_count = userprofile.available_sms_count    
-            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count,'profile_status':'', 'userprofile':userprofile})
+            return TemplateResponse(request, template_name, {'form':form, 'sms_count':sms_count, 'profile_status':'', 'userprofile':userprofile})
         
     else:    
         user = request.user
@@ -91,8 +91,11 @@ def profile(request, template_name='accounts/profile.html', redirected='profile'
               }
         form = UserProfileForm(data)
         profile_status = ''
-        
-        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status})
+        password_status = ''
+        if 'password_status' in request.session:
+            password_status = request.session['password_status']
+            del request.session['password_status']          
+        return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status, 'password_status':password_status})
 
 @login_required
 @commit_on_success
@@ -102,6 +105,7 @@ def change_password(request):
         if form.is_valid():
             request.user.set_password(form.cleaned_data['new_password'])
             request.user.save()
+            request.session['password_status'] = 'success'
             return redirect('profile')
     else:
         form = ChangePasswordForm(request, None)
@@ -167,32 +171,33 @@ def bought_success(request):
     if request.method == 'POST':
 #        total_fee = request.POST.get('total_fee', 0)
         out_trade_no = request.POST.get('out_trade_no', '')
-        receipt = UserAliReceipt.objects.get(receipt=out_trade_no)
+        receipt = UserAliReceipt.objects.get(receipt = out_trade_no)
         userprofile = receipt.user.get_profile()
         userprofile.available_sms_count = userprofile.available_sms_count + receipt.item_count
         userprofile.save()
         return HttpResponse("success", mimetype = "text/html")
     else:
-        return HttpResponse("", mimetype="text/html")
+        return HttpResponse("", mimetype = "text/html")
 
+@commit_on_success
 @login_required    
 def apply_phone_unbingding_ajax(request):#申请手机解绑定
     #是否延时1min
-    exist = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
+    exist = UserBindingTemp.objects.filter(user = request.user, binding_type = 'phone').count() > 0
     if exist:
-        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
+        userbindingtemp = UserBindingTemp.objects.filter(user = request.user, binding_type = 'phone').order_by('-id')[0]
         create_time = userbindingtemp.created_time
         now = datetime.datetime.now()
-        dt = datetime.timedelta(minutes=1)
+        dt = datetime.timedelta(minutes = 1)
         if (create_time + dt) > now:
             time = (now - create_time).total_seconds()
-            time= 60 - int(time)
-            return HttpResponse("time:"+str(time))
+            time = 60 - int(time)
+            return HttpResponse("time:" + str(time))
         
     phone = request.user.get_profile().phone
        
     userkey = generate_phone_code()
-    userbindingtemp, create = UserBindingTemp.objects.get_or_create(user=request.user, binding_address=phone, binding_type='phone', defaults={'key':userkey})
+    userbindingtemp, create = UserBindingTemp.objects.get_or_create(user = request.user, binding_address = phone, binding_type = 'phone', defaults = {'key':userkey})
     if not create:
         userbindingtemp.key = userkey
         userbindingtemp.save()
@@ -206,16 +211,17 @@ def apply_phone_unbingding_ajax(request):#申请手机解绑定
     
     return response
 
+@commit_on_success
 @login_required    
 def apply_phone_bingding_ajax(request):#申请手机绑定
 
     #1.收到手机号码(发送间歇1min)
     #2.产生验证码
     #3.保存到UserBindingTemp 
-    phone = request.POST.get('phone','')
+    phone = request.POST.get('phone', '')
     phone_re = re.compile(r'1\d{10}')
     match = phone_re.search(phone)
-    if (not match.group()) or (len(phone)!=11):
+    if (not match.group()) or (len(phone) != 11):
         return  HttpResponse("invalidate")
     
     #是否有用户已经绑定，该手机号码
@@ -224,21 +230,21 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
         return HttpResponse("used")
     
     #是否延时1min
-    exist = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
-    if exist:
-        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]
+    user_binding_temp = UserBindingTemp.objects.filter(user = request.user, binding_type = 'phone').order_by('-id')
+    if user_binding_temp:
+        userbindingtemp = user_binding_temp[0]
         create_time = userbindingtemp.created_time
         now = datetime.datetime.now()
-        dt = datetime.timedelta(minutes=1)
+        dt = datetime.timedelta(minutes = 1)
         
         if (create_time + dt) > now:
             time = (now - create_time).total_seconds()
-            time= 60 - int(time)
+            time = 60 - int(time)
             
-            return HttpResponse("time:"+str(time))
+            return HttpResponse("time:" + str(time))
     
     userkey = generate_phone_code()
-    userbindingtemp, created = UserBindingTemp.objects.get_or_create(user=request.user, binding_type='phone', defaults={'binding_address': phone, 'key':userkey})
+    userbindingtemp, created = UserBindingTemp.objects.get_or_create(user = request.user, binding_type = 'phone', defaults = {'binding_address': phone, 'key':userkey})
     if not created:
         userbindingtemp.binding_address = phone
         userbindingtemp.key = userkey
@@ -254,48 +260,87 @@ def apply_phone_bingding_ajax(request):#申请手机绑定
     
     return response
 
+@commit_on_success
 @login_required     
-def validate_phone_bingding_ajax(request, binding_status='bind'):#手机绑定验证
+def validate_phone_bingding_ajax(request):#手机绑定验证
     #1.获取验证码
     #2.是否有验证码
     #.绑定/解绑成功
     
-    userkey = request.POST.get('key','')
+    userkey = request.POST.get('key', '')
     
-    data={'status':''}
-    if userkey=='':
-        data['status']='null'
+    data = {'status':''}
+    if userkey == '':
+        data['status'] = 'null'
         
         return HttpResponse(simplejson.dumps(data))
     
-    exists = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').count() > 0
-    if exists:
-        userbindingtemp = UserBindingTemp.objects.filter(user=request.user, binding_type='phone').order_by('-id')[0]#避免有多条数据，虽然理论上不存在
+    user_binding_tmp_list = UserBindingTemp.objects.filter(user = request.user, binding_type = 'phone').order_by('-id')
+    if user_binding_tmp_list:
+        userbindingtemp = user_binding_tmp_list[0]#避免有多条数据，虽然理论上不存在
         binding_key = userbindingtemp.key
         if userkey == binding_key:
             phone = userbindingtemp.binding_address
             #是否有用户已经绑定，该手机号码
-            exist = UserProfile.objects.filter(phone = phone, phone_binding_status = 'bind').count() > 0
+            exist = UserProfile.objects.filter(phone = phone, phone_binding_status__in = ['bind', 'waitunbind']).count() > 0
             if exist:
                 data['status'] = 'used'
+                #如果已经被绑定了，我们应该将这个用户的手机号码清空，多余数据清空
+                profile = request.user.get_profile()
+                profile.phone = ''
+                profile.phone_binding_status = 'unbind'
+                profile.save()
+                for user_binding_tmp in user_binding_tmp_list:
+                    user_binding_tmp.delete()
             else:#绑定操作
                 profile = request.user.get_profile()
                 profile.phone = userbindingtemp.binding_address
-                profile.phone_binding_status = binding_status
+                profile.phone_binding_status = 'bind'
                 #删除临时表
-                userbindingtemp.delete()
-                #短信通知用户，绑定成功
-                message = {'address':'' , 'content':''}
-                message['address'] = userbindingtemp.binding_address
-                if binding_status == 'bind':
-                    message['content'] = 'bindsuccess'
-                else:
-                    message['content'] = 'unbindsuccess'
-                    profile.phone = ''
+                for user_binding_tmp in user_binding_tmp_list:
+                    user_binding_tmp.delete()
                     
                 profile.save()
-                thread.start_new_thread(sendsmsMessage,(message,))
                 data['status'] = 'success'
+        else:
+            data['status'] = 'wrongkey'
+    else :        
+        data['status'] = 'notexist'
+        
+    response = HttpResponse(simplejson.dumps(data))
+    
+    return response
+
+@commit_on_success
+@login_required     
+def validate_phone_unbingding_ajax(request):#手机解绑定验证
+    #1.获取验证码
+    #2.是否有验证码
+    #.绑定/解绑成功
+    
+    userkey = request.POST.get('key', '')
+    
+    data = {'status':''}
+    if userkey == '':
+        data['status'] = 'null'
+        
+        return HttpResponse(simplejson.dumps(data))
+    
+    user_binding_tmp_list = UserBindingTemp.objects.filter(user = request.user, binding_type = 'phone').order_by('-id')
+    if user_binding_tmp_list:
+        userbindingtemp = user_binding_tmp_list[0]#避免有多条数据，虽然理论上不存在
+        binding_key = userbindingtemp.key
+        if userkey == binding_key:
+            #解除绑定操作
+            profile = request.user.get_profile()
+            profile.phone = ''
+            profile.phone_binding_status = 'unbind'
+            #删除临时表
+            for user_binding_tmp in user_binding_tmp_list:
+                user_binding_tmp.delete()
+                
+            profile.save()
+            data['status'] = 'success'
         else:
             data['status'] = 'wrongkey'
     else :        
@@ -313,25 +358,36 @@ def email_binding(request):
         if UserProfile.objects.filter(email=email).count() != 0:
             return HttpResponse("email_already_exist")
         if email:
-            key =  hashlib.md5(email).hexdigest()
-            if UserBindingTemp.objects.filter(key=key).count() == 0:
-                UserBindingTemp.objects.create(user=request.user, binding_type='email', key=key, binding_address=email)
+            key = hashlib.md5(email).hexdigest()
+            if UserBindingTemp.objects.filter(key = key).count() == 0:
+                UserBindingTemp.objects.create(user = request.user, binding_type = 'email', key = key, binding_address = email)
                 return HttpResponse("success")
             else:
                 return HttpResponse("record_already_exist")
     else:
-        key = request.GET.get('key','')
+        key = request.GET.get('key', '')
         if key:
             try:
-                UserBindingTemp.objects.get(key=key)
+                UserBindingTemp.objects.get(key = key)
             except:
                 return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
             else:
-                record = UserBindingTemp.objects.get(key=key)
-            user = User.objects.get(pk=record.user.id)
+                record = UserBindingTemp.objects.get(key = key)
+            user = User.objects.get(pk = record.user.id)
             userprofile = user.get_profile()
             userprofile.email = record.binding_address
             userprofile.email_binding_status = 'bind'
             userprofile.save()
             record.delete()
             return HttpResponseRedirect('/accounts/profile')
+
+@login_required
+def email_unbinding(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        user = User.objects.get(pk = request.user.id)
+        userprofile = user.get_profile()
+        userprofile.email = ''
+        userprofile.email_binding_status = 'unbind'
+        userprofile.save()
+        return HttpResponse("success")

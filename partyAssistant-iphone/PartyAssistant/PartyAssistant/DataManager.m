@@ -186,7 +186,6 @@ static DataManager *sharedDataManager = nil;
 - (BOOL)checkIfUserNameSaved {
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
-    NSLog(@"--->nickname:%@",userData.nickName);
     if ([userData.nickName isEqualToString:@""] || !userData.nickName) {
         return NO;
     }

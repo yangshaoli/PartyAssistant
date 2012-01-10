@@ -192,7 +192,6 @@
 
 -(void)UserLogin
 {
-    NSLog(@"点击登录后输出》》》》》》》");
     WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
     rootVC.isOnlyLogin = YES;
     rootVC.delegate = self;
@@ -209,6 +208,7 @@
     WeiboPersonalProfile *p = [s getWeiboPersonalProfile];
     UILabel *lb = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 260, 44)];
     lb.text = p.nickname;
+    lb.textAlignment = UITextAlignmentRight;
     lb.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb];
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeRoundedRect];

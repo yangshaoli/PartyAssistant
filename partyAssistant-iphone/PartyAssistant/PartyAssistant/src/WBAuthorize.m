@@ -342,7 +342,6 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 								accessToken:(NSString*)token 
 							   accessSecret:(NSString*)secret
 {
-    NSLog(@"url:%@",url);
 	NSMutableDictionary* headInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 									 appkey,@"oauth_consumer_key",
 									 [NSString GUIDString],@"oauth_nonce",
@@ -350,7 +349,6 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 									 token,@"oauth_token",
 									 [NSString stringWithFormat:@"%.0f",[[NSDate date]timeIntervalSince1970]],@"oauth_timestamp",
 									 @"1.0",@"oauth_version",nil];
-	NSLog(@"headinfo:%@",headInfo);
 	NSMutableDictionary* infoForSignture = [NSMutableDictionary dictionaryWithDictionary:headInfo];
 	for (id key in [params keyEnumerator]) 
 	{
@@ -362,17 +360,11 @@ static NSString* oauthGetAccessTokenURL		= @"http://api.t.sina.com.cn/oauth/acce
 	}
 	
 	NSString* baseString = [WBAuthorize getSignatureBaseStringWithHttpMethod:httpMethod withURL:url withHeadInfo:infoForSignture];
-    NSLog(@"baseString:%@",baseString);
 	NSString* keyString = [NSString stringWithFormat:@"%@&%@",[appSecret URLEncodedString],[secret URLEncodedString]];
 	NSString* signatureString = [[baseString HMACSHA1EncodedDataWithKey:keyString]base64EncodedString];
 	[headInfo setObject:signatureString forKey:@"oauth_signature"];
-	NSLog(@"signatureString:%@",signatureString);
 	NSMutableDictionary* dictionary = [NSDictionary dictionaryWithObject:[WBAuthorize stringFromDictionaryForOAuthRequestHeadField:headInfo] forKey:@"Authorization"];
 	[dictionary addEntriesFromDictionary:headerFieldsInfo];
-	NSLog(@"authorization:%@",dictionary);
-    NSLog(@"params:%@",params);
-    NSLog(@"url:%@",url);
-    NSLog(@"HTTP Method:%@",httpMethod);
 	return [WBRequest getRequestWithParams:params
 								httpMethod:httpMethod 
 							  postDataType:postDataType 

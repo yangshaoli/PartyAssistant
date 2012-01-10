@@ -1,5 +1,16 @@
 {% extends 'login_base.html' %}
 {% block title %} 用户信息  {% endblock %}
+{% block style %}
+<style>
+::-webkit-input-placeholder {
+   color: red;
+}
+
+:-moz-placeholder {
+   color: red;
+}
+</style>
+{% endblock %}
 {% block script %}
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js">
 </script>
@@ -159,7 +170,7 @@ function validate_phone_bingding(isbind){
                  
             },
             500: function(response){
-            
+                 alert('服务器正忙，请稍后重试');
             }
         }
     })
@@ -193,8 +204,8 @@ function validate_phone_bingding(isbind){
                                 alert('邮箱已经被绑定，请使用其他邮箱')
                                 break;
                             }
-    	                    default :{
-                                alert('发送成功，请查看您的确认邮件')
+    	                    case 'success':{
+                                $("#id_email").val('').attr('placeholder',v+' 待验证，请登录您绑定邮箱进行确认');
                                 break;
                             }
                         }
@@ -207,20 +218,32 @@ function validate_phone_bingding(isbind){
         }
     }
     
-    function changeEmail(){
-        $("#id_email").attr('disabled', null).val(null);
-        $('a[onclick^="changeEmail"]').attr('onclick', 'bindingEmail()').text('[绑定]');
+    function unBindingEmail(){
+        var answer = confirm("是否解除该邮件的绑定？")
+        if (answer){
+            $.post('{%url email_unbinding %}',function(response){
+                location.reload();
+            })
+        }
     }
     
     $(document).ready(function(){
         $("#tips").delay(3000).fadeOut();
+        $("#id_email").bind('click', function(){
+           $(this).attr('style','').val('').next().show(); 
+        });
     })
 </script>
 {% endblock %}
 {% block content %}
 {% ifequal profile_status 'success' %}
-<div id="tips" style="color:#000;   background:#ffff00; padding:5px; width:400px; border-radius:5px;text-align:center; margin:20px; position:absolute;  margin-left:150px;">
+<div id="tips">
     保存成功 
+</div>
+{% endifequal %}
+{% ifequal password_status 'success' %}
+<div id="tips">
+    密码修改成功 
 </div>
 {% endifequal %}
 <div id="content">
@@ -245,11 +268,11 @@ function validate_phone_bingding(isbind){
                 </div>
                 <div class="field">
                     <label for="email">
-                        电子邮件
+                        邮箱
                     </label>
-                    <input name='email' id='id_email' value='{{ form.email.value|default:'' }}' {%  if userprofile.email %}  disabled="true" {%  endif %}>
-                    </input>{% if userprofile.email %}<a href="#" onclick="changeEmail()">[修改]
-                        {%else%}<a href="#" onclick="bindingEmail()">[绑定]
+                    <input style="border:0px;background:none;" name='email' id='id_email' value='{{ userprofile.email|default:'[未绑定]' }}' {%  if userprofile.email %}  disabled="true" {%  endif %}>
+                    </input><a style="display:none;" onclick="bindingEmail()">[绑定]</a>
+                    {% if userprofile.email %}<a href="#" onclick="unBindingEmail()">[取消绑定]
                             {% endif %}</a>
                         <font color='red'>{{ form.email.errors.0 }}
                         </red>
@@ -267,6 +290,9 @@ function validate_phone_bingding(isbind){
                         <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
                         {% endifequal %}                        
                         {%  ifequal userprofile.phone_binding_status  'unbind' %}
+                        <a href="#" onclick="bindingPhone()">[绑定]</a>
+                        {% endifequal %}
+                        {%  ifequal userprofile.phone_binding_status  '' %}
                         <a href="#" onclick="bindingPhone()">[绑定]</a>
                         {% endifequal %}
                         {%  ifequal userprofile.phone_binding_status  'waitingbind' %}

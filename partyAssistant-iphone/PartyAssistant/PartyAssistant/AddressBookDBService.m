@@ -91,7 +91,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
             }
             
             contact = [ABContact contactWithRecordID:aABRecordID];
-            NSLog(@"LoadMyFavoritesByDB firstName=%@, lastName=%@, usageCount=%d", aFirstName, aLastName, usageCount);
             
             [self.myFavorites addObject:contact];
         }
@@ -133,7 +132,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
             } else {
                 aLastName = @"";
             }
-            NSLog(@"GetFavoriteRecordCount firstName=%@, lastName=%@, usageCount=%d", aFirstName, aLastName, usageCount);
+            
             
         }
         sqlite3_finalize (statement);
