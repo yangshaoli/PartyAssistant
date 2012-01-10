@@ -94,7 +94,8 @@ function getRecentPartiesAddressee(v){
                 for (i in clients){
                     client_list[i] = clients[i].address;
                 }
-                $("#id_client_email_list").val(client_list.join(','))
+                $("#id_client_email_list").val(client_list.join(','));
+                calculate_send_email_count();
             },
             500: function(){ alert('没有获取到用户列表')}
             }
@@ -225,6 +226,7 @@ function getRecentPartiesAddressee(v){
 	                 	}else{
 	                 	    $('#id_client_email_list').val(temp)
 	                 	}
+	                 	calculate_send_email_count();
 	                } 	
                   }
                 
