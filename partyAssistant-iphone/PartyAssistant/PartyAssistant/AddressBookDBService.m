@@ -139,7 +139,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
 //            char *firstName = (char *)sqlite3_column_text(statement, 1);
 //            char *lastName = (char *)sqlite3_column_text(statement, 2);
             usageCount=sqlite3_column_int(statement, 2);
-            NSLog(@"%d",usageCount);
 //            NSString *aFirstName = nil;
 //			if (firstName) {
 //				aFirstName = [[NSString alloc] initWithUTF8String:firstName];
@@ -154,7 +153,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
 //            } else {
 //                aLastName = @"";
 //            }
-//            NSLog(@"GetFavoriteRecordCount firstName=%@, lastName=%@, usageCount=%d", aFirstName, aLastName, usageCount);
             
         }
         sqlite3_finalize (statement);

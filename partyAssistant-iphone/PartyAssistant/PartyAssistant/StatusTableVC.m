@@ -26,6 +26,7 @@
 @synthesize clientStatusFlag;
 @synthesize partyObj;
 @synthesize wordString;
+@synthesize quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -56,20 +57,25 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self showWaiting];
     
-    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次发送" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
+    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"再次邀请" style:UIBarButtonItemStyleDone target:self action:@selector(resendBtnAction)];
     self.navigationItem.rightBarButtonItem = resendBtn;
     [self getPartyClientSeperatedList];
 }
 
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
-    NSLog(@"输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.quest=request;
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -82,7 +88,6 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"self.clientsArray在statustableVC中输出后%@",self.clientsArray);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -93,14 +98,11 @@
             [self.tableView reloadData];
         }else{
             [self showAlertRequestFailed:description];	
-              NSLog(@"self.clientsArray在1");
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-         NSLog(@"self.clientsArray在2");
     }else{
         [self showAlertRequestFailed:REQUEST_ERROR_500];
-         NSLog(@"self.clientsArray在3");
     }
 	
 }
@@ -150,16 +152,36 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
 
 - (void)resendBtnAction{
     
-    NSLog(@"在status中输出-----%@%@",self.clientsArray,self.partyObj.contentString);
     [self getPartyClientSeperatedList];
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:@"再次发送时会过滤掉联系方式为邮箱的人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+    [alertV show];
+
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+    for(NSDictionary  *clientDic in self.clientsArray){
+        NSString *cValueString=[clientDic objectForKey:@"cValue"];
+        if([self  isEmailAddress:cValueString]){
+            [clientDicArray removeObject:clientDic];
+        }
+    }
+    
+    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
     [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
-    NSLog(@"调用再次发送");
+    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 }
 #pragma mark - Table view data source
 
@@ -219,7 +241,7 @@
     UIView *oldLayout6 = nil;
     oldLayout6=[cell viewWithTag:6];
     [oldLayout6 removeFromSuperview];
-    UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 0, 70, 20)];
+    UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 0, 70, 20)];
     nameLb.tag=6;
     nameLb.text=[clentDic objectForKey:@"cName"];
     nameLb.font=[UIFont systemFontOfSize:15];
@@ -246,7 +268,6 @@
     oldLayout8=[cell viewWithTag:8];
     [oldLayout8 removeFromSuperview];
 
-    NSLog(@"%@输出状态。。。%@",[clentDic objectForKey:@"cName"],statusString);
     //5是图标
     UIView *oldLayout2 = nil;
     oldLayout2=[cell viewWithTag:5];
@@ -255,7 +276,6 @@
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(isCheck){
-            NSLog(@"在已报名页面");
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -263,9 +283,22 @@
         }
         
         
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 290, 20)];
         secondLb.tag=8;
-        secondLb.text = [clentDic objectForKey:@"msg"];
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+            
+            
+        }else{
+            
+        }
+        
+        
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -274,15 +307,27 @@
     }else if([self.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(isCheck){
-            NSLog(@"在不参加页面");
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
             [cell  addSubview:cellImageView];
         }
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(50, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        secondLb.text = [clentDic objectForKey:@"msg"];
+        
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+
+        
+        }else{
+        
+        }
+        
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -396,11 +441,17 @@
 //        }
 //        else
 //        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,310)];
 //        }
 //    }
 //    
 //}
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
+}
 
 
 @end

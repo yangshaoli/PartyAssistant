@@ -9,9 +9,9 @@ from django.core.validators import validate_email
 import re
 
 class EmailInviteForm(forms.Form):
-    client_email_list = forms.CharField(required=True, error_messages={'required':u'邮件地址为必填项'})
-    content = forms.CharField(required=True, error_messages={'required':u'邮件内容为必填项'})
-    is_apply_tips = forms.BooleanField(required=False)
+    client_email_list = forms.CharField(required = True, error_messages = {'required':u'邮件地址为必填项'})
+    content = forms.CharField(required = True, error_messages = {'required':u'邮件内容为必填项'})
+    is_apply_tips = forms.BooleanField(required = False)
     
     def clean_client_email_list(self):
         client_email_list = self.cleaned_data['client_email_list']
@@ -36,9 +36,9 @@ class EmailInviteForm(forms.Form):
         return self.cleaned_data['client_email_list']
 
 class SMSInviteForm(forms.Form):
-    client_phone_list = forms.CharField(required=True, error_messages={'required':u'手机号码为必填项'})
-    content = forms.CharField(required=True, error_messages={'required':u'短信内容为必填项'})
-    is_apply_tips = forms.BooleanField(required=False)
+    client_phone_list = forms.CharField(required = True, error_messages = {'required':u'手机号码为必填项'})
+    content = forms.CharField(required = True, error_messages = {'required':u'短信内容为必填项'})
+    is_apply_tips = forms.BooleanField(required = False)
     
     def clean_client_phone_list(self):
         client_phone_list = self.cleaned_data['client_phone_list']
@@ -50,7 +50,7 @@ class SMSInviteForm(forms.Form):
         for phone in phone_list:
             phone = phone.strip()
             if phone != '':
-                if not re.search(phone_re, phone):
+                if (not re.search(phone_re, phone)) or  len(phone) != 11:
                     invalid_phone = phone
                 else:
                     if not phone in valid_phone_list:
@@ -58,6 +58,10 @@ class SMSInviteForm(forms.Form):
         
         if invalid_phone:
             raise forms.ValidationError(u'手机号码 %s 格式错误' % invalid_phone)
+        
+        if len(valid_phone_list) == 0:
+            raise forms.ValidationError(u'手机号码序列 %s 格式有错误,请注意书写格式及分隔标点' % self.cleaned_data['client_phone_list'])
+        
         
         self.cleaned_data['client_phone_list'] = ','.join(valid_phone_list)
         

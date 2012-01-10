@@ -132,15 +132,12 @@
 //    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
    // [keyString release]; 
     if(user){
-        NSLog(@"用户信息不空");
         if(user.uID > 0){
-            NSLog(@"用户id不等于－1");
             [self pushToContentVC];
         }else{
             return;
         }    
     }else{
-        NSLog(@"用户信息为空");
         return;
     }
     
@@ -350,14 +347,10 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-   NSLog(@"－－－在login页面打印出来 用户id::%d     getDefaultCountNumber:%d",user.uID,getDefaultCountNumber);
-    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
     if(getDefaultCountNumber){  
         tab.selectedIndex=1;
-        NSLog(@"有趴列表");
     }else{
         tab.selectedIndex=0;
-        NSLog(@"无趴列表");
         
     }
     [keyString release];

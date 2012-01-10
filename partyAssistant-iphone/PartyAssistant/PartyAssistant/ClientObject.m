@@ -171,7 +171,6 @@
             for (int j=0; j<ABMultiValueGetCount(email); j++) {
                 NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(email, j);
                 if ([valStr isEqualToString:self.cVal]) {
-                    NSLog(@"isEqual");
                     self.cID = ABRecordGetRecordID(card);
                     break;
                 }

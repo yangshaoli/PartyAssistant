@@ -53,7 +53,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(GetClientsCountService)
             NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[newAppliedClientcount stringValue],[refusedClientcount stringValue],[newRefusedClientcount stringValue],[donothingClientcount stringValue], nil];
             self.peopleCountArray = countArray;
         }else{
-            NSLog(@"GetClientsCountService》》》requestFinished》  获取数据出错了。。。。。。");
            // [self showAlertRequestFailed:description];		
         }
     }
@@ -61,7 +60,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(GetClientsCountService)
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
-     NSLog(@"GetClientsCountService》》》》requestFailed  出错了。。。。。。");
     //	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];

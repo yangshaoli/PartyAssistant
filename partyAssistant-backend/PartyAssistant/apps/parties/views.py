@@ -4,7 +4,7 @@ Created on 2011-10-27
 
 @author: liuxue
 '''
-
+from django.db.transaction import commit_on_success
 from apps.accounts.models import UserProfile
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
@@ -31,7 +31,7 @@ import logging
 import time
 logger = logging.getLogger('airenao')
 
-
+@commit_on_success
 @login_required
 def create_party(request):
     if request.method == 'POST':
@@ -58,14 +58,15 @@ def create_party(request):
 
 @login_required
 def delete_party(request, party_id):
-    party = get_object_or_404(Party, pk = party_id, creator=request.user)
-    party.delete()
-    
+    party = Party.objects.filter(pk = party_id, creator = request.user)
+    if party:
+        for p in party:
+            p.delete()
     return redirect('list_party')
 
 @login_required
 def edit_party(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     
     if request.method == 'POST':
         form = PartyForm(request.POST, instance = party)
@@ -100,7 +101,7 @@ def edit_party(request, party_id):
 def email_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id, creator = request.user)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type='email').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type = 'email').filter(creator = request.user).exclude(id = party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
@@ -242,9 +243,9 @@ def email_invite(request, party_id):
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type='phone').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type = 'phone').filter(creator = request.user).exclude(id = party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
@@ -434,7 +435,7 @@ def list_party(request):
     if 'send_status' in request.session:
         send_status = request.session['send_status']
         del request.session['send_status']  
-    sms_count =''    
+    sms_count = ''    
     if 'sms_count' in request.session:
         sms_count = request.session['sms_count']
         del request.session['sms_count']          
@@ -447,7 +448,7 @@ def list_party(request):
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
 
 def _public_enroll(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id)
     creator = party.creator
     
     if request.method == 'POST':
@@ -469,9 +470,9 @@ def _public_enroll(request, party_id):
             if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
                 client, create = Client.objects.get_or_create(name = name, creator = creator, email = email, phone = phone)
             elif BOOL_EMAIL_NONE and (not BOOL_PHONE_NONE) : #存在 phone 记录 ，但无 Email 记录
-                client = get_object_or_404(Client, phone = phone)  
+                client = get_object_or_404(Client, phone = phone, creator = creator)  
             elif (not BOOL_EMAIL_NONE) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
-                client = get_object_or_404(Client, email = email)
+                client = get_object_or_404(Client, email = email, creator = creator)
             else:
                 logger.exception('public enroll exception!')
             #有人数限制
@@ -534,7 +535,7 @@ def _public_enroll(request, party_id):
         return TemplateResponse(request, 'parties/enroll.html', data)
 
 def _invite_enroll(request, party_id, invite_key):
-    party = get_object_or_404(Party, id = party_id, creator = request.user)
+    party = get_object_or_404(Party, id = party_id)
     party_client = get_object_or_404(PartiesClients, invite_key = invite_key)
     party_client.is_check = False
     client = party_client.client
@@ -591,25 +592,26 @@ def _invite_enroll(request, party_id, invite_key):
                 'party': party,
                 'client_count': _get_client_count(party),
                 'form' : form,
-                'key' : request.GET.get('key','')
+                'key' : request.GET.get('key', '')
              }
             return TemplateResponse(request, 'parties/enroll.html', data)
     else:
         userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
+        apply_status = PartiesClients.objects.get(invite_key = request.GET.get('key', '')).apply_status
         data = {
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
             'form' : EnrollForm(),
-            'key' : request.GET.get('key','')
+            'key' : request.GET.get('key', ''),
+            'apply_status' : apply_status
         }
-        
         return TemplateResponse(request, 'parties/enroll.html', data)
         
 def enroll(request, party_id):
     try:
-        get_object_or_404(Party, id = party_id, creator=request.user)
+        get_object_or_404(Party, id = party_id)
     except :
         return TemplateResponse(request, 'message.html', {'message':u'partynotexist'}) 
     invite_key = request.GET.get('key', '')
@@ -650,7 +652,7 @@ def change_apply_status(request, party_client_id, applystatus):
 
 @login_required
 def invite_list(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     party_clients_list = PartiesClients.objects.filter(party = party)
     
     party_clients = {
@@ -693,7 +695,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
         if address == "":
             content += u'，' + u'具体安排待定'
         else:
-            content += address_content
+            content += address_content + u'，' + u'日期暂定，地点待定'
     if start_date != None and start_time == None:
         content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间暂定'
     if start_date == None and start_time != None:
@@ -703,7 +705,7 @@ def _create_default_content(creator, start_date, start_time , address, descripti
     content += u'。'
     return content
 
-@login_required
+
 def invite_list_ajax(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id)
     for party_client in party_clients_list:
@@ -715,7 +717,7 @@ def invite_list_ajax(request, party_id):
 
 def ajax_get_client_list(request, party_id):
     party_clients_datas , party_clients_list = _invite_list(request, party_id) 
-    party = get_object_or_404(Party, id = party_id, creator = request.user)
+    party = get_object_or_404(Party, id = party_id)
     client_count = _get_client_count(party)
     data = {
             'party_clients_datas' : party_clients_datas,
@@ -725,12 +727,12 @@ def ajax_get_client_list(request, party_id):
 
 def _invite_list(request, party_id):
     apply_status = request.GET.get('apply', 'all')
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id)
     
     if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party)
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('is_check','client__name')
     else:
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status)
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status).order_by('is_check','client__name')
     
     party_clients_datas = []
     for party_client in party_clients_list:

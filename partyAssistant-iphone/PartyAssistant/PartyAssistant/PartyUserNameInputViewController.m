@@ -123,7 +123,6 @@
     BOOL isPhoneEmpty = (!_phoneNumTextField.text 
                          || [_phoneNumTextField.text isEqualToString:@""]);
 
-      NSLog(@"昵称:%@ 邮箱：%@  手机号：%@",_userNameTextField.text,_emailInfoTextField.text,_phoneNumTextField.text);
     if (isEmailEmpty || isEmpty || isPhoneEmpty) {
         [self showNotLegalInput];
         return;

@@ -314,8 +314,6 @@
     if (alertView.tag == SuccessfulTag) {
        //[self.navigationController popViewControllerAnimated:YES];
         [delegate  autoLogin];
-        NSLog(@"%@",self.userNameTextField.text);
-        NSLog(@"%@",self.pwdTextField.text);
         
          
     } else {

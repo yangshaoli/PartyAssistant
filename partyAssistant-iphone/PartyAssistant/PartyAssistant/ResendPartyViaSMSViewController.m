@@ -50,6 +50,21 @@
         self.sendModeNameLabel.text = @"通过服务器发送";
     }
 }
+
+- (void)createPartySuc{
+    self.editingTableViewCell.textView.text = @"";
+    self.receipts = [NSMutableArray arrayWithCapacity:10];
+    [self rearrangeContactNameTFContent];
+    
+    self.tabBarController.selectedIndex = 1;
+   [self.navigationController dismissModalViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
+    
+    //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+    //    [[NSNotificationCenter defaultCenter] postNotification:notification];
+    //    [self.navigationController dismissModalViewControllerAnimated:NO];
+}
+
 #pragma mark -
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
@@ -157,7 +172,6 @@
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.tempSMSObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
-                    NSLog(@"可以发送短信");
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.tempSMSObject._isApplyTips) {
                         vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -185,16 +199,15 @@
                     [self.navigationController presentModalViewController:vc animated:YES];
                     [self.tempSMSObject clearObject];
                 }else{
-                    NSLog(@"不能发送短信");
                     [self createPartySuc];
-#if TARGET_IPHONE_SIMULATOR // iPhone Simulator
+                #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                     return;
-#endif
+                #endif
                 }
                 
             }else{
                 [self createPartySuc];
-            }
+                }
         }else{
             [self showAlertRequestFailed:description];		
         }
@@ -222,7 +235,6 @@
     NSLog(@"mark:new Values===========%@",newValues);
     NSDictionary *contactPhoneDic = [[AddressBookDataManager sharedAddressBookDataManager] getCallLogContactData];
     for (NSDictionary *value in newValues) {
-        NSLog(@"%@",value);
         NSDictionary *newReceipt = [NSDictionary dictionaryWithObjectsAndKeys: [value objectForKey:@"cName"], @"name", [value objectForKey:@"cValue"], @"phoneNumber", nil];
         NSLog(@"%@",newReceipt);
         
@@ -288,7 +300,6 @@
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID{
     smsContent = [newContent copy];
     [self.editingTableViewCell setText:[smsContent mutableCopy]];
-    NSLog(@"%@",self.editingTableViewCell);
     groupID = newGroupID;
 }
 

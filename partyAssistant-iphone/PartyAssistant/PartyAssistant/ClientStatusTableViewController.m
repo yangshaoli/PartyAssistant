@@ -159,7 +159,6 @@
     [funcBtn setFrame:CGRectMake(200, 40, 100, 20)];
     if ([self.clientStatusFlag isEqualToString:@"all"]) {
         NSString *cStatus = [[self.clientsArray objectAtIndex:indexPath.row] objectForKey:@"status"];
-        NSLog(@"%@",cStatus);
         if ([cStatus isEqualToString:@"已报名"]) {
             [funcBtn setTitle:@"拒绝" forState:UIControlStateNormal];
             statusLbl.text = @"已报名";
