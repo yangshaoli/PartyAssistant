@@ -5,7 +5,7 @@
 }
 
 @property(nonatomic, assign) id<NSObject, EditableTableViewCellDelegate> delegate;
-@property(nonatomic, readonly) UITextView *textView;
+@property(nonatomic, readonly, retain) UITextView *textView;
 @property(nonatomic, retain) NSMutableString *text;
 
 + (UITextView *)dummyTextView;

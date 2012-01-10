@@ -16,11 +16,6 @@
 #import "ResendPartyViaSMSViewController.h"
 
 
-@interface StatusTableVC()
--(void) hideTabBar:(UITabBarController*) tabbarcontroller;
--(void) showTabBar:(UITabBarController*) tabbarcontroller;
-@end
-
 @implementation StatusTableVC
 @synthesize clientsArray;
 @synthesize clientStatusFlag;
@@ -126,7 +121,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self hideTabBar:self.tabBarController];
     [self getPartyClientSeperatedList];
 
 }
@@ -151,6 +145,7 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+
 
 //正则判断是否Email地址
 - (BOOL) isEmailAddress:(NSString*)email { 
@@ -187,14 +182,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return  [self.clientsArray count];
 }
@@ -404,48 +397,6 @@
    
 }
 
-
-
--(void) hideTabBar:(UITabBarController*) tabbarcontroller {
-    
-    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-        }
-        
-    }
-    
-    //[UIView commitAnimations];
-}
-
-//-(void) showTabBar:(UITabBarController*) tabbarcontroller {
-//    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
-//    
-//    for(UIView*view in tabbarcontroller.view.subviews)
-//    {
-//        if([view isKindOfClass:[UITabBar class]])
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-//        }
-//        else
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,310)];
-//        }
-//    }
-//    
-//}
 #pragma mark -
 #pragma mark dealloc method
 -(void)dealloc {

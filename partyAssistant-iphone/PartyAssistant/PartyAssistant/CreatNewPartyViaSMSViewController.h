@@ -16,7 +16,7 @@
 #import "SegmentManagingViewController.h"
 
 @class ButtonPeoplePicker;
-@interface CreatNewPartyViaSMSViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,MFMessageComposeViewControllerDelegate,ABPeoplePickerNavigationControllerDelegate,EditableTableViewCellDelegate,ButtonPeoplePickerDelegate,MBProgressHUDDelegate,ContactsListPickerViewControllerDelegate,UserSMSModeCheckDelegate,UIAlertViewDelegate, ContactDataDelegate> {
+@interface CreatNewPartyViaSMSViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,MFMessageComposeViewControllerDelegate,EditableTableViewCellDelegate,ButtonPeoplePickerDelegate,MBProgressHUDDelegate,UserSMSModeCheckDelegate,UIAlertViewDelegate, ContactDataDelegate> {
     SMSObject *smsObject;
 }
 
