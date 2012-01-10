@@ -193,7 +193,13 @@
             if (lastID < 0) {
                 lastID = 0;
             }
-            
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dataSource objectForKey:@"unreadCount"] intValue];
+            if ([[dataSource objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dataSource objectForKey:@"unreadCount"]];
+            }
             NSArray *partyDictArray = [dataSource objectForKey:@"partyList"];
             if (!_isAppend) {
                 [self.partyList removeAllObjects];

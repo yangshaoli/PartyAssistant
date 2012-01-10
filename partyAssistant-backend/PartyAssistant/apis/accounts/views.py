@@ -5,8 +5,7 @@ Created on 2011-11-7
 @author: liuxue
 '''
 
-from django.contrib.auth import authenticate
-
+from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
@@ -58,7 +57,7 @@ def accountLogout(request):
         user_token_list = UserIPhoneToken.objects.filter(device_token = device_token)
         for user_token in user_token_list:
             user_token.delete()
-        if user:
+        if request.user:
             logout(request)
         
 @csrf_exempt
@@ -130,4 +129,4 @@ def getAccountRemaining(request):
 def forgetPassword(request):
     if request.method == 'POST' and 'value' in request.POST:
         value = request.POST['value']
-        if 
+#        if 

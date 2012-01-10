@@ -8,7 +8,6 @@ def apis_json_response_decorator(func):
     def new_func(*args, **kargs):
         try:
             datasource = func(*args, **kargs)
-            print datasource
             data = {
                     'status':"ok",
                     'description':"ok",
@@ -19,10 +18,11 @@ def apis_json_response_decorator(func):
         except Exception, e:
             if isinstance(e, myException):
                 print e.description
+                print e.data
                 data = {
                         'status':e.status,
                         'description':e.description,
-                        'datasource':{}
+                        'datasource':data
                         }
                 data = simplejson.dumps(data)       
                 return HttpResponse(data)
