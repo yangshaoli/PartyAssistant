@@ -104,13 +104,14 @@ function ajaxGetClients(applystatus){
 	    <h1><img src="/static/images/logo.png"></h1>
     </div> 
 	<div data-role="content">
-		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %}{{client.name}}{%else%}您{%endif%}
+		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %} {% if client.name %}{{client.name}}{%else%}{{client.phone}}{%endif%}{%else%}您{%endif%}
 		<!--h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
 		<h2>{{party.address|default:"地点待定" }}--> <span style="color:#999">参加活动</span></h2>		
 		<h2>{{party.description}}</h2>
         <form method="POST" action="/m{% url enroll party.id %}?key={{key}}" id='id_form'>
         {% if client %}
             <!-- 被邀请用户报名页面 -->
+            
             <div data-role="fieldcontain">
             <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
