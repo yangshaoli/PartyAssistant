@@ -97,11 +97,6 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    UserObjectService *us = [UserObjectService sharedUserObjectService];
-    UserObject *user = [us getUserObject];
-    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
-    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     [self refreshBtnAction];
     [self.tableView reloadData];
 

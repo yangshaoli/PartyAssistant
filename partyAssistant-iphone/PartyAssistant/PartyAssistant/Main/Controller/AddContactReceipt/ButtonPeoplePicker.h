@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-#import "AddPersonViewController.h"
 #import <AddressBook/AddressBook.h>
 #import "ShadowedTableView.h"
-#import "ContactsListPickerViewController.h"
 #import "BottomSepratorLineView.h"
 #import "SegmentManagingViewController.h"
 
@@ -29,12 +27,10 @@ typedef enum {
 @protocol ButtonPeoplePickerDelegate;
 
 @class ClientObject;
-@interface ButtonPeoplePicker : UIViewController <AddPersonViewControllerDelegate,
-												  UITableViewDataSource,
+@interface ButtonPeoplePicker : UIViewController <UITableViewDataSource,
 												  UITableViewDelegate,
-												  UIKeyInput,
-                                                  ABPeoplePickerNavigationControllerDelegate,
-                                                  ContactsListPickerViewControllerDelegate,
+												  UIKeyInput,               
+                                                  UITextFieldDelegate,
                                                   ContactDataDelegate>
 {
 	UIButton *selectedButton;
@@ -64,7 +60,6 @@ typedef enum {
 - (IBAction)doneClick:(id)sender;
 - (void)findLastButton;
 - (void)changePickerViewToStatus:(ButtonPeoplePickerStatus)newStatus;
-- (IBAction)peopleReciptsInputFinish;
 - (void)resetData;
 - (ClientObject *)scanAddressBookAndSearch:(ClientObject *)client;
 
@@ -75,5 +70,7 @@ void pickerAddressBookChanged (ABAddressBookRef addressBook,
 
 @protocol ButtonPeoplePickerDelegate
 - (void)buttonPeoplePickerDidFinish:(ButtonPeoplePicker *)controller;
+
+@optional
 - (NSMutableArray *)getCurrentContactDataSource;
 @end

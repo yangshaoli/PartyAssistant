@@ -16,7 +16,6 @@
 
 #import "ButtonPeoplePicker.h"
 #import "PeoplePickerCustomCell.h"
-#import "ContactsListPickerViewController.h"
 #import "ClientObject.h"
 #import "MultiContactsPickerListViewController.h"
 
@@ -25,7 +24,6 @@
 - (void)layoutNameButtons;
 - (void)addPersonToGroup:(ClientObject *)oneClient;
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary;
-- (void)displayAddPersonViewController;
 - (NSString *)getCleanPhoneNumber:(NSString *)rawPhoneNumber;
 - (NSString *)getCleanLetter:(NSString *)originalString;
 - (void)filterContentForSearchText:(NSString*)searchText;
@@ -764,60 +762,6 @@
 	[searchField becomeFirstResponder];
 }
 
-#pragma mark - Display the AddPersonViewController modally
-
--(void)displayAddPersonViewController
-{	
-	AddPersonViewController *addPersonViewController = [[AddPersonViewController alloc] init];
-	[addPersonViewController setInitialText:searchField.text];
-	[addPersonViewController setDelegate:self];
-	[self presentModalViewController:addPersonViewController animated:YES];
-}
-
-#pragma mark - AddPersonViewControllerDelegate method
-
-- (void)addPersonViewControllerDidFinish:(AddPersonViewController *)controller
-{
-	NSString *firstName = [NSString stringWithString:controller.firstName];
-	NSString *lastName = [NSString stringWithString:controller.lastName];
-	NSString *email = [NSString stringWithString:controller.email];
-
-	ABRecordRef personRef = ABPersonCreate();
-
-	ABRecordSetValue(personRef, kABPersonFirstNameProperty, (__bridge CFTypeRef)firstName, nil);
-
-	if (lastName && (lastName.length > 0))
-    {
-		ABRecordSetValue(personRef, kABPersonLastNameProperty, (__bridge CFTypeRef)lastName, nil);
-	}
-	
-	if (email && (email.length > 0))
-	{
-		ABMutableMultiValueRef emailProperty = ABMultiValueCreateMutable(kABPersonEmailProperty);
-		ABMultiValueAddValueAndLabel(emailProperty, (__bridge CFTypeRef)email, kABHomeLabel, nil);
-		ABRecordSetValue(personRef, kABPersonEmailProperty, emailProperty, nil);
-		CFRelease(emailProperty);
-	}
-		
-	// Add the person to the address book
-	ABAddressBookAddRecord(addressBook, personRef, nil);
-	
-	// Save changes to the address book
-	ABAddressBookSave(addressBook, nil);
-
-	ABRecordID abRecordID = ABRecordGetRecordID(personRef);
-
-	NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-									 [NSNumber numberWithInt:abRecordID], @"abRecordID",
-									 [NSNumber numberWithInt:0], @"valueIdentifier", nil];
-
-	CFRelease(personRef);
-	
-	[self addPersonToGroup:personDictionary];
-	
-	[self dismissModalViewControllerAnimated:YES];
-}
-
 - (void)touchButton {
 }
 
@@ -853,43 +797,6 @@
     segmentManagingViewController.contactDataDelegate = self;
     UINavigationController *pickersNav = [[UINavigationController alloc] initWithRootViewController:segmentManagingViewController];
     [[(UIViewController *)[self delegate] navigationController] presentModalViewController:pickersNav animated:YES];
-}
-
-#pragma mark -
-#pragma contact list delegate
-- (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
-    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:action];
-}
-
-- (void)contactList:(ContactsListPickerViewController *)contactList selectDefaultActionForPerson:(ABRecordID)personID property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier {
-    
-    ABRecordRef person = ABAddressBookGetPersonWithRecordID(addressBook, personID);
-    
-    // Access the person's email addresses (an ABMultiValueRef)
-    ABMultiValueRef phonesProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
-    CFIndex index = ABMultiValueGetIndexForIdentifier(phonesProperty, identifier);
-    
-    NSString *phone;
-    
-    NSDictionary *personDictionary = nil;
-    
-    if (index != -1)
-    {
-        phone = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phonesProperty, index);
-        
-        NSString *name = (__bridge NSString *)ABRecordCopyCompositeName(person);
-        
-        if (phone) {
-            personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithInt:personID], @"abRecordID",
-                                [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                phone, @"phoneNumber",
-                                name, @"name", nil];
-            [self addPersonToGroup:personDictionary];
-        } 
-    }
-    
-    [[(UIViewController *)[self delegate] navigationController] dismissModalViewControllerAnimated:YES];
 }
 
 #pragma mark -
@@ -997,41 +904,6 @@
         }
     }
     return strippedString;
-}
-
-#pragma mark -
-#pragma mark people picker delegate
-- (BOOL)peoplePickerNavigationController:
-(ABPeoplePickerNavigationController *)peoplePicker
-      shouldContinueAfterSelectingPerson:(ABRecordRef)person {
-    
-    return YES; 
-    
-}
-// Display the selected property
-- (BOOL)peoplePickerNavigationController:
-(ABPeoplePickerNavigationController *)peoplePicker shouldContinueAfterSelectingPerson:(ABRecordRef)person property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier
-{
-    // We are guaranteed to only be working with e-mail or phone [self dismissModalViewControllerAnimated:YES];
-    NSArray *array = [ABContact arrayForProperty:property
-                                        inRecord:person];
-    ABContact *contact = [ABContact contactWithRecord:person];
-    NSString *phone = (NSString *)[array objectAtIndex:identifier];
-    NSString *name = [contact compositeName];
-    NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                      phone, @"phoneNumber", name, @"name",nil];
-    //[self addPersonToGroup:personDictionary];
-    
-    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
-    
-    return NO;
-}
-// Handle user cancels
-- (void)peoplePickerNavigationControllerDidCancel:
-(ABPeoplePickerNavigationController *)peoplePicker {
-    
-    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
-    
 }
 
 #pragma mark -

@@ -14,7 +14,14 @@
 <script>
 var applyStatus = ['apply', 'reject', 'noanswer'];
 $(document).ready(function(){
-    for ( i in applyStatus) { ajaxGetClients(applyStatus[i]);}
+    for ( i in applyStatus) {
+        
+        
+        $("#"+applyStatus[i]).children('li').attr('style','background:#F11F22;color:#eee;text-shadow:none;');
+        $("#s_"+applyStatus[i]).attr('style','color:#fff; background:#F2B804;border:1px solid #F2B804;');
+        ajaxGetClients(applyStatus[i]);
+    }
+    
 });
 
 $(document).bind("mobileinit", function(){
@@ -53,29 +60,13 @@ function ajaxGetClients(applystatus){
             client_count = data.client_count;
             clients = data.party_clients_datas;
             for (i in clients){
-                name = clients[i].name;
-                address = clients[i].address;
-                a_at = clients[i].address.indexOf('@');
-                if(a_at == -1){
-                	address = address.substring(0,3)+'****'+address.substring(7,11);
-                	if (name == clients[i].address){
-                		name = address;
-                	}
-                }else{
-                	if (a_at > 3){
-                		address = address.substring(0,3)+'****'+address.substring(a_at);
-                	}else{
-                		address = address.substring(0,a_at)+'****'+address.substring(a_at);
-                	}
-                	if (name == clients[i].address){
-                		name = address;
-                	}
+                address = maskAddress(clients[i].address);
+                if (clients[i].name == clients[i].address || clients[i].name == ''){
+                    row = '<li class="ui-li ui-li-static ui-body-c">'+address+"<span>"+address+"</span></li>";
+                } else {
+                    row = '<li class="ui-li ui-li-static ui-body-c">'+clients[i].name+"<span>"+address+"</span></li>";
                 }
-                if(clients[i].client_id == '{{ client.id }}'){
-                	row = '<li class="ui-li ui-li-static ui-body-c">'+'{{ client.name }}'+"<span>"+clients[i].address+'</span></li>';
-                }else{
-                	row = '<li class="ui-li ui-li-static ui-body-c">'+name+"<span>"+address+'</span></li>';
-                }
+
                 $('#'+applystatus).append(row);
             }//endfor
             //改变标签上的人数 
@@ -104,13 +95,14 @@ function ajaxGetClients(applystatus){
 	    <h1><img src="/static/images/logo.png"></h1>
     </div> 
 	<div data-role="content">
-		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %}{{client.name}}{%else%}您{%endif%}
+		<h2>{{party.creator.username}} <span style="color:#999">邀请</span> {% if client %} {% if client.name %}{{client.name}}{%else%}{{client.phone}}{%endif%}{%else%}您{%endif%}
 		<!--h2>{{party.start_date|date:"m月d日"}} {{ party.start_time|time:"H:i"|default:"时间待定" }}</h2>
 		<h2>{{party.address|default:"地点待定" }}--> <span style="color:#999">参加活动</span></h2>		
 		<h2>{{party.description}}</h2>
         <form method="POST" action="/m{% url enroll party.id %}?key={{key}}" id='id_form'>
         {% if client %}
-            <!-- 被邀请用户报名页面 -->
+            <!-- 被邀请用户报名页面 --><label for="basic">姓名:</label>
+            <input type="text" name="name" id="id_name" value=""  />
             <div data-role="fieldcontain">
             <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
@@ -144,13 +136,13 @@ function ajaxGetClients(applystatus){
 	</div>
 
 <ul data-role="listview" class="ui-listview" data-inset="true" id="apply">
-	<li data-theme="c">来的 <span class="ui-li-count ui-btn-down-b" style="color:#fff" id='s_apply'>{{client_count.apply}}</span></li>
+	<li data-theme="a">来的 <span class="ui-li-count" id='s_apply'>{{client_count.apply}}</span></li>
 </ul>
 <ul data-role="listview" class="ui-listview" data-inset="true" id="reject">
-	<li data-theme="c">不来的 <span class="ui-li-count" style="color:#fff" id='s_reject'>{{client_count.reject}}</span></li>
+	<li data-theme="a">不来的 <span class="ui-li-count" id='s_reject'>{{client_count.reject}}</span></li>
 </ul>	
 <ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
-	<li data-theme="c">待定的 <span class="ui-li-count" style="color:#fff" id='s_noanswer'>{{client_count.noanswer}}</span></li>
+	<li data-theme="a">待定的 <span class="ui-li-count" id='s_noanswer'>{{client_count.noanswer}}</span></li>
 </ul>
 
 

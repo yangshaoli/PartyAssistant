@@ -7,7 +7,6 @@
 //
 
 #import "CreatNewPartyViaSMSViewController.h"
-#import "ContactsListPickerViewController.h"
 #import "PartyAssistantAppDelegate.h"
 #import "NotificationSettings.h"
 #import "URLSettings.h"
@@ -76,7 +75,7 @@
     [super viewDidLoad];
     self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
-    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(updateRemainCount)];
+    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
     self.navigationItem.rightBarButtonItem = right;
     self.rightItem = right;
     self.receipts = [NSMutableArray arrayWithCapacity:10];
@@ -412,8 +411,6 @@
 
 - (void)sendCreateRequest{
     [self showWaiting];
-    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-    BaseInfoObject *baseinfo = [bs getBaseInfo];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSString *platform = [DeviceDetection platform];
@@ -611,43 +608,6 @@
     [self.navigationController presentModalViewController:pickersNav animated:YES];
 }
 
-- (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
-    [self.navigationController dismissModalViewControllerAnimated:action];
-}
-
-- (void)contactList:(ContactsListPickerViewController *)contactList selectDefaultActionForPerson:(ABRecordID)personID property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier {
-    
-    ABRecordRef person = ABAddressBookGetPersonWithRecordID(addressBook, personID);
-    
-    // Access the person's email addresses (an ABMultiValueRef)
-    ABMultiValueRef phonesProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
-    CFIndex index = ABMultiValueGetIndexForIdentifier(phonesProperty, identifier);
-    NSString *name = (__bridge NSString *)ABRecordCopyCompositeName(person);
-    
-    NSString *phone;
-    
-    NSDictionary *personDictionary = nil;
-    
-    if (index != -1)
-    {
-        phone = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phonesProperty, index);
-        
-        if (phone) {
-            personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithInt:personID], @"abRecordID",
-                                [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                phone, @"phoneNumber", name, @"name",nil];
-            [self.receipts addObject:personDictionary];
-        } 
-    }
-    
-    CFRelease(person);
-    
-    [self.navigationController dismissModalViewControllerAnimated:YES];
-    
-    [self rearrangeContactNameTFContent];
-}
-
 #pragma mark _
 #pragma mark HUD method
 -(void)showWaiting {
@@ -842,7 +802,8 @@
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
     [self dismissWaiting];
-    NSError *error = [request error];
+//    NSError *error = [request error];
+//    NSLog(@"%@", error);
 }
 
 #pragma mark -

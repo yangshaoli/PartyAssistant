@@ -19,7 +19,7 @@
 
 @end
 
-@interface ContactListViewController : UITableViewController <ContactorPhoneDetailsViewControllerDelegate, UISearchBarDelegate>
+@interface ContactListViewController : UITableViewController <ContactorPhoneDetailsViewControllerDelegate, ContactorEmailDetailsViewControllerDelegate, UISearchBarDelegate>
 {
     NSArray *contactorsArray;
     CFArrayRef contactorsArrayRef;
@@ -65,7 +65,6 @@
 
 - (void)alertError:(NSString *)errorStr;
 - (void)showOrCancleSelectedMark:(UITableViewCell *)cell mutableMSGValue:(id)msgVal;
-- (void)selectContactor:(NSDictionary *)userinfo;
 - (void)addInfoToArray:(NSInteger)cID uname:(NSString *)name value:(NSString *)val;
 - (void)removeInfoFromArray:(NSInteger)cID;
 

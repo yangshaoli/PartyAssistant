@@ -24,7 +24,7 @@
 #import "ECPurchase.h"
 
 ABAddressBookRef addressBook;
-@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate,ECPurchaseProductDelegate,ECPurchaseTransactionDelegate> {
+@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate,ECPurchaseProductDelegate,ECPurchaseTransactionDelegate, MBProgressHUDDelegate> {
     MBProgressHUD *_HUD;
     ASIHTTPRequest *remainCountRequest;
 }
