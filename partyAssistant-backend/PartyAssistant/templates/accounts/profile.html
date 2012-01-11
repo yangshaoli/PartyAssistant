@@ -135,15 +135,16 @@ function validate_phone_bingding(isbind){
                     200: function(response){
                         switch(response) {
     		                case 'record_already_exist': {
-                                alert('确认邮件已经发送，请查看您的邮箱')
+                                alert('确认邮件已经发送，请查看您的邮箱');
                                 break;
                             }
                             case 'email_already_exist': {
-                                alert('邮箱已经被绑定，请使用其他邮箱')
+                                alert('邮箱已经被绑定，请使用其他邮箱');
                                 break;
                             }
     	                    case 'success':{
                                 $("#id_email").val('').attr('placeholder',v+' 待验证，请登录您绑定邮箱进行确认');
+                                alert('发送成功，请查看您的确认邮件');
                                 break;
                             }
                         }
