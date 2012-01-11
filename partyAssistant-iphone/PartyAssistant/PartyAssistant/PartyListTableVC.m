@@ -13,6 +13,7 @@
 #import "URLSettings.h"
 #import "ClientObject.h"
 #import "NotificationSettings.h"
+#import "HTTPRequestErrorMSG.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -200,6 +201,8 @@
                 partyModel.partyId =[partyDict  objectForKey:@"partyId"];
                 partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
                 partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
+                partyModel.type=[partyDict objectForKey:@"type"];
+                
                 [self.partyList addObject:partyModel];
                 
             }
@@ -223,10 +226,16 @@
     }else if([request responseStatusCode] == 404){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
-    }    
+    }else if([request responseStatusCode] == 502){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }        
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request

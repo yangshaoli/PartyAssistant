@@ -214,6 +214,10 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
 }
+- (void)showAlertRequestFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    [av show];
+}
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
 	NSString *response = [request responseString];
@@ -229,6 +233,14 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
             NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:[dataSource objectForKey:@"badgeNum"],@"badge",nil]];
             [[NSNotificationCenter defaultCenter] postNotification:notification];
         }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 
@@ -280,6 +292,17 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     } else {
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
     }
+//------------------wu xue zhang
+//    else if([request responseStatusCode] == 404){
+//        [self showAlertRequestFailed:REQUEST_ERROR_404];
+//    }else if([request responseStatusCode] == 500){
+//        [self showAlertRequestFailed:REQUEST_ERROR_500];
+//    }else if([request responseStatusCode] == 502){
+//        [self showAlertRequestFailed:REQUEST_ERROR_502];
+//    }else{
+//        [self showAlertRequestFailed:REQUEST_ERROR_504];
+//>>>>>>> wuxuezhang
+//    }
     [request clearDelegatesAndCancel];
 }
 

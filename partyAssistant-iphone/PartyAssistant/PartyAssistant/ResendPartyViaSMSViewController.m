@@ -35,34 +35,34 @@
 @implementation ResendPartyViaSMSViewController
 @synthesize tempSMSObject;
 
-#pragma mark - Private Method
-
-- (void)rearrangeContactNameTFContent {
-    [super performSelector:@selector(rearrangeContactNameTFContent)];
-}
-
--(void)showWaiting {
-    [super performSelector:@selector(showWaiting)];
-}
-
--(void)dismissWaiting {
-    [super performSelector:@selector(dismissWaiting)];
-}
-
-- (void)showAlertRequestSuccess {
-    [super performSelector:@selector(showAlertRequestSuccess)];
-}
-
-- (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage {
-    [super performSelector:@selector(showAlertRequestSuccessWithMessage:) withObject:theMessage];
-}
-- (void)showAlertRequestFailed: (NSString *) theMessage; {
-    [super performSelector:@selector(showAlertRequestFailed:) withObject:theMessage];
-}
-
-- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
-    return [super performSelector:@selector(getCleanPhoneNumber:) withObject:originalString];
-}
+//#pragma mark - Private Method
+//
+//- (void)rearrangeContactNameTFContent {
+//    [super performSelector:@selector(rearrangeContactNameTFContent)];
+//}
+//
+//-(void)showWaiting {
+//    [super performSelector:@selector(showWaiting)];
+//}
+//
+//-(void)dismissWaiting {
+//    [super performSelector:@selector(dismissWaiting)];
+//}
+//
+//- (void)showAlertRequestSuccess {
+//    [super performSelector:@selector(showAlertRequestSuccess)];
+//}
+//
+//- (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage {
+//    [super performSelector:@selector(showAlertRequestSuccessWithMessage:) withObject:theMessage];
+//}
+//- (void)showAlertRequestFailed: (NSString *) theMessage; {
+//    [super performSelector:@selector(showAlertRequestFailed:) withObject:theMessage];
+//}
+//
+//- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+//    return [super performSelector:@selector(getCleanPhoneNumber:) withObject:originalString];
+//}
 
 #pragma mark - View lifecycle
 - (void)viewDidLoad
@@ -187,12 +187,12 @@
 - (void)saveSMSInfo{
     self.tempSMSObject.smsContent = [self.editingTableViewCell.textView text];
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
-    for (NSDictionary *receipt in self.receipts) {
+    for (ClientObject *receipt in self.receipts) {
         //need check phone format
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
-        client.cName = [receipt objectForKey:@"name"];
-        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        client.cName = receipt.cName;
+        NSString *phoneNumber = receipt.cVal;
         
         if (!phoneNumber) {
             continue;
@@ -250,8 +250,8 @@
                     };
                     
                     NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
-                    for (NSDictionary *receipt in self.receipts) {
-                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                    for (ClientObject *receipt in self.receipts) {
+                        NSString *phoneNumber = receipt.cVal;
                         
                         if (!phoneNumber) {
                             continue;
@@ -293,8 +293,12 @@
         }
     } else if ([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    } else {
+    } else if ([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
