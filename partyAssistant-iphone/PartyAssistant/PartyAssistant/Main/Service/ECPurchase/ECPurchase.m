@@ -236,6 +236,7 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     NSString *response = [request responseString];
     SBJsonParser *parser = [SBJsonParser new];
 	NSDictionary* jsonData = [parser objectWithString: response];
+    NSLog(@"Error in ECPurchase, Function didFailedVerify: %@", jsonData);
 	[parser release];
 }
 

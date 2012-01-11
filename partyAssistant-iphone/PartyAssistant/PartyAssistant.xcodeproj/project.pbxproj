@@ -241,8 +241,6 @@
 		CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28894148E17A300B7E3B7 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28898148E17A300B7E3B7 /* ContactData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750614ADCDA000348263 /* reinvite_word@2x.png */; };
-		CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750714ADCDA000348263 /* reinvite@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1562,8 +1560,6 @@
 				CEA4179514A872F300497186 /* new2.png in Resources */,
 				CEA4179614A872F300497186 /* reinvite_word.png in Resources */,
 				CEA4179714A872F300497186 /* reinvite.png in Resources */,
-				CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */,
-				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
 				7528DAD214AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib in Resources */,
 				7528DADC14AB16EF00236609 /* SendSMSModeChooseViewController.xib in Resources */,
 				7528DAFB14AB22A300236609 /* ButtonPeoplePicker.xib in Resources */,
@@ -1574,8 +1570,6 @@
 				8920895314AEF1FB00F31001 /* edit_word.png in Resources */,
 				8920895614AEF21500F31001 /* refresh_word.png in Resources */,
 				8920895814AEF22100F31001 /* share_word.png in Resources */,
-				CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */,
-				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
 				CE5B254E14B5D05500FBBDDA /* del_word@2x.png in Resources */,
 				CE5B254F14B5D05500FBBDDA /* edit_word@2x.png in Resources */,
 				CE5B255014B5D05500FBBDDA /* refresh_word@2x.png in Resources */,

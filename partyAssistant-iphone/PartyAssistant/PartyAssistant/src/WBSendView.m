@@ -21,7 +21,7 @@
  
 
 //check whether the device is and iPad or not
-BOOL WBIsDeviceIPad() {
+static BOOL WBIsDeviceIPad() {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 		return YES;
@@ -370,7 +370,7 @@ BOOL WBIsDeviceIPad() {
 - (void)deviceOrientationDidChange:(void*)object {
 	
 	
-	UIDeviceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+	UIDeviceOrientation orientation = (UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation;
 	if ( [self shouldRotateToOrientation:orientation]) {
  		
 		CGFloat duration = [UIApplication sharedApplication].statusBarOrientationAnimationDuration;
@@ -403,7 +403,7 @@ BOOL WBIsDeviceIPad() {
 								 screenFrame.origin.x + ceil(screenFrame.size.width/2),
 								 screenFrame.origin.y + ceil(screenFrame.size.height/2));
 	 
-	_orientation = [UIApplication sharedApplication].statusBarOrientation;
+	_orientation = (UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsLandscape(_orientation)) {
 		
 		self.frame = CGRectMake(0, 0, 480, 320);
@@ -594,8 +594,7 @@ BOOL WBIsDeviceIPad() {
 -(int)calculateTextNumber:(NSString *) textA
 {
 	float number = 0.0;
-	int index = 0;
-	for (index; index < [textA length]; index++) {
+	for (int index=0; index < [textA length]; index++) {
 		
 		NSString *character = [textA substringWithRange:NSMakeRange(index, 1)];
 		
