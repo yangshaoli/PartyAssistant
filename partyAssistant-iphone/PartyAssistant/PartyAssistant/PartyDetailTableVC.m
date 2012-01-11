@@ -23,7 +23,7 @@
 
 @implementation PartyDetailTableVC
 @synthesize myToolbarItems,peopleCountArray,clientsArray;
-@synthesize partyObj;
+@synthesize partyObj,quest,seperatedListQuest,deleteQuest;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -101,11 +101,6 @@
     [self loadClientCount];
     [self getPartyClientSeperatedList];
     [self.tableView reloadData];
-    
-//    //[GetClientsCountService sharedGetClientsCountService].partyObj=self.partyObj;
-//    NSLog(@"在Detail页面输出partyid》》》》%d",self.partyObj.partyId);
-   
-
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -137,13 +132,16 @@
     NSNumber *partIdNumber=self.partyObj.partyId;
     NSString *partIdString=[partIdNumber stringValue];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
     
-    
+    self.quest = request;
 //    NSLog(@"loadClientCount预期调用1111");
 //    NSNumber *partyIdNumber=self.partyObj.partyId;
 //    NSLog(@"loadClientCount输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
@@ -244,6 +242,11 @@
 #pragma mark - resend  request
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
+    if (self.seperatedListQuest) {
+        [self.seperatedListQuest clearDelegatesAndCancel];
+    }
+    
+
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
@@ -252,6 +255,7 @@
     [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.seperatedListQuest = request;
 }
 
 - (void)getPartyClientSeperatedListRequestFinished:(ASIHTTPRequest *)request{
@@ -368,7 +372,6 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
-            NSInteger newAppliedInt=[[self.peopleCountArray objectAtIndex:2] intValue];
             
             if(self.partyObj.isnewApplied){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
@@ -392,7 +395,7 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
-            NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
+            
             if(self.partyObj.isnewRefused){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
@@ -507,18 +510,37 @@
     rootVC.partyObj=self.partyObj;
     WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
     [self presentModalViewController:vc animated:YES];
-    
 }
 
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
 
 
 - (void)resentMsg{
-     //[self getPartyClientSeperatedList];
-   
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:@"再次发送时会过滤掉联系方式为邮箱的人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+    [alertV show];
+
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+    for(NSDictionary  *clientDic in self.clientsArray){
+        NSString *cValueString=[clientDic objectForKey:@"cValue"];
+        if([self  isEmailAddress:cValueString]){
+            [clientDicArray removeObject:clientDic];
+        }
+    }
+    
+    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
     [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 
 }
 - (void)editBtnAction{
@@ -546,6 +568,10 @@
             UserObjectService *us = [UserObjectService sharedUserObjectService];
             UserObject *user = [us getUserObject];
             NSURL *url = [NSURL URLWithString:DELETE_PARTY];
+            if (self.deleteQuest) {
+                [self.deleteQuest clearDelegatesAndCancel];
+            }
+            
             ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
             [request setPostValue:self.partyObj.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
@@ -556,6 +582,8 @@
             [request setDidFailSelector:@selector(deleteRequestFailed:)];
             [request setShouldAttemptPersistentConnection:NO];
             [request startAsynchronous];
+
+            self.deleteQuest=request;
         }
     }
 }
@@ -589,5 +617,14 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    [self.seperatedListQuest  clearDelegatesAndCancel];
+    self.quest = nil;
+    self.seperatedListQuest=nil;
 }
 @end

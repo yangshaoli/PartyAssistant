@@ -7,7 +7,6 @@
 //
 
 #import "CreatNewPartyViaSMSViewController.h"
-#import "ContactsListPickerViewController.h"
 #import "PartyAssistantAppDelegate.h"
 #import "NotificationSettings.h"
 #import "URLSettings.h"
@@ -17,6 +16,9 @@
 #import "DeviceDetection.h"
 #import "PartyListTableVC.h"
 #import "ABContact.h"
+#import "SegmentManagingViewController.h"
+#import "NotificationSettings.h"
+#import "AddressBookDBService.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -68,6 +70,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
     UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(updateRemainCount)];
     self.navigationItem.rightBarButtonItem = right;
@@ -161,7 +164,7 @@
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
-            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
             vc.delegate = self;
             [self.navigationController pushViewController:vc animated:YES];
         }
@@ -263,11 +266,11 @@
         
         NSMutableString *contactNameTFContent = [[NSMutableString alloc] initWithCapacity:0];
         for (int i=0; i<[self.receipts count]; i++) {
-            NSDictionary *peopleInfo = [self.receipts objectAtIndex:i];
+            ClientObject *clientInfo = [self.receipts objectAtIndex:i];
         
-            NSString *name  = [peopleInfo objectForKey:@"name"];
+            NSString *name  = clientInfo.cName;
             if (!name || [name isEqualToString:@""]) {
-                name = [peopleInfo objectForKey:@"phoneNumber"];
+                name = clientInfo.cVal;
             }
             
             CGSize nowContentSize = [contactNameTFContent sizeWithFont:[UIFont systemFontOfSize:16.0f]];
@@ -291,7 +294,7 @@
                     }
                 } else {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];
+                        [contactNameTFContent appendFormat:@"%drecipients", leftCount];
                     } else {
                         [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
                     }
@@ -318,42 +321,41 @@
 //                            otherButtonTitles: nil];
 //        [alert show];
 //    }else{
-//        [self saveSMSInfo];
-    UserObjectService *us = [UserObjectService sharedUserObjectService];
-    UserObject *user = [us getUserObject];
-    if (self.smsObject._isSendBySelf) {
-        
-    } else {
-        if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
-            UIAlertView *alert=[[UIAlertView alloc]
-                                initWithTitle:@"需要充值"
-                                message:@"余额不足，不能通过服务器端发送！"
-                                delegate:nil
-                                cancelButtonTitle:@"确定"
-                                otherButtonTitles: nil];
-            [alert show];
-            return;
+//    [self saveSMSInfo];
+    if ([self.smsObject.receiversArray count] == 0) {
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            [alertV show];
+    }else{
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        if (self.smsObject._isSendBySelf) {
+            
+        } else {
+            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+                UIAlertView *alert=[[UIAlertView alloc]
+                                    initWithTitle:@"需要充值"
+                                    message:@"余额不足，不能通过服务器端发送！"
+                                    delegate:nil
+                                    cancelButtonTitle:@"确定"
+                                    otherButtonTitles: nil];
+                [alert show];
+                return;
+            }
         }
+        
+        [self sendCreateRequest];
     }
-                
-//        if ([self.smsObject.receiversArray count] == 0) {
-//            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-//            [alertV show];
-//        }else{
-            [self sendCreateRequest];
-//        }
-//    }
 }
 
 - (void)saveSMSInfo{
     self.smsObject.smsContent = [self.editingTableViewCell.textView text];
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
-    for (NSDictionary *receipt in self.receipts) {
+    for (ClientObject *receipt in self.receipts) {
         //need check phone format
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
-        client.cName = [receipt objectForKey:@"name"];
-        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+        client.cName = receipt.cName;
+        NSString *phoneNumber = receipt.cVal;
         
         if (!phoneNumber) {
             continue;
@@ -381,7 +383,6 @@
 
     self.tabBarController.selectedIndex = 1;
     [self.navigationController dismissModalViewControllerAnimated:YES];
-    
     //    NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
 //    [[NSNotificationCenter defaultCenter] postNotification:notification];
 //    [self.navigationController dismissModalViewControllerAnimated:NO];
@@ -389,8 +390,6 @@
 
 - (void)sendCreateRequest{
     [self showWaiting];
-    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-    BaseInfoObject *baseinfo = [bs getBaseInfo];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSString *platform = [DeviceDetection platform];
@@ -409,11 +408,11 @@
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
+    [self dismissWaiting];
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
 	NSString *description = [result objectForKey:@"description"];
-	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
@@ -426,9 +425,14 @@
                         vc.body = self.smsObject.smsContent;
                     };
                     
+                    AddressBookDBService *favourite = [AddressBookDBService sharedAddressBookDBService];
+                    for (ClientObject *client in self.smsObject.receiversArray) {
+                        [favourite useContact:client];
+                    }
+                    
                     NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
-                    for (NSDictionary *receipt in self.receipts) {
-                        NSString *phoneNumber = [receipt objectForKey:@"phoneNumber"];
+                    for (ClientObject *receipt in self.receipts) {
+                        NSString *phoneNumber = receipt.cVal;
                         
                         if (!phoneNumber) {
                             continue;
@@ -479,8 +483,8 @@
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
+    [self dismissWaiting];
 	NSError *error = [request error];
-	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 
@@ -554,53 +558,22 @@
 #pragma mark -
 #pragma contact list delegate
 - (void)callContactList {
-    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
-    ppnc.peoplePickerDelegate = self;
-    [ppnc setDisplayedProperties:[NSArray
-                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
-    
-    [self.navigationController presentModalViewController:ppnc animated:YES];
+//    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+//    ppnc.peoplePickerDelegate = self;
+//    [ppnc setDisplayedProperties:[NSArray
+//                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+//    
+//    [self.navigationController presentModalViewController:ppnc animated:YES];
+
 //    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
 //    list.contactDelegate = self;
 //    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
 //    [self.navigationController presentModalViewController:nav animated:YES];
-}
-
-- (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
-    [self.navigationController dismissModalViewControllerAnimated:action];
-}
-
-- (void)contactList:(ContactsListPickerViewController *)contactList selectDefaultActionForPerson:(ABRecordID)personID property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier {
     
-    ABRecordRef person = ABAddressBookGetPersonWithRecordID(addressBook, personID);
-    
-    // Access the person's email addresses (an ABMultiValueRef)
-    ABMultiValueRef phonesProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
-    CFIndex index = ABMultiValueGetIndexForIdentifier(phonesProperty, identifier);
-    NSString *name = (__bridge NSString *)ABRecordCopyCompositeName(person);
-    
-    NSString *phone;
-    
-    NSDictionary *personDictionary = nil;
-    
-    if (index != -1)
-    {
-        phone = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phonesProperty, index);
-        
-        if (phone) {
-            personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithInt:personID], @"abRecordID",
-                                [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                phone, @"phoneNumber", name, @"name",nil];
-            [self.receipts addObject:personDictionary];
-        } 
-    }
-    
-    CFRelease(person);
-    
-    [self.navigationController dismissModalViewControllerAnimated:YES];
-    
-    [self rearrangeContactNameTFContent];
+    SegmentManagingViewController * segmentManagingViewController = [[SegmentManagingViewController alloc] init];
+    segmentManagingViewController.contactDataDelegate = self;
+    UINavigationController *pickersNav = [[UINavigationController alloc] initWithRootViewController:segmentManagingViewController];
+    [self.navigationController presentModalViewController:pickersNav animated:YES];
 }
 
 #pragma mark _
@@ -763,7 +736,7 @@
     }else{
         [self saveSMSInfo];
         if ([self.smsObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
             [alertV show];
             return;
         }
@@ -794,20 +767,34 @@
         UserObjectService *us = [UserObjectService sharedUserObjectService];
         UserObject *user = [us getUserObject];
         user.leftSMSCount = [remainCount stringValue];
-        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"RefreshSMSLeftCount" object:nil]];
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:remainCount]];
         [self SMSContentInputDidFinish];
     } else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     } else {
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
-
-    
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
     [self dismissWaiting];
-    NSError *error = [request error];
+//    NSError *error = [request error];
+//    NSLog(@"%@", error);
 }
 
+#pragma mark -
+#pragma mark segment contact delegate
+- (NSArray *)getCurrentContactData {
+    NSLog(@"%@",self.receipts);
+    return self.receipts;
+}
+
+- (void)setNewContactData : (NSArray *)newData {
+    self.receipts = [NSMutableArray arrayWithArray:newData];
+    [self rearrangeContactNameTFContent];
+}
+
+- (void)selectedFinishedInController:(UIViewController *)vc {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
 @end

@@ -67,4 +67,11 @@
 	pred = [NSPredicate predicateWithFormat:@"phonenumbers contains[cd] %@", number];
 	return [contacts filteredArrayUsingPredicate:pred];
 }
+
++ (NSArray *) contactsEqualsName: (NSString *) name {
+    NSPredicate *pred;
+	NSArray *contacts = [ContactData contactsArray];
+	pred = [NSPredicate predicateWithFormat:@"compositeName MATCHES[cd] %@", name];
+	return [contacts filteredArrayUsingPredicate:pred];
+}
 @end

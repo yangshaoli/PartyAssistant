@@ -11,6 +11,7 @@
 #import "NotificationSettings.h"
 #import "ClientObject.h"
 #import "PartyModel.h"
+#import "ASIFormDataRequest.h"
 @protocol ContactorPhoneDetailsViewControllerDelegate <NSObject>
 
 - (void)contactDetailSelectedWithUserInfo:(NSDictionary *)info;
@@ -25,6 +26,7 @@
     UITextView *messageTextView;
     PartyModel *partyObj;
     NSString *clientStatusFlag;
+    ASIHTTPRequest *quest;
     
 }
 @property(nonatomic, retain)UITextView *messageTextView;
@@ -33,5 +35,6 @@
 @property(nonatomic, retain)NSDictionary *clientDict;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *clientStatusFlag;
+@property(nonatomic, retain)ASIHTTPRequest *quest;
 
 @end

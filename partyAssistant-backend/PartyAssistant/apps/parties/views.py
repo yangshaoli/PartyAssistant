@@ -4,7 +4,7 @@ Created on 2011-10-27
 
 @author: liuxue
 '''
-
+from django.db.transaction import commit_on_success
 from apps.accounts.models import UserProfile
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
@@ -31,7 +31,7 @@ import logging
 import time
 logger = logging.getLogger('airenao')
 
-
+@commit_on_success
 @login_required
 def create_party(request):
     if request.method == 'POST':
@@ -58,14 +58,15 @@ def create_party(request):
 
 @login_required
 def delete_party(request, party_id):
-    party = get_object_or_404(Party, pk = party_id, creator=request.user)
-    party.delete()
-    
+    party = Party.objects.filter(pk = party_id, creator = request.user)
+    if party:
+        for p in party:
+            p.delete()
     return redirect('list_party')
 
 @login_required
 def edit_party(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     
     if request.method == 'POST':
         form = PartyForm(request.POST, instance = party)
@@ -100,7 +101,7 @@ def edit_party(request, party_id):
 def email_invite(request, party_id):
     party = get_object_or_404(Party, id = party_id, creator = request.user)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type='email').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type = 'email').filter(creator = request.user).exclude(id = party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = EmailInviteForm(request.POST)
@@ -242,9 +243,9 @@ def email_invite(request, party_id):
 @login_required
 @transaction.commit_on_success
 def sms_invite(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     #取得最近20个活动，用来从中获取好友
-    recent_parties = Party.objects.filter(invite_type='phone').filter(creator=request.user).exclude(id=party.id).order_by('-created_time')
+    recent_parties = Party.objects.filter(invite_type = 'phone').filter(creator = request.user).exclude(id = party.id).order_by('-created_time')
     
     if request.method == 'POST':
         form = SMSInviteForm(request.POST)
@@ -434,7 +435,7 @@ def list_party(request):
     if 'send_status' in request.session:
         send_status = request.session['send_status']
         del request.session['send_status']  
-    sms_count =''    
+    sms_count = ''    
     if 'sms_count' in request.session:
         sms_count = request.session['sms_count']
         del request.session['sms_count']          
@@ -595,19 +596,19 @@ def _invite_enroll(request, party_id, invite_key):
                 'party': party,
                 'client_count': _get_client_count(party),
                 'form' : form,
-                'key' : request.GET.get('key','')
+                'key' : request.GET.get('key', '')
              }
             return TemplateResponse(request, 'parties/enroll.html', data)
     else:
         userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username
-        apply_status = PartiesClients.objects.get(invite_key=request.GET.get('key','')).apply_status
+        apply_status = PartiesClients.objects.get(invite_key = request.GET.get('key', '')).apply_status
         data = {
             'client': client,
             'party': party,
             'client_count': _get_client_count(party),
             'form' : EnrollForm(),
-            'key' : request.GET.get('key',''),
+            'key' : request.GET.get('key', ''),
             'apply_status' : apply_status
         }
         return TemplateResponse(request, 'parties/enroll.html', data)
@@ -655,7 +656,7 @@ def change_apply_status(request, party_client_id, applystatus):
 
 @login_required
 def invite_list(request, party_id):
-    party = get_object_or_404(Party, id = party_id, creator=request.user)
+    party = get_object_or_404(Party, id = party_id, creator = request.user)
     party_clients_list = PartiesClients.objects.filter(party = party)
     
     party_clients = {

@@ -355,6 +355,8 @@ def validate_phone_unbingding_ajax(request):#手机解绑定验证
 def email_binding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
+        if UserProfile.objects.filter(email=email).count() != 0:
+            return HttpResponse("email_already_exist")
         if email:
             key = hashlib.md5(email).hexdigest()
             if UserBindingTemp.objects.filter(key = key).count() == 0:
@@ -378,3 +380,14 @@ def email_binding(request):
             userprofile.save()
             record.delete()
             return HttpResponseRedirect('/accounts/profile')
+
+@login_required
+def email_unbinding(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        user = User.objects.get(pk = request.user.id)
+        userprofile = user.get_profile()
+        userprofile.email = ''
+        userprofile.email_binding_status = 'unbind'
+        userprofile.save()
+        return HttpResponse("success")

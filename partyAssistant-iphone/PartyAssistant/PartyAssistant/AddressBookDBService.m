@@ -10,6 +10,7 @@
 #import "SynthesizeSingleton.h"
 #import "DBSettings.h"
 #import "ABContact.h"
+#import "ClientObject.h"
 
 @implementation AddressBookDBService
 @synthesize myFavorites;
@@ -32,7 +33,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
         NSAssert(0, @"Failed to open databse");
     }
         
-    NSString *createSQL = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (Id INTEGER PRIMARY KEY AUTOINCREMENT, ABRecordID INTEGER,firstName TEXT, lastName TEXT,usageCount INTEGER)", MyFavoriteTableName];
+    NSString *createSQL = [NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ (Id INTEGER PRIMARY KEY AUTOINCREMENT, ABRecordID INTEGER, contactName TEXT, indentifier INTEGER,phoneLabel TEXT,phoneNumber TEXT,usageCount INTEGER)", MyFavoriteTableName];
     if(sqlite3_exec(database, [createSQL UTF8String], NULL, NULL, &errorMsg ) != SQLITE_OK) {
         NSAssert1(1, @"Error create table :%s", errorMsg);
         sqlite3_free(errorMsg);
@@ -61,7 +62,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
     
     ABContact *contact = nil;
     
-    NSString *query = [NSString stringWithFormat:@"SELECT ABRecordID ,firstName , lastName ,usageCount FROM %@ ORDER BY usageCount DESC limit ?", MyFavoriteTableName]; 
+    NSString *query = [NSString stringWithFormat:@"SELECT ABRecordID ,contactName, indentifier , phoneLabel , phoneNumber, usageCount FROM %@ ORDER BY usageCount DESC limit ?", MyFavoriteTableName]; 
     sqlite3_stmt *statement;
     if(sqlite3_prepare_v2(database, [query UTF8String], -1, &statement, nil) == SQLITE_OK){
         
@@ -71,28 +72,41 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
             contact = [[ABContact alloc] init];
             
             int aABRecordID = sqlite3_column_int(statement, 0);
-            char *firstName = (char *)sqlite3_column_text(statement, 1);
-            char *lastName = (char *)sqlite3_column_text(statement, 2);
-            int usageCount=sqlite3_column_int(statement, 3);
+            char *contactName = (char *)sqlite3_column_text(statement, 1);
+            int indentifier = sqlite3_column_int(statement, 2);
+            char *phoneLabel = (char *)sqlite3_column_text(statement, 3);
+            char *phoneNumber = (char *)sqlite3_column_text(statement, 4);
             
-            NSString *aFirstName = nil;
-			if (firstName) {
-				aFirstName = [[NSString alloc] initWithUTF8String:firstName];
-			}
-			else {
-				aFirstName = @"";
-			}
-            
-            NSString *aLastName = nil;
-            if (lastName) {
-                aLastName = [[NSString alloc] initWithUTF8String:lastName];
+            NSString *aContactName = nil;
+            if (contactName) {
+                aContactName = [[NSString alloc] initWithUTF8String:contactName];
             } else {
-                aLastName = @"";
+                aContactName = @"";
             }
             
-            contact = [ABContact contactWithRecordID:aABRecordID];
+            NSString *aPhoneLabel = nil;
+			if (phoneLabel) {
+				aPhoneLabel = [[NSString alloc] initWithUTF8String:phoneLabel];
+			}
+			else {
+				aPhoneLabel = @"";
+			}
             
-            [self.myFavorites addObject:contact];
+            NSString *aPhoneNumber = nil;
+            if (phoneNumber) {
+                aPhoneNumber = [[NSString alloc] initWithUTF8String:phoneNumber];
+            } else {
+                aPhoneNumber = @"";
+            }
+            
+            ClientObject *client = [[ClientObject alloc] init];
+            client.cID = aABRecordID;
+            client.cName = aContactName;
+            client.cVal = aPhoneNumber;
+            client.phoneLabel = aPhoneLabel;
+            client.phoneIdentifier = indentifier;
+            
+            [self.myFavorites addObject:client];
         }
         sqlite3_finalize (statement);
     }
@@ -101,38 +115,41 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
     }
 }
 
-- (int)getFavoriteRecordCount:(ABContact *)contact {
-    if (!contact) {
+- (int)getFavoriteRecordCount:(ClientObject *)client {
+    if (!client) {
+        return 0;
+    }
+    if (client.cID == -1) {
         return 0;
     }
     sqlite3 *database = [self getOrCreateTableIfNotExist];
     int usageCount = 0;
-    NSString *query = [NSString stringWithFormat:@"SELECT ABRecordID ,firstName , lastName ,usageCount FROM %@ where ABRecordID=?", MyFavoriteTableName]; 
+    NSString *query = [NSString stringWithFormat:@"SELECT ABRecordID , indentifier , usageCount FROM %@ where ABRecordID = ? AND indentifier = ? ORDER BY usageCount DESC", MyFavoriteTableName]; 
+    NSLog(@"%@",query);
     sqlite3_stmt *statement;
     if(sqlite3_prepare_v2(database, [query UTF8String], -1, &statement, nil) == SQLITE_OK){
         
-        sqlite3_bind_int(statement, 1, contact.recordID);
+        sqlite3_bind_int(statement, 1, client.cID);
+        sqlite3_bind_int(statement, 2, client.phoneIdentifier);
         if (sqlite3_step(statement) == SQLITE_ROW) {
 //            int aABRecordID = sqlite3_column_int(statement, 0);
-            char *firstName = (char *)sqlite3_column_text(statement, 1);
-            char *lastName = (char *)sqlite3_column_text(statement, 2);
-            usageCount=sqlite3_column_int(statement, 3);
-            
-            NSString *aFirstName = nil;
-			if (firstName) {
-				aFirstName = [[NSString alloc] initWithUTF8String:firstName];
-			}
-			else {
-				aFirstName = @"";
-			}
-            
-            NSString *aLastName = nil;
-            if (lastName) {
-                aLastName = [[NSString alloc] initWithUTF8String:lastName];
-            } else {
-                aLastName = @"";
-            }
-            
+//            char *firstName = (char *)sqlite3_column_text(statement, 1);
+//            char *lastName = (char *)sqlite3_column_text(statement, 2);
+            usageCount=sqlite3_column_int(statement, 2);
+//            NSString *aFirstName = nil;
+//			if (firstName) {
+//				aFirstName = [[NSString alloc] initWithUTF8String:firstName];
+//			}
+//			else {
+//				aFirstName = @"";
+//			}
+//            
+//            NSString *aLastName = nil;
+//            if (lastName) {
+//                aLastName = [[NSString alloc] initWithUTF8String:lastName];
+//            } else {
+//                aLastName = @"";
+//            }
             
         }
         sqlite3_finalize (statement);
@@ -143,18 +160,23 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
     return usageCount;
 }
 
-- (void)addFavoriteRecord:(ABContact *)contact {
+- (void)addFavoriteRecord:(ClientObject *)client {
+    if (client.cID == -1) {
+        return;
+    }
     
     sqlite3 *database = [self getOrCreateTableIfNotExist];
     
-    NSString *insertRow = [NSString stringWithFormat:@"INSERT  INTO  %@ (ABRecordID ,firstName, lastName , usageCount) VALUES (?, ?, ?, ?)", MyFavoriteTableName];
+    NSString *insertRow = [NSString stringWithFormat:@"INSERT  INTO  %@ (ABRecordID ,contactName, indentifier , phoneLabel , phoneNumber, usageCount) VALUES (?, ?, ?, ?, ?, ?)", MyFavoriteTableName];
     sqlite3_stmt *statementInsert;
     if(sqlite3_prepare_v2(database, [insertRow UTF8String], -1, &statementInsert, NULL) == SQLITE_OK) {
         
-        sqlite3_bind_int(statementInsert, 1, contact.recordID);
-        sqlite3_bind_text(statementInsert, 2, [contact.firstname UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(statementInsert, 3, [contact.lastname UTF8String], -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(statementInsert, 4, 1);
+        sqlite3_bind_int(statementInsert, 1, client.cID);
+        sqlite3_bind_text(statementInsert, 2, [client.cName UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(statementInsert, 3, client.phoneIdentifier);
+        sqlite3_bind_text(statementInsert, 4, [client.phoneLabel UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(statementInsert, 5, [client.cVal UTF8String], -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(statementInsert, 6, 1);
     }
     
     if(sqlite3_step(statementInsert) == SQLITE_DONE){
@@ -169,16 +191,19 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
     sqlite3_close(database);
 }
 
-- (void)updateFavoriteRecord:(ABContact *)contact withCount:(int)count{
-    
+- (void)updateFavoriteRecord:(ClientObject *)client withCount:(int)count{
+    if (client.cID == -1) {
+        return;
+    }
     sqlite3 *database = [self getOrCreateTableIfNotExist];
     
-    NSString *updateRow = [NSString stringWithFormat:@"UPDATE %@ SET usageCount=? WHERE ABRecordID=?", MyFavoriteTableName];
+    NSString *updateRow = [NSString stringWithFormat:@"UPDATE %@ SET usageCount=? WHERE ABRecordID=? AND indentifier=?", MyFavoriteTableName];
     sqlite3_stmt *statementUpdate;
     if(sqlite3_prepare_v2(database, [updateRow UTF8String], -1, &statementUpdate, NULL) == SQLITE_OK) {
         
         sqlite3_bind_int(statementUpdate, 1, count);
-        sqlite3_bind_int(statementUpdate, 2, contact.recordID);
+        sqlite3_bind_int(statementUpdate, 2, client.cID);
+        sqlite3_bind_int(statementUpdate, 3, client.phoneIdentifier);
     }
     
     if(sqlite3_step(statementUpdate) == SQLITE_DONE){
@@ -193,12 +218,15 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
     sqlite3_close(database);
 }
 
-- (void)useContact:(ABContact *)contact {
-    int count = [self getFavoriteRecordCount:contact];
+- (void)useContact:(ClientObject *)client {
+    if (client.cID == -1) {
+        return;
+    }
+    int count = [self getFavoriteRecordCount:client];
     if (count == 0) {
-        [self addFavoriteRecord:contact];
+        [self addFavoriteRecord:client];
     } else {
-        [self updateFavoriteRecord:contact withCount:(count+1)];
+        [self updateFavoriteRecord:client withCount:(count + 1)];
     }
 }
 

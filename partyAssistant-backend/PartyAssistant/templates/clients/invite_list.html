@@ -164,8 +164,10 @@ function ajaxChangeStatus(id, applystatus){
   <div class="grid_a">
    <h2 class="title">谁来了</h2>
    <div class="apply_details">
-    <p>{{party.start_time|date:"y年m月d日"|default:""}}{{ party.start_time|date:"H:i"|default:"" }}</p>
-    <p>{{party.address|default:""}} <span class="minor">参加活动</span></p>
+    {% if not party.start_date and not party.start_time %} 时间待定 {% else %}
+    <p>{{ party.start_date|date:"m月d日"|default:"日期待定"}}  {{ party.start_time|time:"H:i"|default:"时间待定" }} </p>
+    {% endif %}
+    <p class="paragraph">{{ party.address|default:"地点待定" }}&nbsp;&nbsp;<span class="minor">参加活动</span></p>
     <p>{{party.description|divstring:'70'|linebreaksbr}}</p>
    </div>
    <div class="accordionview">

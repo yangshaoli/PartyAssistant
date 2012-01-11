@@ -16,16 +16,12 @@
 #import "ResendPartyViaSMSViewController.h"
 
 
-@interface StatusTableVC()
--(void) hideTabBar:(UITabBarController*) tabbarcontroller;
--(void) showTabBar:(UITabBarController*) tabbarcontroller;
-@end
-
 @implementation StatusTableVC
 @synthesize clientsArray;
 @synthesize clientStatusFlag;
 @synthesize partyObj;
 @synthesize wordString;
+@synthesize quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -63,12 +59,18 @@
 
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag,@"?read=yes"]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.quest=request;
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -119,7 +121,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self hideTabBar:self.tabBarController];
     [self getPartyClientSeperatedList];
 
 }
@@ -146,26 +147,47 @@
 }
 
 
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
+
 - (void)resendBtnAction{
     
     [self getPartyClientSeperatedList];
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:@"再次发送时会过滤掉联系方式为邮箱的人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+    [alertV show];
+
     ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+    for(NSDictionary  *clientDic in self.clientsArray){
+        NSString *cValueString=[clientDic objectForKey:@"cValue"];
+        if([self  isEmailAddress:cValueString]){
+            [clientDicArray removeObject:clientDic];
+        }
+    }
+    
+    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
     [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
     [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 }
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return  [self.clientsArray count];
 }
@@ -254,7 +276,7 @@
         }
         
         
-        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 290, 20)];
         secondLb.tag=8;
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
@@ -375,48 +397,12 @@
    
 }
 
-
-
--(void) hideTabBar:(UITabBarController*) tabbarcontroller {
-    
-    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-        }
-        
-    }
-    
-    //[UIView commitAnimations];
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
 }
-
-//-(void) showTabBar:(UITabBarController*) tabbarcontroller {
-//    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
-//    
-//    for(UIView*view in tabbarcontroller.view.subviews)
-//    {
-//        if([view isKindOfClass:[UITabBar class]])
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-//        }
-//        else
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
-//        }
-//    }
-//    
-//}
 
 
 @end

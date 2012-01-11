@@ -15,8 +15,10 @@
 
 @end
 
-@interface SendSMSModeChooseViewController : UITableViewController
+@interface SendSMSModeChooseViewController : UIViewController <UITableViewDelegate,UITableViewDataSource>
 
-@property (nonatomic, weak) id<UserSMSModeCheckDelegate> delegate;
+@property (nonatomic, strong) IBOutlet UITableView *tableView;
+@property (nonatomic, assign) id<UserSMSModeCheckDelegate> delegate;
+@property (nonatomic, strong) IBOutlet UILabel *leftCountLabel;
 
 @end
