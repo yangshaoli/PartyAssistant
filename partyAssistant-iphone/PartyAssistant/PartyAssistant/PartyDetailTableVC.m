@@ -181,46 +181,21 @@
             self.peopleCountArray = countArray;
             [self.tableView reloadData];
         }else{
-            // [self showAlertRequestFailed:description];		
+             [self showAlertRequestFailed:description];		
         }
+    }else if([request responseStatusCode] == 404){
+         NSLog(@"在21");
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+         NSLog(@"在221");
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+         NSLog(@"在22221");
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+         NSLog(@"在222221");
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
-    
-    
-//    NSLog(@"requestFinished预期调用2222");
-//	NSString *response = [request responseString];
-//	SBJsonParser *parser = [[SBJsonParser alloc] init];
-//	NSDictionary *result = [parser objectWithString:response];
-//	NSString *description = [result objectForKey:@"description"];
-//	[self dismissWaiting];
-//    if ([request responseStatusCode] == 200) {
-//        if ([description isEqualToString:@"ok"]) {
-//            NSDictionary *dict = [result objectForKey:@"datasource"];
-//            self.clientsArray = [dict objectForKey:@"clientList"];
-//            NSLog(@"requestFinished============self.clientsArray输出>>>>%@",self.clientsArray);
-//            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
-//            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
-//            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
-//                tbi.badgeValue = nil;
-//            }else{
-//                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
-//            }
-//            [self.tableView reloadData];
-//        }else{
-//            [self showAlertRequestFailed:description];	
-//            NSLog(@"self.clientsArray在1");
-//        }
-//    }else if([request responseStatusCode] == 404){
-//        [self showAlertRequestFailed:REQUEST_ERROR_404];
-//        NSLog(@"self.clientsArray在2");
-//    }else{
-//        [self showAlertRequestFailed:REQUEST_ERROR_500];
-//        NSLog(@"self.clientsArray在3");
-//    }
-//	
-//
-    
-    
-    
     
     
 }
@@ -230,12 +205,6 @@
     //	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];
-    
-    
-    
-    
-    
-    
 }
 
 
@@ -245,8 +214,6 @@
     if (self.seperatedListQuest) {
         [self.seperatedListQuest clearDelegatesAndCancel];
     }
-    
-
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
@@ -268,6 +235,7 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"打印调试数组%@",[dict objectForKey:@"clientList"]);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -281,8 +249,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -512,36 +484,47 @@
     [self presentModalViewController:vc animated:YES];
 }
 
-//正则判断是否Email地址
-- (BOOL) isEmailAddress:(NSString*)email { 
-    
-    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-    
-    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-    
-    return [emailTest evaluateWithObject:email]; 
-    
-} 
+////正则判断是否Email地址
+//- (BOOL) isEmailAddress:(NSString*)email { 
+//    
+//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+//    
+//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+//    
+//    return [emailTest evaluateWithObject:email]; 
+//    
+//} 
 
 
 - (void)resentMsg{
-    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:@"再次发送时会过滤掉联系方式为邮箱的人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
-    [alertV show];
+//    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+//    [alertV show];
+//
+//    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+//    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+//    NSLog(@"打印type：：：%@",self.partyObj.type);
+//    for(NSDictionary  *clientDic in self.clientsArray){
+//        if([self.partyObj.type isEqualToString:@"email"]){
+//            [clientDicArray removeObject:clientDic];
+//        }
+//    }
+//    
+//    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
+//    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+//    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+//    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 
-    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
-    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
-    for(NSDictionary  *clientDic in self.clientsArray){
-        NSString *cValueString=[clientDic objectForKey:@"cValue"];
-        if([self  isEmailAddress:cValueString]){
-            [clientDicArray removeObject:clientDic];
-        }
-    }
     
-    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
-    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
-    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
-
+    [self getPartyClientSeperatedList];
+    if([self.partyObj.type isEqualToString:@"email"]){
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+        [alertV show];
+    }else{
+        ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+        [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+        [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+        [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    }
 }
 - (void)editBtnAction{
     ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
@@ -605,9 +588,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
-       
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

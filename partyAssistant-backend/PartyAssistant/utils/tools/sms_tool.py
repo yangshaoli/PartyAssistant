@@ -145,3 +145,14 @@ def sendsmsMessage(message):
             logger.error(res)
     except:
         logger.exception('send sendsmsBingdingmessage error!')        
+
+def send_forget_pwd_sms(instance):
+    phone = instance.user.userprofile.phone
+    content = u'【爱热闹】您的临时密码为: %s 该密码仅生效一次，请您尽快登陆应用/网站，修改您的密码。' % instance.temp_password
+    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send sendsmsBindingmessage error!')

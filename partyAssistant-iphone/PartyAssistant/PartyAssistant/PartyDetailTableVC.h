@@ -34,6 +34,6 @@
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;
 - (void)getPartyClientSeperatedList;
-- (BOOL) isEmailAddress:(NSString*)email;
+//- (BOOL) isEmailAddress:(NSString*)email;
 
 @end

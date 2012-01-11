@@ -5,16 +5,17 @@ Created on 2011-11-7
 @author: liuxue
 '''
 
-from django.contrib.auth import authenticate
-
+from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
  
-from apps.accounts.models import UserIPhoneToken
+from apps.accounts.models import UserIPhoneToken, AccountTempPassword
 from apps.parties.models import PartiesClients, Party
 
 from utils.structs.my_exception import myException
+from utils.tools.phone_num_tool import regPhoneNum
+from utils.tools.phone_key_tool import generate_phone_code
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
 import re
 
@@ -23,7 +24,11 @@ from ERROR_MSG_SETTINGS import *
 re_username_string = re.compile(r'^[a-zA-Z]+')
 re_username = re.compile(r'^[a-zA-Z]+\w+$')
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
-SMS_APPLY_TIPS_CONTENT = u'(报名点击:aaa, 不报名点击:bbb)'        
+re_email = re.compile(
+    r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
+    r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"' # quoted-string
+    r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$', re.IGNORECASE)
+re_phone = re.compile(r'1\d{10}')
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -56,7 +61,7 @@ def accountLogout(request):
         user_token_list = UserIPhoneToken.objects.filter(device_token = device_token)
         for user_token in user_token_list:
             user_token.delete()
-        if user:
+        if request.user:
             logout(request)
         
 @csrf_exempt
@@ -122,3 +127,45 @@ def getAccountRemaining(request):
         return {'remaining':user.userprofile.available_sms_count}
     else:
         return {'remaining':0}
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def forgetPassword(request):
+    if request.method == 'POST' and 'value' in request.POST:
+        value = request.POST['value']
+        if re_email.match(value):
+            try:
+                user = User.objects.get(userprofile__email = value)
+            except Exception:
+                raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_EMAIL)
+            sending_type = 'email'
+        elif re_username.match(value):
+            try:
+                user = User.objects.get(username = value)
+            except Exception:
+                raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME)
+            if user.userprofile.phone:
+                sending_type = 'sms'
+                value = user.userprofile.phone
+            elif user.userprofile.email:
+                sending_type = "email"
+                value = user.userprofile.email
+            else:
+                raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME_NO_BINDING)
+        elif re_phone.match(regPhoneNum(value)):
+            try:
+                user = User.objects.get(userprofile__phone = regPhoneNum(value))
+            except Exception:
+                raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_SMS)
+            sending_type = 'sms'
+        else:
+            raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME)
+        temp_password = generate_phone_code()
+        temp_pwd_data, created = AccountTempPassword.objects.get_or_create(user = user, defaults = {
+                                                                                                    "temp_password":temp_password,
+                                                                                                    "sending_type":sending_type,
+                                                                                                    })
+        if not created:
+            temp_pwd_data.sending_type = sending_type
+            temp_pwd_data.save()

@@ -33,8 +33,9 @@
     UserObject *user = [us getUserObject];
     self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
 
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshing:) name:UpdateReMainCount object:nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -52,6 +53,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.leftCountLabel.text = @"更新中";
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
 }
 
@@ -202,11 +204,20 @@
     [self.tableView reloadData];
 }
 
+- (void)leftCountRefreshing:(NSNotification *)notify {
+    
+}
+
 - (void)leftCountRefreshed:(NSNotification *)notify {
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
 }
+
+- (void)leftCountRefreshFailed:(NSNotification *)notify {
+    self.leftCountLabel.text = @"更新失败";
+}
+
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
