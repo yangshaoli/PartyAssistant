@@ -16,15 +16,15 @@
                 		'applyURL':String,
 				'sms_count_remaining':Integer,
                 		},
-			'version':IPHONE_APP_VERSION(String),
-                    	'android_version':ANDROID_APP_VERSION(String),
+			'iphone_version':IPHONE_APP_VERSION(String),
+        	'android_version':ANDROID_APP_VERSION(String),
 			}
 		Error - {
 			"status":'error',
 			"description":Error Msg,
 			"data":{},
-			'version':IPHONE_APP_VERSION(String),
-                    	'android_version':ANDROID_APP_VERSION(String),
+			'iphone_version':IPHONE_APP_VERSION(String),
+            'android_version':ANDROID_APP_VERSION(String),
 			}
 	ClientDict:{
 			"cName":String,
@@ -45,8 +45,8 @@
 				"lastID":Integer,
 				"partyList":PartyDictArray,
 				},
-		'version':IPHONE_APP_VERSION(String),
-                'android_version':ANDROID_APP_VERSION(String),
+		'iphone_version':IPHONE_APP_VERSION(String),
+        'android_version':ANDROID_APP_VERSION(String),
 		}
 
 	PartyDict:{
