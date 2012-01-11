@@ -133,4 +133,4 @@ def forgetPassword(request):
     if request.method == 'POST' and 'value' in request.POST:
         value = request.POST['value']
         if re_email.match(value):
-            
+            pass
