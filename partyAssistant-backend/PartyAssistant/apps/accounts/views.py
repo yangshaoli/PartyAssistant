@@ -68,9 +68,10 @@ def profile(request, template_name = 'accounts/profile.html', redirected = 'prof
             
             return TemplateResponse(request, 'accounts/profile.html', {'form':form,
                                                                        'sms_count':userprofile.available_sms_count,
-                                                                       'profile_status':profile_status
+                                                                       'profile_status':profile_status,
+                                                                       'userprofile':userprofile
                                                                        })
-#            return redirect('profile')
+            return redirect('profile')
         else:
             user = request.user
             userprofile = user.get_profile()
@@ -382,12 +383,17 @@ def email_binding(request):
             return HttpResponseRedirect('/accounts/profile')
 
 @login_required
-def email_unbinding(request):
+def unbinding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
-        user = User.objects.get(pk = request.user.id)
-        userprofile = user.get_profile()
-        userprofile.email = ''
-        userprofile.email_binding_status = 'unbind'
+        phone = request.POST.get('phone', '')
+        if email:
+            userprofile = UserProfile.objects.get(pk = request.user.id, email=email)
+            userprofile.email = ''
+            userprofile.email_binding_status = 'unbind'
+        if phone:
+            userprofile = UserProfile.objects.get(pk = request.user.id, phone=phone)
+            userprofile.phone = ''
+            userprofile.phone_binding_status = 'unbind'
         userprofile.save()
         return HttpResponse("success")
