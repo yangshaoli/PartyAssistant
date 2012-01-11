@@ -77,14 +77,14 @@ class ChangePasswordForm(forms.Form):
     
 class UserProfileForm(forms.Form):
     true_name = forms.CharField(required = False, error_messages = {'max_length':u'最多是14个字符'}, max_length = 14)
-    phone = forms.RegexField(required = False, regex = '1\d{10}', error_messages = {'invalid':u'手机号码不规范'})
-    email = forms.EmailField(max_length = 75, required = False, error_messages = {'max_length':u'邮箱地址不要超过75字符'})
+    #phone = forms.RegexField(required = False, regex = '1\d{10}', error_messages = {'invalid':u'手机号码不规范'})
+    #email = forms.EmailField(max_length = 75, required = False, error_messages = {'max_length':u'邮箱地址不要超过75字符'})
     
-    def clean_phone(self):
-        if self.cleaned_data['phone'] == '' :
-            return None
-        else :
-            return str(self.cleaned_data['phone'])
+    #def clean_phone(self):
+    #   if self.cleaned_data['phone'] == '' :
+    #        return None
+    #    else :
+    #       return str(self.cleaned_data['phone'])
 
 class BuySMSForm(forms.Form):
     sms_count = forms.IntegerField()

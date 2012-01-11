@@ -442,8 +442,12 @@ def list_party(request):
     #分页
     paginator = Paginator(party_list, 10)
     page = request.GET.get('page', 1)
-
+    try:
+        page = int(page)
+    except:
+        page = 1    
     party_list = paginator.page(page)
+    request.session['page'] = page
     
     return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
 
@@ -683,8 +687,17 @@ def invite_list(request, party_id):
             party_clients['reject']['client_count'] = party_clients['reject']['client_count'] + 1
             if not party_client.is_check:
                 party_clients['reject']['is_check'] = False
-    
-    return TemplateResponse(request, 'clients/invite_list.html', {'party': party, 'party_clients': party_clients}) 
+                
+    if 'page' in request.session:
+        page = request.session['page']
+    else :
+        page = 1
+    try:        
+        page = int(page)
+    except:
+        page = 1
+        
+    return TemplateResponse(request, 'clients/invite_list.html', {'party': party, 'party_clients': party_clients, 'page':page}) 
 
 
 #生成默认内容

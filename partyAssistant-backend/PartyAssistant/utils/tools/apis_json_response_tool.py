@@ -26,7 +26,7 @@ def apis_json_response_decorator(func):
                 data = {
                         'status':e.status,
                         'description':e.description,
-                        'datasource':data,
+                        'datasource':e.data,
                         'iphone_version':IPHONE_APP_VERSION,
                         'android_version':ANDROID_APP_VERSION,
                         }

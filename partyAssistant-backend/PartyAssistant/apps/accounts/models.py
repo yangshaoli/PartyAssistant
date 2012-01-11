@@ -152,12 +152,12 @@ def sendBindingMessage(sender = None, instance = None, **kwargs):
 
 signals.post_save.connect(sendBindingMessage, sender = UserBindingTemp)
 
-def sendAccountTempOasword(sender = None, instance = None, **kwargs):
-    if instance.sending_type == 'phone':
+def sendAccountTempPasword(sender = None, instance = None, **kwargs):
+    if instance.sending_type == 'email':
         thread.start_new_thread(send_forget_pwd_email, (instance,))
         
-    if instance.sending_type == 'email':
+    if instance.sending_type == 'sms':
         thread.start_new_thread(send_forget_pwd_sms, (instance,))
 
-signals.post_save.connect(sendAccountTempOasword, sender = AccountTempPassword)
+signals.post_save.connect(sendAccountTempPasword, sender = AccountTempPassword)
 
