@@ -26,6 +26,8 @@
 		75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */; };
 		75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */; };
 		75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */; };
+		75B41DDB14BD7463005F9A46 /* MailValidateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B41DD914BD7462005F9A46 /* MailValidateViewController.m */; };
+		75B41DDC14BD7463005F9A46 /* MailValidateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
@@ -291,6 +293,9 @@
 		75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomSepratorLineView.m; sourceTree = "<group>"; };
 		75A2266F14AF0D890025BFC3 /* ResendPartyViaSMSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendPartyViaSMSViewController.h; sourceTree = "<group>"; };
 		75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendPartyViaSMSViewController.m; sourceTree = "<group>"; };
+		75B41DD814BD7462005F9A46 /* MailValidateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MailValidateViewController.h; path = Binding/MailValidateViewController.h; sourceTree = "<group>"; };
+		75B41DD914BD7462005F9A46 /* MailValidateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MailValidateViewController.m; path = Binding/MailValidateViewController.m; sourceTree = "<group>"; };
+		75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MailValidateViewController.xib; path = Binding/MailValidateViewController.xib; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
@@ -758,6 +763,9 @@
 				75C8282E14B2DED900D3FF76 /* MailUnbindingViewController.h */,
 				75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */,
 				75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */,
+				75B41DD814BD7462005F9A46 /* MailValidateViewController.h */,
+				75B41DD914BD7462005F9A46 /* MailValidateViewController.m */,
+				75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */,
 			);
 			name = MailBinding;
 			sourceTree = "<group>";
@@ -1604,6 +1612,7 @@
 				75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */,
 				75DEF33D14B2FB8D00240A23 /* TelBindingViewController.xib in Resources */,
 				75DEF34314B2FCCB00240A23 /* TelValidateViewController.xib in Resources */,
+				75B41DDC14BD7463005F9A46 /* MailValidateViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1770,6 +1779,7 @@
 				75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */,
 				75DEF33C14B2FB8D00240A23 /* TelBindingViewController.m in Sources */,
 				75DEF34214B2FCCB00240A23 /* TelValidateViewController.m in Sources */,
+				75B41DDB14BD7463005F9A46 /* MailValidateViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
