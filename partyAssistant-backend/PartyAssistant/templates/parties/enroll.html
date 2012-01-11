@@ -31,24 +31,20 @@ input[type="image"] { border:0px;height:45px;}
     })
 
 function maskAddress(v){
-    if (v.indexOf('@') == -1 && (v.length != 11 || !isNaN(v))) {
-        return v;
-    } else {
-        var addressType = '';
-        if (v.indexOf('@') == -1){
-            addressType = 'phone';
-        } else { addressType = 'email' ;}
-        
-        if (addressType == 'email') {
-            var atPos = clients[i].address.indexOf('@');
-            var value = v.substring(0,3)+'******'+v.substring(atPos);
-            return value;
-        }
-        
-        if (addressType == 'phone') {
-            var value = v.substring(0, 3) + '****' + v.substring(7, 11);
-            return value;
-        }
+    var addressType = '';
+    if (v.indexOf('@') == -1){
+        addressType = 'phone';
+    } else { addressType = 'email' ;}
+    
+    if (addressType == 'email') {
+        var atPos = clients[i].address.indexOf('@');
+        var value = v.substring(0,3)+'******'+v.substring(atPos);
+        return value;
+    }
+    
+    if (addressType == 'phone') {
+        var value = v.substring(0, 3) + '****' + v.substring(7, 11);
+        return value;
     }
 }
 
@@ -63,13 +59,11 @@ function ajaxGetClients(applystatus){
             client_count = data.client_count;
             clients = data.party_clients_datas;
             for (i in clients){
-                name = maskAddress(clients[i].name);
                 address = maskAddress(clients[i].address);
-                
-                if(clients[i].client_id == '{{ client.id }}'){
-                	row = "<tr><td></td><th>"+'{{ client.name }}'+"</th><td>"+clients[i].address+"</td><td></td></tr>"
-                }else{
-                	row = "<tr><td></td><th>"+name+"</th><td>"+address+"</td><td></td></tr>"
+                if (clients[i].name == clients[i].address || clients[i].name == ''){
+                    row = "<tr><td></td><th>"+address+"</th><td>"+address+"</td><td></td></tr>";
+                } else {
+                    row = "<tr><td></td><th>"+clients[i].name+"</th><td>"+address+"</td><td></td></tr>";
                 }
                 
                 $("#table_"+applystatus).append(row); 
