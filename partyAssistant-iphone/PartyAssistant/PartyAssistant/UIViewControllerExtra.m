@@ -34,10 +34,12 @@
 
 - (void)getVersionFromRequestDic:(NSDictionary *)result{
 	NSString *versionString = [result objectForKey:@"version"];
-    NSLog(@"打印版本信息；；；%@",versionString);
-    
-    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
-    [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+    if(versionString==nil&&[versionString isEqualToString:@""]){
+        return;
+    }else{
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+    }
 }
 
 

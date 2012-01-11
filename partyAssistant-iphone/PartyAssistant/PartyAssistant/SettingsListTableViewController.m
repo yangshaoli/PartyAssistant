@@ -16,6 +16,7 @@
 #define NotPassTag                  2
 #define SuccessfulTag               3
 #define InvalidateNetwork           4
+#define versionRefreshTag           5
 
 @implementation SettingsListTableViewController
 
@@ -95,7 +96,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 6;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -120,6 +121,8 @@
         cell.textLabel.text = @"充值";
     }else if(indexPath.row == 5){
         cell.textLabel.text = @"登出";
+    }else if(indexPath.row == 6){
+        cell.textLabel.text = @"版本信息";
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -194,7 +197,18 @@
         alertView.tag = LogoutTag;
         [alertView show];
     }
-    
+    if(indexPath.row == 6){
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        NSString *versionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if(versionString==nil&&[versionString isEqualToString:@""]){
+            return;
+        }else{
+            
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"更新版本" message:@"确认更新?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+            alertView.tag = versionRefreshTag;
+            [alertView show];
+        }
+    }
 }
 
 #pragma mark -

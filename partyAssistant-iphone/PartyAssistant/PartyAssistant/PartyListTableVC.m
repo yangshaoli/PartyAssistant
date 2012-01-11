@@ -187,7 +187,6 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
-            NSLog(@"在list页面requestfinish中打印self.lastID：：：：%d",self.lastID);
             if (lastID < 0) {
                 lastID = 0;
             }

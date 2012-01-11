@@ -184,16 +184,12 @@
              [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
-         NSLog(@"在21");
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     }else if([request responseStatusCode] == 500){
-         NSLog(@"在221");
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }else if([request responseStatusCode] == 502){
-         NSLog(@"在22221");
         [self showAlertRequestFailed:REQUEST_ERROR_502];
     }else{
-         NSLog(@"在222221");
         [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
     
@@ -235,7 +231,6 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"打印调试数组%@",[dict objectForKey:@"clientList"]);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -483,17 +478,6 @@
     WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
     [self presentModalViewController:vc animated:YES];
 }
-
-////正则判断是否Email地址
-//- (BOOL) isEmailAddress:(NSString*)email { 
-//    
-//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-//    
-//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-//    
-//    return [emailTest evaluateWithObject:email]; 
-//    
-//} 
 
 
 - (void)resentMsg{

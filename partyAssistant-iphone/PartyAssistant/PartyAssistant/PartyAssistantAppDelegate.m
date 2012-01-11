@@ -245,11 +245,12 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
-    if (!self.remainCountRequest) {
-        self.remainCountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
-    } else {
-        [self.remainCountRequest setURL:[NSURL URLWithString:requestURL]]; 
-    }
+    //if (!self.remainCountRequest) {
+    self.remainCountRequest = nil;
+    self.remainCountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+   // } else {
+    //    [self.remainCountRequest setURL:[NSURL URLWithString:requestURL]]; 
+   // }
     [_remainCountRequest setDelegate:self];
     [_remainCountRequest setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
     [_remainCountRequest setDidFailSelector:@selector(remainCountRequestDidFail:)];
@@ -270,20 +271,30 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
         user.leftSMSCount = [remainCount stringValue];
         NSLog(@"%@", user.leftSMSCount);
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[remainCount intValue]]]];
-    }else if([request responseStatusCode] == 404){
-        [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else if([request responseStatusCode] == 500){
-        [self showAlertRequestFailed:REQUEST_ERROR_500];
-    }else if([request responseStatusCode] == 502){
-        [self showAlertRequestFailed:REQUEST_ERROR_502];
-    }else{
-        [self showAlertRequestFailed:REQUEST_ERROR_504];
+        return;
+    } else if([request responseStatusCode] == 404){
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+    } else {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
     }
+//------------------wu xue zhang
+//    else if([request responseStatusCode] == 404){
+//        [self showAlertRequestFailed:REQUEST_ERROR_404];
+//    }else if([request responseStatusCode] == 500){
+//        [self showAlertRequestFailed:REQUEST_ERROR_500];
+//    }else if([request responseStatusCode] == 502){
+//        [self showAlertRequestFailed:REQUEST_ERROR_502];
+//    }else{
+//        [self showAlertRequestFailed:REQUEST_ERROR_504];
+//>>>>>>> wuxuezhang
+//    }
+    [request clearDelegatesAndCancel];
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
-//    NSError *error = [request error];
-//    NSLog(@"%@", error);
+    NSError *error = [request error];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+     [request clearDelegatesAndCancel];
 }
 
 - (void)dealloc {

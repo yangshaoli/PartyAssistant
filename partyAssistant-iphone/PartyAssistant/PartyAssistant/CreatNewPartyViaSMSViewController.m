@@ -20,6 +20,7 @@
 #import "NotificationSettings.h"
 #import "AddressBookDBService.h"
 #import "UIViewControllerExtra.h"
+#import "PurchaseListViewController.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -33,6 +34,8 @@
 - (NSString *)getCleanPhoneNumber:(NSString *)originalString;
 - (void)addPersonToGroup:(NSDictionary *)personDictionary;
 - (NSString *)getCleanLetter:(NSString *)originalString;
+- (void)showLessRemainingCountAlert;
+- (void)gotoPurchasPage;
 
 @end
 
@@ -73,7 +76,7 @@
     [super viewDidLoad];
     self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
-    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(updateRemainCount)];
+    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
     self.navigationItem.rightBarButtonItem = right;
     self.rightItem = right;
     self.receipts = [NSMutableArray arrayWithCapacity:10];
@@ -323,29 +326,47 @@
 //        [alert show];
 //    }else{
 //    [self saveSMSInfo];
-    if ([self.smsObject.receiversArray count] == 0) {
-        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-            [alertV show];
+   
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
     }else{
-        UserObjectService *us = [UserObjectService sharedUserObjectService];
-        UserObject *user = [us getUserObject];
+        [self saveSMSInfo];
+        if ([self.smsObject.receiversArray count] == 0) {
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加有效的收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+            [alertV show];
+            return;
+        }
+    }
+    
+//    if ([self.smsObject.receiversArray count] == 0) {
+//        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+//            [alertV show];
+//    }else{
+//        UserObjectService *us = [UserObjectService sharedUserObjectService];
+//        UserObject *user = [us getUserObject];
         if (self.smsObject._isSendBySelf) {
             
         } else {
-            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
-                UIAlertView *alert=[[UIAlertView alloc]
-                                    initWithTitle:@"需要充值"
-                                    message:@"余额不足，不能通过服务器端发送！"
-                                    delegate:nil
-                                    cancelButtonTitle:@"确定"
-                                    otherButtonTitles: nil];
-                [alert show];
-                return;
-            }
-        }
-        
+//            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+//                UIAlertView *alert=[[UIAlertView alloc]
+//                                    initWithTitle:@"需要充值"
+//                                    message:@"余额不足，不能通过服务器端发送！"
+//                                    delegate:nil
+//                                    cancelButtonTitle:@"确定"
+//                                    otherButtonTitles: nil];
+//                [alert show];
+//                return;
+//            }
+        }        
         [self sendCreateRequest];
-    }
+//    }
 }
 
 - (void)saveSMSInfo{
@@ -414,9 +435,10 @@
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
     [self getVersionFromRequestDic:result];//处理版本信息
+    NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
@@ -471,8 +493,18 @@
                 [self createPartySuc];
             }
                  
-        }else{
-            [self showAlertRequestFailed:description];		
+        } else if ([status isEqualToString:@"lessRemain"]){
+            NSDictionary *infos = [result objectForKey:@"data"];
+            NSNumber *leftCount = nil;
+            leftCount = [infos objectForKey:@"leftCount"];
+            if (leftCount) {
+                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
+                [self showLessRemainingCountAlert];
+                return;
+            }
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+        } else {
+            [self showAlertRequestFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -637,14 +669,6 @@
     self.smsObject._isSendBySelf = status;
 }
 
-#pragma mark - 
-#pragma mark alert view delegate
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 10011) {
-        [self.navigationController dismissModalViewControllerAnimated:YES];
-    }
-}
-
 #pragma mark -
 #pragma mark people picker delegate
 - (BOOL)peoplePickerNavigationController:
@@ -730,23 +754,23 @@
 #pragma mark -
 #pragma mark update remain count
 - (void)updateRemainCount {
-    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
-        UIAlertView *alert=[[UIAlertView alloc]
-                            initWithTitle:@"短信内容不可以为空"
-                            message:@"内容为必填项"
-                            delegate:self
-                            cancelButtonTitle:@"请点击输入内容"
-                            otherButtonTitles: nil];
-        [alert show];
-        return;
-    }else{
-        [self saveSMSInfo];
-        if ([self.smsObject.receiversArray count] == 0) {
-            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
-            [alertV show];
-            return;
-        }
-    }
+//    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+//        UIAlertView *alert=[[UIAlertView alloc]
+//                            initWithTitle:@"短信内容不可以为空"
+//                            message:@"内容为必填项"
+//                            delegate:self
+//                            cancelButtonTitle:@"请点击输入内容"
+//                            otherButtonTitles: nil];
+//        [alert show];
+//        return;
+//    }else{
+//        [self saveSMSInfo];
+//        if ([self.smsObject.receiversArray count] == 0) {
+//            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+//            [alertV show];
+//            return;
+//        }
+//    }
     
     if (self.smsObject._isSendBySelf) {
         [self SMSContentInputDidFinish];
@@ -758,8 +782,8 @@
         [request setDelegate:self];
         [request setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
         [request setDidFailSelector:@selector(remainCountRequestDidFail:)];
-        [request startSynchronous];
         [self showWaiting];
+        [request startSynchronous];
     }
 } 
 
@@ -806,5 +830,35 @@
 
 - (void)selectedFinishedInController:(UIViewController *)vc {
     [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark -
+#pragma mark less remain count error
+- (void)showLessRemainingCountAlert {
+    UIAlertView *lessAlert = [[UIAlertView alloc] initWithTitle:@"操作提示" message:@"帐户余额不足，不能完成本次发送!" delegate:self cancelButtonTitle:@"知道了" otherButtonTitles:@"去充值", nil];
+    [lessAlert setTag:10001];
+    [lessAlert show];
+}
+
+
+#pragma mark - 
+#pragma mark alert view delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 10011) {
+        [self.navigationController dismissModalViewControllerAnimated:YES];
+    } else if (alertView.tag == 10001) {
+        if (buttonIndex == 0) {
+            return;
+        } else {
+            [self gotoPurchasPage];
+        }
+    }
+}
+
+#pragma mark -
+#pragma mark custom method
+- (void)gotoPurchasPage {
+    PurchaseListViewController *purchase = [[PurchaseListViewController alloc] initWithNibName:nil bundle:nil];
+    [self.navigationController pushViewController:purchase animated:YES];
 }
 @end
