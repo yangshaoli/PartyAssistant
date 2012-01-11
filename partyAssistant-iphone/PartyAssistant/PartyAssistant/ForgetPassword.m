@@ -1,23 +1,18 @@
 //
-//  ContentTableVC.m
+//  ForgetPassword.m
 //  PartyAssistant
 //
-//  Created by user on 11-12-22.
-//  Copyright 2011年 __MyCompanyName__. All rights reserved.
+//  Created by user on 12-1-10.
+//  Copyright 2012年 __MyCompanyName__. All rights reserved.
 //
-#import "UITableViewControllerExtra.h"
-#import "ContentTableVC.h"
-#import "UserObjectService.h"
-#import "JSON.h"
-#import "ASIFormDataRequest.h"
-#import "URLSettings.h"
-#import "NotificationSettings.h"
-#import "UITableViewControllerExtra.h"
-#import "HTTPRequestErrorMSG.h"
 
-@implementation ContentTableVC
-@synthesize  contentTextView;
-@synthesize partyObj,quest;
+#import "ForgetPassword.h"
+#import "UITableViewControllerExtra.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "HTTPRequestErrorMSG.h"
+@implementation ForgetPassword
+@synthesize inputTextField,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -40,10 +35,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
-    self.navigationItem.rightBarButtonItem = doneBtn;
-
+    UIBarButtonItem  *getPasswordBarButton=[[UIBarButtonItem alloc] initWithTitle:@"找回" style:
+UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
+    self.navigationItem.rightBarButtonItem=getPasswordBarButton;
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -60,8 +54,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated
-{   
-    
+{
     [super viewWillAppear:animated];
 }
 
@@ -88,101 +81,26 @@
 
 #pragma mark - Table view data source
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 0) {
-        return 180;
-    }
-    return 44.0f;
-}
-- (void)saveInfo{
-    self.partyObj.contentString = self.contentTextView.text;
-}
-- (void)doneBtnAction{
-    if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
-        UIAlertView *alert=[[UIAlertView alloc]
-                            initWithTitle:@"编辑内容不可以为空"
-                            message:@"内容为必填项"
-                            delegate:self
-                            cancelButtonTitle:@"请点击输入内容"
-                            otherButtonTitles: nil];
-        [alert show];
-        return;
-        
-    }else{
-        
-        [self saveInfo];
-        [self showWaiting];
-        UserObjectService *us = [UserObjectService sharedUserObjectService];
-        UserObject *user = [us getUserObject];
-        NSURL *url = [NSURL URLWithString:EDIT_PARTY];
-        
-        if (self.quest) {
-            [self.quest clearDelegatesAndCancel];
-        }
-        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:self.partyObj.contentString forKey:@"description"];
-        [request setPostValue:self.partyObj.partyId forKey:@"partyID"];
-        [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
-        request.timeOutSeconds = 30;
-        [request setDelegate:self];
-        [request setShouldAttemptPersistentConnection:NO];
-        [request startAsynchronous];
-        self.quest=request;
-       
-
-    }
-}
-
-- (void)requestFinished:(ASIHTTPRequest *)request{
-	NSString *response = [request responseString];
-	SBJsonParser *parser = [[SBJsonParser alloc] init];
-	NSDictionary *result = [parser objectWithString:response];
-	NSString *description = [result objectForKey:@"description"];
-	[self dismissWaiting];
-    if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
-            [self.navigationController popViewControllerAnimated:YES];
-            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
-            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
-            [[NSNotificationCenter defaultCenter] postNotification:notification];
-        }else{
-            [self showAlertRequestFailed:description];		
-        }
-    }else if([request responseStatusCode] == 404){
-        [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else if([request responseStatusCode] == 500){
-        [self showAlertRequestFailed:REQUEST_ERROR_500];
-    }else if([request responseStatusCode] == 502){
-        [self showAlertRequestFailed:REQUEST_ERROR_502];
-    }else{
-        [self showAlertRequestFailed:REQUEST_ERROR_504];
-    }
-}
-
-
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
-	NSError *error = [request error];
-	[self dismissWaiting];
-	[self showAlertRequestFailed: error.localizedDescription];
-}
-
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if (section==0) {
-        return @"活动内容";
+        return @"请输入绑定的邮箱或手机号码";
+    }else{
+        return @"";
     }
-    return nil;
 }
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return 1;
 }
@@ -195,16 +113,18 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    if (!contentTextView) {
-        self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(10, 10, 300,160)];
-    }
-    contentTextView.backgroundColor = [UIColor clearColor];
-    contentTextView.text=self.partyObj.contentString;
-    [cell addSubview:contentTextView];
-    [contentTextView becomeFirstResponder];
-    cell.selectionStyle=UITableViewCellSelectionStyleNone;
+    
     // Configure the cell...
     
+    if (!inputTextField) {
+        self.inputTextField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 300, 44)];
+    }
+    inputTextField.textAlignment = UITextAlignmentLeft;
+    inputTextField.backgroundColor = [UIColor clearColor];
+    inputTextField.placeholder=@"系统将发送随机密码到输入的地址中";
+    inputTextField.tag=12;
+    [cell addSubview:inputTextField];      
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -260,11 +180,74 @@
      */
 }
 
-#pragma mark -
-#pragma mark dealloc method
--(void)dealloc {
-    [self.quest clearDelegatesAndCancel];
-    self.quest = nil;
+- (void)getPassword{
+    if(!self.inputTextField.text || [self.inputTextField.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"输入内容不可以为空"
+                            message:@"输入为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
+        
+    }else{
+        
+        [self showWaiting];
+        NSURL *url = [NSURL URLWithString:FORGET_PASSWORD];
+        
+        if (self.quest) {
+            [self.quest clearDelegatesAndCancel];
+        }
+        
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        [request setPostValue:self.inputTextField.text forKey:@"value"];
+        request.timeOutSeconds = 30;
+        [request setDelegate:self];
+        [request setShouldAttemptPersistentConnection:NO];
+        [request startAsynchronous];
+        self.quest=request;
+        
+        NSLog(@"%@",self.inputTextField.text);
+       
+        
+    }
 }
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            [self.navigationController popViewControllerAnimated:YES];
+//            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
+//            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
+//            [[NSNotificationCenter defaultCenter] postNotification:notification];
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+
+}
+
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
 
 @end

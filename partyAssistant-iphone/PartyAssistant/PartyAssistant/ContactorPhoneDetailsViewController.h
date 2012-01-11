@@ -36,5 +36,5 @@
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *clientStatusFlag;
 @property(nonatomic, retain)ASIHTTPRequest *quest;
-
+//- (BOOL) isEmailAddress:(NSString*)email;
 @end

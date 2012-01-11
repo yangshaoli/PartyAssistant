@@ -224,7 +224,18 @@
                                 "remaining":Integer,
                                 }
                 }
-14. AccountLogout:
+14. forgetPassword:
+	url:"/a/accounts/forget_password/",
+	method:"POST",
+	input:{
+		"value":String(not null) 
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+15. AccountLogout:
         url:"/a/accounts/logout/",
         method:"POST",
         input:{
