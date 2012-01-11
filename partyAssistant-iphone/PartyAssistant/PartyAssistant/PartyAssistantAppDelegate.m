@@ -248,11 +248,12 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
-    if (!self.remainCountRequest) {
-        self.remainCountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
-    } else {
-        [self.remainCountRequest setURL:[NSURL URLWithString:requestURL]]; 
-    }
+    //if (!self.remainCountRequest) {
+    self.remainCountRequest = nil;
+    self.remainCountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+   // } else {
+    //    [self.remainCountRequest setURL:[NSURL URLWithString:requestURL]]; 
+   // }
     [_remainCountRequest setDelegate:self];
     [_remainCountRequest setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
     [_remainCountRequest setDidFailSelector:@selector(remainCountRequestDidFail:)];
@@ -279,11 +280,13 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     } else {
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
     }
+    [request clearDelegatesAndCancel];
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
     NSError *error = [request error];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+     [request clearDelegatesAndCancel];
 }
 
 - (void)dealloc {

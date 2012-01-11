@@ -27,7 +27,8 @@
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage;
 - (void)showAlertRequestFailed: (NSString *) theMessage;
 - (NSString *)getCleanPhoneNumber:(NSString *)originalString;
-
+- (void)showLessRemainingCountAlert;
+- (void)gotoPurchasPage;
 @end
 
 
@@ -69,29 +70,70 @@
 #pragma mark custom method
 - (void)SMSContentInputDidFinish {
 //    [self saveSMSInfo];
-    if ([self.tempSMSObject.receiversArray count] == 0) {
-        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-        [alertV show];
+    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        return;
     }else{
-        UserObjectService *us = [UserObjectService sharedUserObjectService];
-        UserObject *user = [us getUserObject];
-        if (self.tempSMSObject._isSendBySelf) {
-            
-        } else {
-            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
-                UIAlertView *alert=[[UIAlertView alloc]
-                                    initWithTitle:@"需要充值"
-                                    message:@"余额不足，不能通过服务器端发送！"
-                                    delegate:nil
-                                    cancelButtonTitle:@"确定"
-                                    otherButtonTitles: nil];
-                [alert show];
-                return;
-            }
+        [self saveSMSInfo];
+        if ([self.tempSMSObject.receiversArray count] == 0) {
+            UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加有效的收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
+            [alertV show];
+            return;
         }
-        
-        [self sendCreateRequest];
     }
+    
+    //    if ([self.smsObject.receiversArray count] == 0) {
+    //        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+    //            [alertV show];
+    //    }else{
+    //        UserObjectService *us = [UserObjectService sharedUserObjectService];
+    //        UserObject *user = [us getUserObject];
+    if (self.tempSMSObject._isSendBySelf) {
+        
+    } else {
+        //            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+        //                UIAlertView *alert=[[UIAlertView alloc]
+        //                                    initWithTitle:@"需要充值"
+        //                                    message:@"余额不足，不能通过服务器端发送！"
+        //                                    delegate:nil
+        //                                    cancelButtonTitle:@"确定"
+        //                                    otherButtonTitles: nil];
+        //                [alert show];
+        //                return;
+        //            }
+    }        
+    [self sendCreateRequest];
+//    
+//    if ([self.tempSMSObject.receiversArray count] == 0) {
+//        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+//        [alertV show];
+//    }else{
+//        UserObjectService *us = [UserObjectService sharedUserObjectService];
+//        UserObject *user = [us getUserObject];
+//        if (self.tempSMSObject._isSendBySelf) {
+//            
+//        } else {
+//            if ([user.leftSMSCount intValue] < [self.smsObject.receiversArray count]) {
+//                UIAlertView *alert=[[UIAlertView alloc]
+//                                    initWithTitle:@"需要充值"
+//                                    message:@"余额不足，不能通过服务器端发送！"
+//                                    delegate:nil
+//                                    cancelButtonTitle:@"确定"
+//                                    otherButtonTitles: nil];
+//                [alert show];
+//                return;
+//            }
+//        }
+//        
+//        [self sendCreateRequest];
+//    }
+
 //
 //    
 //    if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
@@ -162,13 +204,14 @@
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
+	[self dismissWaiting];
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
-	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.tempSMSObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
@@ -208,12 +251,22 @@
             }else{
                 [self createPartySuc];
                 }
-        }else{
-            [self showAlertRequestFailed:description];		
+        }else if ([status isEqualToString:@"lessRemain"]){
+            NSDictionary *infos = [result objectForKey:@"data"];
+            NSNumber *leftCount = nil;
+            leftCount = [infos objectForKey:@"leftCount"];
+            if (leftCount) {
+                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
+                [self showLessRemainingCountAlert];
+                return;
+            }
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+        } else {
+            [self showAlertRequestFailed:description];	
         }
-    }else if([request responseStatusCode] == 404){
+    } else if ([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    } else {
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }
 	
