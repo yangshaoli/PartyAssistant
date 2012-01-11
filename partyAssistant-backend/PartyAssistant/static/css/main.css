@@ -87,6 +87,8 @@ abbr, acronym {
 .new_line td,.new_line th{
  background:url(../images/bg_line1.png) left bottom repeat-x;
 }
+/**2.3 tips **/
+#tips {color:#000; background:#ffff00; padding:5px; border-radius:5px;text-align:center; margin:60px 20%; position:absolute; width:400px;}
 /* 3. page */
 /** 3.1 layout **/
 .grid_a {

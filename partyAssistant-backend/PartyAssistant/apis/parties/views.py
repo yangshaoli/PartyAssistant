@@ -253,14 +253,18 @@ def PartyList(request, uid, start_id = 0):
         partyObject['clientsData'] = client_counts
         
         PartyObjectArray.append(partyObject)
+    party_list = Party.objects.filter(creator = user)
+    unreadCount = PartiesClients.objects.filter(party__in = party_list, is_check = False).count()
     if partylist:
         return {
                 'lastID':partylist[partylist.count() - 1].id,
-                'partyList':PartyObjectArray
+                'partyList':PartyObjectArray,
+                'unreadCount':unreadCount,
                 }
     else:
         return {
                 'lastID':start_id,
+                'unreadCount':unreadCount,
                 'partyList':[]
                 }
 
@@ -362,12 +366,15 @@ def GetPartyClientSeperatedList(request, pid, type):
             cValue = clientparty.client.email
         else:
             cValue = clientparty.client.phone
-        if not clientparty.is_check:
-            clientparty.is_check = True
-            clientparty.save()
-            is_checked = False
+        if 'read' in request.GET:
+            if not clientparty.is_check:
+                clientparty.is_check = True
+                clientparty.save()
+                is_checked = False
+            else:
+                is_checked = True
         else:
-            is_checked = True
+            is_checked = clientparty.is_check
         dic = {
                'cName':clientparty.client.name,
                'cValue':cValue,

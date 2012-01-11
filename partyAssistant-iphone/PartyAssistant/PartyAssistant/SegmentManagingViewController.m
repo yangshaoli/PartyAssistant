@@ -153,7 +153,7 @@
 }
 #pragma mark -
 #pragma mark Mutil contact list delegate
-- (NSMutableArray *)dataSourceForContactList:(MultiContactsPickerListViewController *)contactList {
+- (NSMutableArray *)dataSourceForContactList:(UIViewController *)contactList {
     return self.currentContactData;
 }
 

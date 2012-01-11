@@ -16,11 +16,6 @@
 #import "ResendPartyViaSMSViewController.h"
 
 
-@interface StatusTableVC()
--(void) hideTabBar:(UITabBarController*) tabbarcontroller;
--(void) showTabBar:(UITabBarController*) tabbarcontroller;
-@end
-
 @implementation StatusTableVC
 @synthesize clientsArray;
 @synthesize clientStatusFlag;
@@ -64,7 +59,7 @@
 
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag,@"?read=yes"]];
     
     if (self.quest) {
         [self.quest clearDelegatesAndCancel];
@@ -101,15 +96,11 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-         NSLog(@"在3");
     }else if([request responseStatusCode] == 500){
-         NSLog(@"在31");
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }else if([request responseStatusCode] == 502){
-         NSLog(@"在32");
         [self showAlertRequestFailed:REQUEST_ERROR_502];
     }else{
-         NSLog(@"在33");
         [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
@@ -134,7 +125,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self hideTabBar:self.tabBarController];
     [self getPartyClientSeperatedList];
 
 }
@@ -160,16 +150,18 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-////正则判断是否Email地址
-//- (BOOL) isEmailAddress:(NSString*)email { 
-//    
-//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-//    
-//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-//    
-//    return [emailTest evaluateWithObject:email]; 
-//    0
-//} 
+
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
+
 
 - (void)resendBtnAction{
     
@@ -207,14 +199,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return  [self.clientsArray count];
 }
@@ -424,48 +414,6 @@
    
 }
 
-
-
--(void) hideTabBar:(UITabBarController*) tabbarcontroller {
-    
-    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-        }
-        
-    }
-    
-    //[UIView commitAnimations];
-}
-
-//-(void) showTabBar:(UITabBarController*) tabbarcontroller {
-//    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
-//    
-//    for(UIView*view in tabbarcontroller.view.subviews)
-//    {
-//        if([view isKindOfClass:[UITabBar class]])
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-//        }
-//        else
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,310)];
-//        }
-//    }
-//    
-//}
 #pragma mark -
 #pragma mark dealloc method
 -(void)dealloc {

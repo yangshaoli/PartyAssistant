@@ -380,3 +380,14 @@ def email_binding(request):
             userprofile.save()
             record.delete()
             return HttpResponseRedirect('/accounts/profile')
+
+@login_required
+def email_unbinding(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '')
+        user = User.objects.get(pk = request.user.id)
+        userprofile = user.get_profile()
+        userprofile.email = ''
+        userprofile.email_binding_status = 'unbind'
+        userprofile.save()
+        return HttpResponse("success")

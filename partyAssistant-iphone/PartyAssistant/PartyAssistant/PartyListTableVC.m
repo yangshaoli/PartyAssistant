@@ -14,6 +14,7 @@
 #import "ClientObject.h"
 #import "NotificationSettings.h"
 #import "HTTPRequestErrorMSG.h"
+#import "UIViewControllerExtra.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -98,11 +99,6 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
-    UserObjectService *us = [UserObjectService sharedUserObjectService];
-    UserObject *user = [us getUserObject];
-    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
-    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
     [self refreshBtnAction];
     [self.tableView reloadData];
 
@@ -182,6 +178,7 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];//处理版本信息
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
@@ -194,7 +191,13 @@
             if (lastID < 0) {
                 lastID = 0;
             }
-            
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dataSource objectForKey:@"unreadCount"] intValue];
+            if ([[dataSource objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dataSource objectForKey:@"unreadCount"]];
+            }
             NSArray *partyDictArray = [dataSource objectForKey:@"partyList"];
             if (!_isAppend) {
                 [self.partyList removeAllObjects];

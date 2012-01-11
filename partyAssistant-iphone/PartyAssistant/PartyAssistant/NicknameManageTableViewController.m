@@ -206,7 +206,8 @@
     NetworkConnectionStatus  phoneStatus = [dataManager  setPhoneNumForUserWithUID:user.uID withNewPhoneNum:phoneNum];
     NSString *emailInfo = self.emailTextField.text;
     NetworkConnectionStatus  emailStatus = [dataManager setEmailInfoForUserWithUID:user.uID withNewEmailInfo:emailInfo];
-    
+#warning TO DO: Need to check this three status
+    NSLog(@"Status: %d, %d, %d", status, phoneStatus, emailStatus);
 }
 
 @end

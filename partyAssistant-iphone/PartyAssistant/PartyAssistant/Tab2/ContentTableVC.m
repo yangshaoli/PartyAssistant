@@ -14,12 +14,7 @@
 #import "NotificationSettings.h"
 #import "UITableViewControllerExtra.h"
 #import "HTTPRequestErrorMSG.h"
-@interface ContentTableVC()
 
--(void) hideTabBar:(UITabBarController*) tabbarcontroller;
--(void) showTabBar:(UITabBarController*) tabbarcontroller;
-
-@end
 @implementation ContentTableVC
 @synthesize  contentTextView;
 @synthesize partyObj,quest;
@@ -68,7 +63,6 @@
 {   
     
     [super viewWillAppear:animated];
-    [self hideTabBar:self.tabBarController];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -183,14 +177,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return 1;
 }
@@ -267,49 +259,6 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
 }
-
-
-
--(void) hideTabBar:(UITabBarController*) tabbarcontroller {
-    
-    
-    //    [UIView beginAnimations:nil context:NULL];
-    //    [UIView setAnimationDuration:0.5];
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-        }
-        
-    }
-    
-    //[UIView commitAnimations];
-}
-
-//-(void) showTabBar:(UITabBarController*) tabbarcontroller {
-//    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
-//    
-//    for(UIView*view in tabbarcontroller.view.subviews)
-//    {
-//        if([view isKindOfClass:[UITabBar class]])
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-//        }
-//        else
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-//        }
-//    }
-//    
-//}
 
 #pragma mark -
 #pragma mark dealloc method

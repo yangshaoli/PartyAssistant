@@ -33,9 +33,11 @@
 }
 
 - (void)getVersionFromRequestDic:(NSDictionary *)result{
-	NSString *version = [result objectForKey:@"version"];//什么类型
-	
-
+	NSString *versionString = [result objectForKey:@"version"];
+    NSLog(@"打印版本信息；；；%@",versionString);
+    
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
 }
 
 

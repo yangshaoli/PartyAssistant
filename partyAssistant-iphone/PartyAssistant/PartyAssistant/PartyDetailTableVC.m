@@ -101,11 +101,6 @@
     [self loadClientCount];
     [self getPartyClientSeperatedList];
     [self.tableView reloadData];
-    
-//    //[GetClientsCountService sharedGetClientsCountService].partyObj=self.partyObj;
-//    NSLog(@"在Detail页面输出partyid》》》》%d",self.partyObj.partyId);
-   
-
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -349,7 +344,6 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
-            NSInteger newAppliedInt=[[self.peopleCountArray objectAtIndex:2] intValue];
             
             if(self.partyObj.isnewApplied){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
@@ -373,7 +367,7 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
-            NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
+            
             if(self.partyObj.isnewRefused){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];

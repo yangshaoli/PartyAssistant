@@ -2,8 +2,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
-from utils.tools.sms_tool import sendsmsBindingmessage
-from utils.tools.email_tool import send_binding_email
+from utils.tools.sms_tool import sendsmsBindingmessage, send_forget_pwd_sms
+from utils.tools.email_tool import send_binding_email, send_forget_pwd_email
 import thread
 
 ACCOUNT_TYPE_CHOICES = (
@@ -126,6 +126,14 @@ class UserAliReceipt(UserReceiptBase):
     def __unicode__(self):
         return self.user.username
 
+class AccountTempPassword(models.Model):
+    user = models.OneToOneField(User)
+    temp_password = models.CharField(max_length = 8)
+    sending_type = models.CharField(max_length = 8)
+    
+    def __unicode__(self):
+        return self.user.username
+
 
     
 def create_user_profile(sender = None, instance = None, created = False, **kwargs):
@@ -143,4 +151,13 @@ def sendBindingMessage(sender = None, instance = None, **kwargs):
         thread.start_new_thread(send_binding_email, (instance,))
 
 signals.post_save.connect(sendBindingMessage, sender = UserBindingTemp)
+
+def sendAccountTempOasword(sender = None, instance = None, **kwargs):
+    if instance.sending_type == 'phone':
+        thread.start_new_thread(send_forget_pwd_email, (instance,))
+        
+    if instance.sending_type == 'email':
+        thread.start_new_thread(send_forget_pwd_sms, (instance,))
+
+signals.post_save.connect(sendAccountTempOasword, sender = AccountTempPassword)
 

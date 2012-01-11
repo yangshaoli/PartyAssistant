@@ -19,4 +19,5 @@ urlpatterns = patterns('apps.accounts.views',
     url(r'^validate_phone_bingding_ajax/$', 'validate_phone_bingding_ajax',  name='validate_phone_bingding_ajax'),
     url(r'^validate_phone_unbingding_ajax/$', 'validate_phone_unbingding_ajax', name='validate_phone_unbingding_ajax'),
     url(r'^email_binding/$', 'email_binding', name='email_binding'),
+    url(r'^email_unbinding/$', 'email_unbinding', name='email_unbinding'),
 )
