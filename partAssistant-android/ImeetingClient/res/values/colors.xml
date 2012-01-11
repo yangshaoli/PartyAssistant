@@ -13,4 +13,8 @@
   <color name="blue">#41ccf0</color>
   <color name="themeRed">#d90100</color>
   <color name="mywhite">#e0e1d7</color>
+  <color name="myorienge">#f05008</color>
+  <color name="myWeiboziti">#d07018</color>
+  <color name="transparent">#00ffffff</color>
+  <color name="text_num_gray">#333</color>
 </resources>

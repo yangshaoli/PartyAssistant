@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:orientation="vertical"
+  android:padding="10dip">
+  <LinearLayout
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:orientation="horizontal">
+  
+  <TextView
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:text="信息提示"
+  android:textSize="13px"
+  android:textColor="@color/myWeiboziti"
+  android:layout_marginLeft="5dip">
+  </TextView>
+  </LinearLayout>
+  <TextView
+  android:id="@+id/text_info"
+  android:layout_marginTop="6px"
+  android:layout_width="240px"
+  android:layout_height="wrap_content"
+  android:textColor="@color/myWeiboziti"
+  android:textSize="25px"
+  android:text="第一次使用需要输入您的新浪微博账号和密码进行登录授权">
+  </TextView>
+  <RelativeLayout
+  android:layout_width="fill_parent"
+  android:layout_height="40px">
+      <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:layout_centerHorizontal="true"
+      android:layout_alignParentBottom="true">
+          <Button
+          android:id="@+id/btn_start"
+          android:layout_width="80px"
+          android:layout_height="31px"
+          android:text="确定"
+          android:background="@color/myorienge">
+          </Button>
+          <Button
+          android:id="@+id/btn_cancel"
+          android:layout_width="80px"
+          android:layout_height="31px"
+          android:layout_marginLeft="8px"
+          android:text="取消"
+          android:background="@color/myorienge">
+          </Button>
+      </LinearLayout>
+  </RelativeLayout>
+ 
+</LinearLayout>

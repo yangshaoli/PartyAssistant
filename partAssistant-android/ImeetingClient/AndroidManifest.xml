@@ -9,6 +9,7 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
 	
     <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <meta-data android:value="matthiaskaeppler.de" android:name="UMENG_APPKEY"></meta-data>
     	<activity android:name=".activity.SplashActivity">
     		<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,10 +60,43 @@
 		<activity android:name=".activity.EditActivity">
 			
 		</activity>
+		
+		
+		<activity android:name=".activity.WeiBoSplashActivity"
+			android:label="@string/app_name"
+                  android:configChanges="keyboardHidden|orientation"
+                  android:screenOrientation="portrait" 
+                  android:launchMode="singleTask"
+                  >
+ 			<intent-filter>
+            	<action android:name="android.intent.action.SEND"></action> 
+				<category android:name="android.intent.category.DEFAULT"></category>
+				<data android:mimeType="image/*"></data>
+			</intent-filter>
+			<intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="founderapp" android:host="WeiBoSplashActivity" /> 
+            </intent-filter>
+            
+		</activity>
+		
+		<activity android:name=".activity.WebViewActivity"
+				 android:label="@string/app_name"
+                 android:configChanges="keyboardHidden|orientation"
+                 android:screenOrientation="portrait" >
+		</activity>
+		
+		<activity 
+		android:name=".weibo.ShareActivity"
+				 android:label="@string/app_name">
+		</activity>
     </application>
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.ACCES_MOCK_LOCATION"></uses-permission> 
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission> 
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
 	<uses-permission android:name="android.permission.CALL" />
@@ -74,7 +108,8 @@
 	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 	<uses-permission android:name="android.permission.CAMERA" />
 	<uses-permission android:name="android.permission.RESTART_PACKAGES" />
-	
+	<uses-permission android:name="android.permission.WRITE_APN_SETTINGS"></uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
 	<uses-feature android:name="android.hardware.camera" />
 	<uses-feature android:name="android.hardware.camera.autofocus"
 		android:required="false" />

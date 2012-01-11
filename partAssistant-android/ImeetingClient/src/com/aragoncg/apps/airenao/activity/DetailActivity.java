@@ -54,6 +54,7 @@ import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 import com.aragoncg.apps.airenao.utills.Utility;
+import com.aragoncg.apps.airenao.weibo.ShareActivity;
 
 public class DetailActivity extends Activity implements OnItemClickListener {
 
@@ -75,6 +76,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private String userId;
 	private GridView gridView;
 	private String delteUrl;
+	private String applyUrl="";
 
 	private static final int SUCCESS = 0;
 	private static final int FAIL = 3;
@@ -172,7 +174,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		// userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 		// null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
-
+		applyUrl = mySharedPreferences.getString(partyId, "");
 		// 获得组件集合对象
 		myCache = new ComponentsCache();
 		// 获得menu data
@@ -318,7 +320,30 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				case MENU_SHARE:
 					if (pw.isShowing()) {
 						pw.dismiss();
-
+						SharedPreferences spf = AirenaoUtills.getMySharedPreferences(DetailActivity.this);
+						String accessToken = spf.getString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, null);
+						String accessSecret = spf.getString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, null);
+						Intent intent2 = new Intent();
+						Bundle bundle = new Bundle();
+						if(accessToken!=null && accessSecret!=null){
+							String applyUrl = spf.getString(partyId, null);
+							if(applyUrl==null){
+								throw new RuntimeException("获得报名链接错误");
+							}
+							applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："+applyUrl;
+				    		bundle.putString(WeiBoSplashActivity.EXTRA_WEIBO_CONTENT, applyUrl);
+				    		bundle.putString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, accessToken);
+				    		bundle.putString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, accessSecret);
+				    		intent2.putExtras(bundle);
+				    		intent2.setClass(DetailActivity.this, ShareActivity.class);
+				    		startActivity(intent2);
+						}else{
+							intent2.putExtra(Constants.PARTY_ID, partyId);
+							intent2.setClass(DetailActivity.this, WeiBoSplashActivity.class);
+							startActivity(intent2);
+						}
+						
+						
 					}
 					break;
 				case MENU_SETTINT:

@@ -369,8 +369,13 @@ public class SendAirenaoActivity extends Activity {
 
 					break;
 				case SUCCESS:
+					SharedPreferences spf = AirenaoUtills.getMySharedPreferences(SendAirenaoActivity.this);
+					Editor edit = spf.edit();
+					edit.putString(partyId, applyURL);
+					edit.commit();
 					if (msg.getData().getString("noContacts") == null) {// 等于null说明联系人不为空
 						if (sendSMS) {
+							
 							// 如果用自己手机发送
 							if (ckSendLableUseOwn) {
 									sendSMSorEmail(sendSMS, ckSendLableUseOwn);
@@ -987,10 +992,14 @@ public class SendAirenaoActivity extends Activity {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									switch (which) {
-									case 0:
+									case 0://绑定手机号
 										break;
 
-									case 1:
+									case 1://绑定微博
+										
+										Intent intent = new Intent();
+										intent.setClass(SendAirenaoActivity.this, WeiBoSplashActivity.class);
+										startActivity(intent);
 										break;
 									}
 								}

@@ -281,6 +281,8 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			HttpHelper httpHelper = new HttpHelper();
 			String result = httpHelper.performGet(params[0] + id + "/" + type
 					+ "/", null, null, null, context);
+			/*result = httpHelper.requestByHttpGet(params[0] + id + "/" + type
+					+ "/", context);*/
 			result = AirenaoUtills.linkResult(result);
 			analyzeJson(result, type);
 			return new String[3];

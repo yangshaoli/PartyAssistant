@@ -27,6 +27,7 @@ import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -391,5 +392,30 @@ public class HttpHelper {
 		}
 		return resultData;
 	}
+	
+	// Get方式请求
+	public static String requestByHttpGet(String url,Context context) throws Exception {
+		String response="";
+		if (!AirenaoUtills.isNetWorkExist(context)) {
+			return NO_DATA_CONNECTION;
+		}
+		    String path = url;
+		    // 新建HttpGet对象
+		    HttpGet httpGet = new HttpGet(path);
+		    // 获取HttpClient对象
+		    HttpClient httpClient = new DefaultHttpClient();
+		    // 获取HttpResponse实例
+		    HttpResponse httpResp = httpClient.execute(httpGet);
+		    // 判断是够请求成功
+		    if (httpResp.getStatusLine().getStatusCode() == 200) {
+		        // 获取返回的数据
+		    	response = EntityUtils.toString(httpResp.getEntity(), "UTF-8");
+		    	return response;
+		    } else {
+		    	response = EntityUtils.toString(httpResp.getEntity());
+				return response;
+		    }
+		}
+
 
 }
