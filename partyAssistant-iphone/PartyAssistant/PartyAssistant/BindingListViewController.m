@@ -7,6 +7,15 @@
 //
 
 #import "BindingListViewController.h"
+#import "UserInfoBindingStatusService.h"
+#import "NameBindingViewController.h"
+
+@interface BindingListViewController ()
+
+- (void)refreshCurrentStatus;
+- (void)decideToOpenWhickTelBindingPage;
+
+@end
 
 @implementation BindingListViewController
 @synthesize tableView = _tableView;
@@ -35,11 +44,16 @@
 }
 
 #pragma mark - View lifecycle
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self refreshCurrentStatus];
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.navigationItem.title = @"绑定邮箱";
+    [self refreshCurrentStatus];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -82,6 +96,38 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+    if (indexPath.section == 0) {
+        NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:nameBindingVC animated:YES]; 
+    } else if (indexPath.section == 1) {
+        [self decideToOpenWhickTelBindingPage];
+    } else if (indexPath.section == 2) {
+        
+    }
+}
+
+- (void)refreshCurrentStatus {
+    UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+    self.nameBindingStatusLabel.text = [storedStatusService nickNameStatusString];
+    self.telBindingStatusLabel.text = [storedStatusService telStatusString ];
+    self.mailBindingStatusLabel.text = [storedStatusService mailStatusString];
+}
+
+- (void)decideToOpenWhichTelBindingPage {
+    UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+    BindingStatus telBindingStatus = [storedStatusService telBindingStatus];
+    //1.goTo binding page
+    //2.goTo UnBinding Page
+    //3.goTo VerifyPage
+}
+
+- (void)decideToOpenWhichMailBindingPage {
+    UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+    BindingStatus mailBindingStatus = [storedStatusService telBindingStatus];
+    //1.goTo binding page
+    //2.goTo UnBinding Page
+    //3.goTo VerifyPage
+
 }
 @end

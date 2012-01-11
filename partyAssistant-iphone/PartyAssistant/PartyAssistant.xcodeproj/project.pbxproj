@@ -28,6 +28,7 @@
 		75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */; };
 		75B41DDB14BD7463005F9A46 /* MailValidateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B41DD914BD7462005F9A46 /* MailValidateViewController.m */; };
 		75B41DDC14BD7463005F9A46 /* MailValidateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */; };
+		75B41DEF14BD9386005F9A46 /* UserInfoBindingStatusService.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B41DEE14BD9386005F9A46 /* UserInfoBindingStatusService.m */; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
@@ -296,6 +297,8 @@
 		75B41DD814BD7462005F9A46 /* MailValidateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MailValidateViewController.h; path = Binding/MailValidateViewController.h; sourceTree = "<group>"; };
 		75B41DD914BD7462005F9A46 /* MailValidateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MailValidateViewController.m; path = Binding/MailValidateViewController.m; sourceTree = "<group>"; };
 		75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MailValidateViewController.xib; path = Binding/MailValidateViewController.xib; sourceTree = "<group>"; };
+		75B41DED14BD9385005F9A46 /* UserInfoBindingStatusService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoBindingStatusService.h; sourceTree = "<group>"; };
+		75B41DEE14BD9386005F9A46 /* UserInfoBindingStatusService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoBindingStatusService.m; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
@@ -1359,6 +1362,8 @@
 				89C709C014908E0D00699AE0 /* DeviceTokenService.m */,
 				7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */,
 				7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */,
+				75B41DED14BD9385005F9A46 /* UserInfoBindingStatusService.h */,
+				75B41DEE14BD9386005F9A46 /* UserInfoBindingStatusService.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -1780,6 +1785,7 @@
 				75DEF33C14B2FB8D00240A23 /* TelBindingViewController.m in Sources */,
 				75DEF34214B2FCCB00240A23 /* TelValidateViewController.m in Sources */,
 				75B41DDB14BD7463005F9A46 /* MailValidateViewController.m in Sources */,
+				75B41DEF14BD9386005F9A46 /* UserInfoBindingStatusService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
