@@ -8,6 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    ValidatorResultPass=0,
+    ValidatorResultIsNull,
+    ValidatorResultIllegalLength,
+    ValidatorResulIllegalChar,
+    ValidatorResultNotStartWithLetter,
+} ValidatorResultCode;
+
 @interface UserInfoValidator : NSObject
+
++ (UserInfoValidator *)sharedUserInfoValidator;
+
+- (ValidatorResultCode)validateUsername:(NSString *)aName;
+- (ValidatorResultCode)validatePassword:(NSString *)aPassword;
+
+- (NSString *)getUsernameErrorMessageByCode:(ValidatorResultCode)code;
+- (NSString *)getPasswordErrorMessageByCode:(ValidatorResultCode)code;
 
 @end

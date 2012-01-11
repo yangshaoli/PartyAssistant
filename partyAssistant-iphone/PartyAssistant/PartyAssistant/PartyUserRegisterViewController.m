@@ -9,6 +9,7 @@
 #import "DataManager.h"
 #import "PartyUserRegisterViewController.h"
 #import "PartyLoginViewController.h"
+#import "UserInfoValidator.h"
 
 #define NullTextFieldTag            100
 #define UserNameTextFieldTag        101
@@ -132,16 +133,25 @@
         
     [self cleanKeyBoard];
     
-    BOOL isOk = [self inputFieldNonTextCheck];
-    
-    if (!isOk) {
-        return;
-    }
-    
-    isOk = [self pwdEqualToPwdCheck];
+    BOOL isOk = [self pwdEqualToPwdCheck];
     
     if (!isOk) {
         [self showAlertWithMessage:@"密码和确认密码内容不一致！" buttonTitle:@"OK" tag:NotLegalTag];
+        return;
+    }
+    
+    UserInfoValidator *validator = [UserInfoValidator sharedUserInfoValidator];
+    ValidatorResultCode result = [validator validateUsername:self.userNameTextField.text];
+    if (result != ValidatorResultPass) {
+        NSString *errorMessge = [validator getUsernameErrorMessageByCode:result];
+        [self showAlertWithMessage:errorMessge buttonTitle:@"OK" tag:NotLegalTag];
+        return;
+    }
+    
+    result = [validator validatePassword:self.pwdTextField.text];
+    if (result != ValidatorResultPass) {
+        NSString *errorMessge = [validator getPasswordErrorMessageByCode:result];
+        [self showAlertWithMessage:errorMessge buttonTitle:@"OK" tag:NotLegalTag];
         return;
     }
     
