@@ -101,11 +101,15 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
+         NSLog(@"在3");
     }else if([request responseStatusCode] == 500){
+         NSLog(@"在31");
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }else if([request responseStatusCode] == 502){
+         NSLog(@"在32");
         [self showAlertRequestFailed:REQUEST_ERROR_502];
     }else{
+         NSLog(@"在33");
         [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
@@ -164,7 +168,7 @@
 //    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
 //    
 //    return [emailTest evaluateWithObject:email]; 
-//    
+//    0
 //} 
 
 - (void)resendBtnAction{

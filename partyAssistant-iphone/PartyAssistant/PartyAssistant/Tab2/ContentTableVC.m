@@ -125,7 +125,6 @@
         if (self.quest) {
             [self.quest clearDelegatesAndCancel];
         }
-
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:self.partyObj.contentString forKey:@"description"];
         [request setPostValue:self.partyObj.partyId forKey:@"partyID"];

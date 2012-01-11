@@ -8,6 +8,7 @@
 
 #import "GetClientsCountService.h"
 #import "URLSettings.h"
+#import "HTTPRequestErrorMSG.h"
 @implementation GetClientsCountService
 @synthesize peopleCountArray;
 @synthesize partyObj;
@@ -30,7 +31,10 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(GetClientsCountService)
     [request startAsynchronous];
 }
 
-
+- (void)showAlertRequestFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    [av show];
+}
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
     
@@ -55,6 +59,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(GetClientsCountService)
         }else{
            // [self showAlertRequestFailed:description];		
         }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 

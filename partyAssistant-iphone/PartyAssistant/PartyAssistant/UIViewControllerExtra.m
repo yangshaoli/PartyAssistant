@@ -32,6 +32,13 @@
     [av show];
 }
 
+- (void)getVersionFromRequestDic:(NSDictionary *)result{
+	NSString *version = [result objectForKey:@"version"];//什么类型
+	
+
+}
+
+
 #pragma mark --
 #pragma mark waitingView Method
 
