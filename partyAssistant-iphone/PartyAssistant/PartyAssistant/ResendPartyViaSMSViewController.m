@@ -7,7 +7,7 @@
 //
 
 #import "ResendPartyViaSMSViewController.h"
-#import "ContactsListPickerViewController.h"
+#import "ABContact.h"
 #import "PartyAssistantAppDelegate.h"
 #import "NotificationSettings.h"
 #import "URLSettings.h"
@@ -33,8 +33,37 @@
 
 @implementation ResendPartyViaSMSViewController
 @synthesize tempSMSObject;
-#pragma mark - View lifecycle
 
+#pragma mark - Private Method
+
+- (void)rearrangeContactNameTFContent {
+    [super performSelector:@selector(rearrangeContactNameTFContent)];
+}
+
+-(void)showWaiting {
+    [super performSelector:@selector(showWaiting)];
+}
+
+-(void)dismissWaiting {
+    [super performSelector:@selector(dismissWaiting)];
+}
+
+- (void)showAlertRequestSuccess {
+    [super performSelector:@selector(showAlertRequestSuccess)];
+}
+
+- (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage {
+    [super performSelector:@selector(showAlertRequestSuccessWithMessage:) withObject:theMessage];
+}
+- (void)showAlertRequestFailed: (NSString *) theMessage; {
+    [super performSelector:@selector(showAlertRequestFailed:) withObject:theMessage];
+}
+
+- (NSString *)getCleanPhoneNumber:(NSString *)originalString {
+    return [super performSelector:@selector(getCleanPhoneNumber:) withObject:originalString];
+}
+
+#pragma mark - View lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -141,8 +170,6 @@
 
 - (void)sendCreateRequest{
     [self showWaiting];
-    BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-    BaseInfoObject *baseinfo = [bs getBaseInfo];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:RESEND_MSG_TO_CLIENT];

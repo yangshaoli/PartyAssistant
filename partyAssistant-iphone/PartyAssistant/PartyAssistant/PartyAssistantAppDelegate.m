@@ -266,7 +266,8 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+//    NSError *error = [request error];
+//    NSLog(@"%@", error);
 }
 
 - (void)dealloc {

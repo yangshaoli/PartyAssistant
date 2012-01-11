@@ -15,11 +15,11 @@
 @class MultiContactsPickerListViewController;
 @protocol MultiContactsPickerListViewControllerDelegate <NSObject>
 
-- (NSMutableArray *)dataSourceForContactList:(MultiContactsPickerListViewController *)contactList;
+- (NSMutableArray *)dataSourceForContactList:(UIViewController *)contactList;
 
 @end
 
-@interface MultiContactsPickerListViewController : UITableViewController <MultiContactsPhoneDetailViewControllerDelegate, UISearchBarDelegate>
+@interface MultiContactsPickerListViewController : UITableViewController <MultiContactsPhoneDetailViewControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate>
 {
     NSArray *contactorsArray;
     CFArrayRef contactorsArrayRef;
@@ -64,7 +64,6 @@
 
 - (void)alertError:(NSString *)errorStr;
 - (void)showOrCancleSelectedMark:(ClientObject *)client mutableMSGValue:(id)msgVal;
-- (void)selectContactor:(NSDictionary *)userinfo;
 - (void)addInfoToArray:(NSInteger)cID uname:(NSString *)name value:(NSString *)val;
 - (void)removeInfoFromArray:(NSInteger)cID;
 

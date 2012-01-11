@@ -76,7 +76,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
             int indentifier = sqlite3_column_int(statement, 2);
             char *phoneLabel = (char *)sqlite3_column_text(statement, 3);
             char *phoneNumber = (char *)sqlite3_column_text(statement, 4);
-            int usageCount = sqlite3_column_int(statement, 5);
             
             NSString *aContactName = nil;
             if (contactName) {
@@ -106,8 +105,6 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(AddressBookDBService)// 单例类，保证类只�
             client.cVal = aPhoneNumber;
             client.phoneLabel = aPhoneLabel;
             client.phoneIdentifier = indentifier;
-            
-//            NSLog(@"LoadMyFavoritesByDB firstName=%@, lastName=%@, usageCount=%d", aFirstName, aLastName, usageCount);
             
             [self.myFavorites addObject:client];
         }

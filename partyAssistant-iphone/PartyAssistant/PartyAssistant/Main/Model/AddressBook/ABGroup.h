@@ -9,7 +9,7 @@
 
 + (id) group;
 + (id) groupWithRecord: (ABRecordRef) record;
-+ (id) groupWithRecordID: (ABRecordID) recordID;
+//+ (id) groupWithRecordID: (ABRecordID) recordID;
 
 @property (nonatomic, readonly) ABRecordRef record;
 @property (nonatomic, readonly) ABRecordID recordID;
