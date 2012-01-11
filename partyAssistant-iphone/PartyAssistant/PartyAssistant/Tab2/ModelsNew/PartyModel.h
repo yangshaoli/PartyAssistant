@@ -18,6 +18,7 @@
     BOOL isnewApplied;
     BOOL isnewRefused;
     NSString *shortURL;
+    NSString *type;
    
 }
 @property(nonatomic, retain)NSDictionary *peopleCountDict;
@@ -29,5 +30,6 @@
 @property (nonatomic,assign)BOOL isnewRefused;
 @property(nonatomic, retain)NSNumber *partyId;
 @property (nonatomic,retain)NSString *shortURL;
+@property (nonatomic,retain)NSString *type;
 
 @end

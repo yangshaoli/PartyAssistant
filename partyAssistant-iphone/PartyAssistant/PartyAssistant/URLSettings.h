@@ -33,3 +33,4 @@
 #define ACCOUNT_SET_CHANGEINFO [NSString stringWithFormat:@"%@/a/accounts/changeInfo/",DOMAIN_NAME]
 //wj
 #define ACCOUNT_REMAINING_COUNT [NSString stringWithFormat:@"%@/a/accounts/get_account_remaining/?id=",DOMAIN_NAME]
+#define FORGET_PASSWORD [NSString stringWithFormat:@"%@/a/accounts/forget_password/",DOMAIN_NAME]
