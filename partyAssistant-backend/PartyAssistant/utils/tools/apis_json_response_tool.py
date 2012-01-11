@@ -2,6 +2,8 @@
 from django.utils import simplejson
 from django.http import HttpResponse
 
+from settings import IPHONE_APP_VERSION, ANDROID_APP_VERSION
+
 from utils.structs.my_exception import myException
 
 def apis_json_response_decorator(func):
@@ -11,7 +13,9 @@ def apis_json_response_decorator(func):
             data = {
                     'status':"ok",
                     'description':"ok",
-                    'datasource':datasource
+                    'datasource':datasource,
+                    'version':IPHONE_APP_VERSION,
+                    'android_version':ANDROID_APP_VERSION,
                     }
             data = simplejson.dumps(data)       
             return HttpResponse(data)
@@ -23,6 +27,8 @@ def apis_json_response_decorator(func):
                         'status':e.status,
                         'description':e.description,
                         'datasource':data
+                        'iphone_version':IPHONE_APP_VERSION,
+                        'android_version':ANDROID_APP_VERSION,
                         }
                 data = simplejson.dumps(data)       
                 return HttpResponse(data)
