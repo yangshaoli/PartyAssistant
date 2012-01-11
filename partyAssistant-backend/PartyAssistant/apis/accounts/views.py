@@ -177,3 +177,21 @@ def forgetPassword(request):
         if not created:
             temp_pwd_data.sending_type = sending_type
             temp_pwd_data.save()
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def bindContact(request, type):
+    pass
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def unbindContact(request, type):
+    pass
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def verifyContact(request, type):
+    pass

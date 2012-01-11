@@ -14,7 +14,7 @@ def apis_json_response_decorator(func):
                     'status':"ok",
                     'description':"ok",
                     'datasource':datasource,
-                    'version':IPHONE_APP_VERSION,
+                    'iphone_version':IPHONE_APP_VERSION,
                     'android_version':ANDROID_APP_VERSION,
                     }
             data = simplejson.dumps(data)       

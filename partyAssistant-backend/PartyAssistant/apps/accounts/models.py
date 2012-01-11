@@ -115,7 +115,6 @@ class UserBindingTemp(models.Model):
     key = models.CharField(max_length = 32, blank = True, default = '')
     binding_address = models.CharField(max_length = 75, blank = True, default = '')
     created_time = models.DateTimeField(auto_now = True)
-    binding_type = models.CharField(max_length = 8, choices = BINDING_TYPE)
    
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
