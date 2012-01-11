@@ -373,6 +373,8 @@ def GetPartyClientSeperatedList(request, pid, type):
                 is_checked = False
             else:
                 is_checked = True
+        else:
+            is_checked = clientparty.is_check
         dic = {
                'cName':clientparty.client.name,
                'cValue':cValue,
