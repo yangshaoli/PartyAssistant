@@ -39,7 +39,7 @@ def accountLogin(request):
         password = request.POST['password']
         user = authenticate(username = username, password = password)
         if not user:
-            user_temp_pwd_list = AccountTempPassword.objects.filter(temp_password = password, user__username == username)
+            user_temp_pwd_list = AccountTempPassword.objects.filter(temp_password = password, user__username = username)
             if user_temp_pwd_list:
                 user = user_temp_pwd_list[0].user
             for user_temp_pwd in user_temp_pwd_list:
