@@ -122,7 +122,25 @@
     }else if(indexPath.row == 5){
         cell.textLabel.text = @"登出";
     }else if(indexPath.row == 6){
-        cell.textLabel.text = @"版本信息";
+        
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        NSString *defaultVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        
+        NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+        BOOL isUpdateVersion=[isUpdateVersionDefault boolForKey:@"isUpdateVersion"];
+        
+        cell.textLabel.text = [[NSString alloc] initWithFormat:@"当前版本号：%@",defaultVersionString];
+      
+        UIView *oldLayout2 = nil;
+        oldLayout2 = [cell viewWithTag:2];
+        [oldLayout2 removeFromSuperview];
+        
+        if(isUpdateVersion){        
+            UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 200, 20, 20)];
+            cellImageView.image=[UIImage imageNamed:@"new1"];
+            cellImageView.tag=2;
+            [cell  addSubview:cellImageView];
+        }
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -203,7 +221,6 @@
         if(versionString==nil&&[versionString isEqualToString:@""]){
             return;
         }else{
-            
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"更新版本" message:@"确认更新?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
             alertView.tag = versionRefreshTag;
             [alertView show];

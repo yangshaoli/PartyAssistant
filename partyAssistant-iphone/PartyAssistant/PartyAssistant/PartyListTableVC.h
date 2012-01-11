@@ -26,6 +26,7 @@
     NSInteger lastID;
     BOOL _isAppend;
     ASIHTTPRequest *quest;
+    
 }
 @property(nonatomic, assign)BOOL _isNeedRefresh;
 @property(nonatomic, assign)BOOL _isRefreshing;

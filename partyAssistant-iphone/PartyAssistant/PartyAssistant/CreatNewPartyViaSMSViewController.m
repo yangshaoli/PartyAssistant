@@ -434,7 +434,13 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-    [self getVersionFromRequestDic:result];//处理版本信息
+    NSString *versionString = [result objectForKey:@"iphone_version"];
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+    if([versionString floatValue]>[preVersionString floatValue]){
+        [self getVersionFromRequestDic:result];//处理版本信息
+    }
+
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {

@@ -98,7 +98,6 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
     [self refreshBtnAction];
     [self.tableView reloadData];
 
@@ -178,7 +177,14 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-    [self getVersionFromRequestDic:result];//处理版本信息
+    //判断版本是否更新
+    NSString *versionString = [result objectForKey:@"iphone_version"];
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+    if([versionString floatValue]>[preVersionString floatValue]){
+        [self getVersionFromRequestDic:result];//处理版本信息
+    }
+    
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
@@ -209,7 +215,6 @@
                 partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
                 partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
                 partyModel.type=[partyDict objectForKey:@"type"];
-                
                 [self.partyList addObject:partyModel];
                 
             }

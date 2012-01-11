@@ -33,16 +33,18 @@
 }
 
 - (void)getVersionFromRequestDic:(NSDictionary *)result{
-	NSString *versionString = [result objectForKey:@"version"];
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+	NSString *versionString = [result objectForKey:@"iphone_version"];
+    
+    NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+    
     if(versionString==nil&&[versionString isEqualToString:@""]){
         return;
     }else{
-        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
         [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+        [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
     }
 }
-
-
 #pragma mark --
 #pragma mark waitingView Method
 
