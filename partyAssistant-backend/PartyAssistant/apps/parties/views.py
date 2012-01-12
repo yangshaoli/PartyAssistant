@@ -132,7 +132,7 @@ def email_invite(request, party_id):
                     if not client_temp:
                         client_temp = Client.objects.create(
                             creator = request.user,
-                            name = email,
+                            #name = email,
                             email = email,
                             invite_type = 'email'
                         )
@@ -277,7 +277,7 @@ def sms_invite(request, party_id):
                     if not client_temp:
                         client_temp = Client.objects.create(
                             creator = request.user,
-                            name = phone,
+                            #name = phone,
                             phone = phone,
                             invite_type = 'phone'
                         )
