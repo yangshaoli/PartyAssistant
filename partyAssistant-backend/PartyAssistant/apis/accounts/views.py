@@ -140,7 +140,7 @@ def profilePage(request):
 def saveNickName(request):
     if request.method == 'POST':
         uid = request.POST['uid']
-        user = User.objects.get(pk = id).select_related('userprofile')
+        user = User.objects.get(pk = uid).select_related('userprofile')
         nickname = request.POST['nickname']
         if len(nickname) > 16:
             raise myException(ERROR_PROFILEPAGE_LONG_NAME)
