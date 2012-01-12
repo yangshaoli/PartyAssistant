@@ -121,15 +121,31 @@ def getBadgeNum(request):
 @csrf_exempt
 @apis_json_response_decorator
 @commit_on_success
-def profilePage(request, uid):
-    user = User.objects.get(pk = id).select_related('userprofile')
+def profilePage(request):
     if request.method == 'POST':
+        uid = request.POST['uid']
+        user = User.objects.get(pk = id).select_related('userprofile')
+        return {
+                'nickname':user.userprofile.true_name,
+                'remaining_sms_count':user.userprofile.available_sms_count,
+                'email':user.userprofile.email,
+                'email_binding_status':user.userprofile.email_binding_status,
+                'phone':user.userprofile.phone,
+                'phone_binding_status':user.userprofile.phone_binding_status,
+                }
+
+@csrf_exempt
+@apis_json_response_decorator
+@commit_on_success
+def saveNickName(request):
+    if request.method == 'POST':
+        uid = request.POST['uid']
+        user = User.objects.get(pk = id).select_related('userprofile')
         nickname = request.POST['nickname']
         if len(nickname) > 16:
             raise myException(ERROR_PROFILEPAGE_LONG_NAME)
         user.userprofile.true_name = nickname
         user.userprofile.save()
-    else:
         return {
                 'nickname':user.userprofile.true_name,
                 'remaining_sms_count':user.userprofile.available_sms_count,
