@@ -26,6 +26,10 @@ typedef enum {
     BindingStatus telBindingStatus;
     BindingStatus mailBindingStatus;
     
+    NSString *bindedNickname;
+    NSString *bindedTel;
+    NSString *bindedMail;
+    
     NSString *bindingNickname;
     NSString *bindingTel;
     NSString *bindingMail;
@@ -35,10 +39,13 @@ typedef enum {
 @property (nonatomic) BindingStatus telBindingStatus;
 @property (nonatomic) BindingStatus mailBindingStatus;
 
+@property (nonatomic, strong) NSString *bindedNickname;
+@property (nonatomic, strong) NSString *bindedTel;
+@property (nonatomic, strong) NSString *bindedMail;
+
 @property (nonatomic, strong) NSString *bindingNickname;
 @property (nonatomic, strong) NSString *bindingTel;
 @property (nonatomic, strong) NSString *bindingMail;
-
 
 - (NSString *)nickNameStatusString;
 - (NSString *)telStatusString;
@@ -63,9 +70,15 @@ typedef enum {
 - (NSString *)nickNameStatusString;
 - (NSString *)telStatusString;
 - (NSString *)mailStatusString;
+//binded data
+- (NSString *)bindedNickname;
+- (NSString *)bindedTel;
+- (NSString *)bindedMail;
 //binding data
 - (NSString *)bindingNickname;
 - (NSString *)bindingTel;
 - (NSString *)bindingMail;
 
+- (BindingStatus)detectMailBindingStatus;
+- (BindingStatus)detectTelBindingStatus;
 @end

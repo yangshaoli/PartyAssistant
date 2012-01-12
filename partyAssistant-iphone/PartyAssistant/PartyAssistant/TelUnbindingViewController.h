@@ -17,4 +17,5 @@
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *telUnBindingCell;
 
+@property (nonatomic, strong) IBOutlet UITextField *telTextField;
 @end

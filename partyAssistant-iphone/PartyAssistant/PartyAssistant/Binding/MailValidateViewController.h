@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UserInfoBindingStatusService.h"
 
 @interface MailValidateViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
@@ -18,5 +19,7 @@
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailValidateCell;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailResendValidateCell;
+
+@property (nonatomic) BindingStatus pageStatus;
 
 @end

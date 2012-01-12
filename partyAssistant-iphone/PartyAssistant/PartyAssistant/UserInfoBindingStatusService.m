@@ -18,6 +18,9 @@
 @synthesize nicknameBindingStatus;
 @synthesize telBindingStatus;
 @synthesize mailBindingStatus;
+@synthesize bindedNickname;
+@synthesize bindedTel;
+@synthesize bindedMail;
 @synthesize bindingNickname;
 @synthesize bindingTel;
 @synthesize bindingMail;
@@ -29,6 +32,9 @@
         self.nicknameBindingStatus = StatusNotBind;
         self.telBindingStatus = StatusNotBind;
         self.mailBindingStatus = StatusNotBind;
+        self.bindedNickname = @"";
+        self.bindedTel = @"";
+        self.bindedMail = @"";
         self.bindingNickname = @"";
         self.bindingTel = @"";
         self.bindingMail = @"";
@@ -41,6 +47,9 @@
     [encoder encodeObject: [NSNumber numberWithInteger:self.nicknameBindingStatus] forKey:@"nicknameBindingStatus"];
 	[encoder encodeObject: [NSNumber numberWithInteger:self.telBindingStatus] forKey:@"telBindingStatus"];
     [encoder encodeObject: [NSNumber numberWithInteger:self.mailBindingStatus] forKey:@"mailBindingStatus"];
+    [encoder encodeObject: self.bindedNickname forKey:@"bindedNickname"];
+    [encoder encodeObject: self.bindedTel forKey:@"bindedTel"];
+    [encoder encodeObject: self.bindedMail forKey:@"bindedMail"];
     [encoder encodeObject: self.bindingNickname forKey:@"bindingNickname"];
     [encoder encodeObject: self.bindingTel forKey:@"bindingTel"];
     [encoder encodeObject: self.bindingMail forKey:@"bindingMail"];
@@ -50,6 +59,9 @@
     self.nicknameBindingStatus = [[decoder decodeObjectForKey:@"nicknameBindingStatus"] integerValue];
 	self.telBindingStatus = [[decoder decodeObjectForKey:@"telBindingStatus"] intValue];
 	self.mailBindingStatus = [[decoder decodeObjectForKey:@"mailBindingStatus"] intValue];
+    self.bindedNickname = [decoder decodeObjectForKey:@"bindedNickname"];
+    self.bindedTel = [decoder decodeObjectForKey:@"bindedTel"];
+    self.bindedMail = [decoder decodeObjectForKey:@"bindedMail"];
     self.bindingNickname = [decoder decodeObjectForKey:@"bindingNickname"];
     self.bindingTel = [decoder decodeObjectForKey:@"bindingTel"];
     self.bindingMail = [decoder decodeObjectForKey:@"bindingMail"];
@@ -60,6 +72,9 @@
     self.nicknameBindingStatus = StatusNotBind;
     self.telBindingStatus = StatusNotBind;
     self.mailBindingStatus = StatusNotBind;
+    self.bindedNickname = @"";
+    self.bindedTel = @"";
+    self.bindedMail = @"";
     self.bindingNickname = @"";
     self.bindingTel = @"";
     self.bindingMail = @"";
@@ -77,6 +92,8 @@
             return @"解绑中";
         case StatusBinded :
             return @"已绑定";
+        case StatusNotBind:
+            return @"未绑定";
         default :
             return @"未知状态";
     }
@@ -189,6 +206,18 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
     return [[self getBindingStatusObject] mailStatusString];
 }
 
+- (NSString *)bindedNickname {
+    return [[self getBindingStatusObject] bindedNickname];
+}
+
+- (NSString *)bindedTel {
+    return [[self getBindingStatusObject] bindedTel];
+}
+
+- (NSString *)bindedMail {
+    return [[self getBindingStatusObject] bindedMail];
+}
+
 - (NSString *)bindingNickname {
     return [[self getBindingStatusObject] bindingNickname];
 }
@@ -199,5 +228,31 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 
 - (NSString *)bindingMail {
     return [[self getBindingStatusObject] bindingMail];
+}
+
+- (BindingStatus)detectMailBindingStatus {
+    if ([self mailBindingStatus] == StatusBinding) {
+        if ([[[self getBindingStatusObject] bindingMail] isEqualToString:@""]) {
+            return StatusVerifyUnbinding;
+        } else {
+            return StatusVerifyBinding;
+        }
+    } else {
+        [[self getBindingStatusObject] setBindingMail:@""];
+    }
+    return [self mailBindingStatus];
+}
+
+- (BindingStatus)detectTelBindingStatus {
+    if ([self telBindingStatus] == StatusBinding) {
+        if ([[[self getBindingStatusObject] bindingTel] isEqualToString:@""]) {
+            return StatusVerifyUnbinding;
+        } else {
+            return StatusVerifyBinding;
+        }
+    } else {
+        [[self getBindingStatusObject] setBindingTel:@""];
+    }
+    return [self telBindingStatus];
 }
 @end

@@ -8,6 +8,24 @@
 
 #import "MailBindingViewController.h"
 #import "MailValidateViewController.h"
+//net work use
+#import "URLSettings.h"
+#import "ASIFormDataRequest.h"
+#import "SBJsonParser.h"
+#import "UserObjectService.h"
+#import "UserObject.h"
+#import "UIViewControllerExtra.h"
+#import "HTTPRequestErrorMSG.h"
+//bind extern
+#import "UIVIewControllerExtern+Binding.h"
+
+@interface MailBindingViewController ()
+
+- (void)jumpToVerify;
+- (void)beginMailUpdate;
+
+@end
+
 @implementation MailBindingViewController
 @synthesize tableView = _tableView;
 @synthesize inputMailCell = _inputMailCell;
@@ -75,8 +93,80 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 1) {
         // go to verify view
-        MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-        [self.navigationController presentModalViewController:verifyPage animated:YES];
+        [self beginMailUpdate];
     }
+}
+
+- (void)jumpToVerify {
+    MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
+    [self.navigationController presentModalViewController:verifyPage animated:YES];
+}
+
+- (void)beginMailUpdate {
+    NSString *mailText = self.inputMailTextField.text;
+    if (!mailText) {
+        return;
+    }
+    
+    //mail validate check
+    BOOL isValid = [self validateEmailCheck:mailText];
+    if (isValid) {
+        
+    } else {
+        return;
+    }
+    
+    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+    
+    if (user.uID == -1) {
+        return;
+    }
+    
+    NSURL *url = [NSURL URLWithString:EMAIL_BIND];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:mailText forKey:@"value"];
+    
+    request.timeOutSeconds = 15;
+    [request setDelegate:self];
+    
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];  
+    
+    [self showWaiting];
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    [self dismissWaiting];
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    NSString *status = [result objectForKey:@"status"];
+	NSString *description = [result objectForKey:@"description"];
+    if ([request responseStatusCode] == 200) {
+        if ([status isEqualToString:@"ok"]) {
+            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
+            [self jumpToVerify];
+        } else {
+            [self showAlertRequestFailed:description];	
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+	
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    [self dismissWaiting];
+	NSError *error = [request error];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 @end

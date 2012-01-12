@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UserInfoBindingStatusService.h"
 
 @interface TelValidateViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
@@ -18,5 +19,7 @@
 @property (nonatomic, strong) IBOutlet UITableViewCell *telValidateCell;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *telResendValidateCell;
+
+@property (nonatomic) BindingStatus pageStatus;
 
 @end

@@ -16,6 +16,6 @@
 @property (nonatomic, strong) IBOutlet UILabel *mailInfoTitleLabel;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailUnBindingCell;
-
+@property (nonatomic, strong) IBOutlet UITextField *mailTextField;
 
 @end

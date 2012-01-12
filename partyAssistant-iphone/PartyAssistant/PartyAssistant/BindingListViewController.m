@@ -19,10 +19,23 @@
 #import "MailUnbindingViewController.h"
 #import "MailValidateViewController.h"
 
+//net work use
+#import "URLSettings.h"
+#import "ASIFormDataRequest.h"
+#import "SBJsonParser.h"
+#import "UserObjectService.h"
+#import "UserObject.h"
+#import "UIViewControllerExtra.h"
+#import "HTTPRequestErrorMSG.h"
+//bind extern
+#import "UIVIewControllerExtern+Binding.h"
+
 @interface BindingListViewController ()
 
 - (void)refreshCurrentStatus;
-- (void)decideToOpenWhickTelBindingPage;
+- (void)decideToOpenWhichTelBindingPage;
+- (void)beginProfileUpdate;
+- (void)decideToOpenWhichMailBindingPage;
 
 @end
 
@@ -108,14 +121,13 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
-    if (indexPath.section == 0) {
+    if (indexPath.row == 0) {
         NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
         [self.navigationController pushViewController:nameBindingVC animated:YES]; 
-    } else if (indexPath.section == 1) {
-        [self decideToOpenWhickTelBindingPage];
-    } else if (indexPath.section == 2) {
-        
+    } else if (indexPath.row == 1) {
+        [self decideToOpenWhichTelBindingPage];
+    } else if (indexPath.row == 2) {
+        [self decideToOpenWhichMailBindingPage];
     }
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -134,6 +146,7 @@
     //2.goTo UnBinding Page
     //3.goTo VerifyPage
     UIViewController *vc = nil;
+    BindingStatus verifyPageStatus;
     switch (telBindingStatus) {
         case StatusNotBind:
             vc = [[TelBindingViewController alloc] initWithNibName:nil bundle:nil];
@@ -144,7 +157,9 @@
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
+            verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
             vc = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
+            [(TelValidateViewController *)vc setPageStatus:verifyPageStatus];
             [self.navigationController presentModalViewController:vc animated:YES];
             break;
         default:
@@ -160,6 +175,7 @@
     //2.goTo UnBinding Page
     //3.goTo VerifyPage
     UIViewController *vc = nil;
+    BindingStatus verifyPageStatus;
     switch (mailBindingStatus) {
         case StatusNotBind:
             vc = [[MailBindingViewController alloc] initWithNibName:nil bundle:nil];
@@ -170,7 +186,9 @@
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
+            verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
             vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
+            [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
             [self.navigationController presentModalViewController:vc animated:YES];
             break;
         default:
@@ -180,6 +198,63 @@
 }
 
 - (void)refreshBtnAction {
+    [self beginProfileUpdate];
+}
+
+- (void)beginProfileUpdate {
+    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
     
+    if (user.uID == -1) {
+        return;
+    }
+    
+    NSURL *url = [NSURL URLWithString:PROFILE_GET];
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
+    
+    request.timeOutSeconds = 15;
+    [request setDelegate:self];
+    
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];  
+    
+    [self showWaiting];
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    [self dismissWaiting];
+	NSString *response = [request responseString];
+    NSLog(@"response string:%@",response);
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    NSString *status = [result objectForKey:@"status"];
+	NSString *description = [result objectForKey:@"description"];
+    if ([request responseStatusCode] == 200) {
+        if ([status isEqualToString:@"ok"]) {
+            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
+            [self saveProfileDataFromResult:result];
+            [self.tableView reloadData];
+        } else {
+            [self showAlertRequestFailed:description];	
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+	
+}
+
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    [self dismissWaiting];
+	NSError *error = [request error];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 @end
