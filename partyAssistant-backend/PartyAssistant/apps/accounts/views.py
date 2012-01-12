@@ -398,3 +398,7 @@ def unbinding(request):
             userprofile.phone_binding_status = 'unbind'
         userprofile.save()
         return HttpResponse("success")
+
+@login_required
+def forget_password(request):
+    return HttpResponse("email_already_exist")
