@@ -20,6 +20,7 @@ from utils.tools.apis_json_response_tool import apis_json_response_decorator
 import re
 
 from ERROR_MSG_SETTINGS import *
+from ERROR_STATUS_SETTINGS import *
 
 re_username_string = re.compile(r'^[a-zA-Z]+')
 re_username = re.compile(r'^[a-zA-Z]+\w+$')
@@ -182,7 +183,57 @@ def forgetPassword(request):
 @commit_on_success
 @apis_json_response_decorator
 def bindContact(request, type):
-    pass
+    if request.method == 'POST':
+        value = request.POST['value']
+        uid = request.POST['uid']
+        try:
+            user = User.objects.get(pk = uid).select_related('userprofile')
+        except Exception:
+            raise myException(ERROR_BINDING_NO_USER)
+        userkey = generate_phone_code()
+        data = {"latest_status":{
+                                 'email':user.userprofile.email,
+                                 'email_binding_status':user.userprofile.email_binding_status,
+                                 'phone':user.userprofile.phone,
+                                 'phone_binding_status':user.userprofile.phone_binding_status,
+                                 }
+                }
+        if type == 'email' and user.userprofile.email_binding_status == 'bind':
+            if user.userprofile.email == value:
+                raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
+            else:
+                raise myException(ERROR_BINDING_BY_EMAIL_DIFFERENT_BINDED, status = ERROR_STATUS_DIFFERENT_BINDED, data = data)
+        elif type == 'phone' and user.userprofile.phone_binding_status == 'bind':
+            if user.userprofile.email == value:
+                raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
+            else:
+                raise myException(ERROR_BINDING_BY_PHONE_DIFFERENT_BINDED, status = ERROR_STATUS_DIFFERENT_BINDED, data = data)
+        if type == 'email' and UserProfile.objects.filter(email = value, email_binding_status = 'bind').exclude(user = user).count() != 0:
+            raise myException(ERROR_STATUS_BINDING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_HAS_BINDED_BY_OTHER, data = data)
+        elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
+            raise myException(ERROR_STATUS_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_HAS_BINDED_BY_OTHER, data = data)
+
+        binding_temp, created = UserBindingTemp.objects.get_or_create(user = request.user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+        if not created:
+            binding_temp.binding_addres = value
+            binding_temp.key = userkey
+            binding_temp.save()
+        phone = request.user.get_profile().phone
+           
+        profile = request.user.get_profile()
+        profile.phone = value
+        profile.phone_binding_status = 'waiteunbind'
+        profile.save()
+        data = {"latest_status":{
+                                 'email':user.userprofile.email,
+                                 'email_binding_status':user.userprofile.email_binding_status,
+                                 'phone':user.userprofile.phone,
+                                 'phone_binding_status':user.userprofile.phone_binding_status,
+                                 }
+                }
+        return data
+
+
 
 @csrf_exempt
 @commit_on_success
