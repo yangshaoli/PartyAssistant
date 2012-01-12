@@ -4,17 +4,18 @@ Created on 2011-10-27
 
 @author: liuxue
 '''
-from django.db.transaction import commit_on_success
 from apps.accounts.models import UserProfile
 from apps.clients.models import Client
 from apps.messages.forms import EmailInviteForm, SMSInviteForm
 from apps.messages.models import EmailMessage, SMSMessage, Outbox
-from apps.parties.forms import PublicEnrollForm, EnrollForm
+from apps.parties.forms import PublicEnrollForm, EnrollForm, \
+    PublicPhoneEnrollForm, PublicEmailEnrollForm
 from apps.parties.models import PartiesClients
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db import transaction
+from django.db.transaction import commit_on_success
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.template.response import TemplateResponse
@@ -459,7 +460,14 @@ def _public_enroll(request, party_id):
     
     if request.method == 'POST':
         #将用户加入clients,状态为'已报名'
-        form = PublicEnrollForm(request.POST)
+        if party.invite_type == 'phone':
+            form = PublicPhoneEnrollForm(request.POST)
+            
+        elif party.invite_type == 'email':
+            form = PublicEmailEnrollForm(request.POST)  
+        else :
+            return TemplateResponse(request, 'message.html', {'message': 'nopublicenroll'})
+              
         if form.is_valid():
             name = request.POST['name']
             email = ''
@@ -528,8 +536,10 @@ def _public_enroll(request, party_id):
         invite_message = ''
         if party.invite_type == 'email':
             invite_message = 'email'
-        else:
+        elif party.invite_type == 'phone':
             invite_message = 'phone'
+        else :
+            return TemplateResponse(request, 'message.html', {'message': 'nopublicenroll'})    
         userprofile = party.creator.get_profile()
         party.creator.username = userprofile.true_name if userprofile.true_name else party.creator.username    
         data = {
