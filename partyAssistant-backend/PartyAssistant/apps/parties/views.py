@@ -346,9 +346,9 @@ def sms_invite(request, party_id):
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
-            clients = PartiesClients.objects.filter(party = party_id).exclude(client__invite_type = 'public')
+            clients = PartiesClients.objects.filter(party = party_id)
         else:
-            clients = PartiesClients.objects.filter(party = party_id).filter(apply_status = apply_status).exclude(client__invite_type = 'public')
+            clients = PartiesClients.objects.filter(party = party_id).filter(apply_status = apply_status)
         
         if clients:
             client_phone_list = []
