@@ -51,7 +51,7 @@ function ajaxGetClients(applystatus){
             client_count = data.client_count;
             clients = data.party_clients_datas;
             for (i in clients){
-                address = maskAddress(clients[i].address);
+                (clients[i].id == {{client.id}}) ? address = clients[i].address:address = maskAddress(clients[i].address);//自己的联系方式不打星
                 if (clients[i].name == clients[i].address || clients[i].name == ''){
                     row = "<tr><td></td><th>"+address+"</th><td>"+address+"</td><td></td></tr>";
                 } else {
