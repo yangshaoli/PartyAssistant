@@ -10,6 +10,7 @@
 #import "NicknameManageTableViewController.h"
 #import "DataManager.h"
 #import "PurchaseListViewController.h"
+#import "BindingListViewController.h"
 
 #define NAVIGATION_CONTROLLER_TITLE @"设置"
 #define LogoutTag                   1
@@ -95,7 +96,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 6;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -119,6 +120,8 @@
     }else if(indexPath.row == 4){
         cell.textLabel.text = @"充值";
     }else if(indexPath.row == 5){
+        cell.textLabel.text = @"绑定";
+    }else if(indexPath.row == 6){
         cell.textLabel.text = @"登出";
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -189,7 +192,11 @@
         PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
         [self.navigationController pushViewController:purchaseListVC animated:YES];
     }
-    if(indexPath.row == 5){
+    if (indexPath.row == 5) {
+        BindingListViewController *bindListVC = [[BindingListViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:bindListVC animated:YES];
+    }
+    if(indexPath.row == 6){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"登出" message:@"确认登出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
         alertView.tag = LogoutTag;
         [alertView show];
@@ -261,5 +268,4 @@
             break;
     }
 }
-
 @end

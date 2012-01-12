@@ -75,8 +75,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -159,7 +163,6 @@
     [funcBtn setFrame:CGRectMake(200, 40, 100, 20)];
     if ([self.clientStatusFlag isEqualToString:@"all"]) {
         NSString *cStatus = [[self.clientsArray objectAtIndex:indexPath.row] objectForKey:@"status"];
-        NSLog(@"%@",cStatus);
         if ([cStatus isEqualToString:@"已报名"]) {
             [funcBtn setTitle:@"拒绝" forState:UIControlStateNormal];
             statusLbl.text = @"已报名";
@@ -259,10 +262,18 @@
             [self showAlertRequestFailed:REQUEST_ERROR_404];
             btn.hidden = NO;
             btn.enabled = YES;
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            btn.hidden = NO;
+            btn.enabled = YES;
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+            btn.hidden = NO;
+            btn.enabled = YES;
         }else{
             btn.hidden = NO;
             btn.enabled = YES;
-            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
         }
     } else {
         [activity removeFromSuperview];
@@ -399,8 +410,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 

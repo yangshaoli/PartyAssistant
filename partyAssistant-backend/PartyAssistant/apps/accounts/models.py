@@ -37,7 +37,7 @@ class UserProfile(models.Model):
     first_login = models.BooleanField(default = True)
     phone = models.CharField(blank = True, max_length = 16)
     phone_binding_status = models.CharField(default = 'unbind', max_length = 16, choices = BINDING_STATUS)
-    email = models.CharField(blank = True, null = True, max_length = 16)
+    email = models.CharField(blank = True, max_length = 128)
     email_binding_status = models.CharField(default = 'unbind', max_length = 16, choices = BINDING_STATUS)
     used_sms_count = models.IntegerField(default = 0)
     available_sms_count = models.IntegerField(default = 30)
@@ -106,16 +106,16 @@ class UserAppleReceipt(UserReceiptBase):
         return self.user.username
 
 BINDING_TYPE = (
-                ('phone','phone'),
-                ('email','email')
+                ('phone', 'phone'),
+                ('email', 'email')
                 )
 class UserBindingTemp(models.Model):
     user = models.ForeignKey(User)
-    binding_type = models.CharField(max_length=8, choices=BINDING_TYPE)
-    key = models.CharField(max_length=32, blank = True, default='')
-    binding_address = models.CharField(max_length=75, blank = True, default='')
+    binding_type = models.CharField(max_length = 8, choices = BINDING_TYPE)
+    key = models.CharField(max_length = 32, blank = True, default = '')
+    binding_address = models.CharField(max_length = 75, blank = True, default = '')
     created_time = models.DateTimeField(auto_now = True)
-    binding_type = models.CharField(max_length=8, choices=BINDING_TYPE)
+    binding_type = models.CharField(max_length = 8, choices = BINDING_TYPE)
    
 class UserAliReceipt(UserReceiptBase):
     receipt = models.TextField()
@@ -137,7 +137,7 @@ signals.post_save.connect(create_user_profile, sender = User)
 
 def sendBindingMessage(sender = None, instance = None, **kwargs):
     if instance.binding_type == 'phone':
-        thread.start_new_thread(sendsmsBindingmessage, (instance, ))
+        thread.start_new_thread(sendsmsBindingmessage, (instance,))
         
     if instance.binding_type == 'email':
         thread.start_new_thread(send_binding_email, (instance,))

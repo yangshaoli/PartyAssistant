@@ -7,6 +7,7 @@
 //
 
 #import "TelUnbindingViewController.h"
+#import "TelValidateViewController.h"
 
 @implementation TelUnbindingViewController
 @synthesize tableView = _tableView;
@@ -52,4 +53,31 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+
+#pragma mark _
+#pragma mark tableView delegate
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 2;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        return self.inputTelCell;
+    } else if (indexPath.section == 1) {
+        return self.telUnBindingCell;
+    }
+    return nil;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 1) {
+        // go to verify view
+        TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController presentModalViewController:verifyPage animated:YES];
+    }
+}
 @end

@@ -27,12 +27,13 @@ class InviteForm(forms.Form):
     content = forms.CharField(widget=forms.TextInput(), required=True)   
             
 class PublicEnrollForm(forms.Form):
-    name = forms.CharField(error_messages={'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required=True, max_length='14')  
+    name = forms.CharField(error_messages={'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required=True, max_length=14)  
     phone_or_email = forms.CharField(error_messages={'required':u'联系方式必填'}, required=True)
     leave_message = forms.CharField(error_messages={'max_length':u'留言长度不能超过100字符'}, max_length=100, required=False)
     
     def clean_leave_message(self):
         if 'leave_message' in self.cleaned_data:
+            self.cleaned_data['leave_message'] = self.cleaned_data['leave_message'].replace('\r\n','<br/>') #Ticket 1169
             leave_message = self.cleaned_data['leave_message']
             if len(leave_message) > 100:
                 raise forms.ValidationError(u'留言超过100字符')
@@ -52,7 +53,7 @@ class PublicEnrollForm(forms.Form):
                         invalid_phone = phone
         
                 if invalid_phone:
-                    raise forms.ValidationError(u'电话号码 %s 格式错误' % invalid_phone)
+                    raise forms.ValidationError(u'手机号码 %s 格式错误' % invalid_phone)
         
             else:
                 invalid_email = ''

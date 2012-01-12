@@ -13,6 +13,7 @@
 #import "URLSettings.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "HTTPRequestErrorMSG.h"
 
 @interface DataManager ()
 
@@ -45,7 +46,10 @@ static DataManager *sharedDataManager = nil;
     
     return self;
 }
-
+- (void)showAlertRequestFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    [av show];
+}
 - (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name
                                                 pwd:(NSString *)pwd {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -67,6 +71,7 @@ static DataManager *sharedDataManager = nil;
     if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
+        NSLog(@"%@",[[request responseString] JSONValue]);
         if ([request responseStatusCode] == 200) {
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
@@ -80,6 +85,14 @@ static DataManager *sharedDataManager = nil;
             } else {
 
             }
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
         } 
         [pool release];
         return NetWorkConnectionCheckDeny;
@@ -124,6 +137,7 @@ static DataManager *sharedDataManager = nil;
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
             NSString *description = [dic objectForKey:@"description"];
+            NSLog(@"%@",description);
             if ([description isEqualToString:@"ok"]) {
                 [self saveUsrData:dic];
                 [pool release];
@@ -131,7 +145,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -150,9 +172,10 @@ static DataManager *sharedDataManager = nil;
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
                                    [NSURL URLWithString:ACCOUNT_LOGOUT]];
-    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
+    //暂时不需要UID
+//    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
     
-    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
+//    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
     [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     NSError *error = [request error];
@@ -174,7 +197,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -186,7 +217,6 @@ static DataManager *sharedDataManager = nil;
 - (BOOL)checkIfUserNameSaved {
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
-    NSLog(@"--->nickname:%@",userData.nickName);
     if ([userData.nickName isEqualToString:@""] || !userData.nickName) {
         return NO;
     }
@@ -283,7 +313,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -325,7 +363,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -368,7 +414,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {

@@ -13,6 +13,7 @@
 #import "URLSettings.h"
 #import "ClientObject.h"
 #import "NotificationSettings.h"
+#import "HTTPRequestErrorMSG.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -23,7 +24,7 @@
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
 @synthesize peopleCountArray;
-@synthesize lastID,_isRefreshing,_isNeedRefresh;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -57,15 +58,11 @@
     self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
-    //自定义活动数据
-//    PartyModel *party1=[[PartyModel alloc] init];
-//    party1.contentString=@"自定义活动很好完大家一定还要去hh好好发sfjdskxkkkdfdkldflkjlkjckjxlkcjlkzxjclkzxjclkzxjclkzjxclkxjclkxzjclkjxclkjxlckjzxlkcjzlkjclkxjcxjclkxjckjcjcxkcjkxcjkxcjkxjcckxlzxkjlkxjc";
-//    PartyModel *party2=[[PartyModel alloc] init];
-//    party2.contentString=@"自定义活动2";
-//    self.partyList=[[NSMutableArray alloc] initWithObjects:party1,party2,nil];
+    
     if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
         [self refreshBtnAction];
     }
+    
     minBottomRefreshViewY = 366.0;
 	//setup refresh tool
     if (bottomRefreshView == nil) {
@@ -100,6 +97,11 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    [self refreshBtnAction];
+    [self.tableView reloadData];
+
+
 }
 
 
@@ -115,8 +117,8 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
-    [self refreshBtnAction];
-    [self.tableView reloadData];
+//    [self refreshBtnAction];
+//    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -146,6 +148,11 @@
     UserObject *user = [us getUserObject];
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
@@ -157,11 +164,12 @@
         _isAppend = NO;
     }
     [request startAsynchronous];
+    
+    self.quest=request;
     //self._isRefreshing = YES;
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
     self.navigationItem.rightBarButtonItem.customView = acv;
-    NSLog(@"在list页面输出user.uID》》》》%d",user.uID);
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -177,6 +185,7 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
+            NSLog(@"在list页面requestfinish中打印self.lastID：：：：%d",self.lastID);
             if (lastID < 0) {
                 lastID = 0;
             }
@@ -191,11 +200,23 @@
                 partyModel.contentString = [partyDict objectForKey:@"description"];
                 partyModel.partyId =[partyDict  objectForKey:@"partyId"];
                 partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
+                partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
+                partyModel.type=[partyDict objectForKey:@"type"];
+                
                 [self.partyList addObject:partyModel];
                 
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
+            
+            //用于判断是否登录后跳转到活动列表页面
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+            NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+            [defaults setInteger: self.partyList.count  forKey:keyString];    
+            
+            
             [self setBottomRefreshViewYandDeltaHeight];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
@@ -205,10 +226,16 @@
     }else if([request responseStatusCode] == 404){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
-    }    
+    }else if([request responseStatusCode] == 502){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }        
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
@@ -241,9 +268,9 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
-    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    
 }
 
 #pragma mark - Table view data source
@@ -270,11 +297,30 @@
     }
     NSInteger row=[indexPath row];
     
+        
+    NSString *newAppliedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newAppliedClientcount"]];
+    
+    NSString *newRefusedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newRefusedClientcount"]];
+    
+    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
+    if([newAppliedString intValue]>0){
+       partyObjCell.isnewApplied=YES;
+    }else{
+       partyObjCell.isnewApplied=NO;
+    }
+    
+    if([newRefusedString intValue]>0){
+        partyObjCell.isnewRefused=YES;
+    }else{
+        partyObjCell.isnewRefused=NO;
+    }
+    
+    //NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+    
     UIView *oldLayout2 = nil;
     oldLayout2 = [cell viewWithTag:2];
     [oldLayout2 removeFromSuperview];
-    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
-    NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+
     if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){        
         UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
         cellImageView.image=[UIImage imageNamed:@"new1"];
@@ -282,7 +328,13 @@
         [cell  addSubview:cellImageView];
     
     }
+    
+    
+    UIView *oldLayout3 = nil;
+    oldLayout3 = [cell viewWithTag:3];
+    [oldLayout3 removeFromSuperview];
     UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 175, 40)];
+    contentLabel.tag=3;
     contentLabel.text=[[self.partyList  objectAtIndex:row] contentString];
     contentLabel.font=[UIFont systemFontOfSize:15];
     [cell  addSubview:contentLabel];
@@ -298,6 +350,7 @@
     UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 50, 40)];    
     lb_1.tag = 6;
     lb_1.text = [NSString stringWithFormat:@"%@/",applyString];
+    lb_1.textColor=[UIColor greenColor];
     lb_1.textAlignment = UITextAlignmentRight;
     lb_1.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb_1];
@@ -309,7 +362,6 @@
     UILabel *lb_7 = [[UILabel alloc] initWithFrame:CGRectMake(250, 0, 45, 40)];    
     lb_7.tag = 7;
     lb_7.text = [NSString stringWithFormat:@"%d",allNumbers];
-    lb_7.textColor=[UIColor greenColor];
     lb_7.textAlignment = UITextAlignmentLeft;
     lb_7.backgroundColor = [UIColor clearColor];
     [cell addSubview:lb_7];
@@ -374,7 +426,6 @@
      */
     
     PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
-    partyDetailTableVC.title=[[[self.partyList  objectAtIndex:[indexPath row]] contentString] substringToIndex:3]; 
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
@@ -389,7 +440,6 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
-    NSLog(@"下拉  。。。。。。。。。。。。下");
     _reloading = YES;
     [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
@@ -399,7 +449,6 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
-    NSLog(@"上拉。。。。。。。。。。。上");
     _reloading = YES;
    [self requestDataWithLastID:self.lastID];
 	[self doneLoadingBottomRefreshTableViewData];
@@ -484,11 +533,11 @@
     {
         if([view isKindOfClass:[UITabBar class]])
         {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
         }
         else
         {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
         }
         
     }
@@ -498,22 +547,24 @@
 
 -(void) showTabBar:(UITabBarController*) tabbarcontroller {
     
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
     
     for(UIView*view in tabbarcontroller.view.subviews)
     {
+        
         if([view isKindOfClass:[UITabBar class]])
         {
             [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+        }else{
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
         }
     }
     
+}
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
 }
 
 

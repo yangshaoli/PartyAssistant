@@ -20,6 +20,7 @@ import re
 
 from ERROR_MSG_SETTINGS import *
 
+re_username_string = re.compile(r'^[a-zA-Z]+')
 re_username = re.compile(r'^[a-zA-Z]+\w+$')
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 SMS_APPLY_TIPS_CONTENT = u'(报名点击:aaa, 不报名点击:bbb)'        
@@ -32,7 +33,6 @@ def accountLogin(request):
         user = authenticate(username = request.POST['username'], password = request.POST['password'])
         if user:
             device_token = request.POST['device_token']
-            print device_token
             if device_token:
 #                if request.POST['device_type'] == 'iphone':
                 usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
@@ -52,13 +52,12 @@ def accountLogin(request):
 @commit_on_success
 def accountLogout(request):
     if request.method == 'POST':
-        user = request.user
+        device_token = request.POST['device_token']
+        user_token_list = UserIPhoneToken.objects.filter(device_token = device_token)
+        for user_token in user_token_list:
+            user_token.delete()
         if user:
-            device_token = request.POST['device_token']
-            user_token_list = UserIPhoneToken.objects.filter(user = user, device_token = device_token)
-            for user_token in user_token_list:
-                user_token.delete()
-        logout(request)
+            logout(request)
         
 @csrf_exempt
 @apis_json_response_decorator
@@ -67,12 +66,18 @@ def accountRegist(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        if username == '':
+            raise myException(ERROR_ACCOUNTREGIST_USERNAME_BLANK)
+        if password == '':
+            raise myException(ERROR_ACCOUNTREGIST_PWD_BLANK)
         if len(username) > 14 or len(username) < 6:
             raise myException(ERROR_ACCOUNTREGIST_USERNAME_LENTH_WRONG)
         if len(password) > 16 or len(password) < 6:
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
+        if not re_username_string.match(username):
+            raise myException(ERROR_ACCOUNTREGIST_USERNAME_INVALID_FORMAT_HEAD)
         if not re_username.match(username):
-            raise myException(ERROR_ACCOUNTREGIST_USERNAME_INVALID_FORMAT)
+            raise myException(ERROR_ACCOUNTREGIST_USERNAME_INVALID_FORMAT_STRING)
         if User.objects.filter(username = username):
             raise myException(ERROR_ACCOUNTREGIST_USER_EXIST)
         user = User.objects.create_user(username, '', password)
@@ -85,12 +90,6 @@ def accountRegist(request):
                     usertoken.save()
         return {'uid':user.id}
 
-
-@csrf_exempt
-@apis_json_response_decorator
-@commit_on_success
-def accountLogout(request):
-    pass
 
 @csrf_exempt
 @apis_json_response_decorator
@@ -113,3 +112,13 @@ def profilePage(request, uid):
         pass
     else:
         pass
+
+@csrf_exempt
+@apis_json_response_decorator
+def getAccountRemaining(request):
+    if 'id' in request.GET:
+        id = request.GET['id']
+        user = User.objects.get(pk = id)
+        return {'remaining':user.userprofile.available_sms_count}
+    else:
+        return {'remaining':0}

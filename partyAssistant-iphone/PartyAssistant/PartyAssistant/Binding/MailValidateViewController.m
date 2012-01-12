@@ -63,7 +63,17 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ()
+    if (indexPath.section == 0) {
+        return self.inputMailCell;
+    } else if (indexPath.section == 1) {
+        return self.mailValidateCell;
+    } else if (indexPath.section == 2) {
+        return self.mailResendValidateCell;
+    }
     return nil;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
 }
 @end

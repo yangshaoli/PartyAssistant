@@ -7,7 +7,7 @@
 //
 
 #import "MailBindingViewController.h"
-
+#import "MailValidateViewController.h"
 @implementation MailBindingViewController
 @synthesize tableView = _tableView;
 @synthesize inputMailCell = _inputMailCell;
@@ -56,15 +56,27 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 3;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+    if (indexPath.section == 0) {
+        return self.inputMailCell;
+    } else if (indexPath.section == 1) {
+        return self.mailBindingCell;
+    } 
     return nil;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 1) {
+        // go to verify view
+        MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController presentModalViewController:verifyPage animated:YES];
+    }
 }
 @end

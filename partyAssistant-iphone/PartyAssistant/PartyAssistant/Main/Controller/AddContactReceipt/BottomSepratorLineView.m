@@ -29,7 +29,7 @@
 */
 
 - (void)drawRect:(CGRect)rect {
-    CGFloat startYPosition = CGRectGetMaxY(rect) - 1.0f;
+    CGFloat startYPosition = CGRectGetMaxY(rect);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineWidth(context, 2.0f);
     CGContextSetStrokeColorWithColor(context, [[UIColor grayColor] CGColor]);

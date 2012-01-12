@@ -16,15 +16,17 @@
 
 #import "ButtonPeoplePicker.h"
 #import "PeoplePickerCustomCell.h"
-#import "ContactsListPickerViewController.h"
+#import "ClientObject.h"
+#import "MultiContactsPickerListViewController.h"
 
 @interface ButtonPeoplePicker () // Class extension
 @property (nonatomic, strong) NSMutableArray *filteredPeople;
 - (void)layoutNameButtons;
-- (void)addPersonToGroup:(NSDictionary *)personDictionary;
+- (void)addPersonToGroup:(ClientObject *)oneClient;
 - (void)removePersonFromGroup:(NSDictionary *)personDictionary;
-- (void)displayAddPersonViewController;
 - (NSString *)getCleanPhoneNumber:(NSString *)rawPhoneNumber;
+- (NSString *)getCleanLetter:(NSString *)originalString;
+- (void)filterContentForSearchText:(NSString*)searchText;
 @end
 
 
@@ -42,6 +44,7 @@
 @synthesize searchField;
 @synthesize doneButton;
 @synthesize toolbar;
+@synthesize footerView;
 #pragma mark - View lifecycle methods
 
 // Perform additional initialization after the nib file is loaded
@@ -52,6 +55,8 @@
     addressBook = ABAddressBookCreate();
     
 	self.people = (__bridge_transfer NSArray *)ABAddressBookCopyArrayOfAllPeople(addressBook);
+    
+    ABAddressBookRegisterExternalChangeCallback(addressBook, pickerAddressBookChanged,  (__bridge void*)self);
     
     self.group = [[NSMutableArray alloc] init];
 	
@@ -91,13 +96,14 @@
     self.uiTableView.backgroundView = [[UIView alloc] initWithFrame:self.uiTableView.backgroundView.bounds];
     [self.uiTableView.backgroundView.layer insertSublayer:gradient atIndex:0];
     [self.uiTableView.backgroundView.layer insertSublayer:newShadow atIndex:1];
+    self.uiTableView.tableFooterView = self.footerView;
     
     self.searchField.text = @"\u200B";
     
     self.buttonView.clipsToBounds = YES;
     
     self.addReceiptButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
-    [self.addReceiptButton addTarget:self action:@selector(callCaontactList) forControlEvents:UIControlEventTouchUpInside];
+    [self.addReceiptButton addTarget:self action:@selector(callContactList) forControlEvents:UIControlEventTouchUpInside];
     self.addReceiptBGView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 28, 28)];
     self.addReceiptButton.center = CGPointMake(14, 14);
     [self.addReceiptBGView addSubview:self.addReceiptButton];
@@ -110,6 +116,7 @@
 - (void)dealloc
 {
 	delegate = nil;
+    ABAddressBookUnregisterExternalChangeCallback(addressBook, pickerAddressBookChanged,  (__bridge void*)self);
 	CFRelease(addressBook);
 }
 
@@ -171,7 +178,6 @@
 }
 
 - (void)insertText:(NSString *)text {
-    NSLog(@"input method detected!");
     if (selectedButton) {
         NSInteger selectedIndex = selectedButton.tag;
         NSDictionary *selectedPeople = [self.group objectAtIndex:selectedIndex];
@@ -321,17 +327,34 @@
 	if (indexPath.row == filteredPeople.count)
     {
 		//[self displayAddPersonViewController];
-        NSDictionary *personDictionary = nil;
-        
-        personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"", @"phoneNumber", searchField.text, @"name", nil];
-        [self addPersonToGroup:personDictionary];
+        ClientObject *newClient = nil;
+        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+        if ([newPhoneName length] == 0) {
+            return;
+        } else {
+            newClient = [[ClientObject alloc] init];
+            newClient.cVal = newPhoneName;
+            newClient.cName = @"";
+            [self addPersonToGroup:newClient];
+        }
 	}
 	else
     {
 		NSDictionary *personDictionary = [filteredPeople objectAtIndex:indexPath.row];
-		
-		[self addPersonToGroup:personDictionary];
+        NSString *clientName = [personDictionary objectForKey:@"name"];
+        NSString *clientPhoneNumber = [personDictionary objectForKey:@"phoneNumber"];
+        NSNumber *clientRecordID = [personDictionary objectForKey:@"abRecordID"];
+        NSNumber *clientPhoneIdentifier = [personDictionary objectForKey:@"valueIdentifier"];
+        NSString *clientPhoneLabel = [personDictionary objectForKey:@"phoneLabel"];
+		ClientObject *newClient = nil;
+        newClient = [[ClientObject alloc] init];
+        newClient.cVal = clientPhoneNumber;
+        newClient.cName = clientName;
+        newClient.cID = [clientRecordID intValue];
+        newClient.phoneLabel = clientPhoneLabel;
+        newClient.phoneIdentifier = [clientPhoneIdentifier intValue];
+        [self addPersonToGroup:newClient];
 	}
 
 	searchField.text = @"\u200B";
@@ -378,16 +401,18 @@
                 {
 					// Get the address identifier for this address
 					ABMultiValueIdentifier identifier = ABMultiValueGetIdentifierAtIndex(phonesProperty, index);
-					
+					NSString *phoneLabel = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phonesProperty, index);
 					ABRecordID abRecordID = ABRecordGetRecordID(person);
 					
 					NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
 													 [NSNumber numberWithInt:abRecordID], @"abRecordID",
 													 [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                                     [self getCleanPhoneNumber:phoneString],
+                                                     phoneString,
                                                          @"phoneNumber",
                                                       name,
                                                          @"name",
+                                                      phoneLabel,
+                                                         @"phoneLabel",
                                                       nil];
 
 					// Add each personDictionary to filteredPeople
@@ -428,16 +453,37 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (searchField.text.length > 1)
     {
-        NSString *newContactname = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
-        newContactname = [newContactname stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([newContactname length] == 0) {
+        NSString *newName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        if ([newName length] == 0) {
             searchField.text = @"\u200B";
             return NO;
         }
-        NSDictionary *newContact = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                       @"", @"phoneNumber", newContactname, @"name", nil];
+        ClientObject *newClient = nil;
+        newClient = [[ClientObject alloc] init];
+        newClient.cVal = @"";
+        newClient.cName = newName;
         searchField.text = @"\u200B";
-        [self addPersonToGroup:newContact];
+        
+        [newClient searchClientIDByName];
+        
+        if (![newClient isClientValid]) {
+            newName = [newName stringByReplacingOccurrencesOfString:@" " withString:@""];
+            newClient.cVal = newName;
+            newClient.cName = @"";
+            [newClient searchClientIDByPhone];
+            
+            if ([newClient isClientValid]) {
+                [self addPersonToGroup:newClient];
+            } else {
+                if ([newClient isClientPhoneNumberValid]) {
+                    [self addPersonToGroup:newClient];
+                } else {
+                    return NO;
+                }
+            }
+        } else {
+            [self addPersonToGroup:newClient];
+        }
 	}
 	else
     {
@@ -448,36 +494,60 @@
 
 #pragma mark - Add and remove a person to/from the group
 
-- (void)addPersonToGroup:(NSDictionary *)personDictionary
+- (void)addPersonToGroup:(ClientObject *)oneClient
 {
     //ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
     
-    NSString *number = [personDictionary valueForKey:@"phoneNumber"];
-    NSString *name  = [personDictionary valueForKey:@"name"];
+    NSString *number = oneClient.cVal;
+    NSString *name  = oneClient.cName;
+    
+    ClientObject *clientWithSameID = nil;
     
     // Check for an existing entry for this person, if so remove it
-    for (NSDictionary *personDict in group)
-    {
-        NSString *theContactName = [personDict valueForKey:@"name"];
-        NSString *thePhoneString = [personDict valueForKey:@"phoneNumber"];
-        //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
-        NSLog(@"number :%@ theNumber :%@", number, thePhoneString);
-        
-        if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+    if ([name isEqualToString:@""]) {
+        if ([number isEqualToString:@""]) {
             return;
         }
+        NSString *cleanString = [self getCleanLetter:number];
         
-        if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+        for (ClientObject *aClient in group)
         {
-            return;
+            NSString *thePhoneString = aClient.cVal;
+            if ([cleanString isEqualToString:[self getCleanLetter:thePhoneString]]) {
+                return;
+            }
         }
-        
-        if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
-            return;
+    } else {
+        for (ClientObject *aClient in group)
+        {
+            NSString *theContactName = aClient.cName;
+            NSString *thePhoneString = aClient.cVal;
+            //if (abRecordID == (ABRecordID)[[personDict valueForKey:@"abRecordID"] intValue])
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:thePhoneString] && [name isEqualToString:theContactName]) {
+                return;
+            }
+            
+            if ([[self getCleanPhoneNumber:number] isEqualToString:[self getCleanPhoneNumber:thePhoneString]] && ![number isEqualToString:@""])
+            {
+                return;
+            }
+            
+            if ([number isEqualToString:@""] && [theContactName isEqualToString:name]) {
+                return;
+            }
+            
+            if (aClient.cID != -1 && aClient.cID == oneClient.cID) {
+                clientWithSameID = aClient;
+            }
         }
     }
     
-    [group addObject:personDictionary];
+    if (clientWithSameID) {
+        [group removeObject:clientWithSameID];
+    }
+    
+    [group addObject:oneClient];
     [self layoutNameButtons];
 }
 
@@ -530,8 +600,7 @@
     
 	for (int i = 0; i < group.count; i++)
     {
-		NSDictionary *personDictionary = (NSDictionary *)[group objectAtIndex:i];
-		NSLog(@"the Dictionary :%@",personDictionary);
+		ClientObject *oneClient = (ClientObject *)[group objectAtIndex:i];
 //		ABRecordID abRecordID = (ABRecordID)[[personDictionary valueForKey:@"abRecordID"] intValue];
 //
 //        if (abRecordID == -1){
@@ -543,8 +612,11 @@
 //            ABRecordRef abPerson = ABAddressBookGetPersonWithRecordID(addressBook, abRecordID);
 //            name = (__bridge_transfer NSString *)ABRecordCopyCompositeName(abPerson);
 //        } else {
-            name = [personDictionary objectForKey:@"name"];
+            name = oneClient.cName;
 //        }
+        if ([name isEqualToString:@""]) {
+            name = oneClient.cVal;
+        }
         
 //		ABMultiValueIdentifier identifier = [[personDictionary valueForKey:@"valueIdentifier"] intValue];
 //		
@@ -640,7 +712,6 @@
             searchField.frame = to;
         }
         
-        NSLog(@"search field: %f",searchField.frame.size.width);
         
         [searchField removeFromSuperview];
         [buttonView addSubview:searchField];
@@ -650,7 +721,6 @@
 		[deleteLabel setFrame:labelFrame];
 		
         self.buttonView.contentSize = CGSizeMake(buttonView.frame.size.width, yPosition + button.frame.size.height + Ver_PADDING);
-        NSLog(@"button view height : %f content view height : %f", self.buttonView.frame.size.height, self.buttonView.contentSize.height);
         
         if ((yPosition + button.frame.size.height + Ver_PADDING) > 160) {
             CGRect from = self.buttonView.frame;
@@ -669,7 +739,7 @@
 	}
     
     CGRect addButtonBGFrame = self.addReceiptBGView.frame;
-    addButtonBGFrame.origin.y = yPosition;
+    addButtonBGFrame.origin.y = yPosition - 5.0f;
     self.addReceiptBGView.frame = addButtonBGFrame;
     [addReceiptBGView removeFromSuperview];
     [buttonView addSubview:addReceiptBGView];
@@ -692,62 +762,7 @@
 	[searchField becomeFirstResponder];
 }
 
-#pragma mark - Display the AddPersonViewController modally
-
--(void)displayAddPersonViewController
-{	
-	AddPersonViewController *addPersonViewController = [[AddPersonViewController alloc] init];
-	[addPersonViewController setInitialText:searchField.text];
-	[addPersonViewController setDelegate:self];
-	[self presentModalViewController:addPersonViewController animated:YES];
-}
-
-#pragma mark - AddPersonViewControllerDelegate method
-
-- (void)addPersonViewControllerDidFinish:(AddPersonViewController *)controller
-{
-	NSString *firstName = [NSString stringWithString:controller.firstName];
-	NSString *lastName = [NSString stringWithString:controller.lastName];
-	NSString *email = [NSString stringWithString:controller.email];
-
-	ABRecordRef personRef = ABPersonCreate();
-
-	ABRecordSetValue(personRef, kABPersonFirstNameProperty, (__bridge CFTypeRef)firstName, nil);
-
-	if (lastName && (lastName.length > 0))
-    {
-		ABRecordSetValue(personRef, kABPersonLastNameProperty, (__bridge CFTypeRef)lastName, nil);
-	}
-	
-	if (email && (email.length > 0))
-	{
-		ABMutableMultiValueRef emailProperty = ABMultiValueCreateMutable(kABPersonEmailProperty);
-		ABMultiValueAddValueAndLabel(emailProperty, (__bridge CFTypeRef)email, kABHomeLabel, nil);
-		ABRecordSetValue(personRef, kABPersonEmailProperty, emailProperty, nil);
-		CFRelease(emailProperty);
-	}
-		
-	// Add the person to the address book
-	ABAddressBookAddRecord(addressBook, personRef, nil);
-	
-	// Save changes to the address book
-	ABAddressBookSave(addressBook, nil);
-
-	ABRecordID abRecordID = ABRecordGetRecordID(personRef);
-
-	NSDictionary *personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-									 [NSNumber numberWithInt:abRecordID], @"abRecordID",
-									 [NSNumber numberWithInt:0], @"valueIdentifier", nil];
-
-	CFRelease(personRef);
-	
-	[self addPersonToGroup:personDictionary];
-	
-	[self dismissModalViewControllerAnimated:YES];
-}
-
 - (void)touchButton {
-    NSLog(@"test");
 }
 
 - (void)findLastButton {
@@ -767,48 +782,21 @@
     }
 }
 
-- (void)callCaontactList {
-    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
-    list.contactDelegate = self;
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
-    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
-}
-
-#pragma mark -
-#pragma contact list delegate
-- (void)contactList:(ContactsListPickerViewController *)contactList cancelAction:(BOOL)action {
-    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:action];
-}
-
-- (void)contactList:(ContactsListPickerViewController *)contactList selectDefaultActionForPerson:(ABRecordID)personID property:(ABPropertyID)property identifier:(ABMultiValueIdentifier)identifier {
+- (void)callContactList {
+//    ABPeoplePickerNavigationController *ppnc = [[ABPeoplePickerNavigationController alloc] init];
+//    ppnc.peoplePickerDelegate = self;
+//    [ppnc setDisplayedProperties:[NSArray
+//                                  arrayWithObject:[NSNumber numberWithInt:kABPersonPhoneProperty]]];
+//    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:ppnc animated:YES];
     
-    ABRecordRef person = ABAddressBookGetPersonWithRecordID(addressBook, personID);
-    
-    // Access the person's email addresses (an ABMultiValueRef)
-    ABMultiValueRef phonesProperty = ABRecordCopyValue(person, kABPersonPhoneProperty);
-    CFIndex index = ABMultiValueGetIndexForIdentifier(phonesProperty, identifier);
-    
-    NSString *phone;
-    
-    NSDictionary *personDictionary = nil;
-    
-    if (index != -1)
-    {
-        phone = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(phonesProperty, index);
-        
-        NSString *name = (__bridge NSString *)ABRecordCopyCompositeName(person);
-        
-        if (phone) {
-            personDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [NSNumber numberWithInt:personID], @"abRecordID",
-                                [NSNumber numberWithInt:identifier], @"valueIdentifier", 
-                                phone, @"phoneNumber",
-                                name, @"name", nil];
-            [self addPersonToGroup:personDictionary];
-        } 
-    }
-    
-    [[(UIViewController *)[self delegate] navigationController] dismissModalViewControllerAnimated:YES];
+//    ContactsListPickerViewController *list = [[ContactsListPickerViewController alloc] init];
+//    list.contactDelegate = self;
+//    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
+//    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
+    SegmentManagingViewController * segmentManagingViewController = [[SegmentManagingViewController alloc] init];
+    segmentManagingViewController.contactDataDelegate = self;
+    UINavigationController *pickersNav = [[UINavigationController alloc] initWithRootViewController:segmentManagingViewController];
+    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:pickersNav animated:YES];
 }
 
 #pragma mark -
@@ -835,18 +823,22 @@
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDuration:0.2f];
         CGFloat offset = currentTableViewYPosition - 40.0f;
-        NSLog(@"origin y :%f",newButtonViewFrame.origin.y);
         newTableViewFrame.origin.y = newTableViewFrame.origin.y - offset;
         newButtonViewFrame.origin.y = newButtonViewFrame.origin.y - offset;
         self.buttonView.frame = newButtonViewFrame;
         self.uiTableView.frame = newTableViewFrame;
-        [self.toolbar setHidden:YES];
+
         [UIView commitAnimations];
         
         pickerStatus = ButtonPeoplePickerStatusSearching;
+        
+        [self.buttonView reloadInputViews];
+        self.searchField.inputAccessoryView = nil;
+        [self.searchField reloadInputViews];
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
+        self.toolbar.exclusiveTouch = YES;
         
         CGRect oldButtonViewFrame = self.buttonView.frame;
         CGRect newButtonViewFrame = oldButtonViewFrame;
@@ -854,6 +846,10 @@
         self.buttonView.frame = newButtonViewFrame;
         
         pickerStatus = ButtonPeoplePickerStatusShowing;
+        
+        [self.buttonView reloadInputViews];
+        self.searchField.inputAccessoryView = self.toolbar;
+        [self.searchField reloadInputViews];
     }
 }
 
@@ -886,7 +882,108 @@
             [scanner setScanLocation:([scanner scanLocation] + 1)];
         }
     }
-    NSLog(@"strippedString : %@",strippedString);
     return strippedString;
+}
+
+- (NSString *)getCleanLetter:(NSString *)originalString {
+    NSAssert(originalString != nil, @"Input phone number is %@!", @"NIL");
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:originalString.length];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:originalString];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789abcdefghijklmnopqrestuvwxyzABCDEFGHIJKLMNOPQRESTUVWXYZ"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    return strippedString;
+}
+
+#pragma mark -
+#pragma mark search local addressbook
+- (ClientObject *)scanAddressBookAndSearch:(ClientObject *)client
+{
+    NSUInteger i;
+    NSUInteger k;
+    
+    NSString *phoneNumber = client.cVal;
+    
+    ABAddressBookRef localAddressBook = ABAddressBookCreate();
+    NSArray *m_people = (__bridge NSArray *) ABAddressBookCopyArrayOfAllPeople(localAddressBook);
+    
+    if ( m_people == nil )
+    {
+        NSLog(@"NO ADDRESS BOOK ENTRIES TO SCAN");
+        CFRelease(localAddressBook);
+        return client;
+    }
+    
+    for ( i=0; i<[m_people count]; i++ )
+    {
+        ABRecordRef person = (__bridge ABRecordRef)[m_people objectAtIndex:i];
+        
+        //
+        // Phone Numbers
+        //
+        ABMutableMultiValueRef phoneNumbers = ABRecordCopyValue(person, kABPersonPhoneProperty);
+        CFIndex phoneNumberCount = ABMultiValueGetCount( phoneNumbers );
+        
+        for ( k=0; k<phoneNumberCount; k++ )
+        {
+            NSString *phoneNumberValue = (__bridge NSString *)ABMultiValueCopyValueAtIndex( phoneNumbers, k );
+            
+            if ([phoneNumber isEqualToString:phoneNumberValue]) {
+                NSString *phoneLabelValue = (__bridge NSString *)ABMultiValueCopyLabelAtIndex(phoneNumbers, k);
+                NSInteger indentifier = ABMultiValueGetIdentifierAtIndex(phoneNumbers, k);
+                client.phoneIdentifier = indentifier;
+                client.phoneLabel = phoneLabelValue;
+                client.cID = ABRecordGetRecordID(person);
+                client.cName = (__bridge NSString *)ABRecordCopyCompositeName(person);
+                break;
+            }
+        }
+    }
+
+    CFRelease(localAddressBook);
+    return client;
+}
+
+#pragma mark -
+#pragma mark segment contact delegate
+- (NSArray *)getCurrentContactData {
+    NSLog(@"%@",self.group);
+    return self.group;
+}
+
+- (void)setNewContactData : (NSArray *)newData {
+    self.group = [NSMutableArray arrayWithArray:newData];
+    [self layoutNameButtons];
+}
+
+- (void)selectedFinishedInController:(UIViewController *)vc {
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+}
+
+#pragma input accessory view
+- (UIView *)inputAccessoryView {
+    if (pickerStatus == ButtonPeoplePickerStatusSearching) {
+        return nil;
+    }
+    return self.toolbar;
+}
+
+void pickerAddressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
+    if ([[[(__bridge ButtonPeoplePicker *)context searchField] text] length] > 1) {
+        [(__bridge ButtonPeoplePicker *)context setPeople:(__bridge_transfer NSArray *)ABAddressBookCopyArrayOfAllPeople(reference)];
+        [(__bridge ButtonPeoplePicker *)context filterContentForSearchText:[[[(__bridge ButtonPeoplePicker *)context searchField] text] stringByReplacingOccurrencesOfString:@"\u200B" withString:@""]];
+        [[(__bridge ButtonPeoplePicker *)context uiTableView] reloadData];
+    }
 }
 @end

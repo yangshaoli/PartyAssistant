@@ -327,7 +327,6 @@
                 vc.receiverArray = receiverObjectsArray;
                 SMSObject *sobj = [[SMSObject alloc] init];
                 sobj.receiversArray = receiverObjectsArray;
-                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
                 sobj.smsContent = [dataSource objectForKey:@"content"];
                 sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
                 sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
@@ -344,8 +343,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 

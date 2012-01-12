@@ -11,6 +11,7 @@
 #import "NotificationSettings.h"
 #import "ClientObject.h"
 #import "PartyModel.h"
+#import "ASIFormDataRequest.h"
 @protocol ContactorPhoneDetailsViewControllerDelegate <NSObject>
 
 - (void)contactDetailSelectedWithUserInfo:(NSDictionary *)info;
@@ -20,23 +21,20 @@
 @interface ContactorPhoneDetailsViewController : UITableViewController<UITableViewDelegate,UIActionSheetDelegate>
 {
     ABRecordID contactorID;
-    ABMultiValueRef phone;
-    ABRecordRef card;
     id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
-    
     NSDictionary *clientDict;//服务器获得的数据
     UITextView *messageTextView;
     PartyModel *partyObj;
     NSString *clientStatusFlag;
+    ASIHTTPRequest *quest;
     
 }
 @property(nonatomic, retain)UITextView *messageTextView;
 @property(nonatomic, assign)ABRecordID contactorID;
-@property(nonatomic, assign)ABMultiValueRef phone;
-@property(nonatomic, assign)ABRecordRef card;
 @property(nonatomic, assign)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 @property(nonatomic, retain)NSDictionary *clientDict;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *clientStatusFlag;
-
+@property(nonatomic, retain)ASIHTTPRequest *quest;
+//- (BOOL) isEmailAddress:(NSString*)email;
 @end

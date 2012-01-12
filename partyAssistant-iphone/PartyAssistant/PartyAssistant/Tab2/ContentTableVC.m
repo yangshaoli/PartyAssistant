@@ -14,15 +14,10 @@
 #import "NotificationSettings.h"
 #import "UITableViewControllerExtra.h"
 #import "HTTPRequestErrorMSG.h"
-@interface ContentTableVC()
 
--(void) hideTabBar:(UITabBarController*) tabbarcontroller;
--(void) showTabBar:(UITabBarController*) tabbarcontroller;
-
-@end
 @implementation ContentTableVC
 @synthesize  contentTextView;
-@synthesize partyObj;
+@synthesize partyObj,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -68,7 +63,6 @@
 {   
     
     [super viewWillAppear:animated];
-    [self hideTabBar:self.tabBarController];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -121,16 +115,21 @@
         UserObjectService *us = [UserObjectService sharedUserObjectService];
         UserObject *user = [us getUserObject];
         NSURL *url = [NSURL URLWithString:EDIT_PARTY];
+        
+        if (self.quest) {
+            [self.quest clearDelegatesAndCancel];
+        }
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:self.partyObj.contentString forKey:@"description"];
         [request setPostValue:self.partyObj.partyId forKey:@"partyID"];
         [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
-        
         request.timeOutSeconds = 30;
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
-        NSLog(@"调用doneBtnAction");
+        self.quest=request;
+       
+
     }
 }
 
@@ -151,10 +150,13 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
-	NSLog(@"调用requestFinished");
 }
 
 
@@ -163,21 +165,24 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
-    NSLog(@"调用requestFailed");
 }
 
-
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        return @"活动内容";
+    }
+    return nil;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     return 1;
 }
@@ -191,12 +196,12 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     if (!contentTextView) {
-        self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
+        self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(10, 10, 300,160)];
     }
     contentTextView.backgroundColor = [UIColor clearColor];
     contentTextView.text=self.partyObj.contentString;
     [cell addSubview:contentTextView];
-    cell.textLabel.text  = @"活动内容";
+    [contentTextView becomeFirstResponder];
     cell.selectionStyle=UITableViewCellSelectionStyleNone;
     // Configure the cell...
     
@@ -255,48 +260,11 @@
      */
 }
 
-
-
--(void) hideTabBar:(UITabBarController*) tabbarcontroller {
-    
-    
-    //    [UIView beginAnimations:nil context:NULL];
-    //    [UIView setAnimationDuration:0.5];
-    for(UIView*view in tabbarcontroller.view.subviews)
-    {
-        if([view isKindOfClass:[UITabBar class]])
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x,480, view.frame.size.width, view.frame.size.height)];
-        }
-        else
-        {
-            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
-        }
-        
-    }
-    
-    //[UIView commitAnimations];
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
 }
-
-//-(void) showTabBar:(UITabBarController*) tabbarcontroller {
-//    
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5];
-//    [UIView commitAnimations];
-//    
-//    for(UIView*view in tabbarcontroller.view.subviews)
-//    {
-//        if([view isKindOfClass:[UITabBar class]])
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
-//        }
-//        else
-//        {
-//            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
-//        }
-//    }
-//    
-//}
-
 
 @end

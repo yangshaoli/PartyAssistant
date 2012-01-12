@@ -191,7 +191,6 @@
     PeopleCountInPartyListCellSubView *v = [[PeopleCountInPartyListCellSubView alloc] initWithPeopleCount:baseinfo.peopleCountDict];
     [cell addSubview:v];
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-    NSLog(@"list cell init");
     return cell;
 }
 
@@ -315,6 +314,7 @@
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
                 
+                
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
@@ -327,9 +327,15 @@
     }else if([request responseStatusCode] == 404){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
     //wxz
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -437,8 +443,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -458,7 +468,6 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
-    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }

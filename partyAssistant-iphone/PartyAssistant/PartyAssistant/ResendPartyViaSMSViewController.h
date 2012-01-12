@@ -27,5 +27,5 @@
 
 - (void)setSmsContent:(NSString *)newContent andGropID:(NSInteger)newGroupID;
 
-- (void)setReceipts:(NSArray *)receipts;
+- (void)setNewReceipts:(NSArray *)receipts;
 @end

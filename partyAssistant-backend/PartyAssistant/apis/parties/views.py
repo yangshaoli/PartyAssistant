@@ -24,6 +24,7 @@ from ERROR_MSG_SETTINGS import *
 
 from utils.structs.my_exception import myException
 from utils.tools.apis_json_response_tool import apis_json_response_decorator
+from utils.tools.short_link_tool import transfer_to_shortlink
 
 
 
@@ -76,6 +77,7 @@ def createParty(request):
                                          description = description,
                                          creator = user,
                                          limit_count = peopleMaximum,
+                                         invite_type = (msgType == "SMS" and 'phone' or 'email')
                                          )
             addressArray = []
             for i in range(len(receivers)):
@@ -153,10 +155,10 @@ def createParty(request):
                 if addressArray:
                     addressString = ','.join(addressArray)
                     Outbox.objects.create(address = addressString, base_message = msg)
-
         return {
                 'partyId':party.id,
-                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
+                'sms_count_remaining':user.userprofile.available_sms_count,
                 }
 
 @csrf_exempt
@@ -225,6 +227,8 @@ def PartyList(request, uid, start_id = 0):
         partyObject = {}
         partyObject['description'] = party.description
         partyObject['partyId'] = party.id
+        partyObject['shortURL'] = transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id]))
+        partyObject['type'] = party.invite_type
         
         #各个活动的人数情况
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
@@ -322,8 +326,8 @@ def GetPartyClientMainCount(request, pid):
                     'newRefusedClientcount':0,
                     }
     for party_client in party_clients:
-        if party_client.client.invite_type != 'public':
-            client_counts['allClientcount'] += 1
+#        if party_client.client.invite_type != 'public':
+        client_counts['allClientcount'] += 1
         if party_client.apply_status == 'apply':
             client_counts['appliedClientcount'] += 1
         if party_client.apply_status == 'apply' and party_client.is_check == False:
@@ -494,5 +498,6 @@ def resendMsg(request):
         
         return {
                 'partyId':party.id,
-                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id]),
+                'sms_count_remaining':user.userprofile.available_sms_count,
                 }

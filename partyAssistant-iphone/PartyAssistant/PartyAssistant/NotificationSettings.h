@@ -11,3 +11,7 @@
 #define CREATE_PARTY_SUCCESS @"CreatePartySuccess"
 #define EDIT_PARTY_SUCCESS @"EditPartySuccess"
 #define ADD_BADGE_TO_TABBAR @"AddBadgeToTabbar"
+#define UpdateReMainCount @"kUpdateSMSSendViaServerRemainCountStart"
+#define UpdateRemainCountFailed @"kUpdateSMSSendViaServerRemainCountFailed"
+#define UpdateRemainCountFinished @"kUpdateSMSSendViaServerRemainCountFinished"
+#define TOP_PRESENT_VIEW_APPEAR @"kViewWillAppearWhenAppBecomeActive"

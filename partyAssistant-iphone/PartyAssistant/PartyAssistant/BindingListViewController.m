@@ -8,7 +8,16 @@
 
 #import "BindingListViewController.h"
 #import "UserInfoBindingStatusService.h"
+//name
 #import "NameBindingViewController.h"
+//tel
+#import "TelBindingViewController.h"
+#import "TelUnbindingViewController.h"
+#import "TelValidateViewController.h"
+//mail
+#import "MailBindingViewController.h"
+#import "MailUnbindingViewController.h"
+#import "MailValidateViewController.h"
 
 @interface BindingListViewController ()
 
@@ -52,7 +61,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"绑定邮箱";
+    self.navigationItem.title = @"绑定";
     [self refreshCurrentStatus];
     // Do any additional setup after loading the view from its nib.
 }
@@ -105,6 +114,7 @@
     } else if (indexPath.section == 2) {
         
     }
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)refreshCurrentStatus {
@@ -117,45 +127,52 @@
 - (void)decideToOpenWhichTelBindingPage {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
     BindingStatus telBindingStatus = [storedStatusService telBindingStatus];
+    //1.goTo binding page
+    //2.goTo UnBinding Page
+    //3.goTo VerifyPage
+    UIViewController *vc = nil;
     switch (telBindingStatus) {
         case StatusNotBind:
-            
+            vc = [[TelBindingViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinded :
+            vc = [[TelUnbindingViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
-            break;
-        case StatusUnbinding:
+            vc = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController presentModalViewController:vc animated:YES];
             break;
         default:
             return;
             break;
     }
-    //1.goTo binding page
-    //2.goTo UnBinding Page
-    //3.goTo VerifyPage
 }
 
 - (void)decideToOpenWhichMailBindingPage {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
     BindingStatus mailBindingStatus = [storedStatusService telBindingStatus];
+    //1.goTo binding page
+    //2.goTo UnBinding Page
+    //3.goTo VerifyPage
+    UIViewController *vc = nil;
     switch (mailBindingStatus) {
         case StatusNotBind:
-            
+            vc = [[MailBindingViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinded :
+            vc = [[MailUnbindingViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
-            break;
-        case StatusUnbinding:
+            vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController presentModalViewController:vc animated:YES];
             break;
         default:
             return;
             break;
     }
-    //1.goTo binding page
-    //2.goTo UnBinding Page
-    //3.goTo VerifyPage
-
 }
 @end

@@ -6,7 +6,7 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 #import "PartyListTableVC.h"
-
+#import "ForgetPassword.h"
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "CreatNewPartyViaSMSViewController.h"
@@ -19,7 +19,11 @@
 #import "PartyListService.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
-
+#import "HTTPRequestErrorMSG.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "URLSettings.h"
+#import "NotificationSettings.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -49,6 +53,8 @@
 @synthesize pwdTextField = _pwdTextField;
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
+@synthesize partyList;
+@synthesize appTab;
 
 - (void)dealloc {
     [super dealloc];
@@ -107,13 +113,24 @@
     
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
-    self.navigationItem.rightBarButtonItem = registerButton;
+    self.navigationItem.leftBarButtonItem = registerButton;
+    
+    
+    UIBarButtonItem *forgetPasswordButton = [[UIBarButtonItem alloc] initWithTitle:@"忘记密码" style:UIBarButtonItemStylePlain target:self action:@selector(forgetPassword)];
+    
+    self.navigationItem.rightBarButtonItem = forgetPasswordButton;
+
+    
     
     [registerButton release];
-    
+    [forgetPasswordButton release];
     [tableFooterView release];
    
+    
+    
     //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
+    
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
 //    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
@@ -122,24 +139,31 @@
 //    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
    // [keyString release]; 
     if(user){
-        NSLog(@"用户信息不空");
         if(user.uID > 0){
-            NSLog(@"用户id不等于－1");
             [self pushToContentVC];
         }else{
             return;
         }    
     }else{
-        NSLog(@"用户信息为空");
         return;
     }
     
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive) name: UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.navigationController.navigationBarHidden = NO;
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    if(user){
+        if(user.uID > 0){
+        } else {
+            self.navigationController.navigationBarHidden = NO;
+        }
+    }
+
+    
+    self.appTab = nil;
 }
 
 - (void)viewDidUnload
@@ -265,6 +289,11 @@
     [registerVC release];
 }
 
+- (void)forgetPassword{
+    ForgetPassword *forgetPasswordVC=[[ForgetPassword alloc] initWithNibName:@"ForgetPassword" bundle:nil];
+    [self.navigationController  pushViewController:forgetPasswordVC animated:YES];
+}
+
 - (void)pushToContentVC {
     self.userNameTextField.text = @"";
     self.pwdTextField.text = @"";
@@ -304,6 +333,7 @@
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
+    self.appTab = tab;
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
     tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
     [self.navigationController pushViewController:tab animated:YES];
@@ -329,19 +359,22 @@
     NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
-   //NSLog(@"tab  设置后%d      用户id::%d     getDefaultCountNumber:%d",list.countNumber,user.uID,getDefaultCountNumber);
-    NSLog(@"打印出来uid:%d      name:::%@",user.uID,user.userName);
-    if(getDefaultCountNumber!=0){  
-        NSLog(@"getPartyList非空时获取数据>>>>>%@",[[PartyListService sharedPartyListService] getPartyList]);
+    if(getDefaultCountNumber){  
         tab.selectedIndex=1;
-        NSLog(@"有趴列表");
     }else{
         tab.selectedIndex=0;
-        NSLog(@"无趴列表");
         
     }
     [keyString release];
 }
+
+
+
+
+
+
+
+
 //wxz
 - (void)autoLogin{
     [self pushToContentVC];
@@ -407,10 +440,10 @@
         return;
     }
     //2.show viewController
-    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
-    vc.delegate = self;
-    [self presentModalViewController:vc animated:YES];
-    [vc release];
+//    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//    vc.delegate = self;
+//    [self presentModalViewController:vc animated:YES];
+//    [vc release];
     
 //    //wxz判断   只在用户首次登陆才执行
 //    UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -451,5 +484,14 @@
 - (void)saveInputFailed {
     [_HUD hide:YES];
     [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)appBecomeActive {
+    if (self.appTab) {
+        UINavigationController *nav = [[self.appTab viewControllers] objectAtIndex:self.appTab.selectedIndex];
+        if (nav.presentedViewController) {
+            [nav.presentedViewController viewWillAppear:YES];
+        }
+    }
 }
 @end
