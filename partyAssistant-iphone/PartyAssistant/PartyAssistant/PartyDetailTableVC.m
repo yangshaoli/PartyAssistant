@@ -17,7 +17,7 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "ResendPartyViaSMSViewController.h"
-
+#import "UIViewControllerExtra.h"
 
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
@@ -136,7 +136,7 @@
         [self.quest clearDelegatesAndCancel];
     }
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -147,7 +147,7 @@
 //    NSLog(@"loadClientCount输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
 //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
 //    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-//    request.timeOutSeconds = 30;
+//    request.timeOutSeconds = 20;
 //    [request setDelegate:self];
 //    [request setDidFinishSelector:@selector(requestFinished:)];
 //    [request setDidFailSelector:@selector(requestFailed:)];
@@ -164,9 +164,11 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
             
@@ -212,7 +214,7 @@
     }
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(getPartyClientSeperatedListRequestFinished:)];
     [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
@@ -543,7 +545,7 @@
             [request setPostValue:self.partyObj.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
             
-            //request.timeOutSeconds = 30;
+            //request.timeOutSeconds = 20;
             [request setDelegate:self];
             [request setDidFinishSelector:@selector(deleteRequestFinished:)];
             [request setDidFailSelector:@selector(deleteRequestFailed:)];

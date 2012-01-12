@@ -367,7 +367,7 @@
             [request setPostValue:self.baseinfo.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
             
-            request.timeOutSeconds = 30;
+            request.timeOutSeconds = 20;
             [request setDelegate:self];
             [request setDidFinishSelector:@selector(deleteRequestFinished:)];
             [request setDidFailSelector:@selector(deleteRequestFailed:)];

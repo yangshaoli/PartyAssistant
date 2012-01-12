@@ -24,7 +24,7 @@
 
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
-@synthesize peopleCountArray;
+@synthesize peopleCountArray,partyDictArraySelf;
 @synthesize lastID,_isRefreshing,_isNeedRefresh,quest;
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -53,6 +53,26 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSFileManager* fm = [NSFileManager defaultManager];
+    if(![fm fileExistsAtPath:partyListPath]) {
+        self.partyDictArraySelf = [[NSMutableArray alloc] initWithCapacity:0];
+    } else {
+        self.partyDictArraySelf = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+    }
+    [self.partyList removeAllObjects];
+    for(int i=0;i<[self.partyDictArraySelf count];i++){
+        NSDictionary *partyDict = [self.partyDictArraySelf objectAtIndex:i];
+        PartyModel *partyModel=[[PartyModel alloc] init];
+        partyModel.contentString = [partyDict objectForKey:@"description"];
+        partyModel.partyId =[partyDict  objectForKey:@"partyId"];
+        partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
+        partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
+        partyModel.type=[partyDict objectForKey:@"type"];
+        [self.partyList addObject:partyModel];
+    }
+
     self.title=@"活动列表";
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
@@ -100,8 +120,8 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self refreshBtnAction];
     [self.tableView reloadData];
-
-
+     
+    
 }
 
 
@@ -117,8 +137,6 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
-//    [self refreshBtnAction];
-//    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -129,6 +147,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -146,7 +165,7 @@
 - (void)requestDataWithLastID:(NSInteger)aLastID {
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    
+    //NSLog(@"打印两数 %d---%d",user.uID,aLastID);
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     
     if (self.quest) {
@@ -154,7 +173,7 @@
     }
 
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     
@@ -177,20 +196,14 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-    //判断版本是否更新
-    NSString *versionString = [result objectForKey:@"iphone_version"];
-    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
-    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
-    if([versionString floatValue]>[preVersionString floatValue]){
-        [self getVersionFromRequestDic:result];//处理版本信息
-    }
-    
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
     //	[self dismissWaiting];
     if([request responseStatusCode] == 200){
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
             if (lastID < 0) {
@@ -207,6 +220,34 @@
             if (!_isAppend) {
                 [self.partyList removeAllObjects];
             }
+            ///
+            self.partyDictArraySelf=[partyDictArray copy];//新增
+            
+            NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+            NSFileManager* fm = [NSFileManager defaultManager];
+            NSMutableArray *patyListArrayWrite=[[NSMutableArray alloc] init];
+            NSMutableArray *getArrayFromFile;
+            if(![fm fileExistsAtPath:partyListPath]) {
+                getArrayFromFile = [[NSMutableArray alloc] initWithCapacity:0];
+            } else {
+                getArrayFromFile = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+            }
+            
+            if(getArrayFromFile.count==0){
+                if(self.partyDictArraySelf.count>20){
+                    for(int i=0;i<20;i++){
+                        [patyListArrayWrite addObject:[self.partyDictArraySelf  objectAtIndex:i]];
+                    }
+                    if(patyListArrayWrite) {
+                        [patyListArrayWrite  writeToFile:partyListPath  atomically:YES];
+                    } else {
+                        NSLog(@"partylistArray writeToFile error");
+                    }
+                }else{
+                    [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
+                }
+            }
+            
             for(int i=0;i<[partyDictArray count];i++){
                 NSDictionary *partyDict = [partyDictArray objectAtIndex:i];
                 PartyModel *partyModel=[[PartyModel alloc] init];
@@ -220,6 +261,8 @@
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
+           
+            
             
             //用于判断是否登录后跳转到活动列表页面
             UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -227,8 +270,6 @@
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
             NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
             [defaults setInteger: self.partyList.count  forKey:keyString];    
-            
-            
             [self setBottomRefreshViewYandDeltaHeight];
             //        [self setBottomRefreshViewYandDeltaHeight];
         }else{
@@ -259,13 +300,15 @@
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 
+
+
 - (void)refreshBtnAction{
     //    UserObjectService *us = [UserObjectService sharedUserObjectService];
     //    UserObject *user = [us getUserObject];
     //    int page = 1;
     //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,page]];
     //    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    //    request.timeOutSeconds = 30;
+    //    request.timeOutSeconds = 20;
     //    [request setDelegate:self];
     //    [request setShouldAttemptPersistentConnection:NO];
     //    [request startAsynchronous];
@@ -275,6 +318,23 @@
     UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
     [acv startAnimating];
     self.navigationItem.rightBarButtonItem.customView = acv;
+    
+    ////////////////////自己新增文件 
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSMutableArray *patyListArrayWrite=[[NSMutableArray alloc] init];
+    if(self.partyDictArraySelf.count>20){
+        for(int i=0;i<20;i++){
+            [patyListArrayWrite addObject:[self.partyDictArraySelf  objectAtIndex:i]];
+        }
+        if(patyListArrayWrite) {
+            [patyListArrayWrite  writeToFile:partyListPath  atomically:YES];
+        } else {
+            NSLog(@"partylistArray writeToFile error");
+        }
+    }else{
+        [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
+    }
+
     
 }
 
@@ -455,6 +515,23 @@
     _reloading = YES;
     [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
+    ////////////////////自己新增文件 
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSMutableArray *patyListArrayWrite=[[NSMutableArray alloc] init];
+    if(self.partyDictArraySelf.count>20){
+        for(int i=0;i<20;i++){
+            [patyListArrayWrite addObject:[self.partyDictArraySelf  objectAtIndex:i]];
+        }
+        if(patyListArrayWrite) {
+            [patyListArrayWrite  writeToFile:partyListPath  atomically:YES];
+        } else {
+            NSLog(@"partylistArray writeToFile error");
+        }
+    }else{
+        [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
+    }
+
+    
 }
 
 - (void)loadNextPageTableViewDataSource{

@@ -190,7 +190,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
     [request setPostValue:statusAction forKey:@"cpAction"];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     //btn.hidden = YES;

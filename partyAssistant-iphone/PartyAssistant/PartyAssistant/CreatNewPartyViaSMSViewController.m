@@ -423,7 +423,7 @@
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     [request setPostValue:platform forKey:@"addressType"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -434,13 +434,8 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
-    NSString *versionString = [result objectForKey:@"iphone_version"];
-    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
-    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
-    if([versionString floatValue]>[preVersionString floatValue]){
-        [self getVersionFromRequestDic:result];//处理版本信息
-    }
-
+   [self getVersionFromRequestDic:result];
+    
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
