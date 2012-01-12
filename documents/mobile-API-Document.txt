@@ -439,6 +439,7 @@
         method:"POST",
         input:{
         "uid":Integer,
+        "value":email/phone,
         "verifier":String,
                 }
         output:{
@@ -481,78 +482,40 @@
                                                 'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
-20. verifyUnbindEmail:
-        url:"/a/accounts/verify/unbind/email/",
-        method:"POST",
-        input:{
-        "uid":Integer,
-        "verifier":String,
-                }
-        output:{
-                "status":"ok",
-                "description":"ok",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error",
-                "description":String to Show,
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error_other",
-                "description":"解除绑定失败",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-
-20. verifyUnbindPhone:
-        url:"/a/accounts/verify/unbind/phone/",
-        method:"POST",
-        input:{
-        "uid":Integer,
-        "verifier":String,
-                }
-        output:{
-                "status":"ok",
-                "description":"ok",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error",
-                "description":String to Show,
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error_other",
-                "description":"解除绑定失败",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
+                
+21. getProfilePage:
+    url:"/a/accounts/get_profile/",
+    method:"POST",
+    input:{
+        "uid":integer(not null) 
+        }
+    output:{
+        "status":"ok",
+        "description":"ok",
+        "datasource":{'nickname':user.userprofile.true_name,
+                      'remaining_sms_count':user.userprofile.available_sms_count,
+                      'email':user.userprofile.email,
+                      'email_binding_status':user.userprofile.email_binding_status,
+                      'phone':user.userprofile.phone,
+                      'phone_binding_status':user.userprofile.phone_binding_status,
+                      }
+        }
+        
+21. saveProfilePage:
+    url:"/a/accounts/save_nickname/",
+    method:"POST",
+    input:{
+        "uid":integer,
+        "nickname":String
+        }
+    output:{
+        "status":"ok",
+        "description":"ok",
+        "datasource":{'nickname':user.userprofile.true_name,
+                      'remaining_sms_count':user.userprofile.available_sms_count,
+                      'email':user.userprofile.email,
+                      'email_binding_status':user.userprofile.email_binding_status,
+                      'phone':user.userprofile.phone,
+                      'phone_binding_status':user.userprofile.phone_binding_status,
+                      }
+        }
