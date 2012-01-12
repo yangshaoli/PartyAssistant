@@ -124,7 +124,7 @@ def getBadgeNum(request):
 def profilePage(request):
     if request.method == 'POST':
         uid = request.POST['uid']
-        user = User.objects.get(pk = id)
+        user = User.objects.get(pk = uid)
         return {
                 'nickname':user.userprofile.true_name,
                 'remaining_sms_count':user.userprofile.available_sms_count,
