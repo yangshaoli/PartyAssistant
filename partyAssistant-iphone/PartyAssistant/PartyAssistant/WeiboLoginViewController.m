@@ -106,7 +106,6 @@
 
 - (void)weiboDidLogin
 {
-    NSLog(@"login?");
 	if (isOnlyLogin) {
         UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"用户验证成功" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
         alertV.delegate = self;
@@ -115,7 +114,7 @@
     }else{
         PostWeiboViewController *vc = [[PostWeiboViewController alloc] initWithNibName:@"PostWeiboViewController" bundle:nil];
        // vc.baseinfo = baseinfo;
-        vc.partyObj = vc.partyObj;
+        vc.partyObj = self.partyObj;
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

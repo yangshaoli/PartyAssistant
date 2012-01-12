@@ -59,7 +59,7 @@
 
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],self.clientStatusFlag,@"?read=yes"]];
     
     if (self.quest) {
         [self.quest clearDelegatesAndCancel];

@@ -10,12 +10,11 @@ def apis_json_response_decorator(func):
     def new_func(*args, **kargs):
         try:
             datasource = func(*args, **kargs)
-            print datasource
             data = {
                     'status':"ok",
                     'description':"ok",
                     'datasource':datasource,
-                    'version':IPHONE_APP_VERSION,
+                    'iphone_version':IPHONE_APP_VERSION,
                     'android_version':ANDROID_APP_VERSION,
                     }
             data = simplejson.dumps(data)       
@@ -23,10 +22,11 @@ def apis_json_response_decorator(func):
         except Exception, e:
             if isinstance(e, myException):
                 print e.description
+                print e.data
                 data = {
                         'status':e.status,
                         'description':e.description,
-                        'datasource':{},
+                        'datasource':e.data,
                         'iphone_version':IPHONE_APP_VERSION,
                         'android_version':ANDROID_APP_VERSION,
                         }

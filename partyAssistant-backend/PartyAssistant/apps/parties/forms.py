@@ -6,9 +6,9 @@ from django.core.validators import validate_email
 import re
 
 class PartyForm(forms.ModelForm):
-    limit_count = forms.IntegerField(required=False)
-    address = forms.CharField(error_messages={'max_length':u'地址的最大长度不要超过256个字符'}, required=False, max_length=256)
-    description = forms.CharField(error_messages={'required':u'这个字段是必填的'}, required=True)
+    limit_count = forms.IntegerField(required = False)
+    address = forms.CharField(error_messages = {'max_length':u'地址的最大长度不要超过256个字符'}, required = False, max_length = 256)
+    description = forms.CharField(error_messages = {'required':u'这个字段是必填的'}, required = True)
     class Meta:
         model = Party
         fields = ('start_date', 'start_time', 'address', 'description', 'limit_count')
@@ -23,17 +23,17 @@ class PartyForm(forms.ModelForm):
         return self.cleaned_data['limit_count']
         
 class InviteForm(forms.Form):
-    addressee = forms.CharField(widget=forms.TextInput(), required=True)
-    content = forms.CharField(widget=forms.TextInput(), required=True)   
+    addressee = forms.CharField(widget = forms.TextInput(), required = True)
+    content = forms.CharField(widget = forms.TextInput(), required = True)   
             
 class PublicEnrollForm(forms.Form):
-    name = forms.CharField(error_messages={'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required=True, max_length=14)  
-    phone_or_email = forms.CharField(error_messages={'required':u'联系方式必填'}, required=True)
-    leave_message = forms.CharField(error_messages={'max_length':u'留言长度不能超过100字符'}, max_length=100, required=False)
+    name = forms.CharField(error_messages = {'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required = True, max_length = 14)  
+    phone_or_email = forms.CharField(error_messages = {'required':u'联系方式必填'}, required = True)
+    leave_message = forms.CharField(error_messages = {'max_length':u'留言长度不能超过100字符'}, max_length = 100, required = False)
     
     def clean_leave_message(self):
         if 'leave_message' in self.cleaned_data:
-            self.cleaned_data['leave_message'] = self.cleaned_data['leave_message'].replace('\r\n','<br/>') #Ticket 1169
+            self.cleaned_data['leave_message'] = self.cleaned_data['leave_message'].replace('\r\n', '<br/>') #Ticket 1169
             leave_message = self.cleaned_data['leave_message']
             if len(leave_message) > 100:
                 raise forms.ValidationError(u'留言超过100字符')
@@ -43,7 +43,6 @@ class PublicEnrollForm(forms.Form):
     def clean_phone_or_email(self):
         if 'phone_or_email' in self.cleaned_data:
             phone_or_email = self.cleaned_data['phone_or_email']
-            print phone_or_email.find('@') == -1
             if phone_or_email.find('@') == -1:
                 phone_re = r'1\d{10}'
                 invalid_phone = ''
@@ -68,7 +67,7 @@ class PublicEnrollForm(forms.Form):
             return self.cleaned_data['phone_or_email']
 
 class EnrollForm(forms.Form):
-    leave_message = forms.CharField(error_messages={'max_length':u'留言长度不能超过100字符'}, max_length=100, required=False)
+    leave_message = forms.CharField(error_messages = {'max_length':u'留言长度不能超过100字符'}, max_length = 100, required = False)
     
     def clean_leave_message(self):
         if 'leave_message' in self.cleaned_data:

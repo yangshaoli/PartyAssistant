@@ -105,21 +105,6 @@
     
 }
 
-//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo  
-//{  
-//    
-//    NSLog(@"收到推送消息 ：%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);  
-//    if ([[userInfo objectForKey:@"aps"] objectForKey:@"alert"]!=NULL) {  
-//        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"推送通知"   
-//                                                        message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]           
-//                                                       delegate:self          
-//                                              cancelButtonTitle:@"关闭"       
-//                                              otherButtonTitles:@"更新状态",nil];  
-//        [alert show];  
-//        [alert release];  
-//    }  
-//}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSString *badge = [[userInfo objectForKey:@"aps"] objectForKey:@"badge"];
     application.applicationIconBadgeNumber = [badge intValue];

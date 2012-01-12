@@ -15,8 +15,6 @@
 var applyStatus = ['apply', 'reject', 'noanswer'];
 $(document).ready(function(){
     for ( i in applyStatus) {
-        
-        
         $("#"+applyStatus[i]).children('li').attr('style','background:#F11F22;color:#eee;text-shadow:none;');
         $("#s_"+applyStatus[i]).attr('style','color:#fff; background:#F2B804;border:1px solid #F2B804;');
         ajaxGetClients(applyStatus[i]);
@@ -60,28 +58,18 @@ function ajaxGetClients(applystatus){
             client_count = data.client_count;
             clients = data.party_clients_datas;
             for (i in clients){
-                address = maskAddress(clients[i].address);
+                (clients[i].id == {{client.id}}) ? address = clients[i].address:address = maskAddress(clients[i].address);//自己的联系方式不打星
                 if (clients[i].name == clients[i].address || clients[i].name == ''){
                     row = '<li class="ui-li ui-li-static ui-body-c">'+address+"<span>"+address+"</span></li>";
                 } else {
                     row = '<li class="ui-li ui-li-static ui-body-c">'+clients[i].name+"<span>"+address+"</span></li>";
                 }
-
                 $('#'+applystatus).append(row);
             }//endfor
             //改变标签上的人数 
             $('#s_apply').html(client_count.apply);
             $('#s_reject').html(client_count.reject);
             $('#s_noanswer').html(client_count.noanswer);
-/**
-                var name = maskAddress(clients[i].name);
-                var address = maskAddress(clients[i].address);
-                var row = '<li class="ui-li ui-li-static ui-body-c">'+name+"<span>"+address+'</span></li>';
-                $('#'+applystatus).append(row);  
-            }
-            
-            //修改[再次邀请]的url
-*/
         },
         500: function(){ alert('没有获取到用户列表')}
         }
@@ -101,8 +89,11 @@ function ajaxGetClients(applystatus){
 		<h2>{{party.description}}</h2>
         <form method="POST" action="/m{% url enroll party.id %}?key={{key}}" id='id_form'>
         {% if client %}
-            <!-- 被邀请用户报名页面 --><label for="basic">姓名:</label>
+            <!-- 被邀请用户报名页面 -->
+            {% if not client.name %} 
+            <label for="basic">姓名:</label>
             <input type="text" name="name" id="id_name" value=""  />
+            {% endif %}
             <div data-role="fieldcontain">
             <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
@@ -135,29 +126,21 @@ function ajaxGetClients(applystatus){
         </form>
 	</div>
 
-<ul data-role="listview" class="ui-listview" data-inset="true" id="apply">
-	<li data-theme="a">来的 <span class="ui-li-count" id='s_apply'>{{client_count.apply}}</span></li>
-</ul>
-<ul data-role="listview" class="ui-listview" data-inset="true" id="reject">
-	<li data-theme="a">不来的 <span class="ui-li-count" id='s_reject'>{{client_count.reject}}</span></li>
-</ul>	
-<ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
-	<li data-theme="a">待定的 <span class="ui-li-count" id='s_noanswer'>{{client_count.noanswer}}</span></li>
-</ul>
+    <ul data-role="listview" class="ui-listview" data-inset="true" id="apply">
+    	<li data-theme="a">来的 <span class="ui-li-count" id='s_apply'>{{client_count.apply}}</span></li>
+    </ul>
+    <ul data-role="listview" class="ui-listview" data-inset="true" id="reject">
+    	<li data-theme="a">不来的 <span class="ui-li-count" id='s_reject'>{{client_count.reject}}</span></li>
+    </ul>	
+    <ul data-role="listview" class="ui-listview" data-inset="true" id="noanswer">
+    	<li data-theme="a">待定的 <span class="ui-li-count" id='s_noanswer'>{{client_count.noanswer}}</span></li>
+    </ul>
 
-
-<div data-role="footer" class="ui-bar"> 
-	<a href="http://airenao.com/download/" data-role="button" data-icon="arrow-d">下载Android版</a>
-    <a href="#" data-role="button" data-icon="arrow-d">下载iPhone版</a>
-</div> 
-    
-    <!--div data-role="navbar">
-	<ul>
-		<li><a href="/" data-theme="b">首页</a></li>
-		<li><a href="{%url login %}" data-theme="b">登录</a></li>
-        <li><a href="{%url register %}" data-theme="b">注册</a></li>
-	</ul>
-    </div-->    
+    <div data-role="footer" class="ui-bar" style="text-align:center;">
+        <h2>我也想下载‘爱热闹’</h2>
+    	<a href="http://airenao.com/download/" data-role="button" data-icon="arrow-d">下载Android版</a>
+        <a href="#" data-role="button" data-icon="arrow-d">下载iPhone版</a>
+    </div> 
 </div>
 
 
@@ -185,8 +168,6 @@ function ajaxGetClients(applystatus){
 		<p><a href="#enroll">已报名列表</a></p>	
 	</div><!-- /content -->
 </div>
-
-
 
 </body>
 </html>

@@ -63,6 +63,9 @@
     [super viewDidLoad];
     self.navigationItem.title = @"绑定";
     [self refreshCurrentStatus];
+    
+    UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
+    self.navigationItem.rightBarButtonItem = refreshBtn;
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -174,5 +177,9 @@
             return;
             break;
     }
+}
+
+- (void)refreshBtnAction {
+    
 }
 @end
