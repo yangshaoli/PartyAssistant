@@ -10,6 +10,7 @@
 #import "ASIHTTPRequest.h"
 #import "URLSettings.h"
 #import "SBJsonParser.h"
+#import "HTTPRequestErrorMSG.h"
 
 @implementation UserObject
 @synthesize uID,phoneNum,userName,nickName,emailInfo,leftSMSCount;
@@ -22,7 +23,7 @@
         self.phoneNum = @"";
         self.userName = @"";
         self.nickName = @"";
-        self.leftSMSCount = @"";
+        self.leftSMSCount = @"0";
     }
     
     return self;
@@ -50,7 +51,7 @@
     self.phoneNum = @"";
     self.userName = @"";
     self.nickName = @"";
-    self.leftSMSCount = @"";
+    self.leftSMSCount = @"0";
 }
 
 - (void)updateRemaining {
@@ -65,6 +66,10 @@
         [request startSynchronous];
     }
 } 
+- (void)showAlertRequestFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    [av show];
+}
 
 - (void)remainCountRequestDidFinish:(ASIHTTPRequest *)request {
     NSString *response = [request responseString];
@@ -74,10 +79,18 @@
         NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
         self.leftSMSCount = [remainCount stringValue];
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"RefreshSMSLeftCount" object:nil]];
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+    //NSError *error = [request error];
 }
 @end

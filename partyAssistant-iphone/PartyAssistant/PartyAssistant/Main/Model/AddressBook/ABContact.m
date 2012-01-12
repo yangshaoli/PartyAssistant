@@ -4,7 +4,7 @@
 #import "PartyAssistantAppDelegate.h"
 
 @implementation ABContact
-@synthesize record;
+@synthesize record, thumbData;
 
 // Thanks to Quentarez, Ciaran
 - (id) initWithRecord: (ABRecordRef) aRecord
@@ -38,8 +38,7 @@
 	ABRecordRef contactRec = ABAddressBookGetPersonWithRecordID(addressBook, recordID);
 	if (contactRec) {
 		NSDate *lastModifyDate = (NSDate *)ABRecordCopyValue(contactRec, kABPersonModificationDateProperty);
-		BOOL isModified = [date isEarlierThanDate:lastModifyDate];
-		if (isModified) {
+		if ([date earlierDate:lastModifyDate] == date) {
 			return YES;
 		}
 	}
@@ -540,7 +539,7 @@
 	success = ABPersonSetImageData(record, (CFDataRef) data, &error);
 }
 
-- (NSData *)thumbData
+- (NSData *)getThumbData
 {
 	if (!ABPersonHasImageData(record)) return nil;
 	NSData *imageData = (NSData *)ABPersonCopyImageDataWithFormat(record, kABPersonImageFormatThumbnail);

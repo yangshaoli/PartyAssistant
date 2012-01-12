@@ -8,6 +8,7 @@ Created on 2011-11-17
 from settings import DOMAIN_NAME, SHORT_DOMAIN_NAME
 
 from utils.tools.short_link_tool import transfer_to_shortlink
+from utils.tools.phone_num_tool import regPhoneNum
 
 import hashlib
 import logging
@@ -80,7 +81,7 @@ def sms_modem_send_sms(outbox_message, message, party):
                 enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, phone)).hexdigest())
                 short_link = transfer_to_shortlink(enroll_link)
                 content = u'【爱热闹】%s 快来报名：%s' % (content, short_link)
-                data = {'Mobile':phone, 'Content':content.encode('gbk')}
+                data = {'Mobile':regPhoneNum(phone), 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res != '1':
@@ -95,7 +96,7 @@ def sms_modem_send_sms(outbox_message, message, party):
         else:
             for phone in phone_list:
                 content = u'【爱热闹】' + message.content
-                data = {'Mobile':phone, 'Content':content.encode('gbk')}
+                data = {'Mobile':regPhoneNum(phone), 'Content':content.encode('gbk')}
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res != '1':
@@ -121,7 +122,7 @@ def sms_modem_send_sms(outbox_message, message, party):
 def sendsmsBindingmessage(UserBindingTemp):
     phone = UserBindingTemp.binding_address
     content = u'【爱热闹】' + u'您的手机验证码：' + UserBindingTemp.key
-    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    data = {'Mobile':regPhoneNum(phone) , 'Content':content.encode('gbk')}
     try:
         res = _post_api_request_sendSMS(data)
         if res != '1':
@@ -138,10 +139,21 @@ def sendsmsMessage(message):
     else:
         return
     content = u'【爱热闹】' + message['content']
-    data = {'Mobile':phone , 'Content':content.encode('gbk')}
+    data = {'Mobile':regPhoneNum(phone) , 'Content':content.encode('gbk')}
     try:
         res = _post_api_request_sendSMS(data)
         if res != '1':
             logger.error(res)
     except:
         logger.exception('send sendsmsBingdingmessage error!')        
+
+def send_forget_pwd_sms(instance):
+    phone = instance.user.userprofile.phone
+    content = u'【爱热闹】您的临时密码为: %s 该密码仅生效一次，请您尽快登陆应用/网站，修改您的密码。' % instance.temp_password
+    data = {'Mobile':regPhoneNum(phone) , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send sendsmsBindingmessage error!')

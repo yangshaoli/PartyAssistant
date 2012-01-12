@@ -157,7 +157,8 @@ def createParty(request):
                     Outbox.objects.create(address = addressString, base_message = msg)
         return {
                 'partyId':party.id,
-                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id]))
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
+                'sms_count_remaining':user.userprofile.available_sms_count,
                 }
 
 @csrf_exempt
@@ -227,6 +228,7 @@ def PartyList(request, uid, start_id = 0):
         partyObject['description'] = party.description
         partyObject['partyId'] = party.id
         partyObject['shortURL'] = transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id]))
+        partyObject['type'] = party.invite_type
         
         #各个活动的人数情况
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
@@ -251,14 +253,18 @@ def PartyList(request, uid, start_id = 0):
         partyObject['clientsData'] = client_counts
         
         PartyObjectArray.append(partyObject)
+    party_list = Party.objects.filter(creator = user)
+    unreadCount = PartiesClients.objects.filter(party__in = party_list, is_check = False).count()
     if partylist:
         return {
                 'lastID':partylist[partylist.count() - 1].id,
-                'partyList':PartyObjectArray
+                'partyList':PartyObjectArray,
+                'unreadCount':unreadCount,
                 }
     else:
         return {
                 'lastID':start_id,
+                'unreadCount':unreadCount,
                 'partyList':[]
                 }
 
@@ -360,12 +366,15 @@ def GetPartyClientSeperatedList(request, pid, type):
             cValue = clientparty.client.email
         else:
             cValue = clientparty.client.phone
-        if not clientparty.is_check:
-            clientparty.is_check = True
-            clientparty.save()
-            is_checked = False
+        if 'read' in request.GET:
+            if not clientparty.is_check:
+                clientparty.is_check = True
+                clientparty.save()
+                is_checked = False
+            else:
+                is_checked = True
         else:
-            is_checked = True
+            is_checked = clientparty.is_check
         dic = {
                'cName':clientparty.client.name,
                'cValue':cValue,
@@ -496,5 +505,6 @@ def resendMsg(request):
         
         return {
                 'partyId':party.id,
-                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id])
+                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id]),
+                'sms_count_remaining':user.userprofile.available_sms_count,
                 }

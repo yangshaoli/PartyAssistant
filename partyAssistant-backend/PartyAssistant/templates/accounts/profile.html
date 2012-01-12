@@ -67,9 +67,6 @@ function validate_phone_bingding(isbind){
     if(isbind=='bind'){
         r_url='{% url validate_phone_bingding_ajax %}';
         alert_success='绑定成功';
-    }else if (isbind=='unbind'){
-        r_url='{% url validate_phone_unbingding_ajax %}';
-        alert_success='成功解除绑定';
     }else{
        return;
     }   
@@ -228,15 +225,12 @@ function validate_phone_bingding(isbind){
                 </div>
                 <div class="field">
                     <label for="phone">手机：</label>
-                    <input style="border:0px;background:none;" name='phone' id='id_phone' value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}{%  ifequal userprofile.phone_binding_status 'waiteunbind' %}  disabled="true" {%  endifequal %}>
+                    <input style="border:0px;background:none;" name='phone' id='id_phone' value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
                     </input>
                     
                     {%  ifequal userprofile.phone_binding_status  'bind' %}
                     <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
                     {% endifequal %}
-                    {%  ifequal userprofile.phone_binding_status  'waiteunbind' %}
-                    <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
-                    {% endifequal %}                        
                     {%  ifequal userprofile.phone_binding_status  'unbind' %}
                     <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
                     {% endifequal %}

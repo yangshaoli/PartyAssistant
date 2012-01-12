@@ -13,7 +13,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
-@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj;
+@synthesize contactorID,phoneDetailDelegate,clientDict,partyObj,quest;
 @synthesize messageTextView;
 @synthesize clientStatusFlag;
 
@@ -42,6 +42,7 @@
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [goButton setFrame:CGRectMake(50, 200, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
+    [goButton setImage:[UIImage imageNamed:@"apply"] forState:UIControlStateNormal];
     
 //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
     goButton.tag=23;
@@ -51,6 +52,7 @@
     UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [notGoButton setFrame:CGRectMake(200, 200,80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
+    [notGoButton setImage:[UIImage imageNamed:@"reject"] forState:UIControlStateNormal];
     //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
     notGoButton.tag=24;
     notGoButton.backgroundColor=[UIColor clearColor];
@@ -77,7 +79,14 @@
     }
     
     messageTextView=[[UITextView alloc] init];
-    messageTextView.frame=CGRectMake(100, 153, 200, 40);
+    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
+    if([self.partyObj.type isEqualToString:@"email"]){
+       messageTextView.frame=CGRectMake(100, 85, 200, 40);
+    }else{
+       messageTextView.frame=CGRectMake(100, 153, 200, 40);
+    
+    }
+    
     messageTextView.font=[UIFont systemFontOfSize:15];
     messageTextView.backgroundColor=[UIColor clearColor];
     messageTextView.editable=NO;
@@ -105,10 +114,6 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
     NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
     [defaults setInteger:5  forKey:keyString]; 
-   
-    
-    NSInteger  getStatusChangedInt=[defaults integerForKey:keyString];
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -152,6 +157,7 @@
         NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
         NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
         [isChenkDefault  setInteger:currentInt+1  forKey:appliedKeyString]; 
+        [btn setImage:[UIImage imageNamed:@"apply_gray"] forState:UIControlStateNormal];
     
     }else if(btn.tag==24){
         statusAction=@"reject";
@@ -159,6 +165,7 @@
         NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
         NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
         [isChenkDefault setInteger:currentInt-1 forKey:refusedKeyString];
+        [btn setImage:[UIImage imageNamed:@"reject_gray"] forState:UIControlStateNormal];
     
     }
 //    if ([self.clientStatusFlag isEqualToString:@"all"]) {
@@ -176,6 +183,10 @@
 //    }
     
     NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
     [request setPostValue:statusAction forKey:@"cpAction"];
@@ -191,6 +202,7 @@
     [request setDidFinishSelector:nil];
     [request setDidFailSelector:nil];
     [request startSynchronous];
+    self.quest=request;
     NSError *error = [request error];
     if (!error) {
         //[activity removeFromSuperview];
@@ -224,10 +236,18 @@
             [self showAlertRequestFailed:REQUEST_ERROR_404];
             btn.hidden = NO;
             btn.enabled = YES;
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            btn.hidden = NO;
+            btn.enabled = YES;
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+            btn.hidden = NO;
+            btn.enabled = YES;
         }else{
             btn.hidden = NO;
             btn.enabled = YES;
-            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
         }
     } else {
         //[activity removeFromSuperview];
@@ -240,13 +260,27 @@
 }
 
 
-
+////正则判断是否Email地址
+//- (BOOL) isEmailAddress:(NSString*)email { 
+//    
+//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+//    
+//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+//    
+//    return [emailTest evaluateWithObject:email]; 
+//    
+//} 
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
+    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
+    if([self.partyObj.type isEqualToString:@"email"]){
+        return 1;
+    }
+
     return 2;
 }
 
@@ -276,38 +310,59 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
     
-    // Configure the cell...
-    if(indexPath.section==0){
-        //NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
-       // NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
-        UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-        typeLb.text = @"联系方式";
-        typeLb.textAlignment = UITextAlignmentRight;
-        typeLb.textColor = [UIColor blueColor];
-        typeLb.backgroundColor = [UIColor clearColor];
-        [cell addSubview:typeLb];
-        UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
-        valLb.text = [clientDict objectForKey:@"cValue"];
-        valLb.backgroundColor = [UIColor clearColor];
-        cell.selectionStyle=UITableViewCellSelectionStyleNone;
-        [cell addSubview:valLb];
-    }
-    if(indexPath.section==1){
-        cell.selectionStyle= UITableViewCellSelectionStyleNone;
-        UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-        wordsLabel.text=@"留言";
-        wordsLabel.textAlignment = UITextAlignmentRight;
-        wordsLabel.textColor = [UIColor blueColor];
-        wordsLabel.backgroundColor = [UIColor clearColor];
-        NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
-        if(detailWordString.length>1){
-             messageTextView.text=[detailWordString substringFromIndex:1];
-        }else{
+    if([self.partyObj.type isEqualToString:@"email"]){
+        if(indexPath.section==0){
+            cell.selectionStyle= UITableViewCellSelectionStyleNone;
+            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 40, 44)];
+            wordsLabel.text=@"留言";
+            wordsLabel.textAlignment = UITextAlignmentRight;
+            wordsLabel.textColor = [UIColor blueColor];
+            wordsLabel.backgroundColor = [UIColor clearColor];
+            NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+            if(detailWordString.length>1){
+                messageTextView.text=[detailWordString substringFromIndex:1];
+            }else{
+            }
+            [cell addSubview:wordsLabel];
+           
         }
-        [cell addSubview:wordsLabel];
+    
+    }else{
+        if(indexPath.section==0){
+            //NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
+            // NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
+            UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+            typeLb.text = @"联系方式";
+            typeLb.textAlignment = UITextAlignmentRight;
+            typeLb.textColor = [UIColor blueColor];
+            typeLb.backgroundColor = [UIColor clearColor];
+            [cell addSubview:typeLb];
+            UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
+            valLb.text = [clientDict objectForKey:@"cValue"];
+            valLb.backgroundColor = [UIColor clearColor];
+            cell.selectionStyle=UITableViewCellSelectionStyleNone;
+            [cell addSubview:valLb];
+        }
+        if(indexPath.section==1){
+            cell.selectionStyle= UITableViewCellSelectionStyleNone;
+            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+            wordsLabel.text=@"留言";
+            wordsLabel.textAlignment = UITextAlignmentRight;
+            wordsLabel.textColor = [UIColor blueColor];
+            wordsLabel.backgroundColor = [UIColor clearColor];
+            NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+            if(detailWordString.length>1){
+                messageTextView.text=[detailWordString substringFromIndex:1];
+            }else{
+            }
+            [cell addSubview:wordsLabel];
+        }
+
     }
-        
+    // Configure the cell...
+            
     return cell;
 }
 
@@ -377,9 +432,6 @@
   }
     return nil;
 }
-
-
-
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     if(section==0){
@@ -488,11 +540,17 @@
 //    [phoneDetailDelegate contactDetailSelectedWithUserInfo:userinfo];
 //   
 //    [self.navigationController popViewControllerAnimated:YES];
-    if(indexPath.section==0){
+    if([self.partyObj.type isEqualToString:@"email"]){
+        return;
+    }else{
+        if(indexPath.section==0){
             //NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
             UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:@"发送短信" otherButtonTitles:@"拨打电话", nil];
             actionSheet.tag = 5;
             [actionSheet showInView:self.tabBarController.view];
+        }
+
+    
     }
 }
 
@@ -519,16 +577,19 @@
               return;
               
           }
-
-      
       
       }
         
             
     }
     return;
-      
-        
 }
+#pragma mark -
+#pragma mark dealloc method
+-(void)dealloc {
+    [self.quest  clearDelegatesAndCancel];
+    self.quest = nil;
+}
+
 
 @end

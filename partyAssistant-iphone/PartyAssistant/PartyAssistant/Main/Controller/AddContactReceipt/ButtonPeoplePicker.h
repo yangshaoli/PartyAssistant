@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-#import "AddPersonViewController.h"
 #import <AddressBook/AddressBook.h>
 #import "ShadowedTableView.h"
-#import "ContactsListPickerViewController.h"
 #import "BottomSepratorLineView.h"
+#import "SegmentManagingViewController.h"
 
 typedef enum {
     ButtonPeoplePickerStatusShowing,
@@ -27,12 +26,12 @@ typedef enum {
 
 @protocol ButtonPeoplePickerDelegate;
 
-@interface ButtonPeoplePicker : UIViewController <AddPersonViewControllerDelegate,
-												  UITableViewDataSource,
+@class ClientObject;
+@interface ButtonPeoplePicker : UIViewController <UITableViewDataSource,
 												  UITableViewDelegate,
-												  UIKeyInput,
-                                                  ABPeoplePickerNavigationControllerDelegate,
-                                                  ContactsListPickerViewControllerDelegate>
+												  UIKeyInput,               
+                                                  UITextFieldDelegate,
+                                                  ContactDataDelegate>
 {
 	UIButton *selectedButton;
     UIButton *lastButton;
@@ -55,17 +54,23 @@ typedef enum {
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *doneButton;
 
 @property (nonatomic, strong) IBOutlet UIToolbar *toolbar;
+@property (nonatomic, strong) IBOutlet UIView *footerView;
 
 - (IBAction)cancelClick:(id)sender;
 - (IBAction)doneClick:(id)sender;
 - (void)findLastButton;
 - (void)changePickerViewToStatus:(ButtonPeoplePickerStatus)newStatus;
-- (IBAction)peopleReciptsInputFinish;
 - (void)resetData;
+- (ClientObject *)scanAddressBookAndSearch:(ClientObject *)client;
 
+void pickerAddressBookChanged (ABAddressBookRef addressBook,
+                         CFDictionaryRef info,
+                         void *context);
 @end
 
 @protocol ButtonPeoplePickerDelegate
 - (void)buttonPeoplePickerDidFinish:(ButtonPeoplePicker *)controller;
+
+@optional
 - (NSMutableArray *)getCurrentContactDataSource;
 @end

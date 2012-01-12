@@ -23,7 +23,7 @@
 
 @implementation PartyDetailTableVC
 @synthesize myToolbarItems,peopleCountArray,clientsArray;
-@synthesize partyObj;
+@synthesize partyObj,quest,seperatedListQuest,deleteQuest;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -101,11 +101,6 @@
     [self loadClientCount];
     [self getPartyClientSeperatedList];
     [self.tableView reloadData];
-    
-//    //[GetClientsCountService sharedGetClientsCountService].partyObj=self.partyObj;
-//    NSLog(@"在Detail页面输出partyid》》》》%d",self.partyObj.partyId);
-   
-
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -137,13 +132,16 @@
     NSNumber *partIdNumber=self.partyObj.partyId;
     NSString *partIdString=[partIdNumber stringValue];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
     
-    
+    self.quest = request;
 //    NSLog(@"loadClientCount预期调用1111");
 //    NSNumber *partyIdNumber=self.partyObj.partyId;
 //    NSLog(@"loadClientCount输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
@@ -183,46 +181,21 @@
             self.peopleCountArray = countArray;
             [self.tableView reloadData];
         }else{
-            // [self showAlertRequestFailed:description];		
+             [self showAlertRequestFailed:description];		
         }
+    }else if([request responseStatusCode] == 404){
+         NSLog(@"在21");
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+         NSLog(@"在221");
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+         NSLog(@"在22221");
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+         NSLog(@"在222221");
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
-    
-    
-//    NSLog(@"requestFinished预期调用2222");
-//	NSString *response = [request responseString];
-//	SBJsonParser *parser = [[SBJsonParser alloc] init];
-//	NSDictionary *result = [parser objectWithString:response];
-//	NSString *description = [result objectForKey:@"description"];
-//	[self dismissWaiting];
-//    if ([request responseStatusCode] == 200) {
-//        if ([description isEqualToString:@"ok"]) {
-//            NSDictionary *dict = [result objectForKey:@"datasource"];
-//            self.clientsArray = [dict objectForKey:@"clientList"];
-//            NSLog(@"requestFinished============self.clientsArray输出>>>>%@",self.clientsArray);
-//            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
-//            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
-//            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
-//                tbi.badgeValue = nil;
-//            }else{
-//                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
-//            }
-//            [self.tableView reloadData];
-//        }else{
-//            [self showAlertRequestFailed:description];	
-//            NSLog(@"self.clientsArray在1");
-//        }
-//    }else if([request responseStatusCode] == 404){
-//        [self showAlertRequestFailed:REQUEST_ERROR_404];
-//        NSLog(@"self.clientsArray在2");
-//    }else{
-//        [self showAlertRequestFailed:REQUEST_ERROR_500];
-//        NSLog(@"self.clientsArray在3");
-//    }
-//	
-//
-    
-    
-    
     
     
 }
@@ -232,18 +205,15 @@
     //	NSError *error = [request error];
 	//[self dismissWaiting];
 	//[self showAlertRequestFailed: error.localizedDescription];
-    
-    
-    
-    
-    
-    
 }
 
 
 #pragma mark - resend  request
 - (void)getPartyClientSeperatedList{
     NSNumber *partyIdNumber=self.partyObj.partyId;
+    if (self.seperatedListQuest) {
+        [self.seperatedListQuest clearDelegatesAndCancel];
+    }
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
     request.timeOutSeconds = 30;
@@ -252,6 +222,7 @@
     [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
+    self.seperatedListQuest = request;
 }
 
 - (void)getPartyClientSeperatedListRequestFinished:(ASIHTTPRequest *)request{
@@ -264,6 +235,7 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"打印调试数组%@",[dict objectForKey:@"clientList"]);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -277,8 +249,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -368,7 +344,6 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
-            NSInteger newAppliedInt=[[self.peopleCountArray objectAtIndex:2] intValue];
             
             if(self.partyObj.isnewApplied){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
@@ -392,7 +367,7 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
-            NSInteger newRefusedInt=[[self.peopleCountArray objectAtIndex:4] intValue];
+            
             if(self.partyObj.isnewRefused){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
@@ -507,19 +482,49 @@
     rootVC.partyObj=self.partyObj;
     WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
     [self presentModalViewController:vc animated:YES];
-    
 }
 
+////正则判断是否Email地址
+//- (BOOL) isEmailAddress:(NSString*)email { 
+//    
+//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+//    
+//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+//    
+//    return [emailTest evaluateWithObject:email]; 
+//    
+//} 
 
 
 - (void)resentMsg{
-     //[self getPartyClientSeperatedList];
-   
-    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
-    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
-    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
-    [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+//    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+//    [alertV show];
+//
+//    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+//    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+//    NSLog(@"打印type：：：%@",self.partyObj.type);
+//    for(NSDictionary  *clientDic in self.clientsArray){
+//        if([self.partyObj.type isEqualToString:@"email"]){
+//            [clientDicArray removeObject:clientDic];
+//        }
+//    }
+//    
+//    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
+//    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+//    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+//    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
 
+    
+    [self getPartyClientSeperatedList];
+    if([self.partyObj.type isEqualToString:@"email"]){
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+        [alertV show];
+    }else{
+        ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+        [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+        [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+        [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    }
 }
 - (void)editBtnAction{
     ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
@@ -546,6 +551,10 @@
             UserObjectService *us = [UserObjectService sharedUserObjectService];
             UserObject *user = [us getUserObject];
             NSURL *url = [NSURL URLWithString:DELETE_PARTY];
+            if (self.deleteQuest) {
+                [self.deleteQuest clearDelegatesAndCancel];
+            }
+            
             ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
             [request setPostValue:self.partyObj.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
@@ -556,6 +565,8 @@
             [request setDidFailSelector:@selector(deleteRequestFailed:)];
             [request setShouldAttemptPersistentConnection:NO];
             [request startAsynchronous];
+
+            self.deleteQuest=request;
         }
     }
 }
@@ -577,9 +588,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
-       
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -589,5 +603,14 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    [self.seperatedListQuest  clearDelegatesAndCancel];
+    self.quest = nil;
+    self.seperatedListQuest=nil;
 }
 @end

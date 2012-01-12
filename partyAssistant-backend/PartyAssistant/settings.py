@@ -3,6 +3,10 @@
 import os
 PROJECT_ROOT = os.path.dirname(__file__)
 
+IPHONE_APP_VERSION = "1.0"
+ANDROID_APP_VERSION = "1.0"
+WEB_VERSION = "1.0"
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -15,11 +19,11 @@ ADMINS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'airenao', # Or path to database file if using sqlite3.
-        'USER': 'eventmgr', # Not used with sqlite3.
-        'PASSWORD': 'wo4liwenjian', # Not used with sqlite3.
-        'HOST': '192.168.2.100', # Set to empty string for localhost. Not used with sqlite3.
+        'ENGINE': 'sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '%s/dev.db' % PROJECT_ROOT, # Or path to database file if using sqlite3.
+        'USER': '', # Not used with sqlite3.
+        'PASSWORD': '', # Not used with sqlite3.
+        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }

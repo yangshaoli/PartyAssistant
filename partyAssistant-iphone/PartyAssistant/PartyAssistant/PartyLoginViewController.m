@@ -6,7 +6,7 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 #import "PartyListTableVC.h"
-
+#import "ForgetPassword.h"
 
 #import "AddNewPartyBaseInfoTableViewController.h"
 #import "CreatNewPartyViaSMSViewController.h"
@@ -23,6 +23,7 @@
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
 #import "URLSettings.h"
+#import "NotificationSettings.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -53,6 +54,8 @@
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
 @synthesize partyList;
+@synthesize appTab;
+
 - (void)dealloc {
     [super dealloc];
     
@@ -110,10 +113,17 @@
     
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
-    self.navigationItem.rightBarButtonItem = registerButton;
+    self.navigationItem.leftBarButtonItem = registerButton;
+    
+    
+    UIBarButtonItem *forgetPasswordButton = [[UIBarButtonItem alloc] initWithTitle:@"忘记密码" style:UIBarButtonItemStylePlain target:self action:@selector(forgetPassword)];
+    
+    self.navigationItem.rightBarButtonItem = forgetPasswordButton;
+
+    
     
     [registerButton release];
-    
+    [forgetPasswordButton release];
     [tableFooterView release];
    
     
@@ -138,12 +148,22 @@
         return;
     }
     
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive) name: UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.navigationController.navigationBarHidden = NO;
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    if(user){
+        if(user.uID > 0){
+        } else {
+            self.navigationController.navigationBarHidden = NO;
+        }
+    }
+
+    
+    self.appTab = nil;
 }
 
 - (void)viewDidUnload
@@ -269,6 +289,11 @@
     [registerVC release];
 }
 
+- (void)forgetPassword{
+    ForgetPassword *forgetPasswordVC=[[ForgetPassword alloc] initWithNibName:@"ForgetPassword" bundle:nil];
+    [self.navigationController  pushViewController:forgetPasswordVC animated:YES];
+}
+
 - (void)pushToContentVC {
     self.userNameTextField.text = @"";
     self.pwdTextField.text = @"";
@@ -308,6 +333,7 @@
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
+    self.appTab = tab;
 //    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
     tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
     [self.navigationController pushViewController:tab animated:YES];
@@ -458,5 +484,14 @@
 - (void)saveInputFailed {
     [_HUD hide:YES];
     [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)appBecomeActive {
+    if (self.appTab) {
+        UINavigationController *nav = [[self.appTab viewControllers] objectAtIndex:self.appTab.selectedIndex];
+        if (nav.presentedViewController) {
+            [nav.presentedViewController viewWillAppear:YES];
+        }
+    }
 }
 @end

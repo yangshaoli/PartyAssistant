@@ -7,11 +7,13 @@
 //
 
 #import "PartyAssistantAppDelegate.h"
-#import "ECPurchase.h"
+#import "AddressBookDataManager.h"
 
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
+@synthesize remainCountRequest = _remainCountRequest;
+@synthesize nav = _nav;
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
 }
@@ -63,22 +65,28 @@
 
 #pragma Push Notification
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
+    NSLog(@"Luanch Option");
+    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
     if(addressBook == nil) {
         addressBook = ABAddressBookCreate();
         ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
     }
-    _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:login];
-    [_window addSubview:nav.view];
-
+    _nav = [[UINavigationController alloc] initWithRootViewController:login];
+    [self.window addSubview:_nav.view];
+    [login release];
+    
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     
     [[ECPurchase shared] addTransactionObserver];
     [[ECPurchase shared] setProductDelegate:self];
     [[ECPurchase shared] setTransactionDelegate:self];
     [[ECPurchase shared] setVerifyRecepitMode:ECVerifyRecepitModeServer];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateRemainCount) name:UpdateReMainCount object:nil];
+    
+    [self.window makeKeyAndVisible];
     
     return YES;  
 }  
@@ -97,21 +105,6 @@
     
 }
 
-//- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo  
-//{  
-//    
-//    NSLog(@"收到推送消息 ：%@",[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]);  
-//    if ([[userInfo objectForKey:@"aps"] objectForKey:@"alert"]!=NULL) {  
-//        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"推送通知"   
-//                                                        message:[[userInfo objectForKey:@"aps"] objectForKey:@"alert"]           
-//                                                       delegate:self          
-//                                              cancelButtonTitle:@"关闭"       
-//                                              otherButtonTitles:@"更新状态",nil];  
-//        [alert show];  
-//        [alert release];  
-//    }  
-//}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSString *badge = [[userInfo objectForKey:@"aps"] objectForKey:@"badge"];
     application.applicationIconBadgeNumber = [badge intValue];
@@ -123,10 +116,7 @@
 }
 
 void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
-    //	DialerAppDelegate *dialerDelegate = context;
-    //	[dialerDelegate refreshServices];
-    //	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
-    //	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:kUpdateContactsDataNotification object:nil]];
+	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
 }
 
 #pragma mark -
@@ -209,6 +199,10 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
 }
+- (void)showAlertRequestFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    [av show];
+}
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
 	NSString *response = [request responseString];
@@ -224,11 +218,88 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
             NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:[dataSource objectForKey:@"badgeNum"],@"badge",nil]];
             [[NSNotificationCenter defaultCenter] postNotification:notification];
         }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
 
+}
+
+#pragma mark -
+#pragma mark update remain count
+- (void)updateRemainCount {
+    if (self.remainCountRequest) {
+        if (![self.remainCountRequest isFinished]) {
+            return;
+        }
+    }
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *requestURL = [NSString stringWithFormat:@"%@%d",ACCOUNT_REMAINING_COUNT,user.uID];
+    //if (!self.remainCountRequest) {
+    self.remainCountRequest = nil;
+    self.remainCountRequest = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:requestURL]];
+   // } else {
+    //    [self.remainCountRequest setURL:[NSURL URLWithString:requestURL]]; 
+   // }
+    [_remainCountRequest setDelegate:self];
+    [_remainCountRequest setDidFinishSelector:@selector(remainCountRequestDidFinish:)];
+    [_remainCountRequest setDidFailSelector:@selector(remainCountRequestDidFail:)];
+    [_remainCountRequest startSynchronous];
+    return;
+} 
+
+- (void)remainCountRequestDidFinish:(ASIHTTPRequest *)request {
+    NSString *response = [request responseString];
+    SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    NSLog(@"response : %d",[request responseStatusCode]);
+    
+    if ([request responseStatusCode] == 200) {
+        NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        user.leftSMSCount = [remainCount stringValue];
+        NSLog(@"%@", user.leftSMSCount);
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[remainCount intValue]]]];
+        return;
+    } else if([request responseStatusCode] == 404){
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+    } else {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+    }
+//------------------wu xue zhang
+//    else if([request responseStatusCode] == 404){
+//        [self showAlertRequestFailed:REQUEST_ERROR_404];
+//    }else if([request responseStatusCode] == 500){
+//        [self showAlertRequestFailed:REQUEST_ERROR_500];
+//    }else if([request responseStatusCode] == 502){
+//        [self showAlertRequestFailed:REQUEST_ERROR_502];
+//    }else{
+//        [self showAlertRequestFailed:REQUEST_ERROR_504];
+//>>>>>>> wuxuezhang
+//    }
+    [request clearDelegatesAndCancel];
+}
+
+- (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
+    NSError *error = [request error];
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+     [request clearDelegatesAndCancel];
+}
+
+- (void)dealloc {
+    [super dealloc];
+    self.nav = nil;
+    [_nav release];
 }
 @end

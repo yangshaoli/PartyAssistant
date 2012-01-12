@@ -18,29 +18,7 @@
 }
 
 + (NSDictionary *)contactsNumberDictionary {
-//	//ABAddressBookRef aAddressBook = ABAddressBookCreate();
-//	NSArray *thePeople = (NSArray *)ABAddressBookCopyArrayOfAllPeopleInSourceWithSortOrdering(addressBook, addressBook, kABPersonSortByFirstName);
-//	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:thePeople.count];
-//    NSString *aNumber;
-//	for (id person in thePeople) {
-//        ABContact *contact = [ABContact contactWithRecord:(ABRecordRef)person];
-//        NSArray *numbers = [contact phoneArray];
-//        for (NSString *number in numbers) {
-//            aNumber = [number stringByReplacingOccurrencesOfString:@"+" withString:@""];
-//            aNumber = [aNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
-//            aNumber = [aNumber stringByReplacingOccurrencesOfString:@"(" withString:@""];
-//            aNumber = [aNumber stringByReplacingOccurrencesOfString:@")" withString:@""];
-//            aNumber = [aNumber stringByReplacingOccurrencesOfString:@"+" withString:@""];
-//            aNumber = [aNumber stringByReplacingOccurrencesOfString:@"#" withString:@""];
-//            aNumber = [aNumber stringByReplacingOccurrencesOfString:@"-" withString:@""];
-//            [dictionary setValue:contact forKey:aNumber];
-//        }
-//    }
-//		
-//	[thePeople release];
-//	//CFRelease(aAddressBook);
-//	return dictionary;
-	return [[AddressBookDataManager sharedAddressBookDataManager] getCallLogContactData];
+	return (NSDictionary *)[[AddressBookDataManager sharedAddressBookDataManager] getCallLogContactData];
 }
 
 

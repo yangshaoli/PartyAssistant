@@ -9,6 +9,7 @@
 #import "DataManager.h"
 #import "PartyUserRegisterViewController.h"
 #import "PartyLoginViewController.h"
+#import "UserInfoValidator.h"
 
 #define NullTextFieldTag            100
 #define UserNameTextFieldTag        101
@@ -16,10 +17,11 @@
 #define PwdCheckTextFieldTag        103
 
 
-#define NotLegalTag                 1
-#define NotPassTag                  2
-#define SuccessfulTag               3
-#define InvalidateNetwork           4
+#define NotLegalTag                         1
+#define NotPassTag                          2
+#define SuccessfulTag                       3
+#define InvalidateNetwork                   4
+#define PasswordAndPasswordCheckNotEqual    5
 
 @interface PartyUserRegisterViewController ()
 
@@ -131,15 +133,25 @@
         
     [self cleanKeyBoard];
     
-    BOOL isOk = [self inputFieldNonTextCheck];
+    BOOL isOk = [self pwdEqualToPwdCheck];
     
     if (!isOk) {
+        [self showAlertWithMessage:@"密码和确认密码内容不一致！" buttonTitle:@"OK" tag:NotLegalTag];
         return;
     }
     
-    isOk = [self pwdEqualToPwdCheck];
+    UserInfoValidator *validator = [UserInfoValidator sharedUserInfoValidator];
+    ValidatorResultCode result = [validator validateUsername:self.userNameTextField.text];
+    if (result != ValidatorResultPass) {
+        NSString *errorMessge = [validator getUsernameErrorMessageByCode:result];
+        [self showAlertWithMessage:errorMessge buttonTitle:@"OK" tag:NotLegalTag];
+        return;
+    }
     
-    if (!isOk) {
+    result = [validator validatePassword:self.pwdTextField.text];
+    if (result != ValidatorResultPass) {
+        NSString *errorMessge = [validator getPasswordErrorMessageByCode:result];
+        [self showAlertWithMessage:errorMessge buttonTitle:@"OK" tag:NotLegalTag];
         return;
     }
     
