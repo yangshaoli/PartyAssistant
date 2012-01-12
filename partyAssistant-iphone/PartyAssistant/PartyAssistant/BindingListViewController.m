@@ -117,6 +117,20 @@
 - (void)decideToOpenWhichTelBindingPage {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
     BindingStatus telBindingStatus = [storedStatusService telBindingStatus];
+    switch (telBindingStatus) {
+        case StatusNotBind:
+            
+            break;
+        case StatusBinded :
+            break;
+        case StatusBinding:
+            break;
+        case StatusUnbinding:
+            break;
+        default:
+            return;
+            break;
+    }
     //1.goTo binding page
     //2.goTo UnBinding Page
     //3.goTo VerifyPage
@@ -125,6 +139,20 @@
 - (void)decideToOpenWhichMailBindingPage {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
     BindingStatus mailBindingStatus = [storedStatusService telBindingStatus];
+    switch (mailBindingStatus) {
+        case StatusNotBind:
+            
+            break;
+        case StatusBinded :
+            break;
+        case StatusBinding:
+            break;
+        case StatusUnbinding:
+            break;
+        default:
+            return;
+            break;
+    }
     //1.goTo binding page
     //2.goTo UnBinding Page
     //3.goTo VerifyPage

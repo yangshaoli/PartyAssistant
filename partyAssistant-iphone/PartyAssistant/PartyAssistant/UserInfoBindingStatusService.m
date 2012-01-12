@@ -18,6 +18,10 @@
 @synthesize nicknameBindingStatus;
 @synthesize telBindingStatus;
 @synthesize mailBindingStatus;
+@synthesize bindingNickname;
+@synthesize bindingTel;
+@synthesize bindingMail;
+
 - (id)init
 {
     self = [super init];
@@ -25,6 +29,9 @@
         self.nicknameBindingStatus = StatusNotBind;
         self.telBindingStatus = StatusNotBind;
         self.mailBindingStatus = StatusNotBind;
+        self.bindingNickname = @"";
+        self.bindingTel = @"";
+        self.bindingMail = @"";
     }
     
     return self;
@@ -34,13 +41,18 @@
     [encoder encodeObject: [NSNumber numberWithInteger:self.nicknameBindingStatus] forKey:@"nicknameBindingStatus"];
 	[encoder encodeObject: [NSNumber numberWithInteger:self.telBindingStatus] forKey:@"telBindingStatus"];
     [encoder encodeObject: [NSNumber numberWithInteger:self.mailBindingStatus] forKey:@"mailBindingStatus"];
+    [encoder encodeObject: self.bindingNickname forKey:@"bindingNickname"];
+    [encoder encodeObject: self.bindingTel forKey:@"bindingTel"];
+    [encoder encodeObject: self.bindingMail forKey:@"bindingMail"];
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
     self.nicknameBindingStatus = [[decoder decodeObjectForKey:@"nicknameBindingStatus"] integerValue];
 	self.telBindingStatus = [[decoder decodeObjectForKey:@"telBindingStatus"] intValue];
 	self.mailBindingStatus = [[decoder decodeObjectForKey:@"mailBindingStatus"] intValue];
-
+    self.bindingNickname = [decoder decodeObjectForKey:@"bindingNickname"];
+    self.bindingTel = [decoder decodeObjectForKey:@"bindingTel"];
+    self.bindingMail = [decoder decodeObjectForKey:@"bindingMail"];
 	return self;
 }
 
@@ -48,6 +60,9 @@
     self.nicknameBindingStatus = StatusNotBind;
     self.telBindingStatus = StatusNotBind;
     self.mailBindingStatus = StatusNotBind;
+    self.bindingNickname = @"";
+    self.bindingTel = @"";
+    self.bindingMail = @"";
 }
 
 - (NSString *)translateStatusCodeToString : (BindingStatus)status {
@@ -172,5 +187,17 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 
 - (NSString *)mailStatusString {
     return [[self getBindingStatusObject] mailStatusString];
+}
+
+- (NSString *)bindingNickname {
+    return [[self getBindingStatusObject] bindingNickname];
+}
+
+- (NSString *)bindingTel {
+    return [[self getBindingStatusObject] bindingTel];
+}
+
+- (NSString *)bindingMail {
+    return [[self getBindingStatusObject] bindingMail];
 }
 @end

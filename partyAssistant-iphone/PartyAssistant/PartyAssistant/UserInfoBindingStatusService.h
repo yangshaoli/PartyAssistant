@@ -25,11 +25,20 @@ typedef enum {
     BindingStatus nicknameBindingStatus;
     BindingStatus telBindingStatus;
     BindingStatus mailBindingStatus;
+    
+    NSString *bindingNickname;
+    NSString *bindingTel;
+    NSString *bindingMail;
 }
 
 @property (nonatomic) BindingStatus nicknameBindingStatus;
 @property (nonatomic) BindingStatus telBindingStatus;
 @property (nonatomic) BindingStatus mailBindingStatus;
+
+@property (nonatomic, strong) NSString *bindingNickname;
+@property (nonatomic, strong) NSString *bindingTel;
+@property (nonatomic, strong) NSString *bindingMail;
+
 
 - (NSString *)nickNameStatusString;
 - (NSString *)telStatusString;
@@ -46,10 +55,17 @@ typedef enum {
 - (BindingStatusObject *)getBindingStatusObject;
 - (void)saveBindingStatusObject;
 - (void)clearBindingStatusObject;
+//status code
 - (BindingStatus)nicknameBindingStatus;
 - (BindingStatus)telBindingStatus;
 - (BindingStatus)mailBindingStatus;
+//status to string
 - (NSString *)nickNameStatusString;
 - (NSString *)telStatusString;
 - (NSString *)mailStatusString;
+//binding data
+- (NSString *)bindingNickname;
+- (NSString *)bindingTel;
+- (NSString *)bindingMail;
+
 @end
