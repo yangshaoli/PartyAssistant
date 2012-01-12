@@ -439,6 +439,7 @@
         method:"POST",
         input:{
         "uid":Integer,
+        "value":email/phone,
         "verifier":String,
                 }
         output:{
@@ -474,81 +475,6 @@
                 {
                 "status":"error_invalid_verifier",
                 "description":"该验证码已经失效，请重新获取验证码",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-20. verifyUnbindEmail:
-        url:"/a/accounts/verify/unbind/email/",
-        method:"POST",
-        input:{
-        "uid":Integer,
-        "verifier":String,
-                }
-        output:{
-                "status":"ok",
-                "description":"ok",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error",
-                "description":String to Show,
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error_other",
-                "description":"解除绑定失败",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-
-20. verifyUnbindPhone:
-        url:"/a/accounts/verify/unbind/phone/",
-        method:"POST",
-        input:{
-        "uid":Integer,
-        "verifier":String,
-                }
-        output:{
-                "status":"ok",
-                "description":"ok",
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error",
-                "description":String to Show,
-                "datasource":{
-                                "latest_status":{'email':user.userprofile.email,
-                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
-                                                'phone':user.userprofile.phone,
-                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
-                                }
-                }
-                {
-                "status":"error_other",
-                "description":"解除绑定失败",
                 "datasource":{
                                 "latest_status":{'email':user.userprofile.email,
                                                 'email_binding_status':"bind"/"unbind"/"waitingbind",

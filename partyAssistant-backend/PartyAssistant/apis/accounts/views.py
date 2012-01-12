@@ -299,7 +299,7 @@ def verifyContact(request, type):
     if request.method == 'POST':
         value = request.POST['value']
         uid = request.POST['uid']
-        userkey = request.POST['userkey']
+        userkey = request.POST['verifier']
         try:
             user = User.objects.get(pk = uid).select_related('userprofile')
         except Exception:
