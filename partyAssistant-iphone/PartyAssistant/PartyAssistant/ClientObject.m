@@ -12,6 +12,8 @@
 #import "PartyAssistantAppDelegate.h"
 #import "ABContactsHelper.h"
 
+#define PhoneNumberLength 11
+
 @implementation ClientObject
 
 @synthesize cID,cName,cVal,backendID;
@@ -192,6 +194,30 @@
 }
 
 - (BOOL)isClientPhoneNumberValid {
-    return YES;
+    NSMutableString *strippedString = [NSMutableString 
+                                       stringWithCapacity:PhoneNumberLength];
+    
+    NSScanner *scanner = [NSScanner scannerWithString:self.cVal];
+    NSCharacterSet *numbers = [NSCharacterSet 
+                               characterSetWithCharactersInString:@"0123456789"];
+    
+    while ([scanner isAtEnd] == NO) {
+        NSString *buffer;
+        if ([scanner scanCharactersFromSet:numbers intoString:&buffer]) {
+            [strippedString appendString:buffer];
+            
+        } else {
+            [scanner setScanLocation:([scanner scanLocation] + 1)];
+        }
+    }
+    
+    int stringLength = [strippedString length];
+    if (stringLength >= 11) {
+        if ([strippedString characterAtIndex:stringLength - PhoneNumberLength]== '1') {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 @end

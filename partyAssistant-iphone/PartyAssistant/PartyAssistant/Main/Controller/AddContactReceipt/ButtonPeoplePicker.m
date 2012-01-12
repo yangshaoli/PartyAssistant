@@ -368,7 +368,7 @@
 	[filteredPeople removeAllObjects];
 
 	// beginswith[cd] predicate
-	NSPredicate *beginsPredicate = [NSPredicate predicateWithFormat:@"(SELF beginswith[cd] %@)", searchText];
+	NSPredicate *beginsPredicate = [NSPredicate predicateWithFormat:@"(SELF beginswith[cd] '%@')", searchText];
 
 	/*
 	 Search the main list for people whose firstname OR lastname OR organization matches searchText; add items that match to the filtered array.

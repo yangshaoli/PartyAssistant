@@ -41,6 +41,7 @@
 		7A2CDD8C14A207C20054B723 /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8A14A207C20054B723 /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A2CDD9814A2082F0054B723 /* AddressBookDBService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */; };
 		7A2CDD9A14A208C60054B723 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A2CDD9914A208C60054B723 /* libsqlite3.dylib */; };
+		7AF4B44C14BD80D300F1E787 /* UserInfoValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AF4B44B14BD80D300F1E787 /* UserInfoValidator.m */; };
 		8902E9C5146E3EFB0076EC36 /* ReceiverTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */; };
 		8913F19C148CE3B300762E5D /* NicknameManageTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8913F19A148CE3B300762E5D /* NicknameManageTableViewController.m */; };
 		8913F19D148CE3B300762E5D /* NicknameManageTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8913F19B148CE3B300762E5D /* NicknameManageTableViewController.xib */; };
@@ -243,8 +244,6 @@
 		CEB2889A148E17A300B7E3B7 /* ABContactsHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28892148E17A300B7E3B7 /* ABContactsHelper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889B148E17A300B7E3B7 /* ABGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28894148E17A300B7E3B7 /* ABGroup.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CEB2889D148E17A300B7E3B7 /* ContactData.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB28898148E17A300B7E3B7 /* ContactData.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750614ADCDA000348263 /* reinvite_word@2x.png */; };
-		CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CEC0750714ADCDA000348263 /* reinvite@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -319,6 +318,8 @@
 		7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDBService.h; sourceTree = "<group>"; };
 		7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDBService.m; sourceTree = "<group>"; };
 		7A2CDD9914A208C60054B723 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		7AF4B44A14BD80D300F1E787 /* UserInfoValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UserInfoValidator.h; path = Services/UserInfoValidator.h; sourceTree = "<group>"; };
+		7AF4B44B14BD80D300F1E787 /* UserInfoValidator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UserInfoValidator.m; path = Services/UserInfoValidator.m; sourceTree = "<group>"; };
 		8902E9C3146E3EFB0076EC36 /* ReceiverTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReceiverTableViewCell.h; sourceTree = "<group>"; };
 		8902E9C4146E3EFB0076EC36 /* ReceiverTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReceiverTableViewCell.m; sourceTree = "<group>"; };
 		8913F199148CE3B300762E5D /* NicknameManageTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NicknameManageTableViewController.h; sourceTree = "<group>"; };
@@ -1340,6 +1341,8 @@
 				89C709C014908E0D00699AE0 /* DeviceTokenService.m */,
 				7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */,
 				7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */,
+				7AF4B44A14BD80D300F1E787 /* UserInfoValidator.h */,
+				7AF4B44B14BD80D300F1E787 /* UserInfoValidator.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -1570,8 +1573,6 @@
 				CEA4179514A872F300497186 /* new2.png in Resources */,
 				CEA4179614A872F300497186 /* reinvite_word.png in Resources */,
 				CEA4179714A872F300497186 /* reinvite.png in Resources */,
-				CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */,
-				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
 				7528DAD214AB0D6900236609 /* CreatNewPartyViaSMSViewController.xib in Resources */,
 				7528DADC14AB16EF00236609 /* SendSMSModeChooseViewController.xib in Resources */,
 				7528DAFB14AB22A300236609 /* ButtonPeoplePicker.xib in Resources */,
@@ -1582,8 +1583,6 @@
 				8920895314AEF1FB00F31001 /* edit_word.png in Resources */,
 				8920895614AEF21500F31001 /* refresh_word.png in Resources */,
 				8920895814AEF22100F31001 /* share_word.png in Resources */,
-				CEC0750814ADCDA000348263 /* reinvite_word@2x.png in Resources */,
-				CEC0750914ADCDA000348263 /* reinvite@2x.png in Resources */,
 				CE5B254E14B5D05500FBBDDA /* del_word@2x.png in Resources */,
 				CE5B254F14B5D05500FBBDDA /* edit_word@2x.png in Resources */,
 				CE5B255014B5D05500FBBDDA /* refresh_word@2x.png in Resources */,
@@ -1759,6 +1758,7 @@
 				75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */,
 				75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */,
 				75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */,
+				7AF4B44C14BD80D300F1E787 /* UserInfoValidator.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
