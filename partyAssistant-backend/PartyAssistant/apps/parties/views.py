@@ -189,6 +189,11 @@ def email_invite(request, party_id):
             clients = PartiesClients.objects.filter(party = party_id).exclude(client__invite_type = 'public')
         else:
             clients = PartiesClients.objects.filter(party = party_id).filter(apply_status = apply_status).exclude(client__invite_type = 'public')
+
+        #生成默认内容
+        userprofile = request.user.get_profile()
+        creator = userprofile.true_name if userprofile.true_name else request.user.username  
+        content = _create_default_content(creator, party.start_date, party.start_time , party.address, party.description)
        
         if clients:
             client_email_list = []
@@ -200,15 +205,11 @@ def email_invite(request, party_id):
             
             data = {
                 'client_email_list': client_email_list,
-                'content': email_message.content,
+                'content': content,
                 'is_apply_tips' : email_message.is_apply_tips
             }
             form = EmailInviteForm(initial = data)
         else:
-            #生成默认内容
-            userprofile = request.user.get_profile()
-            creator = userprofile.true_name if userprofile.true_name else request.user.username  
-            content = _create_default_content(creator, party.start_date, party.start_time , party.address, party.description)
             data = {
                 'client_email_list': '',
                 'content': content,
@@ -350,6 +351,11 @@ def sms_invite(request, party_id):
             clients = PartiesClients.objects.filter(party = party_id).exclude(client__invite_type = 'public')
         else:
             clients = PartiesClients.objects.filter(party = party_id).filter(apply_status = apply_status).exclude(client__invite_type = 'public')
+
+        #生成默认内容
+        userprofile = request.user.get_profile()
+        creator = userprofile.true_name if userprofile.true_name else request.user.username  
+        content = _create_default_content(creator, party.start_date, party.start_time , party.address, party.description)
         
         if clients:
             client_phone_list = []
@@ -358,18 +364,14 @@ def sms_invite(request, party_id):
             client_phone_list = ','.join(client_phone_list)
 
             sms_message = SMSMessage.objects.get(party = party)
-            
+
             data = {
                 'client_phone_list': client_phone_list,
-                'content': sms_message.content,
+                'content': content,
                 'is_apply_tips' : sms_message.is_apply_tips
             }
             form = SMSInviteForm(initial = data)
         else:
-            #生成默认内容
-            userprofile = request.user.get_profile()
-            creator = userprofile.true_name if userprofile.true_name else request.user.username  
-            content = _create_default_content(creator, party.start_date, party.start_time , party.address, party.description)
             data = {
                'client_phone_list': '',
                'content': content,
