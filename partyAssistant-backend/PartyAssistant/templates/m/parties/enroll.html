@@ -89,8 +89,11 @@ function ajaxGetClients(applystatus){
 		<h2>{{party.description}}</h2>
         <form method="POST" action="/m{% url enroll party.id %}?key={{key}}" id='id_form'>
         {% if client %}
-            <!-- 被邀请用户报名页面 --><label for="basic">姓名:</label>
+            <!-- 被邀请用户报名页面 -->
+            {% if not client.name %} 
+            <label for="basic">姓名:</label>
             <input type="text" name="name" id="id_name" value=""  />
+            {% endif %}
             <div data-role="fieldcontain">
             <label for="textarea" style="display:block;">我要留言:</label>
             	<textarea name="leave_message" id="id_leave_message"></textarea>
@@ -133,7 +136,8 @@ function ajaxGetClients(applystatus){
     	<li data-theme="a">待定的 <span class="ui-li-count" id='s_noanswer'>{{client_count.noanswer}}</span></li>
     </ul>
 
-    <div data-role="footer" class="ui-bar"> 
+    <div data-role="footer" class="ui-bar" style="text-align:center;">
+        <h2>我也想下载‘爱热闹’</h2>
     	<a href="http://airenao.com/download/" data-role="button" data-icon="arrow-d">下载Android版</a>
         <a href="#" data-role="button" data-icon="arrow-d">下载iPhone版</a>
     </div> 

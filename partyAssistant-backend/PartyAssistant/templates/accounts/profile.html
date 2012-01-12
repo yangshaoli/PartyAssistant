@@ -18,18 +18,7 @@
     
 function bindingPhone(){
     var v = $("#id_phone").val();
-    if (!v) {
-        alert('请输入手机号码');
-        return false;
-    }
-    if (v.length!=11){
-    	alert('手机长度不合法');
-    	return false;
-    }
-    if(!v.match(/^1\d{10}/)){
-        alert('格式不合法');
-        return false;
-    }
+    if (!checkInput(v, 'phone')) return false ;
     var answer = confirm("要给" + v + "发送验证码吗？")
     if (answer) {
         $.ajax({
@@ -119,12 +108,33 @@ function validate_phone_bingding(isbind){
 }    
     
     
-    function bindingEmail(){
-        var v = $('#id_email').val();
+    function checkInput(v, type){
         if (!v) {
-            alert('请输入邮件地址');
+            (type == 'email') ? alert('请输入邮件地址') : alert('请输入电话号码')
             return false;
         }
+        if (type == 'email') {
+            if (!v.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) != -1){
+                alert('请输入一个有效的 e-mail 地址');
+                return false;
+            }
+        }
+        if (type == 'phone') {
+            if (v.length!=11){
+            	alert('手机号码不规范');
+            	return false;
+            }
+            if(!v.match(/^1\d{10}/)){
+                alert('手机号码不规范');
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function bindingEmail(){
+        var v = $('#id_email').val();
+        if (!checkInput(v, 'email'))  return false ;
         var answer = confirm("要给" + v + "发送确认邮件吗？")
         if (answer) {
             $.ajax({
