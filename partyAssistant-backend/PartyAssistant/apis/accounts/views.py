@@ -124,7 +124,7 @@ def getBadgeNum(request):
 def profilePage(request):
     if request.method == 'POST':
         uid = request.POST['uid']
-        user = User.objects.get(pk = id).select_related('userprofile')
+        user = User.objects.get(pk = id)
         return {
                 'nickname':user.userprofile.true_name,
                 'remaining_sms_count':user.userprofile.available_sms_count,
@@ -140,7 +140,7 @@ def profilePage(request):
 def saveNickName(request):
     if request.method == 'POST':
         uid = request.POST['uid']
-        user = User.objects.get(pk = uid).select_related('userprofile')
+        user = User.objects.get(pk = uid)
         nickname = request.POST['nickname']
         if len(nickname) > 16:
             raise myException(ERROR_PROFILEPAGE_LONG_NAME)
@@ -215,7 +215,7 @@ def bindContact(request, type):
         value = request.POST['value']
         uid = request.POST['uid']
         try:
-            user = User.objects.get(pk = uid).select_related('userprofile')
+            user = User.objects.get(pk = uid)
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         if type == 'email':
@@ -272,7 +272,7 @@ def unbindContact(request, type):
         value = request.POST['value']
         uid = request.POST['uid']
         try:
-            user = User.objects.get(pk = uid).select_related('userprofile')
+            user = User.objects.get(pk = uid)
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         if type == 'email':
@@ -317,7 +317,7 @@ def verifyContact(request, type):
         uid = request.POST['uid']
         userkey = request.POST['verifier']
         try:
-            user = User.objects.get(pk = uid).select_related('userprofile')
+            user = User.objects.get(pk = uid)
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         data = {"latest_status":{
