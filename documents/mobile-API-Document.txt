@@ -266,27 +266,48 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
+                "status":"error_has_binded_by_other",
+                "description":"该手机号已被其他用户绑定，请重新输入手机号",
+                "datasource":{
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
+                                }
+                }
                 "status":"error_has_binded",
                 "description":"",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 "status":"error_different_binded",
                 "description":"您的账号已绑定了另一个手机号，请您解绑后再次绑定",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
 
@@ -301,27 +322,39 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_has_binded",
                 "description":"",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 "status":"error_different_binded",
                 "description":"您的账号已绑定了另一个邮箱，请您解绑后再次绑定",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
 
@@ -336,21 +369,30 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_different_unbinded",
                 "description":"解除绑定失败，请重新解除绑定",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 
@@ -365,21 +407,30 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_different_unbinded",
                 "description":"解除绑定失败，请重新解除绑定",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 
@@ -394,28 +445,40 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_has_binded_by_other",
                 "description":"该邮箱已被其他用户绑定，请重新输入邮箱",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_invalid_verifier",
                 "description":"该验证码已经失效，请重新获取验证码",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
 21. verifyPhone:
@@ -429,28 +492,40 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_has_binded_by_other",
                 "description":"该手机号已被其他用户绑定，请重新输入手机号",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_invalid_verifier",
                 "description":"该验证码已经失效，请重新获取验证码",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
 20. verifyUnbindEmail:
@@ -464,21 +539,30 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_other",
                 "description":"解除绑定失败",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
 
@@ -493,20 +577,29 @@
                 "status":"ok",
                 "description":"ok",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error",
                 "description":String to Show,
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
                 {
                 "status":"error_other",
                 "description":"解除绑定失败",
                 "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                "latest_status":{'email':user.userprofile.email,
+                                                'email_binding_status':"bind"/"unbind"/"waitingbind",
+                                                'phone':user.userprofile.phone,
+                                                'phone_binding_status':"bind"/"unbind"/"waitingbind",},
                                 }
                 }
