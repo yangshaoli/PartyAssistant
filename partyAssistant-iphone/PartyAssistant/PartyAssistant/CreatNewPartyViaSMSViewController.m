@@ -447,7 +447,7 @@
                 if([MFMessageComposeViewController canSendText]==YES){
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.smsObject._isApplyTips) {
-                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"( 报名链接: %@ )",applyURL]];
                     }else{
                         vc.body = self.smsObject.smsContent;
                     };
