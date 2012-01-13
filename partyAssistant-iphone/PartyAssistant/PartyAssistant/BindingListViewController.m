@@ -74,7 +74,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"绑定";
+    self.navigationItem.title = @"用户绑定";
     [self refreshCurrentStatus];
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
@@ -121,6 +121,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.row == 0) {
         NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
         [self.navigationController pushViewController:nameBindingVC animated:YES]; 
@@ -157,10 +158,26 @@
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
-            verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
-            vc = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-            [(TelValidateViewController *)vc setPageStatus:verifyPageStatus];
-            [self.navigationController presentModalViewController:vc animated:YES];
+            {
+                vc = [[TelBindingViewController alloc] initWithNibName:nil bundle:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+                
+                vc = nil;
+                
+                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+                vc = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
+                [(TelValidateViewController *)vc setPageStatus:verifyPageStatus];
+                vc.navigationItem.hidesBackButton = YES;
+                vc.hidesBottomBarWhenPushed = YES;
+                
+                CATransition *transition = [CATransition animation];
+                transition.duration = 0.5;
+                transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                transition.type = kCATransitionMoveIn;
+                transition.subtype = kCATransitionFromTop;
+                [self.navigationController.view.layer addAnimation:transition forKey:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+            }
             break;
         default:
             return;
@@ -170,7 +187,7 @@
 
 - (void)decideToOpenWhichMailBindingPage {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
-    BindingStatus mailBindingStatus = [storedStatusService telBindingStatus];
+    BindingStatus mailBindingStatus = [storedStatusService mailBindingStatus];
     //1.goTo binding page
     //2.goTo UnBinding Page
     //3.goTo VerifyPage
@@ -186,10 +203,24 @@
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
-            verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
-            vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-            [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
-            [self.navigationController presentModalViewController:vc animated:YES];
+            {
+                vc = [[MailBindingViewController alloc] initWithNibName:nil bundle:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+                
+                vc = nil;
+                
+                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+                vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
+                [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
+                
+                CATransition *transition = [CATransition animation];
+                transition.duration = 0.5;
+                transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                transition.type = kCATransitionMoveIn;
+                transition.subtype = kCATransitionFromTop;
+                [self.navigationController.view.layer addAnimation:transition forKey:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+            }
             break;
         default:
             return;

@@ -42,7 +42,11 @@
         [userObject setNicknameBindingStatus:StatusBinded];
     }
     
-    [userObject setTelBindingStatus:[self translateToLocalStatusFromString:telStatus]];
+    BindingStatus telCurrentStatus = [self translateToLocalStatusFromString:telStatus];
+    if (telCurrentStatus != StatusBinding) {
+        [userObject setBindingTel:@""];
+    }
+    [userObject setTelBindingStatus:telCurrentStatus];
     [userObject setMailBindingStatus:[self translateToLocalStatusFromString:emailStatus]];
     
     [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] saveBindingStatusObject];

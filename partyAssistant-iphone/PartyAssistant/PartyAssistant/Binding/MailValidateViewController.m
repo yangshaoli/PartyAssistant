@@ -122,10 +122,10 @@
         return;
     }
     
-    NSURL *url = [NSURL URLWithString:EMAIL_BIND];
+    NSURL *url = [NSURL URLWithString:EMAIL_VERIFY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:mailText forKey:@"value"];
     [request setPostValue:@"email" forKey:@"email"];
     
@@ -200,7 +200,7 @@
     NSURL *url = [NSURL URLWithString:EMAIL_BIND];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:mailText forKey:@"value"];
     [request setPostValue:@"email" forKey:@"email"];
     

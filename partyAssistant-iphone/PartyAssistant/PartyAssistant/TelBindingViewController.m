@@ -90,6 +90,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
         // go to verify view
         [self beginPhoneUpdate];
@@ -97,8 +98,15 @@
 }
 
 - (void)jumpToVerify {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-    [self.navigationController presentModalViewController:verifyPage animated:YES];
+    [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
 - (void)beginPhoneUpdate {
@@ -124,7 +132,7 @@
     NSURL *url = [NSURL URLWithString:PHONE_BIND];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:telText forKey:@"value"];
     
     request.timeOutSeconds = 15;

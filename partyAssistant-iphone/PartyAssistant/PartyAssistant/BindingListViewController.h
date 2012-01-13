@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "UserInfoBindingStatusService.h"
 
 @interface BindingListViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {

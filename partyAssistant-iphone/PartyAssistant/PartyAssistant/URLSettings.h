@@ -43,8 +43,8 @@
 //2.phone
 #define PHONE_BIND [NSString stringWithFormat:@"%@/a/accounts/bind/phone/",DOMAIN_NAME]
 #define PHONE_UNBIND [NSString stringWithFormat:@"%@/a/accounts/unbind/phone/",DOMAIN_NAME]
-#define PHONE_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/bind/phone/",DOMAIN_NAME]
+#define PHONE_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/phone/",DOMAIN_NAME]
 //3.email
 #define EMAIL_BIND [NSString stringWithFormat:@"%@/a/accounts/bind/email/",DOMAIN_NAME]
 #define EMAIL_UNBIND [NSString stringWithFormat:@"%@/a/accounts/unbind/email/",DOMAIN_NAME]
-#define EMAIL_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/bind/phone/",DOMAIN_NAME]
+#define EMAIL_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/phone/",DOMAIN_NAME]

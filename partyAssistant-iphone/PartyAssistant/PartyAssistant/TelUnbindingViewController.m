@@ -96,6 +96,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
         // go to verify view
         [self beginPhoneUpdate];
@@ -128,10 +129,10 @@
         return;
     }
     
-    NSURL *url = [NSURL URLWithString:PHONE_BIND];
+    NSURL *url = [NSURL URLWithString:PHONE_UNBIND];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:telText forKey:@"value"];
     
     request.timeOutSeconds = 15;

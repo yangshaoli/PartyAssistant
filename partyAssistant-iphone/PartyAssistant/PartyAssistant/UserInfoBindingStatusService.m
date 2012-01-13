@@ -101,14 +101,23 @@
 }
 
 - (NSString *)nickNameStatusString {
+    if (self.nicknameBindingStatus == StatusBinded) {
+        return self.bindedNickname;
+    }
     return [self translateStatusCodeToString:self.nicknameBindingStatus];
 }
 
 - (NSString *)telStatusString {
+    if (self.telBindingStatus == StatusBinded) {
+        return self.bindedTel;
+    }
     return [self translateStatusCodeToString:self.telBindingStatus];
 }
 
 - (NSString *)mailStatusString {
+    if (self.mailBindingStatus == StatusBinded) {
+        return self.bindedMail;
+    }
     return [self translateStatusCodeToString:self.mailBindingStatus];
 }
 @end

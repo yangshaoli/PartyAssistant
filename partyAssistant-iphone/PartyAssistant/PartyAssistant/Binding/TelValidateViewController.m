@@ -19,6 +19,8 @@
 //bind extern
 #import "UIVIewControllerExtern+Binding.h"
 
+#import "BindingListViewController.h"
+
 @interface TelValidateViewController ()
 
 - (void)resendPhoneVerifyCode;
@@ -56,6 +58,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    self.navigationItem.leftBarButtonItem = closeBtn;
+    
+    UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+    self.navigationItem.rightBarButtonItem = resendBtn;
+
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -131,7 +139,7 @@
     NSURL *url = [NSURL URLWithString:PHONE_VERIFY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:telText forKey:@"value"];
     [request setPostValue:@"email" forKey:@"email"];
     
@@ -200,7 +208,7 @@
     NSURL *url = [NSURL URLWithString:PHONE_VERIFY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:telText forKey:@"value"];
     [request setPostValue:@"phone" forKey:@"phone"];
     
@@ -246,5 +254,34 @@
     [self dismissWaiting];
 	NSError *error = [request error];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)closePage {
+    NSArray *controllers = self.navigationController.viewControllers;
+    BindingListViewController *bindingList = nil;
+    for (UIViewController *controller in controllers) {
+        if ([controller isMemberOfClass:[BindingListViewController class]]) {
+            bindingList = (BindingListViewController *)controller;
+        }
+    }
+    if (bindingList) {
+        CATransition *transition = [CATransition animation];
+        transition.duration = 0.5;
+        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        transition.type = kCATransitionReveal;
+        transition.subtype = kCATransitionFromBottom;
+        [self.navigationController.view.layer addAnimation:transition forKey:nil];
+        [self.navigationController popToViewController:bindingList animated:NO];
+    }
+}
+
+- (void)resendPage {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionReveal;
+    transition.subtype = kCATransitionFromBottom;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    [self.navigationController popViewControllerAnimated:NO];
 }
 @end
