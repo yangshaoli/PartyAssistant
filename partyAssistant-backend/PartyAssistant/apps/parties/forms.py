@@ -25,7 +25,7 @@ class PartyForm(forms.ModelForm):
 class InviteForm(forms.Form):
     addressee = forms.CharField(widget = forms.TextInput(), required = True)
     content = forms.CharField(widget = forms.TextInput(), required = True)   
-            
+
 class PublicEnrollForm(forms.Form):
     name = forms.CharField(error_messages = {'required':u'姓名必填', 'max_length':u'姓名限制在14个字符以内'}, required = True, max_length = 14)  
     phone_or_email = forms.CharField(error_messages = {'required':u'联系方式必填'}, required = True)
@@ -65,6 +65,35 @@ class PublicEnrollForm(forms.Form):
                     raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
             
             return self.cleaned_data['phone_or_email']
+
+class PublicEmailEnrollForm(PublicEnrollForm):
+    def clean_phone_or_email(self):
+        phone_or_email = self.cleaned_data['phone_or_email']
+        invalid_email = ''
+        try:
+            validate_email(phone_or_email)
+        except:
+            invalid_email = phone_or_email
+
+        if invalid_email:
+            raise forms.ValidationError(u'邮件地址 %s 格式错误' % invalid_email)
+        
+        return self.cleaned_data['phone_or_email']
+
+class PublicPhoneEnrollForm(PublicEnrollForm):
+    def clean_phone_or_email(self):
+        phone_or_email = self.cleaned_data['phone_or_email']
+        phone_re = r'1\d{10}'
+        invalid_phone = ''
+        phone = phone_or_email.strip()
+        if phone != '':
+            if not re.search(phone_re, phone) or len(phone_or_email) != 11:
+                invalid_phone = phone
+
+        if invalid_phone:
+            raise forms.ValidationError(u'手机号码 %s 格式错误' % invalid_phone)
+        
+        return self.cleaned_data['phone_or_email']
 
 class EnrollForm(forms.Form):
     leave_message = forms.CharField(error_messages = {'max_length':u'留言长度不能超过100字符'}, max_length = 100, required = False)
