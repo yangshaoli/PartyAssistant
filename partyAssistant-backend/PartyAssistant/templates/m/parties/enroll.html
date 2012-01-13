@@ -111,7 +111,7 @@ function ajaxGetClients(applystatus){
 
             <label for="basic">姓名:</label>
             <input type="text" name="name" id="id_name" value=""  />
-            <font color='red'>{{ form.name.errors.0 }}</font>
+            <font color='red'>{{ form.name.errors.0 }}</font><br />
             <label for="client_email_list">联系方式</label>
             {{ form.phone_or_email }}<font color='red'>{{ form.phone_or_email.errors.0 }}</font>
             <p style="color:#999;">请填写手机号码，以免收不到活动具体通知</p>
