@@ -459,36 +459,24 @@ def _public_enroll(request, party_id):
     creator = party.creator
     
     if request.method == 'POST':
-        #将用户加入clients,状态为'已报名'
         if party.invite_type == 'phone':
-            form = PublicPhoneEnrollForm(request.POST)
-            
+            form = PublicPhoneEnrollForm(request.POST)            
         elif party.invite_type == 'email':
-            form = PublicEmailEnrollForm(request.POST)  
+            form = PublicEmailEnrollForm(request.POST)              
         else :
+            
             return TemplateResponse(request, 'message.html', {'message': 'nopublicenroll'})
               
         if form.is_valid():
-            name = request.POST['name']
-            email = ''
-            phone = ''
-            if form.cleaned_data['phone_or_email'].find('@') > 0:
-                email = form.cleaned_data['phone_or_email']
-            else:
+            name = form.cleaned_data['name']
+            
+            if party.invite_type == 'phone':
                 phone = form.cleaned_data['phone_or_email']
-             
-            BOOL_EMAIL_NONE = Client.objects.filter(creator = creator).filter(email = email).exclude(email = '').count() == 0 #Email 方式，查无此人    
-            BOOL_PHONE_NONE = Client.objects.filter(creator = creator).filter(phone = phone).exclude(phone = '').count() == 0 #Phone 方式，查无此人        
-            client = None
-            create = False
-            if  BOOL_EMAIL_NONE and BOOL_PHONE_NONE :  #未受邀状态
-                client, create = Client.objects.get_or_create(name = name, creator = creator, email = email, phone = phone)
-            elif BOOL_EMAIL_NONE and (not BOOL_PHONE_NONE) : #存在 phone 记录 ，但无 Email 记录
-                client = get_object_or_404(Client, phone = phone, creator = creator)  
-            elif (not BOOL_EMAIL_NONE) and BOOL_PHONE_NONE : #存在 email 记录 ，但无 phone 记录
-                client = get_object_or_404(Client, email = email, creator = creator)
-            else:
-                logger.exception('public enroll exception!')
+                client, create = Client.objects.get_or_create(creator = creator, phone = phone)
+                
+            else :
+                email = form.cleaned_data['phone_or_email']
+                client, create = Client.objects.get_or_create(creator = creator, email = email)
             #有人数限制
             if party.limit_count != 0 :
                 if PartiesClients.objects.filter(party = party, apply_status = 'apply').count() >= party.limit_count:
