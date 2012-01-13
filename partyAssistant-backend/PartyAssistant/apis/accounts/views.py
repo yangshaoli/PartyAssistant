@@ -45,8 +45,11 @@ def accountLogin(request):
             user_temp_pwd_list = AccountTempPassword.objects.filter(temp_password = password, user__username = username)
             if user_temp_pwd_list:
                 user = user_temp_pwd_list[0].user
+                _israndomlogin = "1"
             for user_temp_pwd in user_temp_pwd_list:
                 user_temp_pwd.delete()
+        else:
+            _israndomlogin = "0"
         if user:
             device_token = request.POST['device_token']
             if device_token:
@@ -58,6 +61,7 @@ def accountLogin(request):
             return {
                     'uid':user.id,
                     'name':user.userprofile.true_name,
+                     "_israndomlogin":_israndomlogin,
                     }
         else:
             print 'error'
@@ -369,3 +373,36 @@ def verifyContact(request, type):
                 }
         return data
     
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def changePassword(request):
+    if request.method == 'POST':
+        uid = request.POST['uID']
+        originalpassword = request.POST['originalpassword']
+        newpassword = request.POST['newpassword']
+        user = User.objects.get(pk = uid)
+        if newpassword == '':
+            raise myException(ERROR_ACCOUNTREGIST_PWD_BLANK)
+        if len(newpassword) > 16 or len(newpassword) < 6:
+            raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
+        if user.check_password(originalpassword):
+            user.set_password(newpassword)
+            user.save()
+        else:
+            raise myException(ERROR_CHANGE_PWD_WRONG_PWD)
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def changePasswordByFinePWD(request):
+    if request.method == 'POST':
+        uid = request.POST['uID']
+        newpassword = request.POST['newpassword']
+        user = User.objects.get(pk = uid)
+        if newpassword == '':
+            raise myException(ERROR_ACCOUNTREGIST_PWD_BLANK)
+        if len(newpassword) > 16 or len(newpassword) < 6:
+            raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
+        user.set_password(newpassword)
+        user.save()
