@@ -10,9 +10,9 @@
 #import "ASIFormDataRequest.h"
 @interface ForgetPassword : UITableViewController{
     UITextField *inputTextField;
-    ASIHTTPRequest *quest;
+    //ASIHTTPRequest *quest;
 
 }
 @property(nonatomic,retain)UITextField *inputTextField;
-@property(nonatomic, retain)ASIHTTPRequest *quest;
+//@property(nonatomic, retain)ASIHTTPRequest *quest;
 @end

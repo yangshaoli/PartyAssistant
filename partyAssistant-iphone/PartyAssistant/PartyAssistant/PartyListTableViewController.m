@@ -7,7 +7,7 @@
 //
 
 #import "PartyListTableViewController.h"
-
+#import "UIViewControllerExtra.h"
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 #define NAVIGATION_CONTROLLER_TITLE @"趴列表"
 
@@ -256,7 +256,7 @@
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     
@@ -275,6 +275,7 @@
 - (void)refreshBtnAction{
     int aLastID = 0;
     [self requestDataWithLastID:aLastID];
+    
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -282,12 +283,14 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
 //	[self dismissWaiting];
     if([request responseStatusCode] == 200){
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
             if (lastID < 0) {
@@ -414,7 +417,7 @@
             [request setPostValue:[NSNumber numberWithInteger:_currentDeletePartyID] forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
 
-            request.timeOutSeconds = 30;
+            request.timeOutSeconds = 20;
             [request setDelegate:self];
             [request setDidFinishSelector:@selector(deleteRequestFinished:)];
             [request setDidFailSelector:@selector(deleteRequestFailed:)];

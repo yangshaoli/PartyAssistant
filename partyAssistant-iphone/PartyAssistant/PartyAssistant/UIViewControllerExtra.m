@@ -33,12 +33,32 @@
 }
 
 - (void)getVersionFromRequestDic:(NSDictionary *)result{
-	NSString *version = [result objectForKey:@"version"];//什么类型
-	
-
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+    NSString *newVersionString = [result objectForKey:@"iphone_version"];
+    if(preVersionString==nil||[preVersionString isEqualToString:@""]){
+        [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+        //NSLog(@"前版本为空");
+        return;
+    }else{
+        if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
+            return;
+        }else{
+            //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
+            if([newVersionString floatValue]>[preVersionString floatValue]){
+                [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
+            }else{
+                [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
+            }
+        }
+    
+    }
+    
+    
+   
 }
-
-
 #pragma mark --
 #pragma mark waitingView Method
 

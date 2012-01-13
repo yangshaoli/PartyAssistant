@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
  
-from apps.accounts.models import UserIPhoneToken, AccountTempPassword
+from apps.accounts.models import UserIPhoneToken, AccountTempPassword, UserProfile, UserBindingTemp
 from apps.parties.models import PartiesClients, Party
 
 from utils.structs.my_exception import myException
@@ -45,8 +45,11 @@ def accountLogin(request):
             user_temp_pwd_list = AccountTempPassword.objects.filter(temp_password = password, user__username = username)
             if user_temp_pwd_list:
                 user = user_temp_pwd_list[0].user
+                _israndomlogin = "1"
             for user_temp_pwd in user_temp_pwd_list:
                 user_temp_pwd.delete()
+        else:
+            _israndomlogin = "0"
         if user:
             device_token = request.POST['device_token']
             if device_token:
@@ -58,6 +61,7 @@ def accountLogin(request):
             return {
                     'uid':user.id,
                     'name':user.userprofile.true_name,
+                     "_israndomlogin":_israndomlogin,
                     }
         else:
             print 'error'
@@ -124,7 +128,7 @@ def getBadgeNum(request):
 def profilePage(request):
     if request.method == 'POST':
         uid = request.POST['uid']
-        user = User.objects.get(pk = id)
+        user = User.objects.get(pk = uid)
         return {
                 'nickname':user.userprofile.true_name,
                 'remaining_sms_count':user.userprofile.available_sms_count,
@@ -244,12 +248,12 @@ def bindContact(request, type):
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER , data = data)
 
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = request.user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
         if not created:
             binding_temp.binding_addres = value
             binding_temp.key = userkey
             binding_temp.save()
-        profile = request.user.get_profile()
+        profile = user.get_profile()
         profile.phone = value
         profile.phone_binding_status = 'waitingbind'
         profile.save()
@@ -294,7 +298,7 @@ def unbindContact(request, type):
         if (type == 'email' and user.userprofile.email != value)or(type == 'phone' and user.userprofile.phone != value):
             raise myException(ERROR_UNBINDING, status = ERROR_STATUS_DIFFERENT_UNBINDED, data = data)
         # 发送验证码
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = request.user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
         if not created:
             binding_temp.binding_addres = value
             binding_temp.key = userkey
@@ -341,7 +345,7 @@ def verifyContact(request, type):
             raise myException(ERROR_VERIFYING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_HAS_BINDED_BY_OTHER, data = data)
         
         #开始解绑
-        binding_temp = UserBindingTemp.objects.filter(user = request.user, binding_type = type, binding_address = value, key = userkey)
+        binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
         if not binding_temp:
             raise myException(ERROR_VERIFYING_WRONG_VERIFIER)
         if type == 'email':
@@ -369,3 +373,36 @@ def verifyContact(request, type):
                 }
         return data
     
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def changePassword(request):
+    if request.method == 'POST':
+        uid = request.POST['uID']
+        originalpassword = request.POST['originalpassword']
+        newpassword = request.POST['newpassword']
+        user = User.objects.get(pk = uid)
+        if newpassword == '':
+            raise myException(ERROR_ACCOUNTREGIST_PWD_BLANK)
+        if len(newpassword) > 16 or len(newpassword) < 6:
+            raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
+        if user.check_password(originalpassword):
+            user.set_password(newpassword)
+            user.save()
+        else:
+            raise myException(ERROR_CHANGE_PWD_WRONG_PWD)
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def changePasswordByFinePWD(request):
+    if request.method == 'POST':
+        uid = request.POST['uID']
+        newpassword = request.POST['newpassword']
+        user = User.objects.get(pk = uid)
+        if newpassword == '':
+            raise myException(ERROR_ACCOUNTREGIST_PWD_BLANK)
+        if len(newpassword) > 16 or len(newpassword) < 6:
+            raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
+        user.set_password(newpassword)
+        user.save()

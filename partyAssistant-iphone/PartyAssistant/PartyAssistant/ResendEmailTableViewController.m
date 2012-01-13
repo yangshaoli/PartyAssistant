@@ -5,7 +5,7 @@
 //  Created by 超 李 on 11-11-17.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
+#import "UIViewControllerExtra.h"
 #import "ResendEmailTableViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
@@ -313,7 +313,7 @@
     //        [request addFile:imageFile withFileName:nil andContentType:@"image/jpeg" forKey:@"images"];
     //    }
     //    [request setDelegate:self];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -325,10 +325,12 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
                 /* */

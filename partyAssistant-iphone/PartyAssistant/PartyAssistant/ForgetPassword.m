@@ -11,8 +11,9 @@
 #import "URLSettings.h"
 #import "JSON.h"
 #import "HTTPRequestErrorMSG.h"
+#import "UIViewControllerExtra.h"
 @implementation ForgetPassword
-@synthesize inputTextField,quest;
+@synthesize inputTextField;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -194,17 +195,17 @@ UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
         [self showWaiting];
         NSURL *url = [NSURL URLWithString:FORGET_PASSWORD];
         
-        if (self.quest) {
-            [self.quest clearDelegatesAndCancel];
-        }
-        
+//        if (self.quest) {
+//            [self.quest clearDelegatesAndCancel];
+//        }
+//        
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:self.inputTextField.text forKey:@"value"];
-        request.timeOutSeconds = 30;
+        request.timeOutSeconds = 20;
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
-        self.quest=request;
+        //self.quest=request;
         
         NSLog(@"%@",self.inputTextField.text);
        
@@ -216,10 +217,12 @@ UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             [self.navigationController popViewControllerAnimated:YES];
 //            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
 //            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
@@ -228,6 +231,7 @@ UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
             [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
+        NSLog(@"zai 1");
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
