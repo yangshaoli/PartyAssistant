@@ -244,7 +244,7 @@ def bindContact(request, type):
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER , data = data)
 
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = request.user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
         if not created:
             binding_temp.binding_addres = value
             binding_temp.key = userkey
