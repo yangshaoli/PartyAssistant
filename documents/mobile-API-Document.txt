@@ -112,6 +112,7 @@
                 "device_token":String(not null)
 		}
 	output:{
+                "_israndomlogin":"0" or "1",
 		"status":"ok",
 		"description":"ok",
 		"datasource":{
@@ -241,6 +242,37 @@
 		"description":"ok",
 		"datasource":{}
 		}
+
+14. changePassword:
+	url:"/a/accounts/change_password/",
+	method:"POST",
+	input:{
+		"uID":Int,
+                "originalpassword":String(not null), 
+                "newpassword":String(not null)  
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+
+14. changePasswordrandomlogin:
+	url:"/a/accounts/change_password_random_login/",
+	method:"POST",
+	input:{
+		"uID":Int,
+                "newpassword":String(not null)  
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+
+
 		
 15. AccountLogout:
         url:"/a/accounts/logout/",

@@ -84,7 +84,7 @@ return self;                                        \
 return UINT_MAX;                                    \
 }                                                   \
 \
-- (void)release                                     \
+- (oneway void)release                                     \
 {                                                   \
 }                                                   \
 \

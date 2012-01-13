@@ -106,7 +106,8 @@ def createParty(request):
                         else:
                             client = Client.objects.create(phone = receiver['cValue'],
                                                            name = receiver['cName'],
-                                                           creator = user
+                                                           creator = user,
+                                                           invite_type = 'phone'
                                                            )
                     
                 else:
@@ -128,7 +129,8 @@ def createParty(request):
                         else:
                             client = Client.objects.create(email = receiver['cValue'],
                                                            name = receiver['cName'],
-                                                           creator = user
+                                                           creator = user,
+                                                           invite_type = 'phone'
                                                            )
                 PartiesClients.objects.create(
                                               party = party,
@@ -451,7 +453,8 @@ def resendMsg(request):
                         else:
                             client = Client.objects.create(phone = receiver['cValue'],
                                                            name = receiver['cName'],
-                                                           creator = user
+                                                           creator = user,
+                                                           invite_type = 'phone'
                                                            )
                 else:
                     client_list = Client.objects.filter(email = receiver['cValue'],
@@ -472,7 +475,8 @@ def resendMsg(request):
                         else:
                             client = Client.objects.create(email = receiver['cValue'],
                                                            name = receiver['cName'],
-                                                           creator = user
+                                                           creator = user,
+                                                           invite_type = 'phone'
                                                            )
                 PartiesClients.objects.get_or_create(
                                                   party = party,

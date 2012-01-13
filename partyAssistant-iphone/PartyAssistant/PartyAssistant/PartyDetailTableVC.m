@@ -552,7 +552,6 @@
             [request setDidFailSelector:@selector(deleteRequestFailed:)];
             [request setShouldAttemptPersistentConnection:NO];
             [request startAsynchronous];
-
             self.deleteQuest=request;
         }
     }

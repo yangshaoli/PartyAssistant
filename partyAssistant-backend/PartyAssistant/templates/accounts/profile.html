@@ -18,18 +18,7 @@
     
 function bindingPhone(){
     var v = $("#id_phone").val();
-    if (!v) {
-        alert('请输入手机号码');
-        return false;
-    }
-    if (v.length!=11){
-    	alert('手机长度不合法');
-    	return false;
-    }
-    if(!v.match(/^1\d{10}/)){
-        alert('格式不合法');
-        return false;
-    }
+    if (!checkInput(v, 'phone')) return false ;
     var answer = confirm("要给" + v + "发送验证码吗？")
     if (answer) {
         $.ajax({
@@ -78,9 +67,6 @@ function validate_phone_bingding(isbind){
     if(isbind=='bind'){
         r_url='{% url validate_phone_bingding_ajax %}';
         alert_success='绑定成功';
-    }else if (isbind=='unbind'){
-        r_url='{% url validate_phone_unbingding_ajax %}';
-        alert_success='成功解除绑定';
     }else{
        return;
     }   
@@ -119,12 +105,33 @@ function validate_phone_bingding(isbind){
 }    
     
     
-    function bindingEmail(){
-        var v = $('#id_email').val();
+    function checkInput(v, type){
         if (!v) {
-            alert('请输入邮件地址');
+            (type == 'email') ? alert('请输入邮件地址') : alert('请输入电话号码')
             return false;
         }
+        if (type == 'email') {
+            if (!v.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) != -1){
+                alert('请输入一个有效的 e-mail 地址');
+                return false;
+            }
+        }
+        if (type == 'phone') {
+            if (v.length!=11){
+            	alert('手机号码不规范');
+            	return false;
+            }
+            if(!v.match(/^1\d{10}/)){
+                alert('手机号码不规范');
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function bindingEmail(){
+        var v = $('#id_email').val();
+        if (!checkInput(v, 'email'))  return false ;
         var answer = confirm("要给" + v + "发送确认邮件吗？")
         if (answer) {
             $.ajax({
@@ -218,15 +225,12 @@ function validate_phone_bingding(isbind){
                 </div>
                 <div class="field">
                     <label for="phone">手机：</label>
-                    <input style="border:0px;background:none;" name='phone' id='id_phone' value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}{%  ifequal userprofile.phone_binding_status 'waiteunbind' %}  disabled="true" {%  endifequal %}>
+                    <input style="border:0px;background:none;" name='phone' id='id_phone' value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
                     </input>
                     
                     {%  ifequal userprofile.phone_binding_status  'bind' %}
                     <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
                     {% endifequal %}
-                    {%  ifequal userprofile.phone_binding_status  'waiteunbind' %}
-                    <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
-                    {% endifequal %}                        
                     {%  ifequal userprofile.phone_binding_status  'unbind' %}
                     <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
                     {% endifequal %}

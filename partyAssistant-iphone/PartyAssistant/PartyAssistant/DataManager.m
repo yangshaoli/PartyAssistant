@@ -25,7 +25,7 @@
 @end
 
 @implementation DataManager
-
+@synthesize isRandomLoginSelf;
 static DataManager *sharedDataManager = nil;
 
 + (DataManager *)sharedDataManager {
@@ -76,14 +76,21 @@ static DataManager *sharedDataManager = nil;
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
             NSString *description = [dic objectForKey:@"description"];
-            if ([description isEqualToString:@"ok"]) {
+            NSString *status = [dic objectForKey:@"status"];
+            BOOL isRandomLogin=[[dic objectForKey:@"_israndomlogin"] boolValue];
+            if(isRandomLogin){
+                self.isRandomLoginSelf=YES;
+            }else{
+                self.isRandomLoginSelf=NO; 
+            }
+            if ([status isEqualToString:@"ok"]) {
                 dic = [NSMutableDictionary dictionaryWithDictionary:dic];
                 [dic setValue:name forKey:@"username"];
                 [self saveUsrData:dic];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
-
+                 [self showAlertRequestFailed:description];
             }
         }else if([request responseStatusCode] == 404){
             [self showAlertRequestFailed:REQUEST_ERROR_404];

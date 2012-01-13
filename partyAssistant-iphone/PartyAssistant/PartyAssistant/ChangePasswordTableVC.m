@@ -7,7 +7,14 @@
 //
 
 #import "ChangePasswordTableVC.h"
-
+#import "UIViewControllerExtra.h"
+#import "ASIFormDataRequest.h"
+#import "JSON.h"
+#import "HTTPRequestErrorMSG.h"
+#import "URLSettings.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+#import "DataManager.h"
 @implementation ChangePasswordTableVC
 @synthesize originPasswordTextField;
 @synthesize nPasswordTextField;
@@ -104,34 +111,33 @@
     }
     
     // Configure the cell...
-    if(indexPath.row==0){
-        cell.textLabel.text = @"输入原密码：";
-        if (!originPasswordTextField) {
-            self.originPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+        if(indexPath.row==0){
+            cell.textLabel.text = @"输入原密码：";
+            if (!originPasswordTextField) {
+                self.originPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+            }
+            originPasswordTextField.textAlignment = UITextAlignmentLeft;
+            originPasswordTextField.backgroundColor = [UIColor clearColor];
+            [cell addSubview:originPasswordTextField];        
         }
-        originPasswordTextField.textAlignment = UITextAlignmentLeft;
-        originPasswordTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:originPasswordTextField];        
-    }
-    if(indexPath.row==1){
-        cell.textLabel.text = @"输入新密码：";
-        if (!nPasswordTextField) {
-            self.nPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+        if(indexPath.row==1){
+            cell.textLabel.text = @"输入新密码：";
+            if (!nPasswordTextField) {
+                self.nPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+            }
+            nPasswordTextField.textAlignment = UITextAlignmentLeft;
+            nPasswordTextField.backgroundColor = [UIColor clearColor];
+            [cell addSubview:nPasswordTextField];        
         }
-        nPasswordTextField.textAlignment = UITextAlignmentLeft;
-        nPasswordTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:nPasswordTextField];        
-    }
-    if(indexPath.row==2){
-        cell.textLabel.text = @"确认新密码：";
-        if (!resurePasswordTextField) {
-            self.resurePasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
-        }
-        resurePasswordTextField.textAlignment = UITextAlignmentLeft;
-        resurePasswordTextField.backgroundColor = [UIColor clearColor];
-        [cell addSubview:resurePasswordTextField];        
-    }
-    
+        if(indexPath.row==2){
+            cell.textLabel.text = @"确认新密码：";
+            if (!resurePasswordTextField) {
+                self.resurePasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+            }
+            resurePasswordTextField.textAlignment = UITextAlignmentLeft;
+            resurePasswordTextField.backgroundColor = [UIColor clearColor];
+            [cell addSubview:resurePasswordTextField];        
+        }        
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
@@ -195,8 +201,69 @@
     }else if(![nPasswordTextField.text isEqualToString:resurePasswordTextField.text]){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"输入不正确" message:@"两次输入的新密码不匹配" delegate:self cancelButtonTitle:nil otherButtonTitles:@"点击请重新输入", nil];
         [alertView show];
+        
+    }else{
+        [self showWaiting];
+        NSURL *url = [NSURL URLWithString:CHANGE_PASSWORD];
+        
+        //        if (self.quest) {
+        //            [self.quest clearDelegatesAndCancel];
+        //        }
+        //      
+        
+        ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+        [request setPostValue:self.originPasswordTextField.text forKey:@"originalpassword"];
+        [request setPostValue:self.nPasswordTextField.text forKey:@"newpassword"];
+        request.timeOutSeconds = 20;
+        [request setDelegate:self];
+        [request setShouldAttemptPersistentConnection:NO];
+        [request startAsynchronous];
+        //self.quest=request;
+
     
     }
+}
+- (void)requestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([status isEqualToString:@"ok"]) {
+            [self.navigationController popViewControllerAnimated:YES];
+            //            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
+            //            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
+            //            [[NSNotificationCenter defaultCenter] postNotification:notification];
+            
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"修改密码成功" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+            [alertView show];
+        }else{
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+    
+}
+
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 
 

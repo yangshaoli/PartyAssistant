@@ -24,6 +24,7 @@
 #import "ASIFormDataRequest.h"
 #import "URLSettings.h"
 #import "NotificationSettings.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
@@ -257,14 +258,18 @@
     //1.modal
     
     //2.nav
-    if (self.isModal) {
-        
-    } else {
-        //2
-        [self pushToContentVC];
+    
+    if([DataManager sharedDataManager].isRandomLoginSelf){
+        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
     }
     
-
+    if (self.isModal) {
+            
+    } else {
+            //2
+        [self pushToContentVC];
+    }
 }
 
 - (void)showInvalidateNetworkalert {
@@ -367,14 +372,6 @@
     }
     [keyString release];
 }
-
-
-
-
-
-
-
-
 //wxz
 - (void)autoLogin{
     [self pushToContentVC];
