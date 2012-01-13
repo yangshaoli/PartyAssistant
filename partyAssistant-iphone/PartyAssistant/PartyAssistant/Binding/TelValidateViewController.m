@@ -19,17 +19,20 @@
 //bind extern
 #import "UIVIewControllerExtern+Binding.h"
 
+#import "BindingListViewController.h"
+
 @interface TelValidateViewController ()
 
 - (void)resendPhoneVerifyCode;
 - (void)sendPhoneVerify;
+- (void)closePage;
 
 @end
 
 @implementation TelValidateViewController
 @synthesize tableView = _tableView;
 @synthesize inputTelCell = _inputTelCell;
-@synthesize inputTelTextField = _inputTelTextField;
+@synthesize inputCodeTextField = _inputCodeTextField;
 @synthesize telValidateCell = _telValidateCell;
 @synthesize telResendValidateCell = _telResendValidateCell;
 @synthesize pageStatus = _pageStatus;
@@ -56,6 +59,20 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    if (self.pageStatus == StatusVerifyBinding) {
+        self.navigationItem.title = @"绑定";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+        self.navigationItem.rightBarButtonItem = resendBtn;
+    } else {
+        self.navigationItem.title = @"解除绑定";
+    }
+    
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    self.navigationItem.leftBarButtonItem = closeBtn;
+    
+    
+
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -96,9 +113,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
-        [self resendPhoneVerifyCode];
-    } else if (indexPath.section == 2) {
         [self sendPhoneVerify];
+    } else if (indexPath.section == 2) {
+        [self resendPhoneVerifyCode];
     }
 }
 
@@ -115,7 +132,7 @@
     }
     
     //mail validate check
-    BOOL isValid = [self validateEmailCheck:telText];
+    BOOL isValid = [self validatePhoneCheck:telText];
     if (isValid) {
         
     } else {
@@ -128,17 +145,24 @@
         return;
     }
     
-    NSURL *url = [NSURL URLWithString:PHONE_VERIFY];
+    NSURL *url = nil;
+    
+    if (self.pageStatus == StatusVerifyBinding) {
+        url = [NSURL URLWithString:PHONE_BIND];
+    } else {
+        url = [NSURL URLWithString:PHONE_UNBIND];
+    }
+    
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:telText forKey:@"value"];
-    [request setPostValue:@"email" forKey:@"email"];
+    [request setPostValue:@"phone" forKey:@"phone"];
     
     request.timeOutSeconds = 15;
     [request setDelegate:self];
-    [request setDidFinishSelector:@selector(resendVerifycodeRequestRequestFinished)];
-    [request setDidFailSelector:@selector(resendVerifycodeRequestRequestFailed)];
+    [request setDidFinishSelector:@selector(resendVerifycodeRequestRequestFinished:)];
+    [request setDidFailSelector:@selector(resendVerifycodeRequestRequestFailed:)];
     
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];  
@@ -155,10 +179,11 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
-            
+            [self saveProfileDataFromResult:result];
         } else {
-            [self showAlertRequestFailed:description];	
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -178,7 +203,14 @@
 }
 
 - (void)sendPhoneVerify {
-    NSString *telText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel];
+    NSString *telText = nil;
+    
+    if (self.pageStatus == StatusVerifyBinding) {
+        telText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingTel];
+    } else {
+        telText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel];
+    }
+
     if (!telText) {
         return;
     }
@@ -200,9 +232,10 @@
     NSURL *url = [NSURL URLWithString:PHONE_VERIFY];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:telText forKey:@"value"];
-    [request setPostValue:@"phone" forKey:@"phone"];
+    [request setPostValue:@"phone" forKey:@"type"];
+    [request setPostValue:self.inputCodeTextField.text forKey:@"verifier"];
     
     request.timeOutSeconds = 15;
     [request setDelegate:self];
@@ -224,10 +257,15 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
+            [self saveProfileDataFromResult:result];
             
+            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证成功！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+            av.tag = 11113;
+            [av show];
         } else {
-            [self showAlertRequestFailed:description];	
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -246,5 +284,45 @@
     [self dismissWaiting];
 	NSError *error = [request error];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)closePage {
+    NSArray *controllers = self.navigationController.viewControllers;
+    BindingListViewController *bindingList = nil;
+    for (UIViewController *controller in controllers) {
+        if ([controller isMemberOfClass:[BindingListViewController class]]) {
+            bindingList = (BindingListViewController *)controller;
+        }
+    }
+    if (bindingList) {
+        CATransition *transition = [CATransition animation];
+        transition.duration = 0.5;
+        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        transition.type = kCATransitionReveal;
+        transition.subtype = kCATransitionFromBottom;
+        [self.navigationController.view.layer addAnimation:transition forKey:nil];
+        [self.navigationController popToViewController:bindingList animated:NO];
+    }
+}
+
+- (void)resendPage {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionReveal;
+    transition.subtype = kCATransitionFromBottom;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    [self.navigationController popViewControllerAnimated:NO];
+}
+
+#pragma mark - 
+#pragma mark alert delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 11112) {
+        [self closePage];
+    }
+    if (alertView.tag == 11113) {
+        [self closePage];
+    }
 }
 @end
