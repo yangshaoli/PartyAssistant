@@ -254,8 +254,12 @@ def bindContact(request, type):
             binding_temp.key = userkey
             binding_temp.save()
         profile = user.get_profile()
-        profile.phone = value
-        profile.phone_binding_status = 'waitingbind'
+        if type == 'phone':
+            profile.phone = value
+            profile.phone_binding_status = 'waitingbind'
+        else:
+            profile.email = value
+            profile.email_binding_status = 'waitingbind'
         profile.save()
         data = {"latest_status":{
                                  'email':user.userprofile.email,
@@ -364,6 +368,8 @@ def verifyContact(request, type):
                 user.userprofile.phone_binding_status = 'unbind'
                 user.userprofile.phone = ''
                 user.userprofile.save()
+        for binding in binding_temp:
+            binding.delete()
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
