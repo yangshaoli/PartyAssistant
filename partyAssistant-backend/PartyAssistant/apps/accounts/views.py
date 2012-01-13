@@ -2,9 +2,8 @@
 import datetime
 import logging
 
-from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
-    RegistrationForm, UserProfileForm, BuySMSForm
-from apps.accounts.models import UserAliReceipt, UserBindingTemp
+from apps.accounts.forms import *
+from apps.accounts.models import *
 from decimal import Decimal, InvalidOperation
 
 from django.db.transaction import commit_on_success
@@ -17,8 +16,6 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 
-from apps.accounts.models import UserProfile, UserAliReceipt, UserBindingTemp, AccountTempPassword
-from apps.accounts.forms import ChangePasswordForm, RegistrationForm, UserProfileForm, BuySMSForm
 from settings import DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
 from utils.tools.phone_key_tool import generate_phone_code
@@ -412,12 +409,8 @@ def forget_password(request):
         #判断发送方式
         if user.userprofile.phone:
             sending_type = 'sms'
-            #value = user.userprofile.phone
-            return TemplateResponse(request, 'message.html', {'message': 'sendtophone'})
         elif user.userprofile.email:
             sending_type = "email"
-            #value = user.userprofile.email
-            return TemplateResponse(request, 'message.html', {'message': 'sendtoemail'})
         else:
             return TemplateResponse(request, 'message.html', {'message': 'nobinding'})
         
@@ -429,4 +422,24 @@ def forget_password(request):
         if not created:
             temp_pwd_data.sending_type = sending_type
             temp_pwd_data.save()
+        if sending_type == 'sms' : return TemplateResponse(request, 'message.html', {'message': 'sendtophone'})
+        if sending_type == 'email' : return TemplateResponse(request, 'message.html', {'message': 'sendtoemail'})
+        
     return TemplateResponse(request, 'accounts/forget_password.html')
+
+@commit_on_success
+def reset_password(request):
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            user = request.session['temp_login']
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            del request.session['temp_login']
+            return redirect('profile')
+        else:
+            return TemplateResponse(request, 'accounts/reset_password.html', {'form': form})
+    else:
+        form = ResetPasswordForm()
+    
+    return TemplateResponse(request, 'accounts/reset_password.html')
