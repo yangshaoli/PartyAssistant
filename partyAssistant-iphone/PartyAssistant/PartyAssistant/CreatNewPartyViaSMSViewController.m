@@ -74,6 +74,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.title = @"活动邀请";
     self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
     UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];

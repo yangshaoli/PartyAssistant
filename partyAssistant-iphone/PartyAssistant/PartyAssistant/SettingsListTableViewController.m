@@ -51,6 +51,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
 }
 
 - (void)viewDidUnload
