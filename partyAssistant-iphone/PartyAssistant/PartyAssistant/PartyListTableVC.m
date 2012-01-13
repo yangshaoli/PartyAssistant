@@ -274,9 +274,12 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
+    NSString *badge = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    if ([badge intValue] <= 0) {
+        return;
+    }
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
-    tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
-    
+    tbi.badgeValue = badge;
 }
 
 #pragma mark - Table view data source
