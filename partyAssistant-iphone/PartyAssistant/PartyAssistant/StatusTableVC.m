@@ -296,8 +296,6 @@
         }else{
             
         }
-        
-        
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -325,6 +323,50 @@
         
         }else{
         
+        }
+        
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }else if([self.title isEqualToString:@"已邀请"]){
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        secondLb.tag=8;
+        
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+            
+            
+        }else{
+            
+        }
+        
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }else if([self.title isEqualToString:@"未响应"]){
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        secondLb.tag=8;
+        
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+            
+            
+        }else{
+            
         }
         
         secondLb.font=[UIFont systemFontOfSize:15];

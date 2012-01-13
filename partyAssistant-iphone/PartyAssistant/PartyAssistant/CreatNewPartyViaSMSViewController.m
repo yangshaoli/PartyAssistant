@@ -21,6 +21,8 @@
 #import "AddressBookDBService.h"
 #import "UIViewControllerExtra.h"
 #import "PurchaseListViewController.h"
+#import "DataManager.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -92,6 +94,12 @@
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
+    
+    //wxz
+    if([DataManager sharedDataManager].isRandomLoginSelf){
+        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {

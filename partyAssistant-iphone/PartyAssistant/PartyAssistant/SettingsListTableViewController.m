@@ -10,8 +10,8 @@
 #import "NicknameManageTableViewController.h"
 #import "DataManager.h"
 #import "PurchaseListViewController.h"
+#import "ChangePasswordTableVC.h"
 #import "BindingListViewController.h"
-
 #define NAVIGATION_CONTROLLER_TITLE @"设置"
 #define LogoutTag                   1
 #define NotPassTag                  2
@@ -98,7 +98,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 7;
+    return 8;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -125,7 +125,7 @@
         cell.textLabel.text = @"绑定";
     }else if(indexPath.row == 6){
         cell.textLabel.text = @"登出";
-    }else if(indexPath.row == 6){
+    }else if(indexPath.row == 7){
         
         NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
         NSString *defaultVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
@@ -207,6 +207,10 @@
         NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
         [self.navigationController pushViewController:nickChangeVc animated:YES];
     }
+    if(indexPath.row==1){
+        ChangePasswordTableVC *changePasswordTableVC=[[ChangePasswordTableVC alloc] initWithNibName:@"ChangePasswordTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordTableVC animated:YES];
+    }  
     if(indexPath.row == 2){
         WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
         [self.navigationController pushViewController:vc animated:YES];
