@@ -5,7 +5,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = patterns('apps.accounts.views',
     url(r'^login/$', auth_views.login, {'template_name': 'accounts/login.html', 'authentication_form':LoginForm }, name = 'login'),
     url(r'^register/$', 'register', name = 'register'),
-    url(r'^logout/$', auth_views.logout_then_login, name = 'logout'),
+#    url(r'^logout/$', auth_views.logout_then_login, name = 'logout'),
     url(r'^forget_password/$', 'forget_password', name = 'forget_password'),
     url(r'^profile/$', 'profile', name='profile'),
     url(r'^completeprofile/$', 'profile', {'template_name': 'accounts/completeprofile.html', 'redirected': 'list_party'}, name='completeprofile'),

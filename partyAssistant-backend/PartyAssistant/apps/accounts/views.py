@@ -17,7 +17,7 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 
-from apps.accounts.models import UserProfile, UserAliReceipt, UserBindingTemp
+from apps.accounts.models import UserProfile, UserAliReceipt, UserBindingTemp, AccountTempPassword
 from apps.accounts.forms import ChangePasswordForm, RegistrationForm, UserProfileForm, BuySMSForm
 from settings import DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
@@ -399,6 +399,34 @@ def unbinding(request):
         userprofile.save()
         return HttpResponse("success")
 
-@login_required
+@commit_on_success
 def forget_password(request):
-    return HttpResponse("email_already_exist")
+    if request.method == 'POST':
+        username = request.POST.get('username','')
+        try:
+            User.objects.get(username = username)
+        except:
+            return TemplateResponse(request, 'message.html', {'message': 'noexistusername'})
+        else:
+            user = User.objects.get(username = username)
+        #判断发送方式
+        if user.userprofile.phone:
+            sending_type = 'sms'
+            #value = user.userprofile.phone
+            return TemplateResponse(request, 'message.html', {'message': 'sendtophone'})
+        elif user.userprofile.email:
+            sending_type = "email"
+            #value = user.userprofile.email
+            return TemplateResponse(request, 'message.html', {'message': 'sendtoemail'})
+        else:
+            return TemplateResponse(request, 'message.html', {'message': 'nobinding'})
+        
+        temp_password = generate_phone_code()
+        temp_pwd_data, created = AccountTempPassword.objects.get_or_create(user = user, defaults = {
+                                                                                                "temp_password":temp_password,
+                                                                                                "sending_type":sending_type,
+                                                                                                })
+        if not created:
+            temp_pwd_data.sending_type = sending_type
+            temp_pwd_data.save()
+    return TemplateResponse(request, 'accounts/forget_password.html')
