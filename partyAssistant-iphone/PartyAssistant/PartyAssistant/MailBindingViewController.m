@@ -99,8 +99,15 @@
 }
 
 - (void)jumpToVerify {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-    [self.navigationController presentModalViewController:verifyPage animated:YES];
+    [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
 - (void)beginMailUpdate {

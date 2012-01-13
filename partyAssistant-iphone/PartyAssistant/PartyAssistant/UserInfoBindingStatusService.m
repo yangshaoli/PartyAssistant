@@ -83,13 +83,13 @@
 - (NSString *)translateStatusCodeToString : (BindingStatus)status {
     switch (status) {
         case StatusBinding :
-            return @"绑定中";
+            return @"待验证";
         case StatusVerifyBinding :
-            return @"待绑定";
+            return @"待验证";
         case StatusUnbinding :
-            return @"解绑中";
+            return @"待验证";
         case StatusVerifyUnbinding :
-            return @"解绑中";
+            return @"待验证";
         case StatusBinded :
             return @"已绑定";
         case StatusNotBind:
@@ -242,9 +242,9 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 - (BindingStatus)detectMailBindingStatus {
     if ([self mailBindingStatus] == StatusBinding) {
         if ([[[self getBindingStatusObject] bindingMail] isEqualToString:@""]) {
-            return StatusVerifyUnbinding;
-        } else {
             return StatusVerifyBinding;
+        } else {
+            return StatusVerifyUnbinding;
         }
     } else {
         [[self getBindingStatusObject] setBindingMail:@""];
@@ -255,9 +255,9 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 - (BindingStatus)detectTelBindingStatus {
     if ([self telBindingStatus] == StatusBinding) {
         if ([[[self getBindingStatusObject] bindingTel] isEqualToString:@""]) {
-            return StatusVerifyUnbinding;
-        } else {
             return StatusVerifyBinding;
+        } else {
+            return StatusVerifyUnbinding;
         }
     } else {
         [[self getBindingStatusObject] setBindingTel:@""];

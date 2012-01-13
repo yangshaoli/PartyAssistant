@@ -212,6 +212,8 @@
                 verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
                 vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
                 [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
+                vc.navigationItem.hidesBackButton = YES;
+                vc.hidesBottomBarWhenPushed = YES;
                 
                 CATransition *transition = [CATransition animation];
                 transition.duration = 0.5;

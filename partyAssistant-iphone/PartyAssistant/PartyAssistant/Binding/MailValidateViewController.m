@@ -19,6 +19,8 @@
 //bind extern
 #import "UIVIewControllerExtern+Binding.h"
 
+#import "BindingListViewController.h"
+
 @interface MailValidateViewController ()
 
 - (void)resendMailVerifyCode;
@@ -56,6 +58,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    if (self.pageStatus == StatusVerifyBinding) {
+        self.navigationItem.title = @"绑定";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+        self.navigationItem.rightBarButtonItem = resendBtn;
+    } else {
+        self.navigationItem.title = @"解除绑定";
+    }
+    
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    self.navigationItem.leftBarButtonItem = closeBtn;
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -246,5 +258,34 @@
     [self dismissWaiting];
 	NSError *error = [request error];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)closePage {
+    NSArray *controllers = self.navigationController.viewControllers;
+    BindingListViewController *bindingList = nil;
+    for (UIViewController *controller in controllers) {
+        if ([controller isMemberOfClass:[BindingListViewController class]]) {
+            bindingList = (BindingListViewController *)controller;
+        }
+    }
+    if (bindingList) {
+        CATransition *transition = [CATransition animation];
+        transition.duration = 0.5;
+        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        transition.type = kCATransitionReveal;
+        transition.subtype = kCATransitionFromBottom;
+        [self.navigationController.view.layer addAnimation:transition forKey:nil];
+        [self.navigationController popToViewController:bindingList animated:NO];
+    }
+}
+
+- (void)resendPage {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionReveal;
+    transition.subtype = kCATransitionFromBottom;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    [self.navigationController popViewControllerAnimated:NO];
 }
 @end
