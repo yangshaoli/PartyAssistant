@@ -249,7 +249,7 @@ def bindContact(request, type):
             binding_temp.binding_addres = value
             binding_temp.key = userkey
             binding_temp.save()
-        profile = request.user.get_profile()
+        profile = user.get_profile()
         profile.phone = value
         profile.phone_binding_status = 'waitingbind'
         profile.save()
