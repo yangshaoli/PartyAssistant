@@ -508,10 +508,10 @@
                 [se clearEmailObject];
             }
                  
-        } else if ([status isEqualToString:@"lessRemain"]){
-            NSDictionary *infos = [result objectForKey:@"data"];
+        } else if ([status isEqualToString:@"error_no_remaining"]){
+            NSDictionary *infos = [result objectForKey:@"datasource"];
             NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"leftCount"];
+            leftCount = [infos objectForKey:@"remaining"];
             if (leftCount) {
                 [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
                 [self showLessRemainingCountAlert];
