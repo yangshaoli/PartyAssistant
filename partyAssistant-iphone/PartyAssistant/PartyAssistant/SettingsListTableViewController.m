@@ -10,7 +10,7 @@
 #import "NicknameManageTableViewController.h"
 #import "DataManager.h"
 #import "PurchaseListViewController.h"
-
+#import "ChangePasswordTableVC.h"
 #define NAVIGATION_CONTROLLER_TITLE @"设置"
 #define LogoutTag                   1
 #define NotPassTag                  2
@@ -203,6 +203,10 @@
         NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
         [self.navigationController pushViewController:nickChangeVc animated:YES];
     }
+    if(indexPath.row==1){
+        ChangePasswordTableVC *changePasswordTableVC=[[ChangePasswordTableVC alloc] initWithNibName:@"ChangePasswordTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordTableVC animated:YES];
+    }  
     if(indexPath.row == 2){
         WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
         [self.navigationController pushViewController:vc animated:YES];

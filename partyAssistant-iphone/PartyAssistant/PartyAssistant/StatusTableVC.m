@@ -333,6 +333,7 @@
         secondLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:secondLb];
     }
+
     return cell;
 }
 

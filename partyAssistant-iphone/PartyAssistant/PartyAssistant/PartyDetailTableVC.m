@@ -351,6 +351,7 @@
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
             lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
+            
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];

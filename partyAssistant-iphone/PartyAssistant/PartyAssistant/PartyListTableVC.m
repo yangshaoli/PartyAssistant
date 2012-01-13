@@ -25,7 +25,7 @@
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
 @synthesize peopleCountArray,partyDictArraySelf;
-@synthesize lastID,_isRefreshing,_isNeedRefresh,quest;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest,isRefreshImage;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -137,6 +137,10 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
+    if(isRefreshImage){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -393,12 +397,15 @@
     oldLayout2 = [cell viewWithTag:2];
     [oldLayout2 removeFromSuperview];
 
-    if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){        
+    if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){  
+        self.isRefreshImage=YES;
         UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
         cellImageView.image=[UIImage imageNamed:@"new1"];
         cellImageView.tag=2;
         [cell  addSubview:cellImageView];
     
+    }else{
+        self.isRefreshImage=NO;
     }
     
     
