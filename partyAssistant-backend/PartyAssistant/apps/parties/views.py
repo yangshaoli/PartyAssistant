@@ -336,7 +336,7 @@ def sms_invite(request, party_id):
                 send_message.save()
                 send_status = 'sms_success'
                 
-            request.session['sms_count'] = '' #将sms_count加入session，并不关心其数值;具体的数值在list_party中获取    
+            request.session['sms_count'] = sms_count - will_send_message_num    
             request.session['send_status'] = send_status 
             return redirect('list_party')
         else:
@@ -458,7 +458,7 @@ def list_party(request):
         del request.session['send_status']  
     sms_count = ''    
     if 'sms_count' in request.session:
-        sms_count = request.user.get_profile().available_sms_count
+        sms_count = request.session['sms_count']
         del request.session['sms_count']          
     #分页
     paginator = Paginator(party_list, 10)
