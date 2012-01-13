@@ -376,6 +376,8 @@
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = receipt.cName;
         client.cID = receipt.cID;
+        client.phoneLabel = receipt.phoneLabel;
+        client.phoneIdentifier = receipt.phoneIdentifier;
         NSString *phoneNumber = receipt.cVal;
         
         if (!phoneNumber) {

@@ -105,11 +105,18 @@
 
 - (void)beginInfoUpdate {
     NSString *nickname = self.nickNameInputTextField.text;
-    if (!nickname) {
+    if (!nickname || [nickname isEqualToString:@""]) {
+        [self showAlertWithTitle:@"警告" Message:@"不能输入空值！"];
         return;
     }
     
-    if (nickname.length < 4) {
+    if (nickname.length < 6) {
+        [self showAlertWithTitle:@"警告" Message:@"输入不能少于6个字符！"];
+        return;
+    }
+    
+    if (nickname.length > 16) {
+        [self showAlertWithTitle:@"警告" Message:@"最多输入16个字符！"];
         return;
     }
     
@@ -144,10 +151,11 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
             [self saveProfileDataFromResult:result];
+            self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
+            [self.navigationController popViewControllerAnimated:YES];
         } else {
-            [self showAlertRequestFailed:description];	
+            [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -169,4 +177,11 @@
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 
+#pragma mark - 
+#pragma mark alert delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 11112) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
 @end

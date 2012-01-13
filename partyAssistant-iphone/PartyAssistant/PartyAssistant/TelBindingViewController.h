@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
-@interface TelBindingViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface TelBindingViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,UIAlertViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 

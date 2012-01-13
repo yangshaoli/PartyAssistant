@@ -242,9 +242,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 - (BindingStatus)detectMailBindingStatus {
     if ([self mailBindingStatus] == StatusBinding) {
         if ([[[self getBindingStatusObject] bindingMail] isEqualToString:@""]) {
-            return StatusVerifyBinding;
-        } else {
             return StatusVerifyUnbinding;
+        } else {
+            if ([[[self getBindingStatusObject] bindedMail] isEqualToString:@""]) {
+                return StatusVerifyUnbinding;
+            }
+            return StatusVerifyBinding;
         }
     } else {
         [[self getBindingStatusObject] setBindingMail:@""];
@@ -255,9 +258,12 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 - (BindingStatus)detectTelBindingStatus {
     if ([self telBindingStatus] == StatusBinding) {
         if ([[[self getBindingStatusObject] bindingTel] isEqualToString:@""]) {
-            return StatusVerifyBinding;
-        } else {
             return StatusVerifyUnbinding;
+        } else {
+            if ([[[self getBindingStatusObject] bindedTel] isEqualToString:@""]) {
+                return StatusVerifyUnbinding;
+            }
+            return StatusVerifyBinding;
         }
     } else {
         [[self getBindingStatusObject] setBindingTel:@""];

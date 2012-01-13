@@ -224,6 +224,7 @@ static DataManager *sharedDataManager = nil;
 }
 
 - (void)saveUsrData:(NSDictionary *)jsonValue {
+    NSLog(@"user :%@",jsonValue);
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
     [userData clearObject];

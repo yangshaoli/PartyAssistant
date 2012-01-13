@@ -19,6 +19,8 @@
 //bind extern
 #import "UIVIewControllerExtern+Binding.h"
 
+#import "UserInfoBindingStatusService.h"
+
 @interface TelBindingViewController ()
 
 - (void)jumpToVerify;
@@ -54,6 +56,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    BindingStatus telStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] telBindingStatus];
+    if (telStatus == StatusNotBind) {
+        self.navigationItem.title = @"绑定电话号码";
+    } else if (telStatus != StatusUnknown && telStatus != StatusBinded) {
+        self.navigationItem.title = @"重新输入号码";
+    }
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -105,7 +113,10 @@
     transition.subtype = kCATransitionFromTop;
     [self.navigationController.view.layer addAnimation:transition forKey:nil];
     
+    BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
+    verifyPage.pageStatus = verifyPageStatus;
+    
     [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
@@ -153,10 +164,19 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
-            [self jumpToVerify];
+            BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+            userStatus.bindingTel = self.inputTelTextField.text;
+            
+            [self saveProfileDataFromResult:result];
+            
+            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的手机中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+            av.tag = 11001;
+            [av show];
+            
         } else {
-            [self showAlertRequestFailed:description];	
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -175,5 +195,17 @@
     [self dismissWaiting];
 	NSError *error = [request error];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+
+#pragma mark - 
+#pragma mark alert delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 11001) {
+        [self jumpToVerify];
+    }
+    if (alertView.tag == 11112) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 @end

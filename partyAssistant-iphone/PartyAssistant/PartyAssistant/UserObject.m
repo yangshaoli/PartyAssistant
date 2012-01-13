@@ -67,7 +67,7 @@
     }
 } 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"抱歉!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
 }
 
