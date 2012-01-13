@@ -834,7 +834,7 @@
         
         [self.buttonView reloadInputViews];
         self.searchField.inputAccessoryView = nil;
-        [self.searchField reloadInputViews];
+        [self.toolbar removeFromSuperview];
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
