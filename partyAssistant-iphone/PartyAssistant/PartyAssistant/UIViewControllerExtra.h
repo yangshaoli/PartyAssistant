@@ -19,5 +19,5 @@
 - (void)showWaitingWithFrame:(CGRect)frame;
 - (void)showWaiting;
 - (void)dismissWaiting;
-
+- (void)getVersionFromRequestDic:(NSDictionary *)result;
 @end

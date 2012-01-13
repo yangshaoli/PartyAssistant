@@ -17,7 +17,7 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "ResendPartyViaSMSViewController.h"
-
+#import "UIViewControllerExtra.h"
 
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
@@ -136,7 +136,7 @@
         [self.quest clearDelegatesAndCancel];
     }
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -147,7 +147,7 @@
 //    NSLog(@"loadClientCount输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
 //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
 //    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-//    request.timeOutSeconds = 30;
+//    request.timeOutSeconds = 20;
 //    [request setDelegate:self];
 //    [request setDidFinishSelector:@selector(requestFinished:)];
 //    [request setDidFailSelector:@selector(requestFailed:)];
@@ -164,9 +164,11 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
             
@@ -184,16 +186,12 @@
              [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
-         NSLog(@"在21");
         [self showAlertRequestFailed:REQUEST_ERROR_404];
     }else if([request responseStatusCode] == 500){
-         NSLog(@"在221");
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }else if([request responseStatusCode] == 502){
-         NSLog(@"在22221");
         [self showAlertRequestFailed:REQUEST_ERROR_502];
     }else{
-         NSLog(@"在222221");
         [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
     
@@ -216,7 +214,7 @@
     }
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setDidFinishSelector:@selector(getPartyClientSeperatedListRequestFinished:)];
     [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
@@ -235,7 +233,6 @@
         if ([description isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"打印调试数组%@",[dict objectForKey:@"clientList"]);
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -484,17 +481,6 @@
     [self presentModalViewController:vc animated:YES];
 }
 
-////正则判断是否Email地址
-//- (BOOL) isEmailAddress:(NSString*)email { 
-//    
-//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-//    
-//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-//    
-//    return [emailTest evaluateWithObject:email]; 
-//    
-//} 
-
 
 - (void)resentMsg{
 //    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
@@ -559,7 +545,7 @@
             [request setPostValue:self.partyObj.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
             
-            //request.timeOutSeconds = 30;
+            //request.timeOutSeconds = 20;
             [request setDelegate:self];
             [request setDidFinishSelector:@selector(deleteRequestFinished:)];
             [request setDidFailSelector:@selector(deleteRequestFailed:)];

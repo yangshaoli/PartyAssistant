@@ -19,6 +19,7 @@
 #import "SegmentManagingViewController.h"
 #import "NotificationSettings.h"
 #import "AddressBookDBService.h"
+#import "UIViewControllerExtra.h"
 #import "PurchaseListViewController.h"
 
 @interface CreatNewPartyViaSMSViewController ()
@@ -422,7 +423,7 @@
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     [request setPostValue:platform forKey:@"addressType"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -433,6 +434,8 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+   [self getVersionFromRequestDic:result];
+    
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {

@@ -7,7 +7,7 @@
 //
 
 #import "ClientStatusTableViewController.h"
-
+#import "UIViewControllerExtra.h"
 @implementation ClientStatusTableViewController
 @synthesize clientsArray,clientStatusFlag,partyId,baseinfo;
 
@@ -46,7 +46,7 @@
     [self showWaiting];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,self.partyId,self.clientStatusFlag]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -56,10 +56,12 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
@@ -222,7 +224,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInt:cell.tag] forKey:@"cpID"];
     [request setPostValue:statusAction forKey:@"cpAction"];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     btn.hidden = YES;
@@ -346,7 +348,7 @@
     [self showWaiting];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/",GET_MSG_IN_COPY_PARTY,self.baseinfo.partyId]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request setDidFinishSelector:@selector(resendRequestFinished:)];
