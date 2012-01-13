@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
  
-from apps.accounts.models import UserIPhoneToken, AccountTempPassword, UserProfile
+from apps.accounts.models import UserIPhoneToken, AccountTempPassword, UserProfile, UserBindingTemp
 from apps.parties.models import PartiesClients, Party
 
 from utils.structs.my_exception import myException
