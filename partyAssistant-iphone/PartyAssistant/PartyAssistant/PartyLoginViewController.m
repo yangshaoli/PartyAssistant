@@ -28,7 +28,7 @@
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
-
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
 @interface PartyLoginViewController()
 
 - (void)cleanKeyBoard;
@@ -139,6 +139,7 @@
 //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
 //    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
    // [keyString release]; 
+    
     if(user){
         if(user.uID > 0){
             [self pushToContentVC];
@@ -258,12 +259,6 @@
     //1.modal
     
     //2.nav
-    
-    if([DataManager sharedDataManager].isRandomLoginSelf){
-        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
-        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
-    }
-    
     if (self.isModal) {
             
     } else {
@@ -371,6 +366,8 @@
         
     }
     [keyString release];
+    NSLog(@"打印isRandomLoginSelf  %@",BOOLStringOutput([DataManager sharedDataManager].isRandomLoginSelf));
+    
 }
 //wxz
 - (void)autoLogin{

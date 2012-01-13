@@ -35,7 +35,7 @@
 #define ACCOUNT_REMAINING_COUNT [NSString stringWithFormat:@"%@/a/accounts/get_account_remaining/?id=",DOMAIN_NAME]
 #define FORGET_PASSWORD [NSString stringWithFormat:@"%@/a/accounts/forget_password/",DOMAIN_NAME]
 #define CHANGE_PASSWORD [NSString stringWithFormat:@"%@/a/accounts/change_password/",DOMAIN_NAME]
-#define CHANGE_PASSWORD_RANDOM_LOGIN [NSString stringWithFormat:@"%@/a/accounts/change_password_random_login/",DOMAIN_NAME]
+#define CHANGE_PASSWORD_RANDOM_LOGIN [NSString stringWithFormat:@"%@/a/accounts/change_password_by_find_pwd/",DOMAIN_NAME]
 //binding_url_group wj
 //whole profile get
 #define PROFILE_GET [NSString stringWithFormat:@"%@/a/accounts/get_profile/",DOMAIN_NAME]

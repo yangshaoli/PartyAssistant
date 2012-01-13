@@ -15,6 +15,8 @@
 #import "NotificationSettings.h"
 #import "HTTPRequestErrorMSG.h"
 #import "UIViewControllerExtra.h"
+#import "DataManager.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -118,6 +120,10 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    if([DataManager sharedDataManager].isRandomLoginSelf){
+        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    }
     [self refreshBtnAction];
     [self.tableView reloadData];
      
