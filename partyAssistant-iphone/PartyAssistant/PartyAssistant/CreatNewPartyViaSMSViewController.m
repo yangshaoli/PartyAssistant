@@ -843,6 +843,10 @@
     [self rearrangeContactNameTFContent];
 }
 
+- (void)selectedCancelInController:(UIViewController *)vc {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
 - (void)selectedFinishedInController:(UIViewController *)vc {
     [self.navigationController dismissModalViewControllerAnimated:YES];
 }

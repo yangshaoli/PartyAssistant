@@ -967,6 +967,10 @@
     [self layoutNameButtons];
 }
 
+- (void)selectedCancelInController:(UIViewController *)vc {
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+}
+
 - (void)selectedFinishedInController:(UIViewController *)vc {
     [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
 }
