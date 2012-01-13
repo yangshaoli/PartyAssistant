@@ -111,7 +111,7 @@ function validate_phone_bingding(isbind){
             return false;
         }
         if (type == 'email') {
-            if (!v.search(/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/) != -1){
+            if (!(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/).test(v)){
                 alert('请输入一个有效的 e-mail 地址');
                 return false;
             }

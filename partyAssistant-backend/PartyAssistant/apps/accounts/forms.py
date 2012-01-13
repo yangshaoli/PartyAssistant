@@ -1,10 +1,13 @@
 #coding=utf-8
 
 from django import forms
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms.util import ErrorList
+from django.shortcuts import redirect, HttpResponse
+
+from apps.accounts.models import AccountTempPassword
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(error_messages = {'required': u'用户名不能为空'}, max_length = 30)
@@ -13,11 +16,20 @@ class LoginForm(AuthenticationForm):
     def clean(self):
         username = self.cleaned_data.get('username')
         password = self.cleaned_data.get('password')
-
         if username and password:
             self.user_cache = authenticate(username = username, password = password)
             if self.user_cache is None:
-                raise forms.ValidationError("请输入正确的用户名、密码")
+                #临时密码登录
+                user_temp_pwd_list = AccountTempPassword.objects.filter(temp_password = password, user__username = username)
+                if user_temp_pwd_list:
+                    user = user_temp_pwd_list[0].user
+                    raise forms.ValidationError("临时登录成功")
+                else:
+                    raise forms.ValidationError("请输入正确的用户名、密码")
+                
+                #for user_temp_pwd in user_temp_pwd_list:
+                #    user_temp_pwd.delete()
+                
             elif not self.user_cache.is_active:
                 raise forms.ValidationError("该账户未激活")
         self.check_for_test_cookie()
