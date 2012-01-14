@@ -168,7 +168,16 @@ function validate_phone_bingding(isbind){
         var answer = confirm("是否解除该邮件的绑定？")
         if (answer){
             $.post('{%url unbinding %}', {'email': $("#id_email").val()}, function(response){
-                location.reload();
+                switch(response) {
+	                case 'record_already_exist': {
+                        alert('解除绑定邮件已经发送，请查看您的邮箱');
+                        break;
+                    }
+                    case 'success':{
+                        alert('解除绑定邮件发送成功，请查看您的邮箱');
+                        break;
+                    }
+                }
             })
         }
     }

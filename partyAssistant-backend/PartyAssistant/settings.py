@@ -111,6 +111,12 @@ MIDDLEWARE_CLASSES = (
     'middlewares.variant_template_middleware.VariantTemplateMiddleware',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.request",
+)
+
+
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (

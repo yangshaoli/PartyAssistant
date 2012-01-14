@@ -2,9 +2,8 @@
 import datetime
 import logging
 
-from apps.accounts.forms import GetPasswordForm, ChangePasswordForm, \
-    RegistrationForm, UserProfileForm, BuySMSForm
-from apps.accounts.models import UserAliReceipt, UserBindingTemp
+from apps.accounts.forms import *
+from apps.accounts.models import *
 from decimal import Decimal, InvalidOperation
 
 from django.db.transaction import commit_on_success
@@ -17,8 +16,6 @@ from django.template.context import RequestContext
 from django.template.response import TemplateResponse
 from django.utils import simplejson
 
-from apps.accounts.models import UserProfile, UserAliReceipt, UserBindingTemp, AccountTempPassword
-from apps.accounts.forms import ChangePasswordForm, RegistrationForm, UserProfileForm, BuySMSForm
 from settings import DOMAIN_NAME, ALIPAY_SELLER_EMAIL
 from utils.tools.alipay import Alipay
 from utils.tools.phone_key_tool import generate_phone_code
@@ -384,21 +381,43 @@ def email_binding(request):
             return HttpResponseRedirect('/accounts/profile')
 
 @login_required
+@commit_on_success
 def unbinding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
         phone = request.POST.get('phone', '')
         if email:
-            userprofile = UserProfile.objects.get(pk = request.user.id, email=email)
-            userprofile.email = ''
-            userprofile.email_binding_status = 'unbind'
+            key = hashlib.md5(email).hexdigest()
+            if UserBindingTemp.objects.filter(key = key).count() == 0:
+                UserBindingTemp.objects.create(user = request.user, binding_type = 'email', key = key, binding_address = email)
+                return HttpResponse("success")
+            else:
+                return HttpResponse("record_already_exist")
+
         if phone:
             userprofile = UserProfile.objects.get(pk = request.user.id, phone=phone)
             userprofile.phone = ''
             userprofile.phone_binding_status = 'unbind'
         userprofile.save()
         return HttpResponse("success")
+    else:
+        key = request.GET.get('key', '')
+        if key:
+            try:
+                UserBindingTemp.objects.get(key = key)
+            except:
+                return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
+            else:
+                record = UserBindingTemp.objects.get(key = key)
+            user = User.objects.get(pk = record.user.id)
+            userprofile = user.get_profile()
+            userprofile.email = ''
+            userprofile.email_binding_status = 'unbind'
+            userprofile.save()
+            record.delete()
+            return HttpResponseRedirect('/accounts/profile')
 
+        
 @commit_on_success
 def forget_password(request):
     if request.method == 'POST':
@@ -412,12 +431,8 @@ def forget_password(request):
         #判断发送方式
         if user.userprofile.phone:
             sending_type = 'sms'
-            #value = user.userprofile.phone
-            return TemplateResponse(request, 'message.html', {'message': 'sendtophone'})
         elif user.userprofile.email:
             sending_type = "email"
-            #value = user.userprofile.email
-            return TemplateResponse(request, 'message.html', {'message': 'sendtoemail'})
         else:
             return TemplateResponse(request, 'message.html', {'message': 'nobinding'})
         
@@ -429,4 +444,24 @@ def forget_password(request):
         if not created:
             temp_pwd_data.sending_type = sending_type
             temp_pwd_data.save()
+        if sending_type == 'sms' : return TemplateResponse(request, 'message.html', {'message': 'sendtophone'})
+        if sending_type == 'email' : return TemplateResponse(request, 'message.html', {'message': 'sendtoemail'})
+        
     return TemplateResponse(request, 'accounts/forget_password.html')
+
+@commit_on_success
+def reset_password(request):
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            user = request.session['temp_login']
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            del request.session['temp_login']
+            return redirect('profile')
+        else:
+            return TemplateResponse(request, 'accounts/reset_password.html', {'form': form})
+    else:
+        form = ResetPasswordForm()
+    
+    return TemplateResponse(request, 'accounts/reset_password.html')

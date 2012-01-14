@@ -35,5 +35,6 @@
  <script>
 document.getElementsByClassName('menu')[0].children[1].className = '';
 document.getElementsByClassName('menu')[1].children[0].className = 'active';
+{% if request.session.temp_login %} location.href = '/accounts/reset_password' {% endif %}
 </script>
 {% endblock %}

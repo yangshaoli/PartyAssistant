@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from utils.tools.sms_tool import sendsmsBindingmessage, send_forget_pwd_sms
-from utils.tools.email_tool import send_binding_email, send_forget_pwd_email
+from utils.tools.email_tool import send_binding_email,send_unbinding_email, send_forget_pwd_email
 import thread
 
 ACCOUNT_TYPE_CHOICES = (
@@ -146,8 +146,13 @@ def sendBindingMessage(sender = None, instance = None, **kwargs):
     if instance.binding_type == 'phone':
         thread.start_new_thread(sendsmsBindingmessage, (instance,))
         
-    if instance.binding_type == 'email':
-        thread.start_new_thread(send_binding_email, (instance,))
+    if instance.binding_type == 'email' :
+        userprofile = instance.user.get_profile()
+        if userprofile.email_binding_status == 'unbind':
+            thread.start_new_thread(send_binding_email, (instance,))
+        elif userprofile.email_binding_status == 'bind':
+            thread.start_new_thread(send_unbinding_email, (instance,))
+            
 
 signals.post_save.connect(sendBindingMessage, sender = UserBindingTemp)
 
