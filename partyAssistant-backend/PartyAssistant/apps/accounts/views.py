@@ -265,10 +265,16 @@ def validate_phone_bingding_ajax(request):#手机绑定验证
     #1.获取验证码
     #2.是否有验证码
     #.绑定/解绑成功
-    
-    userkey = request.POST.get('key', '')
-    
     data = {'status':''}
+    userkey = request.POST.get('key', '')
+    cphone = request.POST.get('phone', '')
+    phone_re = re.compile(r'1\d{10}')
+    match = phone_re.search(cphone)
+    if (not match.group()) or (len(cphone) != 11):
+        data['status'] = 'invalidate'
+        
+        return  HttpResponse(simplejson.dumps(data))
+    
     if userkey == '':
         data['status'] = 'null'
         
@@ -280,27 +286,28 @@ def validate_phone_bingding_ajax(request):#手机绑定验证
         binding_key = userbindingtemp.key
         if userkey == binding_key:
             phone = userbindingtemp.binding_address
-            #是否有用户已经绑定，该手机号码
-            exist = UserProfile.objects.filter(phone = phone, phone_binding_status__in = ['bind', 'waitunbind']).count() > 0
-            if exist:
-                data['status'] = 'used'
-                #如果已经被绑定了，我们应该将这个用户的手机号码清空，多余数据清空
+            #手机号码和待绑定是否匹配
+            if cphone == phone:
+                #是否有用户已经绑定，该手机号码
+                exist = UserProfile.objects.filter(phone = phone, phone_binding_status__in = ['bind', 'waitunbind']).count() > 0
                 profile = request.user.get_profile()
-                profile.phone = ''
-                profile.phone_binding_status = 'unbind'
-                profile.save()
-                for user_binding_tmp in user_binding_tmp_list:
-                    user_binding_tmp.delete()
-            else:#绑定操作
-                profile = request.user.get_profile()
-                profile.phone = userbindingtemp.binding_address
-                profile.phone_binding_status = 'bind'
+                if exist:
+                    data['status'] = 'used'
+                    #如果已经被绑定了，我们应该将这个用户的手机号码清空，多余数据清空
+                    profile.phone = ''
+                    profile.phone_binding_status = 'unbind'
+                else:#绑定操作
+                    profile = request.user.get_profile()
+                    profile.phone = userbindingtemp.binding_address
+                    profile.phone_binding_status = 'bind'
+                    data['status'] = 'success'
+                    
+                profile.save()    
                 #删除临时表
                 for user_binding_tmp in user_binding_tmp_list:
                     user_binding_tmp.delete()
-                    
-                profile.save()
-                data['status'] = 'success'
+            else:
+                data['status'] = 'phone_not_equal'                
         else:
             data['status'] = 'wrongkey'
     else :        
