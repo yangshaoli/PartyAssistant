@@ -177,7 +177,7 @@ def forgetPassword(request):
         value = request.POST['value']
         if re_email.match(value):
             try:
-                user = User.objects.get(userprofile__email = value)
+                user = User.objects.get(userprofile__email = value, userprofile__email_binding_status = 'bind')
             except Exception:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_EMAIL)
             sending_type = 'email'
@@ -186,17 +186,17 @@ def forgetPassword(request):
                 user = User.objects.get(username = value)
             except Exception:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME)
-            if user.userprofile.phone:
+            if user.userprofile.phone and user.userprofile.phone_binding_status == 'bind':
                 sending_type = 'sms'
                 value = user.userprofile.phone
-            elif user.userprofile.email:
+            elif user.userprofile.email and user.userprofile.email_binding_status == 'bind':
                 sending_type = "email"
                 value = user.userprofile.email
             else:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME_NO_BINDING)
         elif re_phone.match(regPhoneNum(value)):
             try:
-                user = User.objects.get(userprofile__phone = regPhoneNum(value))
+                user = User.objects.get(userprofile__phone = regPhoneNum(value), userprofile__phone_binding_status = 'bind')
             except Exception:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_SMS)
             sending_type = 'sms'
