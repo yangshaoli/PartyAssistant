@@ -87,7 +87,7 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -95,23 +95,23 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        return self.inputMailCell;
-    } else if (indexPath.section == 1) {
-        return self.mailValidateCell;
-    } else if (indexPath.section == 2) {
+//    if (indexPath.section == 0) {
+//        return self.inputMailCell;
+//    } else if (indexPath.section == 1) {
+//        return self.mailValidateCell;
+//    } else if (indexPath.section == 2) {
         return self.mailResendValidateCell;
-    }
-    return nil;
+//    }
+//    return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 1) {
-        [self sendMailVerify];
-    } else if (indexPath.section == 2) {
+//    if (indexPath.section == 1) {
+//        [self sendMailVerify];
+//    } else if (indexPath.section == 2) {
         [self resendMailVerifyCode];
-    }
+//    }
 }
 
 - (void)resendMailVerifyCode {

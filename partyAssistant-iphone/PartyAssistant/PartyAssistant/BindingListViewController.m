@@ -45,8 +45,6 @@
 
 @implementation BindingListViewController
 @synthesize tableView = _tableView;
-@synthesize IDCell = _IDCell;
-@synthesize countCell = _countCell;
 @synthesize nameBindingCell = _nameBindingCell;
 @synthesize telBindingCell = _telBindingCell;
 @synthesize mailBindingCell = _mailBindingCell;
@@ -76,7 +74,8 @@
 #pragma mark - View lifecycle
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self refreshCurrentStatus];
+    
+    [self.tableView reloadData];
     
     self.userAccountLabel.text = @"更新中";
     
@@ -87,7 +86,6 @@
 {
     [super viewDidLoad];
     self.navigationItem.title = @"用户绑定";
-    [self refreshCurrentStatus];
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
@@ -115,58 +113,39 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    [self refreshCurrentStatus];
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return 2;
-    } else if (section == 1) {
-        return 3;
-    }
-    return 0;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        switch (indexPath.row) {
-            case 0:
-                return self.IDCell;
-                break;
-            case 1:    
-                return self.countCell;
-                break;
-        } 
-    } else if (indexPath.section == 1) {
-        switch (indexPath.row) {
-            case 0:
-                return self.nameBindingCell;
-                break;
-            case 1:    
-                return self.telBindingCell;
-                break;
-            case 2:
-                return self.mailBindingCell;
-                break;
-        }
+       switch (indexPath.row) {
+        case 0:
+            return self.nameBindingCell;
+            break;
+        case 1:    
+            return self.telBindingCell;
+            break;
+        case 2:
+            return self.mailBindingCell;
+            break;
     }
     return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
     
-    } else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
-            [self.navigationController pushViewController:nameBindingVC animated:YES]; 
-        } else if (indexPath.row == 1) {
-            [self decideToOpenWhichTelBindingPage];
-        } else if (indexPath.row == 2) {
-            [self decideToOpenWhichMailBindingPage];
-        }
-
+    if (indexPath.row == 0) {
+        NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:nameBindingVC animated:YES]; 
+    } else if (indexPath.row == 1) {
+        [self decideToOpenWhichTelBindingPage];
+    } else if (indexPath.row == 2) {
+        [self decideToOpenWhichMailBindingPage];
     }
 }
 

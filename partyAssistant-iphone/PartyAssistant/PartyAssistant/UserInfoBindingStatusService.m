@@ -245,7 +245,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
             return StatusVerifyUnbinding;
         } else {
             if ([[[self getBindingStatusObject] bindedMail] isEqualToString:@""]) {
-                return StatusVerifyUnbinding;
+                return StatusVerifyBinding;
             }
             return StatusVerifyBinding;
         }
@@ -261,7 +261,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
             return StatusVerifyUnbinding;
         } else {
             if ([[[self getBindingStatusObject] bindedTel] isEqualToString:@""]) {
-                return StatusVerifyUnbinding;
+                return StatusVerifyBinding;
             }
             return StatusVerifyBinding;
         }

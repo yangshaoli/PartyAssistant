@@ -832,9 +832,10 @@
         
         pickerStatus = ButtonPeoplePickerStatusSearching;
         
-        [self.buttonView reloadInputViews];
         self.searchField.inputAccessoryView = nil;
         [self.toolbar removeFromSuperview];
+        
+        [self.buttonView reloadInputViews];
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
@@ -847,9 +848,9 @@
         
         pickerStatus = ButtonPeoplePickerStatusShowing;
         
-        [self.buttonView reloadInputViews];
         self.searchField.inputAccessoryView = self.toolbar;
         [self.searchField reloadInputViews];
+        [self.buttonView reloadInputViews];
     }
 }
 

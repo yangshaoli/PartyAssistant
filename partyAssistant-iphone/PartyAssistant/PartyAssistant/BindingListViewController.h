@@ -15,8 +15,7 @@
 }
 
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) IBOutlet UITableViewCell *IDCell;
-@property (nonatomic, strong) IBOutlet UITableViewCell *countCell;
+
 @property (nonatomic, strong) IBOutlet UITableViewCell *nameBindingCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *telBindingCell;
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailBindingCell;
