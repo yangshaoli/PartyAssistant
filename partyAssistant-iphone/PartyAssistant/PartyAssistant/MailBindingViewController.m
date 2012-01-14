@@ -91,6 +91,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
         // go to verify view
         [self beginMailUpdate];
@@ -98,8 +99,18 @@
 }
 
 - (void)jumpToVerify {
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
+    BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectMailBindingStatus];
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-    [self.navigationController presentModalViewController:verifyPage animated:YES];
+    verifyPage.pageStatus = verifyPageStatus;
+    
+    [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
 - (void)beginMailUpdate {
@@ -125,7 +136,7 @@
     NSURL *url = [NSURL URLWithString:EMAIL_BIND];
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
     [request setPostValue:mailText forKey:@"value"];
     
     request.timeOutSeconds = 15;
@@ -146,10 +157,19 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-            NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
-            [self jumpToVerify];
+            BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+            userStatus.bindingMail = self.inputMailTextField.text;
+            
+            [self saveProfileDataFromResult:result];
+            
+            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的手机中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+            av.tag = 11001;
+            [av show];
+
         } else {
-            [self showAlertRequestFailed:description];	
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -168,5 +188,16 @@
     [self dismissWaiting];
 	NSError *error = [request error];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+#pragma mark - 
+#pragma mark alert delegate
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == 11001) {
+        [self jumpToVerify];
+    }
+    if (alertView.tag == 11112) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 @end

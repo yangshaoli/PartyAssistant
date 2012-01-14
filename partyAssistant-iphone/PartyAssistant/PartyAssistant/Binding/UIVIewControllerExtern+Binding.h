@@ -18,4 +18,6 @@
 
 - (BindingStatus)translateToLocalStatusFromString:(NSString *)statusString;
 
+- (void)showBindOperationFailed: (NSString *) theMessage;
+
 @end

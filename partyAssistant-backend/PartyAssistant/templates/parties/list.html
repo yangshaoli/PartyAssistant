@@ -56,6 +56,7 @@ iframe{
     {% ifequal send_status 'sms_success'%} 短信发送成功 {% endifequal %}
     {% ifequal send_status 'sms_fail'%} 短信发送成功 {% endifequal %}
     {% if sms_count %} 你剩余的短信数量为：{{ sms_count }} ,是否需要<a href='{% url buy_sms %}'>充值</a>？ {% endif %}
+    {% ifequal sms_count 0 %} 你剩余的短信数量为：{{ sms_count }} ,是否需要<a href='{% url buy_sms %}'>充值</a>？ {% endifequal %}
     </div>
     {% endif %}
  <div id="content">

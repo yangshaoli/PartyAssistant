@@ -73,6 +73,7 @@ def _post_api_request_sendSMS(params = {}):
  
 def sms_modem_send_sms(outbox_message, message, party):
     number_of_message = (len(message.content) + (SHORT_LINK_LENGTH if message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
+    userprofile = party.creator.get_profile()
     try:
         phone_list = outbox_message.address.split(',')
         if message.is_apply_tips:
@@ -82,12 +83,16 @@ def sms_modem_send_sms(outbox_message, message, party):
                 short_link = transfer_to_shortlink(enroll_link)
                 content = u'【爱热闹】%s 快来报名：%s' % (content, short_link)
                 data = {'Mobile':regPhoneNum(phone), 'Content':content.encode('gbk')}
+                
+                #短信扣除
+                userprofile.used_sms_count = userprofile.used_sms_count + number_of_message
+                userprofile.available_sms_count = userprofile.available_sms_count - number_of_message
+                userprofile.save()
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res != '1':
                         logger.error(res)
                 except:
-                    userprofile = party.creator.get_profile()
                     userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
                     userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
                     userprofile.save()
@@ -97,19 +102,22 @@ def sms_modem_send_sms(outbox_message, message, party):
             for phone in phone_list:
                 content = u'【爱热闹】' + message.content
                 data = {'Mobile':regPhoneNum(phone), 'Content':content.encode('gbk')}
+
+                #短信扣除
+                userprofile.used_sms_count = userprofile.used_sms_count + number_of_message
+                userprofile.available_sms_count = userprofile.available_sms_count - number_of_message
+                userprofile.save()
                 try:
                     res = _post_api_request_sendSMS(data)
                     if res != '1':
                         logger.error(res)
                 except:
-                    userprofile = party.creator.get_profile()
                     userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
                     userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
                     userprofile.save()
                     logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
     except:
-        userprofile = party.creator.get_profile()
         userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
         userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
         userprofile.save()
