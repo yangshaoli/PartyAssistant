@@ -233,6 +233,12 @@ def bindContact(request, type):
                                  'phone_binding_status':user.userprofile.phone_binding_status,
                                  }
                 }
+        #数据有效性验证
+        if type == 'email' and not re_email.match(value):
+            raise myException(ERROR_BINDING_INVAILID_EMAIL_FORMMAT)
+        if type == 'phone' and not re_phone.match(regPhoneNum(value)):
+            raise myException(ERROR_BINDING_INVAILID_PHONE_FORMMAT)
+            
         if type == 'email' and user.userprofile.email_binding_status == 'bind':
             if user.userprofile.email == value:
                 raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
@@ -247,7 +253,8 @@ def bindContact(request, type):
             raise myException(ERROR_BINDING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
-
+        if type == 'phone':
+            value = regPhoneNum(value)
         binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
         if not created:
             binding_temp.binding_addres = value
