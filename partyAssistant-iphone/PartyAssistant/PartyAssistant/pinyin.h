@@ -8,4 +8,8 @@
  */
 
 #define ALPHA	@"ABCDEFGHIJKLMNOPQRSTUVWXYZ#"
+
+#define ENHANCEALPHA @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#"
+
 char pinyinFirstLetter(unsigned short hanzi);
+int checkIsEnglishLetter(unsigned short hanzi);
