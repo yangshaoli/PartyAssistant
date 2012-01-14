@@ -268,7 +268,7 @@
 	// If this is the last row in filteredPeople, take special action
 	if (filteredPeople.count == indexPath.row)
     {
-		cell.textLabel.text	= @"Add Person";
+		cell.textLabel.text	= @"添加联系人";
 		cell.labelTF.text = nil;
         cell.phoneNumber = nil;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -577,7 +577,7 @@
 	CGFloat Begin_PADDING = 8.0f;
     CGFloat End_PADDING = 38.0f;
 	CGFloat maxWidth = buttonView.frame.size.width - Begin_PADDING - End_PADDING;
-	CGFloat xPosition = Begin_PADDING + 30.f;
+	CGFloat xPosition = Begin_PADDING + 65.f;
 	CGFloat yPosition = Ver_PADDING;
     CGFloat minWidth = maxWidth / 3;
     
@@ -661,9 +661,9 @@
 		} else {
             if (rowCount == 0) {
                 if (colCount == 0) {
-                    if (nameSize.width  > (self.buttonView.frame.size.width - (Begin_PADDING * 8)))
+                    if (nameSize.width  > (self.buttonView.frame.size.width - (Begin_PADDING * 13)))
                     {
-                        nameSize.width = self.buttonView.frame.size.width - (Begin_PADDING * 8);
+                        nameSize.width = self.buttonView.frame.size.width - (Begin_PADDING * 13);
                     }
                 } else {
                     if (nameSize.width  > (self.buttonView.frame.size.width - (Begin_PADDING * 4)))

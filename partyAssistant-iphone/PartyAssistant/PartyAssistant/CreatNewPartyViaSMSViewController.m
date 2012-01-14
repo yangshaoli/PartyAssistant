@@ -302,15 +302,15 @@
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipient", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipient", leftCount];   
+                        [contactNameTFContent appendFormat:@"&%d个联系人", leftCount];   
                     }
                 } else {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipients", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
+                        [contactNameTFContent appendFormat:@"&%d个联系人", leftCount];   
                     }
                 }
                 break;
