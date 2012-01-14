@@ -10,6 +10,7 @@ def apis_json_response_decorator(func):
     def new_func(*args, **kargs):
         try:
             datasource = func(*args, **kargs)
+            print datasource
             data = {
                     'status':"ok",
                     'description':"ok",

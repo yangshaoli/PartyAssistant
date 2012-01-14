@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "UserInfoBindingStatusService.h"
 
 @interface MailValidateViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
@@ -14,7 +15,7 @@
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *inputMailCell;
-@property (nonatomic, strong) IBOutlet UITextField *inputMailTextField;
+@property (nonatomic, strong) IBOutlet UITextField *inputCodeTextField;
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailValidateCell;
 

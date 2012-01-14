@@ -251,6 +251,10 @@
 		CEA4179514A872F300497186 /* new2.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179114A872F300497186 /* new2.png */; };
 		CEA4179614A872F300497186 /* reinvite_word.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179214A872F300497186 /* reinvite_word.png */; };
 		CEA4179714A872F300497186 /* reinvite.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179314A872F300497186 /* reinvite.png */; };
+		CEAB66B014BFD04F006A42FE /* ChangePasswordTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB66AE14BFD04F006A42FE /* ChangePasswordTableVC.m */; };
+		CEAB66B114BFD04F006A42FE /* ChangePasswordTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEAB66AF14BFD04F006A42FE /* ChangePasswordTableVC.xib */; };
+		CEAB66CA14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB66C814C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m */; };
+		CEAB66CB14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEAB66C914C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib */; };
 		CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */; };
 		CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */; };
 		CEB072C8149EDE9A0056F7B5 /* PartyDetailTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */; };
@@ -664,6 +668,12 @@
 		CEA4179114A872F300497186 /* new2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new2.png; sourceTree = "<group>"; };
 		CEA4179214A872F300497186 /* reinvite_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reinvite_word.png; sourceTree = "<group>"; };
 		CEA4179314A872F300497186 /* reinvite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reinvite.png; sourceTree = "<group>"; };
+		CEAB66AD14BFD04F006A42FE /* ChangePasswordTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangePasswordTableVC.h; sourceTree = "<group>"; };
+		CEAB66AE14BFD04F006A42FE /* ChangePasswordTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangePasswordTableVC.m; sourceTree = "<group>"; };
+		CEAB66AF14BFD04F006A42FE /* ChangePasswordTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangePasswordTableVC.xib; sourceTree = "<group>"; };
+		CEAB66C714C002F2006A42FE /* ChangePasswordRandomLoginTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangePasswordRandomLoginTableVC.h; sourceTree = "<group>"; };
+		CEAB66C814C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangePasswordRandomLoginTableVC.m; sourceTree = "<group>"; };
+		CEAB66C914C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangePasswordRandomLoginTableVC.xib; sourceTree = "<group>"; };
 		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
 		CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListTableVC.m; path = ../PartyListTableVC.m; sourceTree = "<group>"; };
 		CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyListTableVC.xib; path = ../PartyListTableVC.xib; sourceTree = "<group>"; };
@@ -1164,6 +1174,12 @@
 				75C029421494913600067730 /* PurchaseListViewController.h */,
 				75C029431494913600067730 /* PurchaseListViewController.m */,
 				75C029441494913600067730 /* PurchaseListViewController.xib */,
+				CEAB66AD14BFD04F006A42FE /* ChangePasswordTableVC.h */,
+				CEAB66AE14BFD04F006A42FE /* ChangePasswordTableVC.m */,
+				CEAB66AF14BFD04F006A42FE /* ChangePasswordTableVC.xib */,
+				CEAB66C714C002F2006A42FE /* ChangePasswordRandomLoginTableVC.h */,
+				CEAB66C814C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m */,
+				CEAB66C914C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -1710,6 +1726,8 @@
 				CE5B255D14B5D06900FBBDDA /* apply.png in Resources */,
 				CE5B255E14B5D06900FBBDDA /* apply@2x.png in Resources */,
 				CE0B288D14BBDE57001EAEE8 /* ForgetPassword.xib in Resources */,
+				CEAB66B114BFD04F006A42FE /* ChangePasswordTableVC.xib in Resources */,
+				CEAB66CB14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1881,8 +1899,10 @@
 				75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */,
 				75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */,
 				75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */,
+				CEAB66B014BFD04F006A42FE /* ChangePasswordTableVC.m in Sources */,
 				7AF4B44C14BD80D300F1E787 /* UserInfoValidator.m in Sources */,
 				75908EAB14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m in Sources */,
+				CEAB66CA14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

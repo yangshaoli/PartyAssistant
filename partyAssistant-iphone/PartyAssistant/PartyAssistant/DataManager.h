@@ -17,7 +17,10 @@ typedef enum {
 
 
 @interface DataManager : NSObject
-
+{
+    BOOL isRandomLoginSelf;
+}
+@property(nonatomic,assign)BOOL isRandomLoginSelf;
 + (DataManager *)sharedDataManager;
 - (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
 - (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo;

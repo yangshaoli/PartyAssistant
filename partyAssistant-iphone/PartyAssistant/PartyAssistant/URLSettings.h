@@ -34,6 +34,8 @@
 //wj
 #define ACCOUNT_REMAINING_COUNT [NSString stringWithFormat:@"%@/a/accounts/get_account_remaining/?id=",DOMAIN_NAME]
 #define FORGET_PASSWORD [NSString stringWithFormat:@"%@/a/accounts/forget_password/",DOMAIN_NAME]
+#define CHANGE_PASSWORD [NSString stringWithFormat:@"%@/a/accounts/change_password/",DOMAIN_NAME]
+#define CHANGE_PASSWORD_RANDOM_LOGIN [NSString stringWithFormat:@"%@/a/accounts/change_password_by_find_pwd/",DOMAIN_NAME]
 //binding_url_group wj
 //whole profile get
 #define PROFILE_GET [NSString stringWithFormat:@"%@/a/accounts/get_profile/",DOMAIN_NAME]
@@ -43,8 +45,8 @@
 //2.phone
 #define PHONE_BIND [NSString stringWithFormat:@"%@/a/accounts/bind/phone/",DOMAIN_NAME]
 #define PHONE_UNBIND [NSString stringWithFormat:@"%@/a/accounts/unbind/phone/",DOMAIN_NAME]
-#define PHONE_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/bind/phone/",DOMAIN_NAME]
+#define PHONE_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/phone/",DOMAIN_NAME]
 //3.email
 #define EMAIL_BIND [NSString stringWithFormat:@"%@/a/accounts/bind/email/",DOMAIN_NAME]
 #define EMAIL_UNBIND [NSString stringWithFormat:@"%@/a/accounts/unbind/email/",DOMAIN_NAME]
-#define EMAIL_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/bind/phone/",DOMAIN_NAME]
+#define EMAIL_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/phone/",DOMAIN_NAME]

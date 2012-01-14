@@ -24,10 +24,11 @@
 #import "ASIFormDataRequest.h"
 #import "URLSettings.h"
 #import "NotificationSettings.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
-
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
 @interface PartyLoginViewController()
 
 - (void)cleanKeyBoard;
@@ -141,6 +142,7 @@
 //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
 //    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
    // [keyString release]; 
+    
     if(user){
         if(user.uID > 0){
             [self pushToContentVC];
@@ -261,13 +263,11 @@
     
     //2.nav
     if (self.isModal) {
-        
+            
     } else {
-        //2
+            //2
         [self pushToContentVC];
     }
-    
-
 }
 
 - (void)showInvalidateNetworkalert {
@@ -369,15 +369,9 @@
         
     }
     [keyString release];
+    NSLog(@"打印isRandomLoginSelf  %@",BOOLStringOutput([DataManager sharedDataManager].isRandomLoginSelf));
+    
 }
-
-
-
-
-
-
-
-
 //wxz
 - (void)autoLogin{
     [self pushToContentVC];

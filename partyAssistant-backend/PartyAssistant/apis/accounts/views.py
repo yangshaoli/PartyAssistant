@@ -177,7 +177,7 @@ def forgetPassword(request):
         value = request.POST['value']
         if re_email.match(value):
             try:
-                user = User.objects.get(userprofile__email = value)
+                user = User.objects.get(userprofile__email = value, userprofile__email_binding_status = 'bind')
             except Exception:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_EMAIL)
             sending_type = 'email'
@@ -186,17 +186,17 @@ def forgetPassword(request):
                 user = User.objects.get(username = value)
             except Exception:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME)
-            if user.userprofile.phone:
+            if user.userprofile.phone and user.userprofile.phone_binding_status == 'bind':
                 sending_type = 'sms'
                 value = user.userprofile.phone
-            elif user.userprofile.email:
+            elif user.userprofile.email and user.userprofile.email_binding_status == 'bind':
                 sending_type = "email"
                 value = user.userprofile.email
             else:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_USERNAME_NO_BINDING)
         elif re_phone.match(regPhoneNum(value)):
             try:
-                user = User.objects.get(userprofile__phone = regPhoneNum(value))
+                user = User.objects.get(userprofile__phone = regPhoneNum(value), userprofile__phone_binding_status = 'bind')
             except Exception:
                 raise myException(ERROR_FORGETPASSWORD_NO_USER_BY_SMS)
             sending_type = 'sms'
@@ -233,6 +233,12 @@ def bindContact(request, type):
                                  'phone_binding_status':user.userprofile.phone_binding_status,
                                  }
                 }
+        #数据有效性验证
+        if type == 'email' and not re_email.match(value):
+            raise myException(ERROR_BINDING_INVAILID_EMAIL_FORMMAT)
+        if type == 'phone' and not re_phone.match(regPhoneNum(value)):
+            raise myException(ERROR_BINDING_INVAILID_PHONE_FORMMAT)
+            
         if type == 'email' and user.userprofile.email_binding_status == 'bind':
             if user.userprofile.email == value:
                 raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
@@ -244,18 +250,23 @@ def bindContact(request, type):
             else:
                 raise myException(ERROR_BINDING_BY_PHONE_DIFFERENT_BINDED, status = ERROR_STATUS_DIFFERENT_BINDED, data = data)
         if type == 'email' and UserProfile.objects.filter(email = value, email_binding_status = 'bind').exclude(user = user).count() != 0:
-            raise myException(ERROR_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_BINDING_BY_EMAIL_HAS_BINDED_BY_OTHER , data = data)
+            raise myException(ERROR_BINDING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
-            raise myException(ERROR_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER , data = data)
-
+            raise myException(ERROR_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
+        if type == 'phone':
+            value = regPhoneNum(value)
         binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
         if not created:
             binding_temp.binding_addres = value
             binding_temp.key = userkey
             binding_temp.save()
         profile = user.get_profile()
-        profile.phone = value
-        profile.phone_binding_status = 'waitingbind'
+        if type == 'phone':
+            profile.phone = value
+            profile.phone_binding_status = 'waitingbind'
+        else:
+            profile.email = value
+            profile.email_binding_status = 'waitingbind'
         profile.save()
         data = {"latest_status":{
                                  'email':user.userprofile.email,
@@ -340,9 +351,9 @@ def verifyContact(request, type):
             raise myException(ERROR_VERIFY, status = ERROR_STATUS_INVALID_VERIFIER, data = data)
         # 确定app端的绑定邮箱/手机号未被别的用户使用
         if type == 'email' and UserProfile.objects.filter(email = value, email_binding_status = 'bind').exclude(user = user).count() != 0:
-            raise myException(ERROR_VERIFYING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_HAS_BINDED_BY_OTHER, data = data)
+            raise myException(ERROR_VERIFYING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER, data = data)
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
-            raise myException(ERROR_VERIFYING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_HAS_BINDED_BY_OTHER, data = data)
+            raise myException(ERROR_VERIFYING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER, data = data)
         
         #开始解绑
         binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
@@ -364,6 +375,8 @@ def verifyContact(request, type):
                 user.userprofile.phone_binding_status = 'unbind'
                 user.userprofile.phone = ''
                 user.userprofile.save()
+        for binding in binding_temp:
+            binding.delete()
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,

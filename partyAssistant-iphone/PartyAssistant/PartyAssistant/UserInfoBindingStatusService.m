@@ -83,13 +83,13 @@
 - (NSString *)translateStatusCodeToString : (BindingStatus)status {
     switch (status) {
         case StatusBinding :
-            return @"绑定中";
+            return @"待验证";
         case StatusVerifyBinding :
-            return @"待绑定";
+            return @"待验证";
         case StatusUnbinding :
-            return @"解绑中";
+            return @"待验证";
         case StatusVerifyUnbinding :
-            return @"解绑中";
+            return @"待验证";
         case StatusBinded :
             return @"已绑定";
         case StatusNotBind:
@@ -101,14 +101,23 @@
 }
 
 - (NSString *)nickNameStatusString {
+    if (self.nicknameBindingStatus == StatusBinded) {
+        return self.bindedNickname;
+    }
     return [self translateStatusCodeToString:self.nicknameBindingStatus];
 }
 
 - (NSString *)telStatusString {
+    if (self.telBindingStatus == StatusBinded) {
+        return self.bindedTel;
+    }
     return [self translateStatusCodeToString:self.telBindingStatus];
 }
 
 - (NSString *)mailStatusString {
+    if (self.mailBindingStatus == StatusBinded) {
+        return self.bindedMail;
+    }
     return [self translateStatusCodeToString:self.mailBindingStatus];
 }
 @end
@@ -235,6 +244,9 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
         if ([[[self getBindingStatusObject] bindingMail] isEqualToString:@""]) {
             return StatusVerifyUnbinding;
         } else {
+            if ([[[self getBindingStatusObject] bindedMail] isEqualToString:@""]) {
+                return StatusVerifyUnbinding;
+            }
             return StatusVerifyBinding;
         }
     } else {
@@ -248,6 +260,9 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
         if ([[[self getBindingStatusObject] bindingTel] isEqualToString:@""]) {
             return StatusVerifyUnbinding;
         } else {
+            if ([[[self getBindingStatusObject] bindedTel] isEqualToString:@""]) {
+                return StatusVerifyUnbinding;
+            }
             return StatusVerifyBinding;
         }
     } else {
