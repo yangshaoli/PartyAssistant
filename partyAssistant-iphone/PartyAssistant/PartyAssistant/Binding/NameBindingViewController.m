@@ -105,15 +105,6 @@
 
 - (void)beginInfoUpdate {
     NSString *nickname = self.nickNameInputTextField.text;
-    if (!nickname || [nickname isEqualToString:@""]) {
-        [self showAlertWithTitle:@"警告" Message:@"不能输入空值！"];
-        return;
-    }
-    
-    if (nickname.length < 6) {
-        [self showAlertWithTitle:@"警告" Message:@"输入不能少于6个字符！"];
-        return;
-    }
     
     if (nickname.length > 16) {
         [self showAlertWithTitle:@"警告" Message:@"最多输入16个字符！"];
