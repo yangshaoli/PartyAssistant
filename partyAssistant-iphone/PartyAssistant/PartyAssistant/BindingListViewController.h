@@ -27,4 +27,8 @@
 @property (nonatomic, strong) IBOutlet UILabel *nameBindingStatusLabel;
 @property (nonatomic, strong) IBOutlet UILabel *telBindingStatusLabel;
 @property (nonatomic, strong) IBOutlet UILabel *mailBindingStatusLabel;
+
+@property (nonatomic, strong) IBOutlet UILabel *mailBindingInfoLabel;
+@property (nonatomic, strong) IBOutlet UILabel *telBindingInfoLabel;
+
 @end

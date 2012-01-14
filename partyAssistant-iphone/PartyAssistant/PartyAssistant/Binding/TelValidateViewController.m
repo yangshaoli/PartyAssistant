@@ -62,13 +62,13 @@
     
     if (self.pageStatus == StatusVerifyBinding) {
         self.navigationItem.title = @"绑定";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
     } else {
         self.navigationItem.title = @"解除绑定";
     }
     
-    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleBordered target:self action:@selector(closePage)];
     self.navigationItem.leftBarButtonItem = closeBtn;
     
     

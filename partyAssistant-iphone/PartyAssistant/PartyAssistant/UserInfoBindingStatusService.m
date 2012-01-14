@@ -108,16 +108,16 @@
 }
 
 - (NSString *)telStatusString {
-    if (self.telBindingStatus == StatusBinded) {
-        return self.bindedTel;
-    }
+//    if (self.telBindingStatus == StatusBinded) {
+//        return self.bindedTel;
+//    }
     return [self translateStatusCodeToString:self.telBindingStatus];
 }
 
 - (NSString *)mailStatusString {
-    if (self.mailBindingStatus == StatusBinded) {
-        return self.bindedMail;
-    }
+//    if (self.mailBindingStatus == StatusBinded) {
+//        return self.bindedMail;
+//    }
     return [self translateStatusCodeToString:self.mailBindingStatus];
 }
 @end

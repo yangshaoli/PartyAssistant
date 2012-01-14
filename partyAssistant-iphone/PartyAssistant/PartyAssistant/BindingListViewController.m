@@ -53,6 +53,8 @@
 @synthesize nameBindingStatusLabel = _nameBindingStatusLabel;
 @synthesize telBindingStatusLabel = _telBindingStatusLabel;
 @synthesize mailBindingStatusLabel = _mailBindingStatusLabel;
+@synthesize mailBindingInfoLabel = _mailBindingInfoLabel;
+@synthesize telBindingInfoLabel = _telBindingInfoLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -154,6 +156,29 @@
     self.nameBindingStatusLabel.text = [storedStatusService nickNameStatusString];
     self.telBindingStatusLabel.text = [storedStatusService telStatusString ];
     self.mailBindingStatusLabel.text = [storedStatusService mailStatusString];
+    
+    BindingStatus telBindingStatus = [storedStatusService detectTelBindingStatus];
+    BindingStatus mailBindingStatus = [storedStatusService detectMailBindingStatus];
+    
+    NSString *telInfoString = nil;
+    if (telBindingStatus == StatusVerifyBinding) {
+        telInfoString = [storedStatusService bindingTel]; 
+    } else if (telBindingStatus == StatusVerifyUnbinding) {
+        telInfoString = @"";
+    } else {
+        telInfoString = @"";
+    }
+    self.telBindingInfoLabel.text = telInfoString;
+    
+    NSString *mailInfoString = nil;
+    if (mailBindingStatus == StatusVerifyBinding) {
+        mailInfoString = [storedStatusService bindingMail];
+    } else if (mailBindingStatus == StatusVerifyUnbinding) {
+        mailInfoString = @"";
+    } else {
+        mailInfoString = @"";
+    }
+    self.mailBindingInfoLabel.text = mailInfoString;
 }
 
 - (void)decideToOpenWhichTelBindingPage {
