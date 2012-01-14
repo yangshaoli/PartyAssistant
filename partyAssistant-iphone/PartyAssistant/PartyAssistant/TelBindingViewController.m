@@ -115,7 +115,8 @@
     
     BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-    verifyPage.pageStatus = verifyPageStatus;
+    //verifyPage.pageStatus = verifyPageStatus;
+    verifyPage.pageStatus = StatusVerifyBinding;
     
     [self.navigationController pushViewController:verifyPage animated:NO];
 }

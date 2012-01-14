@@ -56,6 +56,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[self mailTextField] setText:[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -106,7 +107,8 @@
 - (void)jumpToVerify {
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
     BindingStatus m_pageStatus = StatusVerifyUnbinding;
-    verifyPage.pageStatus = m_pageStatus;
+    //verifyPage.pageStatus = m_pageStatus;
+    verifyPage.pageStatus = StatusVerifyUnbinding;
     verifyPage.hidesBottomBarWhenPushed = YES;
     
     CATransition *transition = [CATransition animation];

@@ -59,8 +59,10 @@
         self.navigationItem.title = @"绑定";
         UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换邮箱" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
-    } else {
+    } else if (self.pageStatus == StatusVerifyUnbinding){
         self.navigationItem.title = @"解除绑定";
+    } else {
+        self.navigationItem.title = @"未知错误状态";
     }
     
     UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleBordered target:self action:@selector(closePage)];
@@ -84,7 +86,10 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
+        return 1;
+    }
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

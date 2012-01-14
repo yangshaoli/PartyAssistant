@@ -87,7 +87,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"用户绑定";
+    self.navigationItem.title = @"个人信息";
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
@@ -163,6 +163,8 @@
     NSString *telInfoString = nil;
     if (telBindingStatus == StatusVerifyBinding) {
         telInfoString = [storedStatusService bindingTel]; 
+    } else if (telBindingStatus == StatusBinded) {
+        telInfoString = [storedStatusService bindedTel];
     } else if (telBindingStatus == StatusVerifyUnbinding) {
         telInfoString = @"";
     } else {
@@ -173,6 +175,8 @@
     NSString *mailInfoString = nil;
     if (mailBindingStatus == StatusVerifyBinding) {
         mailInfoString = [storedStatusService bindingMail];
+    } else if (mailBindingStatus == StatusBinded) {
+        mailInfoString = [storedStatusService bindedMail];
     } else if (mailBindingStatus == StatusVerifyUnbinding) {
         mailInfoString = @"";
     } else {
@@ -252,7 +256,7 @@
                 
                 vc = nil;
                 
-                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectMailBindingStatus];
                 vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
                 [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
                 vc.navigationItem.hidesBackButton = YES;

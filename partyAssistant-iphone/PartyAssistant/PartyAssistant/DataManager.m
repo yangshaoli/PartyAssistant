@@ -178,7 +178,9 @@ static DataManager *sharedDataManager = nil;
             NSString *status = [dic objectForKey:@"status"];   
             NSLog(@"%@",description);
             if ([status isEqualToString:@"ok"]) {
-                [self saveUsrData:dic];
+                NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:dic];
+                [info setValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
+                [self saveUsrData:info];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
@@ -284,7 +286,10 @@ static DataManager *sharedDataManager = nil;
         
     }
     
-    userData.userName = [jsonValue objectForKey:@"username"];
+    NSString *userName = [jsonValue objectForKey:@"username"];
+    if (userName) {
+        userData.userName = userName;
+    }
     
     [userObjectService saveUserObject];
 }

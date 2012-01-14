@@ -830,11 +830,14 @@
 
         [UIView commitAnimations];
         
+        
         pickerStatus = ButtonPeoplePickerStatusSearching;
         
         self.searchField.inputAccessoryView = nil;
         [self.toolbar removeFromSuperview];
+        
         [self reloadInputViews];
+        
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
@@ -847,9 +850,11 @@
         
         pickerStatus = ButtonPeoplePickerStatusShowing;
         
+        [self reloadInputViews];
+        
         self.searchField.inputAccessoryView = self.toolbar;
         [self.searchField reloadInputViews];
-        [self reloadInputViews];
+        
     }
 }
 
