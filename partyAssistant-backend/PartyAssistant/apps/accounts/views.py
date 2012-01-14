@@ -381,21 +381,43 @@ def email_binding(request):
             return HttpResponseRedirect('/accounts/profile')
 
 @login_required
+@commit_on_success
 def unbinding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
         phone = request.POST.get('phone', '')
         if email:
-            userprofile = UserProfile.objects.get(pk = request.user.id, email=email)
-            userprofile.email = ''
-            userprofile.email_binding_status = 'unbind'
+            key = hashlib.md5(email).hexdigest()
+            if UserBindingTemp.objects.filter(key = key).count() == 0:
+                UserBindingTemp.objects.create(user = request.user, binding_type = 'email', key = key, binding_address = email)
+                return HttpResponse("success")
+            else:
+                return HttpResponse("record_already_exist")
+
         if phone:
             userprofile = UserProfile.objects.get(pk = request.user.id, phone=phone)
             userprofile.phone = ''
             userprofile.phone_binding_status = 'unbind'
         userprofile.save()
         return HttpResponse("success")
+    else:
+        key = request.GET.get('key', '')
+        if key:
+            try:
+                UserBindingTemp.objects.get(key = key)
+            except:
+                return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
+            else:
+                record = UserBindingTemp.objects.get(key = key)
+            user = User.objects.get(pk = record.user.id)
+            userprofile = user.get_profile()
+            userprofile.email = ''
+            userprofile.email_binding_status = 'unbind'
+            userprofile.save()
+            record.delete()
+            return HttpResponseRedirect('/accounts/profile')
 
+        
 @commit_on_success
 def forget_password(request):
     if request.method == 'POST':
