@@ -94,10 +94,21 @@
     // Do any additional setup after loading the view from its nib.
     
     //wxz
-    if([DataManager sharedDataManager].isRandomLoginSelf){
-        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
-        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  
+        //tab.selectedIndex=1;
+    }else{
+        if([DataManager sharedDataManager].isRandomLoginSelf){
+            ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+            [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];  
+            NSLog(@"creat-----");
+        }
     }
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -446,8 +457,10 @@
     
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
+    NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            [isCreatSucDefault setBool:YES forKey:@"isCreatSucDefault"];
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
@@ -513,6 +526,7 @@
             }
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
         } else {
+            [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
             [self showAlertRequestFailed:description];	
         }
     }else if([request responseStatusCode] == 404){

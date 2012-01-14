@@ -265,7 +265,7 @@
         _HUD = [[MBProgressHUD alloc] initWithView:self.view];
         [self.navigationController.view addSubview:_HUD];
         
-        _HUD.labelText = @"Loading";
+        _HUD.labelText = @"载入中";
         
         _HUD.delegate = self;
         
@@ -282,24 +282,24 @@
 - (void)showAlertWithMessage:(NSString *)message 
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
 }
 
 - (void)showInvalidateNetworkalert {
     [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
-                   buttonTitle:@"OK" 
+                   buttonTitle:@"好的" 
                            tag:InvalidateNetwork];
 }
 
 - (void)showRegistSuccessfulAlert {
     [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
-    [self showAlertWithMessage:@"登出成功！" buttonTitle:@"OK" tag:SuccessfulTag];
+    [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"无法完成登出！" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"无法完成登出！" buttonTitle:@"好的" tag:NotPassTag];
 }
 
 - (void)tryConnectToServer {

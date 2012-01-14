@@ -612,7 +612,7 @@
 }
 
 - (void)alertError:(NSString *)errorStr{
-    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"出错了！" message:errorStr delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"出错了！" message:errorStr delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     [alertV show];
 }
 
