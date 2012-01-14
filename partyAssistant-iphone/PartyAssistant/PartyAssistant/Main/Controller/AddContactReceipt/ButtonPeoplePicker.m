@@ -327,17 +327,15 @@
 	if (indexPath.row == filteredPeople.count)
     {
 		//[self displayAddPersonViewController];
-        ClientObject *newClient = nil;
-        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
-        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([newPhoneName length] == 0) {
-            return;
-        } else {
-            newClient = [[ClientObject alloc] init];
-            newClient.cVal = newPhoneName;
-            newClient.cName = @"";
-            [self addPersonToGroup:newClient];
-        }
+//        ClientObject *newClient = nil;
+//        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+//        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+//        if ([newPhoneName length] == 0) {
+//            return;
+//        } else {
+        [self textFieldShouldReturn:self.searchField];
+//        }
+        return;
 	}
 	else
     {

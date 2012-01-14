@@ -47,7 +47,7 @@
         if (telCurrentStatus != StatusBinding) {
             [userObject setBindingTel:@""];
             if (tel) {
-                [userObject setBindingTel:tel];
+                [userObject setBindedTel:tel];
             }
         } else {
             if (tel) {
@@ -64,7 +64,7 @@
         if (emailCurrentStatus != StatusBinding) {
             [userObject setBindingMail:@""];
             if (email) {
-                [userObject setBindingMail:email];
+                [userObject setBindedMail:email];
             }
         } else {
             if (email) {
