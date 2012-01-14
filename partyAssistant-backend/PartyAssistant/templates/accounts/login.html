@@ -23,12 +23,7 @@
      </label>
      <input name='password' type='password'  id="id_password" placeholder='6-16字符'><font color="red">{{ form.password.errors.0 }}</font>
      </div>
-     <!--div class="field">
-     	<label>
-     		&nbsp;
-     	</label>
-     	<font color="red">{{ form.non_field_errors.0 }}</font>
-     </div-->
+     <a href="{%url forget_password %}"><font color="red">忘记密码？</font></a>
      <div class="submit_field">
      <input type="hidden" name="next" value="{{ next }}" />
       <input id="id_login_submit" type="submit" value="登录" />

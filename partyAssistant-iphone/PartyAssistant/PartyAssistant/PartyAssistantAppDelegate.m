@@ -8,7 +8,7 @@
 
 #import "PartyAssistantAppDelegate.h"
 #import "AddressBookDataManager.h"
-
+#import "UIViewControllerExtra.h"
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -194,7 +194,7 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 {
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?id=%@",GET_USER_BADGE_NUM,uid]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -204,19 +204,39 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     [av show];
 }
 
+- (void)getVersionFromRequestDic:(NSDictionary *)result{
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *newVersionString = [result objectForKey:@"version"];
+    if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
+        return;
+    }else{
+        NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if([newVersionString floatValue]>[preVersionString floatValue]){
+            [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+            [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
+        }else{
+            [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
+        }
+    }
+}
 - (void)requestFinished:(ASIHTTPRequest *)request{
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
     //	[self dismissWaiting];
     if([request responseStatusCode] == 200){
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             NSNotification *notification = [NSNotification notificationWithName:ADD_BADGE_TO_TABBAR object:nil userInfo:[[NSDictionary alloc] initWithObjectsAndKeys:[dataSource objectForKey:@"badgeNum"],@"badge",nil]];
             [[NSNotificationCenter defaultCenter] postNotification:notification];
+        }else{
+            [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];

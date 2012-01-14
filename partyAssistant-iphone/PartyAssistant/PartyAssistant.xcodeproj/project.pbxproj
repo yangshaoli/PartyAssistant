@@ -16,10 +16,18 @@
 		7528DAF314AB1E7200236609 /* PeoplePickerCustomCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAE914AB1E7200236609 /* PeoplePickerCustomCell.m */; };
 		7528DAF414AB1E7200236609 /* ShadowedTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7528DAEB14AB1E7200236609 /* ShadowedTableView.m */; };
 		7528DAFB14AB22A300236609 /* ButtonPeoplePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */; };
+		7574BE9F14B2D0E3007651EE /* BindingListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7574BE9D14B2D0E3007651EE /* BindingListViewController.m */; };
+		7574BEA014B2D0E3007651EE /* BindingListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */; };
+		7574BEA714B2D7CF007651EE /* NameBindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7574BEA514B2D7CF007651EE /* NameBindingViewController.m */; };
+		7574BEA814B2D7CF007651EE /* NameBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */; };
+		75908EAB14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m in Sources */ = {isa = PBXBuildFile; fileRef = 75908EAA14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m */; };
 		75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */; };
 		75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */; };
 		75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */; };
 		75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */; };
+		75B41DDB14BD7463005F9A46 /* MailValidateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B41DD914BD7462005F9A46 /* MailValidateViewController.m */; };
+		75B41DDC14BD7463005F9A46 /* MailValidateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */; };
+		75B41DEF14BD9386005F9A46 /* UserInfoBindingStatusService.m in Sources */ = {isa = PBXBuildFile; fileRef = 75B41DEE14BD9386005F9A46 /* UserInfoBindingStatusService.m */; };
 		75BC083914987E20007B39CB /* DeviceDetection.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083814987E20007B39CB /* DeviceDetection.m */; };
 		75BC083D14989113007B39CB /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 75BC083C14989113007B39CB /* RegexKitLite.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		75BC083F1498916E007B39CB /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 75BC083E1498916E007B39CB /* libicucore.dylib */; };
@@ -28,8 +36,18 @@
 		75C0294014948F2000067730 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75C0293F14948F2000067730 /* StoreKit.framework */; };
 		75C029451494913600067730 /* PurchaseListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C029431494913600067730 /* PurchaseListViewController.m */; };
 		75C029461494913600067730 /* PurchaseListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C029441494913600067730 /* PurchaseListViewController.xib */; };
+		75C8282B14B2DE7C00D3FF76 /* MailBindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8282914B2DE7C00D3FF76 /* MailBindingViewController.m */; };
+		75C8282C14B2DE7C00D3FF76 /* MailBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8282A14B2DE7C00D3FF76 /* MailBindingViewController.xib */; };
+		75C8283114B2DED900D3FF76 /* MailUnbindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */; };
+		75C8283214B2DED900D3FF76 /* MailUnbindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */; };
+		75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */; };
+		75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */; };
 		75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */; };
 		75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */; };
+		75DEF33C14B2FB8D00240A23 /* TelBindingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DEF33A14B2FB8D00240A23 /* TelBindingViewController.m */; };
+		75DEF33D14B2FB8D00240A23 /* TelBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75DEF33B14B2FB8D00240A23 /* TelBindingViewController.xib */; };
+		75DEF34214B2FCCB00240A23 /* TelValidateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75DEF34014B2FCCA00240A23 /* TelValidateViewController.m */; };
+		75DEF34314B2FCCB00240A23 /* TelValidateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75DEF34114B2FCCA00240A23 /* TelValidateViewController.xib */; };
 		75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */; };
 		75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394614B595DF0071BF1D /* SegmentManagingViewController.m */; };
 		75E0394A14B596780071BF1D /* NSArray+PerformSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E0394914B596780071BF1D /* NSArray+PerformSelector.m */; settings = {COMPILER_FLAGS = "-Wno-arc-performSelector-leaks"; }; };
@@ -233,6 +251,10 @@
 		CEA4179514A872F300497186 /* new2.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179114A872F300497186 /* new2.png */; };
 		CEA4179614A872F300497186 /* reinvite_word.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179214A872F300497186 /* reinvite_word.png */; };
 		CEA4179714A872F300497186 /* reinvite.png in Resources */ = {isa = PBXBuildFile; fileRef = CEA4179314A872F300497186 /* reinvite.png */; };
+		CEAB66B014BFD04F006A42FE /* ChangePasswordTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB66AE14BFD04F006A42FE /* ChangePasswordTableVC.m */; };
+		CEAB66B114BFD04F006A42FE /* ChangePasswordTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEAB66AF14BFD04F006A42FE /* ChangePasswordTableVC.xib */; };
+		CEAB66CA14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEAB66C814C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m */; };
+		CEAB66CB14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEAB66C914C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib */; };
 		CEB072BA149ED45B0056F7B5 /* PartyListTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */; };
 		CEB072BB149ED45B0056F7B5 /* PartyListTableVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */; };
 		CEB072C8149EDE9A0056F7B5 /* PartyDetailTableVC.m in Sources */ = {isa = PBXBuildFile; fileRef = CEB072C6149EDE9A0056F7B5 /* PartyDetailTableVC.m */; };
@@ -272,6 +294,14 @@
 		7528DAEA14AB1E7200236609 /* ShadowedTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShadowedTableView.h; sourceTree = "<group>"; };
 		7528DAEB14AB1E7200236609 /* ShadowedTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShadowedTableView.m; sourceTree = "<group>"; };
 		7528DAFA14AB22A200236609 /* ButtonPeoplePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonPeoplePicker.xib; sourceTree = "<group>"; };
+		7574BE9D14B2D0E3007651EE /* BindingListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BindingListViewController.m; sourceTree = "<group>"; };
+		7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BindingListViewController.xib; sourceTree = "<group>"; };
+		7574BEA414B2D7CF007651EE /* NameBindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NameBindingViewController.h; path = Binding/NameBindingViewController.h; sourceTree = "<group>"; };
+		7574BEA514B2D7CF007651EE /* NameBindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NameBindingViewController.m; path = Binding/NameBindingViewController.m; sourceTree = "<group>"; };
+		7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NameBindingViewController.xib; path = Binding/NameBindingViewController.xib; sourceTree = "<group>"; };
+		75908E9C14BEC84F001CEFD8 /* BindingListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BindingListViewController.h; sourceTree = "<group>"; };
+		75908EA914BED49B001CEFD8 /* UIVIewControllerExtern+Binding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIVIewControllerExtern+Binding.h"; path = "Binding/UIVIewControllerExtern+Binding.h"; sourceTree = "<group>"; };
+		75908EAA14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIVIewControllerExtern+Binding.m"; path = "Binding/UIVIewControllerExtern+Binding.m"; sourceTree = "<group>"; };
 		75A0476814AC0D9F00B2532C /* JFTextViewNoInset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JFTextViewNoInset.h; sourceTree = "<group>"; };
 		75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JFTextViewNoInset.m; sourceTree = "<group>"; };
 		75A0476B14AC0DAA00B2532C /* EditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableTableViewCell.h; sourceTree = "<group>"; };
@@ -281,6 +311,11 @@
 		75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomSepratorLineView.m; sourceTree = "<group>"; };
 		75A2266F14AF0D890025BFC3 /* ResendPartyViaSMSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResendPartyViaSMSViewController.h; sourceTree = "<group>"; };
 		75A2267014AF0D890025BFC3 /* ResendPartyViaSMSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResendPartyViaSMSViewController.m; sourceTree = "<group>"; };
+		75B41DD814BD7462005F9A46 /* MailValidateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MailValidateViewController.h; path = Binding/MailValidateViewController.h; sourceTree = "<group>"; };
+		75B41DD914BD7462005F9A46 /* MailValidateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MailValidateViewController.m; path = Binding/MailValidateViewController.m; sourceTree = "<group>"; };
+		75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MailValidateViewController.xib; path = Binding/MailValidateViewController.xib; sourceTree = "<group>"; };
+		75B41DED14BD9385005F9A46 /* UserInfoBindingStatusService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoBindingStatusService.h; sourceTree = "<group>"; };
+		75B41DEE14BD9386005F9A46 /* UserInfoBindingStatusService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoBindingStatusService.m; sourceTree = "<group>"; };
 		75BC083714987E20007B39CB /* DeviceDetection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceDetection.h; sourceTree = "<group>"; };
 		75BC083814987E20007B39CB /* DeviceDetection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DeviceDetection.m; sourceTree = "<group>"; };
 		75BC083B14989113007B39CB /* RegexKitLite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegexKitLite.h; sourceTree = "<group>"; };
@@ -294,10 +329,25 @@
 		75C029421494913600067730 /* PurchaseListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PurchaseListViewController.h; sourceTree = "<group>"; };
 		75C029431494913600067730 /* PurchaseListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PurchaseListViewController.m; sourceTree = "<group>"; };
 		75C029441494913600067730 /* PurchaseListViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PurchaseListViewController.xib; sourceTree = "<group>"; };
+		75C8282814B2DE7C00D3FF76 /* MailBindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailBindingViewController.h; sourceTree = "<group>"; };
+		75C8282914B2DE7C00D3FF76 /* MailBindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailBindingViewController.m; sourceTree = "<group>"; };
+		75C8282A14B2DE7C00D3FF76 /* MailBindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MailBindingViewController.xib; sourceTree = "<group>"; };
+		75C8282E14B2DED900D3FF76 /* MailUnbindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MailUnbindingViewController.h; sourceTree = "<group>"; };
+		75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MailUnbindingViewController.m; sourceTree = "<group>"; };
+		75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MailUnbindingViewController.xib; sourceTree = "<group>"; };
+		75C8283814B2E64F00D3FF76 /* TelUnbindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelUnbindingViewController.h; sourceTree = "<group>"; };
+		75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelUnbindingViewController.m; sourceTree = "<group>"; };
+		75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TelUnbindingViewController.xib; sourceTree = "<group>"; };
 		75CEB1AE14B71B1500C45A3B /* AddressBookDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookDataManager.h; sourceTree = "<group>"; };
 		75CEB1AF14B71B1500C45A3B /* AddressBookDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookDataManager.m; sourceTree = "<group>"; };
 		75DB0D0814B83803004F19C9 /* MultiFavoritesContactsList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiFavoritesContactsList.h; sourceTree = "<group>"; };
 		75DB0D0914B83803004F19C9 /* MultiFavoritesContactsList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiFavoritesContactsList.m; sourceTree = "<group>"; };
+		75DEF33914B2FB8D00240A23 /* TelBindingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TelBindingViewController.h; sourceTree = "<group>"; };
+		75DEF33A14B2FB8D00240A23 /* TelBindingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TelBindingViewController.m; sourceTree = "<group>"; };
+		75DEF33B14B2FB8D00240A23 /* TelBindingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TelBindingViewController.xib; sourceTree = "<group>"; };
+		75DEF33F14B2FCCA00240A23 /* TelValidateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TelValidateViewController.h; path = Binding/TelValidateViewController.h; sourceTree = "<group>"; };
+		75DEF34014B2FCCA00240A23 /* TelValidateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TelValidateViewController.m; path = Binding/TelValidateViewController.m; sourceTree = "<group>"; };
+		75DEF34114B2FCCA00240A23 /* TelValidateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = TelValidateViewController.xib; path = Binding/TelValidateViewController.xib; sourceTree = "<group>"; };
 		75E0393A14B5388D0071BF1D /* MultiContactsPickerListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiContactsPickerListViewController.h; sourceTree = "<group>"; };
 		75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiContactsPickerListViewController.m; sourceTree = "<group>"; };
 		75E0394514B595DF0071BF1D /* SegmentManagingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentManagingViewController.h; sourceTree = "<group>"; };
@@ -618,6 +668,12 @@
 		CEA4179114A872F300497186 /* new2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = new2.png; sourceTree = "<group>"; };
 		CEA4179214A872F300497186 /* reinvite_word.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reinvite_word.png; sourceTree = "<group>"; };
 		CEA4179314A872F300497186 /* reinvite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reinvite.png; sourceTree = "<group>"; };
+		CEAB66AD14BFD04F006A42FE /* ChangePasswordTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangePasswordTableVC.h; sourceTree = "<group>"; };
+		CEAB66AE14BFD04F006A42FE /* ChangePasswordTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangePasswordTableVC.m; sourceTree = "<group>"; };
+		CEAB66AF14BFD04F006A42FE /* ChangePasswordTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangePasswordTableVC.xib; sourceTree = "<group>"; };
+		CEAB66C714C002F2006A42FE /* ChangePasswordRandomLoginTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangePasswordRandomLoginTableVC.h; sourceTree = "<group>"; };
+		CEAB66C814C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangePasswordRandomLoginTableVC.m; sourceTree = "<group>"; };
+		CEAB66C914C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChangePasswordRandomLoginTableVC.xib; sourceTree = "<group>"; };
 		CEB072B7149ED45B0056F7B5 /* PartyListTableVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PartyListTableVC.h; path = ../PartyListTableVC.h; sourceTree = "<group>"; };
 		CEB072B8149ED45B0056F7B5 /* PartyListTableVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PartyListTableVC.m; path = ../PartyListTableVC.m; sourceTree = "<group>"; };
 		CEB072B9149ED45B0056F7B5 /* PartyListTableVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = PartyListTableVC.xib; path = ../PartyListTableVC.xib; sourceTree = "<group>"; };
@@ -717,6 +773,63 @@
 			);
 			name = ContactList;
 			path = Main/Controller/ContactList;
+			sourceTree = "<group>";
+		};
+		7574BE9A14B2D07C007651EE /* Binding */ = {
+			isa = PBXGroup;
+			children = (
+				75908EA914BED49B001CEFD8 /* UIVIewControllerExtern+Binding.h */,
+				75908EAA14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m */,
+				75908E9C14BEC84F001CEFD8 /* BindingListViewController.h */,
+				7574BE9D14B2D0E3007651EE /* BindingListViewController.m */,
+				7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */,
+				7574BEA314B2D72F007651EE /* NameBinding */,
+				7574BEA214B2D724007651EE /* MailBinding */,
+				7574BEA114B2D716007651EE /* TelBinding */,
+			);
+			name = Binding;
+			sourceTree = "<group>";
+		};
+		7574BEA114B2D716007651EE /* TelBinding */ = {
+			isa = PBXGroup;
+			children = (
+				75DEF33914B2FB8D00240A23 /* TelBindingViewController.h */,
+				75DEF33A14B2FB8D00240A23 /* TelBindingViewController.m */,
+				75DEF33B14B2FB8D00240A23 /* TelBindingViewController.xib */,
+				75C8283814B2E64F00D3FF76 /* TelUnbindingViewController.h */,
+				75C8283914B2E64F00D3FF76 /* TelUnbindingViewController.m */,
+				75C8283A14B2E64F00D3FF76 /* TelUnbindingViewController.xib */,
+				75DEF33F14B2FCCA00240A23 /* TelValidateViewController.h */,
+				75DEF34014B2FCCA00240A23 /* TelValidateViewController.m */,
+				75DEF34114B2FCCA00240A23 /* TelValidateViewController.xib */,
+			);
+			name = TelBinding;
+			sourceTree = "<group>";
+		};
+		7574BEA214B2D724007651EE /* MailBinding */ = {
+			isa = PBXGroup;
+			children = (
+				75C8282814B2DE7C00D3FF76 /* MailBindingViewController.h */,
+				75C8282914B2DE7C00D3FF76 /* MailBindingViewController.m */,
+				75C8282A14B2DE7C00D3FF76 /* MailBindingViewController.xib */,
+				75C8282E14B2DED900D3FF76 /* MailUnbindingViewController.h */,
+				75C8282F14B2DED900D3FF76 /* MailUnbindingViewController.m */,
+				75C8283014B2DED900D3FF76 /* MailUnbindingViewController.xib */,
+				75B41DD814BD7462005F9A46 /* MailValidateViewController.h */,
+				75B41DD914BD7462005F9A46 /* MailValidateViewController.m */,
+				75B41DDA14BD7463005F9A46 /* MailValidateViewController.xib */,
+			);
+			name = MailBinding;
+			sourceTree = "<group>";
+		};
+		7574BEA314B2D72F007651EE /* NameBinding */ = {
+			isa = PBXGroup;
+			children = (
+				7574BEA414B2D7CF007651EE /* NameBindingViewController.h */,
+				7574BEA514B2D7CF007651EE /* NameBindingViewController.m */,
+				7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */,
+			);
+			name = NameBinding;
 			sourceTree = "<group>";
 		};
 		75A0476514AC0D4700B2532C /* SMS */ = {
@@ -1048,6 +1161,7 @@
 		891A4DC51457B18500A2CF47 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				7574BE9A14B2D07C007651EE /* Binding */,
 				8966754C147B3568007CEAF3 /* SettingsListTableViewController.h */,
 				8966754D147B3568007CEAF3 /* SettingsListTableViewController.m */,
 				8966754E147B3568007CEAF3 /* SettingsListTableViewController.xib */,
@@ -1060,6 +1174,12 @@
 				75C029421494913600067730 /* PurchaseListViewController.h */,
 				75C029431494913600067730 /* PurchaseListViewController.m */,
 				75C029441494913600067730 /* PurchaseListViewController.xib */,
+				CEAB66AD14BFD04F006A42FE /* ChangePasswordTableVC.h */,
+				CEAB66AE14BFD04F006A42FE /* ChangePasswordTableVC.m */,
+				CEAB66AF14BFD04F006A42FE /* ChangePasswordTableVC.xib */,
+				CEAB66C714C002F2006A42FE /* ChangePasswordRandomLoginTableVC.h */,
+				CEAB66C814C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m */,
+				CEAB66C914C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -1341,6 +1461,8 @@
 				89C709C014908E0D00699AE0 /* DeviceTokenService.m */,
 				7A2CDD9614A2082F0054B723 /* AddressBookDBService.h */,
 				7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */,
+				75B41DED14BD9385005F9A46 /* UserInfoBindingStatusService.h */,
+				75B41DEE14BD9386005F9A46 /* UserInfoBindingStatusService.m */,
 				7AF4B44A14BD80D300F1E787 /* UserInfoValidator.h */,
 				7AF4B44B14BD80D300F1E787 /* UserInfoValidator.m */,
 			);
@@ -1583,6 +1705,14 @@
 				8920895314AEF1FB00F31001 /* edit_word.png in Resources */,
 				8920895614AEF21500F31001 /* refresh_word.png in Resources */,
 				8920895814AEF22100F31001 /* share_word.png in Resources */,
+				7574BEA014B2D0E3007651EE /* BindingListViewController.xib in Resources */,
+				7574BEA814B2D7CF007651EE /* NameBindingViewController.xib in Resources */,
+				75C8282C14B2DE7C00D3FF76 /* MailBindingViewController.xib in Resources */,
+				75C8283214B2DED900D3FF76 /* MailUnbindingViewController.xib in Resources */,
+				75C8283C14B2E64F00D3FF76 /* TelUnbindingViewController.xib in Resources */,
+				75DEF33D14B2FB8D00240A23 /* TelBindingViewController.xib in Resources */,
+				75DEF34314B2FCCB00240A23 /* TelValidateViewController.xib in Resources */,
+				75B41DDC14BD7463005F9A46 /* MailValidateViewController.xib in Resources */,
 				CE5B254E14B5D05500FBBDDA /* del_word@2x.png in Resources */,
 				CE5B254F14B5D05500FBBDDA /* edit_word@2x.png in Resources */,
 				CE5B255014B5D05500FBBDDA /* refresh_word@2x.png in Resources */,
@@ -1596,6 +1726,8 @@
 				CE5B255D14B5D06900FBBDDA /* apply.png in Resources */,
 				CE5B255E14B5D06900FBBDDA /* apply@2x.png in Resources */,
 				CE0B288D14BBDE57001EAEE8 /* ForgetPassword.xib in Resources */,
+				CEAB66B114BFD04F006A42FE /* ChangePasswordTableVC.xib in Resources */,
+				CEAB66CB14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1751,6 +1883,15 @@
 				75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */,
 				75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */,
 				75A2267114AF0D890025BFC3 /* ResendPartyViaSMSViewController.m in Sources */,
+				7574BE9F14B2D0E3007651EE /* BindingListViewController.m in Sources */,
+				7574BEA714B2D7CF007651EE /* NameBindingViewController.m in Sources */,
+				75C8282B14B2DE7C00D3FF76 /* MailBindingViewController.m in Sources */,
+				75C8283114B2DED900D3FF76 /* MailUnbindingViewController.m in Sources */,
+				75C8283B14B2E64F00D3FF76 /* TelUnbindingViewController.m in Sources */,
+				75DEF33C14B2FB8D00240A23 /* TelBindingViewController.m in Sources */,
+				75DEF34214B2FCCB00240A23 /* TelValidateViewController.m in Sources */,
+				75B41DDB14BD7463005F9A46 /* MailValidateViewController.m in Sources */,
+				75B41DEF14BD9386005F9A46 /* UserInfoBindingStatusService.m in Sources */,
 				CE0B288C14BBDE57001EAEE8 /* ForgetPassword.m in Sources */,
 				75E0393D14B5388D0071BF1D /* MultiContactsPickerListViewController.m in Sources */,
 				75E0394714B595DF0071BF1D /* SegmentManagingViewController.m in Sources */,
@@ -1758,7 +1899,10 @@
 				75E0394D14B5ADB70071BF1D /* MultiContactsPhoneDetailViewController.m in Sources */,
 				75CEB1B014B71B1500C45A3B /* AddressBookDataManager.m in Sources */,
 				75DB0D0A14B83803004F19C9 /* MultiFavoritesContactsList.m in Sources */,
+				CEAB66B014BFD04F006A42FE /* ChangePasswordTableVC.m in Sources */,
 				7AF4B44C14BD80D300F1E787 /* UserInfoValidator.m in Sources */,
+				75908EAB14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m in Sources */,
+				CEAB66CA14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

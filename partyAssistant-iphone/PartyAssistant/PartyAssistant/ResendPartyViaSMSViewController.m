@@ -16,6 +16,8 @@
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
 #import "AddressBookDataManager.h"
+#import "UIViewControllerExtra.h"
+#import "AddressBookDBService.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -192,6 +194,7 @@
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = receipt.cName;
+        client.cID = receipt.cID;
         NSString *phoneNumber = receipt.cVal;
         
         if (!phoneNumber) {
@@ -224,7 +227,7 @@
     [request setPostValue:platform forKey:@"addressType"];
     [request setPostValue:[NSNumber numberWithInt:groupID] forKey:@"partyID"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -235,10 +238,14 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            NSNumber *leftCount = [[result objectForKey:@"datasource"] objectForKey:@"sms_count_remaining"];
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[leftCount intValue]]]];
+            
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.tempSMSObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
@@ -248,6 +255,11 @@
                     }else{
                         vc.body = self.tempSMSObject.smsContent;
                     };
+                    
+                    AddressBookDBService *favourite = [AddressBookDBService sharedAddressBookDBService];
+                    for (ClientObject *client in self.tempSMSObject.receiversArray) {
+                        [favourite useContact:client];
+                    }
                     
                     NSMutableArray *numberArray = [NSMutableArray arrayWithCapacity:10];
                     for (ClientObject *receipt in self.receipts) {
@@ -276,8 +288,12 @@
                 }
                 
             }else{
-                [self createPartySuc];
+                AddressBookDBService *favourite = [AddressBookDBService sharedAddressBookDBService];
+                for (ClientObject *client in self.tempSMSObject.receiversArray) {
+                    [favourite useContact:client];
                 }
+                [self createPartySuc];
+            }
         }else if ([status isEqualToString:@"lessRemain"]){
             NSDictionary *infos = [result objectForKey:@"data"];
             NSNumber *leftCount = nil;

@@ -40,7 +40,7 @@
 {
     [super viewDidLoad];
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [goButton setFrame:CGRectMake(50, 200, 80, 40)];
+    [goButton setFrame:CGRectMake(50, 360, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
     [goButton setImage:[UIImage imageNamed:@"apply"] forState:UIControlStateNormal];
     
@@ -50,7 +50,7 @@
     [goButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [notGoButton setFrame:CGRectMake(200, 200,80, 40)];
+    [notGoButton setFrame:CGRectMake(200, 360,80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
     [notGoButton setImage:[UIImage imageNamed:@"reject"] forState:UIControlStateNormal];
     //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
@@ -81,9 +81,9 @@
     messageTextView=[[UITextView alloc] init];
     NSString *cvalueString=[clientDict objectForKey:@"cValue"];
     if([self.partyObj.type isEqualToString:@"email"]){
-       messageTextView.frame=CGRectMake(100, 85, 200, 40);
+       messageTextView.frame=CGRectMake(100, 85, 200, 175);
     }else{
-       messageTextView.frame=CGRectMake(100, 153, 200, 40);
+       messageTextView.frame=CGRectMake(100, 153, 200, 175);
     
     }
     
@@ -190,7 +190,7 @@
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
     [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
     [request setPostValue:statusAction forKey:@"cpAction"];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     //btn.hidden = YES;
@@ -310,8 +310,6 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
-    
     if([self.partyObj.type isEqualToString:@"email"]){
         if(indexPath.section==0){
             cell.selectionStyle= UITableViewCellSelectionStyleNone;
@@ -326,7 +324,6 @@
             }else{
             }
             [cell addSubview:wordsLabel];
-           
         }
     
     }else{
@@ -483,7 +480,18 @@
     }
     
 }
-
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if([self.partyObj.type isEqualToString:@"email"]){
+        return 180;
+    }
+    
+   if(![self.partyObj.type isEqualToString:@"email"]){
+       if(indexPath.section==1){
+               return 180;
+       }
+       return 44;
+    }     
+}
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath

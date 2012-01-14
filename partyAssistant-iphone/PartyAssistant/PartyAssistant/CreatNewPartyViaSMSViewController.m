@@ -19,7 +19,10 @@
 #import "SegmentManagingViewController.h"
 #import "NotificationSettings.h"
 #import "AddressBookDBService.h"
+#import "UIViewControllerExtra.h"
 #import "PurchaseListViewController.h"
+#import "DataManager.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -73,6 +76,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.title = @"活动邀请";
     self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
     UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
@@ -89,6 +94,12 @@
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
+    
+    //wxz
+    if([DataManager sharedDataManager].isRandomLoginSelf){
+        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -325,7 +336,6 @@
 //        [alert show];
 //    }else{
 //    [self saveSMSInfo];
-   
     if(!self.editingTableViewCell.textView.text || [self.editingTableViewCell.textView.text isEqualToString:@""]){
         UIAlertView *alert=[[UIAlertView alloc]
                             initWithTitle:@"短信内容不可以为空"
@@ -376,6 +386,9 @@
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         ClientObject *client = [[ClientObject alloc] init];
         client.cName = receipt.cName;
+        client.cID = receipt.cID;
+        client.phoneLabel = receipt.phoneLabel;
+        client.phoneIdentifier = receipt.phoneIdentifier;
         NSString *phoneNumber = receipt.cVal;
         
         if (!phoneNumber) {
@@ -422,7 +435,7 @@
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     [request setPostValue:platform forKey:@"addressType"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -433,10 +446,15 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+   [self getVersionFromRequestDic:result];
+    
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            NSNumber *leftCount = [[result objectForKey:@"datasource"] objectForKey:@"sms_count_remaining"];
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[leftCount intValue]]]];
+            
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
@@ -485,10 +503,22 @@
                 }
                 
             }else{
-                UserObjectService *us = [UserObjectService sharedUserObjectService];
-                UserObject *user = [us getUserObject];
-                user.leftSMSCount = [[NSNumber numberWithInt:([user.leftSMSCount intValue] - [self.smsObject.receiversArray count])] stringValue];
+                AddressBookDBService *favourite = [AddressBookDBService sharedAddressBookDBService];
+                for (ClientObject *client in self.smsObject.receiversArray) {
+                    [favourite useContact:client];
+                }
+                
+//                UserObjectService *us = [UserObjectService sharedUserObjectService];
+//                UserObject *user = [us getUserObject];
+//                user.leftSMSCount = [[NSNumber numberWithInt:([user.leftSMSCount intValue] - [self.smsObject.receiversArray count])] stringValue];
                 [self createPartySuc];
+                
+                SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+                [s clearSMSObject];
+                BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+                [bs clearBaseInfo];
+                EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
+                [se clearEmailObject];
             }
                  
         } else if ([status isEqualToString:@"lessRemain"]){

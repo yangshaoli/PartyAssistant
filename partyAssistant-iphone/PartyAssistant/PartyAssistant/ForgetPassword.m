@@ -11,8 +11,9 @@
 #import "URLSettings.h"
 #import "JSON.h"
 #import "HTTPRequestErrorMSG.h"
+#import "UIViewControllerExtra.h"
 @implementation ForgetPassword
-@synthesize inputTextField,quest;
+@synthesize inputTextField;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -35,10 +36,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIBarButtonItem  *getPasswordBarButton=[[UIBarButtonItem alloc] initWithTitle:@"找回" style:
-UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
-    self.navigationItem.rightBarButtonItem=getPasswordBarButton;
-    
+    UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [goButton setFrame:CGRectMake(50, 100,150, 40)];
+    [goButton setTitle:@"找回" forState:UIControlStateNormal];
+    [goButton addTarget:self action:@selector(getPassword) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:goButton];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -115,7 +117,7 @@ UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
     // Configure the cell...
     
     if (!inputTextField) {
-        self.inputTextField = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 300, 44)];
+        self.inputTextField = [[UITextField alloc] initWithFrame:CGRectMake(20, 10, 280, 44)];
     }
     inputTextField.textAlignment = UITextAlignmentLeft;
     inputTextField.backgroundColor = [UIColor clearColor];
@@ -194,17 +196,17 @@ UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
         [self showWaiting];
         NSURL *url = [NSURL URLWithString:FORGET_PASSWORD];
         
-        if (self.quest) {
-            [self.quest clearDelegatesAndCancel];
-        }
-        
+//        if (self.quest) {
+//            [self.quest clearDelegatesAndCancel];
+//        }
+//        
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
         [request setPostValue:self.inputTextField.text forKey:@"value"];
-        request.timeOutSeconds = 30;
+        request.timeOutSeconds = 20;
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
-        self.quest=request;
+        //self.quest=request;
         
         NSLog(@"%@",self.inputTextField.text);
        
@@ -216,10 +218,12 @@ UIBarButtonItemStylePlain target:self action:@selector(getPassword)];
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             [self.navigationController popViewControllerAnimated:YES];
 //            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
 //            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
