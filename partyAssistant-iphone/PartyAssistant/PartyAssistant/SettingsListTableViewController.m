@@ -98,7 +98,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 8;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -122,10 +122,8 @@
     }else if(indexPath.row == 4){
         cell.textLabel.text = @"充值";
     }else if(indexPath.row == 5){
-        cell.textLabel.text = @"绑定";
-    }else if(indexPath.row == 6){
         cell.textLabel.text = @"登出";
-    }else if(indexPath.row == 7){
+    }else if(indexPath.row == 6){
         
         NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
         NSString *defaultVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
@@ -204,8 +202,8 @@
 //    WeiboService *s = [WeiboService sharedWeiboService];
 //    [s WeiboLogin];
     if(indexPath.row == 0){
-        NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
-        [self.navigationController pushViewController:nickChangeVc animated:YES];
+        BindingListViewController *bindListVC = [[BindingListViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:bindListVC animated:YES];
     }
     if(indexPath.row==1){
         ChangePasswordTableVC *changePasswordTableVC=[[ChangePasswordTableVC alloc] initWithNibName:@"ChangePasswordTableVC" bundle:nil];
@@ -224,11 +222,7 @@
         PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
         [self.navigationController pushViewController:purchaseListVC animated:YES];
     }
-    if (indexPath.row == 5) {
-        BindingListViewController *bindListVC = [[BindingListViewController alloc] initWithNibName:nil bundle:nil];
-        [self.navigationController pushViewController:bindListVC animated:YES];
-    }
-    if(indexPath.row == 6){
+    if(indexPath.row == 5){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"登出" message:@"确认登出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
         alertView.tag = LogoutTag;
         [alertView show];

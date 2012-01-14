@@ -464,13 +464,10 @@
     NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-<<<<<<< HEAD
+            [isCreatSucDefault setBool:YES forKey:@"isCreatSucDefault"];
             NSNumber *leftCount = [[result objectForKey:@"datasource"] objectForKey:@"sms_count_remaining"];
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[leftCount intValue]]]];
-            
-=======
-            [isCreatSucDefault setBool:YES forKey:@"isCreatSucDefault"];
->>>>>>> wuxuezhang
+
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
