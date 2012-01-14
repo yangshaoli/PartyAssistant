@@ -834,8 +834,7 @@
         
         self.searchField.inputAccessoryView = nil;
         [self.toolbar removeFromSuperview];
-        
-        [self.buttonView reloadInputViews];
+        [self reloadInputViews];
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
@@ -850,7 +849,7 @@
         
         self.searchField.inputAccessoryView = self.toolbar;
         [self.searchField reloadInputViews];
-        [self.buttonView reloadInputViews];
+        [self reloadInputViews];
     }
 }
 
