@@ -452,5 +452,12 @@
     self.quest = nil;
 }
 
-
+- (void)reorderSubjects : (NSArray *)newSubjects {
+    //1 isCheck == NO
+    //2 isCheck == YES
+    
+    //combine two array
+    
+    //reorder each on by name
+}
 @end
