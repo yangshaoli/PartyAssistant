@@ -12,18 +12,18 @@
 @implementation UIViewController(UIViewControllerExtra)
 
 - (void)showAlertRequestSuccess{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:@"操作已成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:@"操作已成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 

@@ -141,13 +141,16 @@
     NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
+    NSUserDefaults *isEditSucDefault=[NSUserDefaults standardUserDefaults];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            [isEditSucDefault setBool:YES forKey:@"isEditSucDefault"];
             [self.navigationController popViewControllerAnimated:YES];
             NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
             NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
             [[NSNotificationCenter defaultCenter] postNotification:notification];
         }else{
+            [isEditSucDefault setBool:NO forKey:@"isEditSucDefault"];
             [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){

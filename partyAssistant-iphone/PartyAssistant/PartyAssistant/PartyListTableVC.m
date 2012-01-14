@@ -120,9 +120,18 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    if([DataManager sharedDataManager].isRandomLoginSelf){
-        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
-        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    //wxz
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  //如果该用户活动条数非空
+        if([DataManager sharedDataManager].isRandomLoginSelf){
+            ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+            [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES]; 
+            NSLog(@"list------");
+        }
     }
     [self refreshBtnAction];
     [self.tableView reloadData];
@@ -147,6 +156,36 @@
         [self refreshBtnAction];
         [self.tableView reloadData];
     }
+    NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isCreatSucBool=[[isCreatSucDefault objectForKey:@"isCreatSucDefault"] boolValue];
+    if(isCreatSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
+    }
+    
+    
+    
+    NSUserDefaults *isDeleteSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isDeleteSucBool=[[isDeleteSucDefault objectForKey:@"isDeleteSucDefault"] boolValue];
+    if(isDeleteSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isDeleteSucDefault setBool:NO forKey:@"isDeleteSucDefault"];
+    }
+
+    
+    NSUserDefaults *isEditSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isEditSucBool=[[isEditSucDefault objectForKey:@"isEditSucDefault"] boolValue];
+    if(isEditSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isEditSucDefault setBool:NO forKey:@"isEditSucDefault"];
+    }
+    
+    
+    
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated

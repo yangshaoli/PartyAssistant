@@ -181,6 +181,7 @@
             
             NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[newAppliedClientcount stringValue],[refusedClientcount stringValue],[newRefusedClientcount stringValue],[donothingClientcount stringValue], nil];
             self.peopleCountArray = countArray;
+            //NSLog(@"DAYIN  self.peopleCountArray  %@",self.peopleCountArray);
             [self.tableView reloadData];
         }else{
              [self showAlertRequestFailed:description];		
@@ -311,11 +312,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    UIView *oldLayout2 = nil;
-    oldLayout2=[cell viewWithTag:5];
-    [oldLayout2 removeFromSuperview];
-    
-    
+       
     UIView *oldLayout = nil;
     oldLayout = [cell viewWithTag:2];
     [oldLayout removeFromSuperview];
@@ -341,8 +338,11 @@
             
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
-            
-            if(self.partyObj.isnewApplied){
+            UIView *oldLayout2 = nil;
+            oldLayout2=[cell viewWithTag:5];
+            [oldLayout2 removeFromSuperview];
+           // NSLog(@"新报名 %d",[[self.peopleCountArray objectAtIndex:2] intValue]);
+            if([[self.peopleCountArray objectAtIndex:2] intValue]>0){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
                 cellImageView.tag=5;
@@ -365,11 +365,14 @@
             [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
-            
-            if(self.partyObj.isnewRefused){
+            UIView *oldLayout2 = nil;
+            oldLayout2=[cell viewWithTag:15];
+            [oldLayout2 removeFromSuperview];
+           // NSLog(@"新拒绝 %d",[[self.peopleCountArray objectAtIndex:4] intValue]);
+            if([[self.peopleCountArray objectAtIndex:4] intValue]>0){
                 UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
                 cellImageView.image=[UIImage imageNamed:@"new2"];
-                cellImageView.tag=5;
+                cellImageView.tag=15;
                 [cell  addSubview:cellImageView];
             }
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
@@ -522,6 +525,7 @@
 }
 - (void)refreshItem{
     [self loadClientCount];
+    [self.tableView reloadData];
     
 }
 - (void)deleteParty
@@ -564,13 +568,18 @@
 	NSDictionary *result = [parser objectWithString:response];
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
+    NSUserDefaults *isDeleteSucDefault=[NSUserDefaults standardUserDefaults];
     if ([request responseStatusCode] == 200) {
         if ([description isEqualToString:@"ok"]) {
+            [isDeleteSucDefault setBool:YES forKey:@"isDeleteSucDefault"];
            [self.navigationController popViewControllerAnimated:YES];
             NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
             [[NSNotificationCenter defaultCenter] postNotification:notification];
+            
+            
         }else{
-            [self showAlertRequestFailed:description];		
+            [self showAlertRequestFailed:description];	
+            [isDeleteSucDefault setBool:NO forKey:@"isDeleteSucDefault"];
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
