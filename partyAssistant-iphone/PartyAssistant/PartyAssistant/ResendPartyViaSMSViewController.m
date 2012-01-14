@@ -16,6 +16,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "DeviceDetection.h"
 #import "AddressBookDataManager.h"
+#import "UIViewControllerExtra.h"
 #import "AddressBookDBService.h"
 
 @interface ResendPartyViaSMSViewController ()
@@ -226,7 +227,7 @@
     [request setPostValue:platform forKey:@"addressType"];
     [request setPostValue:[NSNumber numberWithInt:groupID] forKey:@"partyID"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -237,6 +238,7 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {

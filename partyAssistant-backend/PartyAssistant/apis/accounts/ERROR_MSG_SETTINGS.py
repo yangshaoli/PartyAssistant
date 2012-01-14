@@ -29,3 +29,5 @@ ERROR_VERIFY = u"该验证码已经失效，请重新获取验证码"
 ERROR_VERIFYING_BY_PHONE_HAS_BINDED_BY_OTHER = u"该手机号已被其他用户绑定，请重新输入手机号"
 ERROR_VERIFYING_BY_EMAIL_HAS_BINDED_BY_OTHER = u"该邮箱已被其他用户绑定，请重新输入邮箱地址"
 ERROR_VERIFYING_WRONG_VERIFIER = "验证码错误"
+
+ERROR_CHANGE_PWD_WRONG_PWD = u'原始密码错误，请重新输入'

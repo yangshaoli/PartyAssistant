@@ -1,19 +1,23 @@
 //
-//  ForgetPassword.m
+//  ChangePasswordRandomLoginTableVC.m
 //  PartyAssistant
 //
-//  Created by user on 12-1-10.
+//  Created by user on 12-1-13.
 //  Copyright 2012年 __MyCompanyName__. All rights reserved.
 //
 
-#import "ForgetPassword.h"
-#import "UITableViewControllerExtra.h"
-#import "URLSettings.h"
+#import "ChangePasswordRandomLoginTableVC.h"
+#import "UIViewControllerExtra.h"
+#import "ASIFormDataRequest.h"
 #import "JSON.h"
 #import "HTTPRequestErrorMSG.h"
-#import "UIViewControllerExtra.h"
-@implementation ForgetPassword
-@synthesize inputTextField;
+#import "URLSettings.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+#import "DataManager.h"
+
+@implementation ChangePasswordRandomLoginTableVC
+@synthesize nPasswordTextField,resurePasswordTextField;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -36,11 +40,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [goButton setFrame:CGRectMake(50, 100,150, 40)];
-    [goButton setTitle:@"找回" forState:UIControlStateNormal];
-    [goButton addTarget:self action:@selector(getPassword) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:goButton];
+    UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
+    self.navigationItem.rightBarButtonItem = doneBtn;
+    self.title=@"修改密码";
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -83,26 +86,18 @@
 
 #pragma mark - Table view data source
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    if (section==0) {
-        return @"请输入绑定的邮箱或手机号码";
-    }else{
-        return @"";
-    }
-}
-
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 1;
+    return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -114,17 +109,27 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
+    if(indexPath.row==0){
+        cell.textLabel.text = @"输入新密码：";
+        if (!nPasswordTextField) {
+            self.nPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+        }
+        nPasswordTextField.textAlignment = UITextAlignmentLeft;
+        nPasswordTextField.backgroundColor = [UIColor clearColor];
+        [cell addSubview:nPasswordTextField];        
+    }
+    if(indexPath.row==1){
+        cell.textLabel.text = @"确认新密码：";
+        if (!resurePasswordTextField) {
+            self.resurePasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+        }
+        resurePasswordTextField.textAlignment = UITextAlignmentLeft;
+        resurePasswordTextField.backgroundColor = [UIColor clearColor];
+        [cell addSubview:resurePasswordTextField];        
+    }        
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     // Configure the cell...
     
-    if (!inputTextField) {
-        self.inputTextField = [[UITextField alloc] initWithFrame:CGRectMake(20, 10, 280, 44)];
-    }
-    inputTextField.textAlignment = UITextAlignmentLeft;
-    inputTextField.backgroundColor = [UIColor clearColor];
-    inputTextField.placeholder=@"系统将发送随机密码到输入的地址中";
-    inputTextField.tag=12;
-    [cell addSubview:inputTextField];      
-    cell.selectionStyle=UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -179,41 +184,35 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
 }
-
-- (void)getPassword{
-    if(!self.inputTextField.text || [self.inputTextField.text isEqualToString:@""]){
-        UIAlertView *alert=[[UIAlertView alloc]
-                            initWithTitle:@"输入内容不可以为空"
-                            message:@"输入为必填项"
-                            delegate:self
-                            cancelButtonTitle:@"请点击输入内容"
-                            otherButtonTitles: nil];
-        [alert show];
-        return;
+- (void)doneBtnAction{
+    if(nPasswordTextField.text==nil||[nPasswordTextField.text isEqualToString:@""]||resurePasswordTextField.text==nil||[resurePasswordTextField.text isEqualToString:@""]){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"输入不完整" message:@"所有输入不能为空" delegate:self cancelButtonTitle:nil otherButtonTitles:@"点击请重新输入", nil];
+        [alertView show];
         
+    }else if(![nPasswordTextField.text isEqualToString:resurePasswordTextField.text]){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"输入不正确" message:@"两次输入的新密码不匹配" delegate:self cancelButtonTitle:nil otherButtonTitles:@"点击请重新输入", nil];
+        [alertView show];
     }else{
-        
         [self showWaiting];
-        NSURL *url = [NSURL URLWithString:FORGET_PASSWORD];
-        
-//        if (self.quest) {
-//            [self.quest clearDelegatesAndCancel];
-//        }
-//        
+        NSURL *url = [NSURL URLWithString:CHANGE_PASSWORD_RANDOM_LOGIN];
+        //        if (self.quest) {
+        //            [self.quest clearDelegatesAndCancel];
+        //        }
+        //      
         ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-        [request setPostValue:self.inputTextField.text forKey:@"value"];
+        UserObjectService *us = [UserObjectService sharedUserObjectService];
+        UserObject *user = [us getUserObject];
+        [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+        [request setPostValue:self.nPasswordTextField.text forKey:@"newpassword"];
         request.timeOutSeconds = 20;
         [request setDelegate:self];
         [request setShouldAttemptPersistentConnection:NO];
         [request startAsynchronous];
         //self.quest=request;
         
-        NSLog(@"%@",self.inputTextField.text);
-       
         
     }
 }
-
 - (void)requestFinished:(ASIHTTPRequest *)request{
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
@@ -225,9 +224,12 @@
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
             [self.navigationController popViewControllerAnimated:YES];
-//            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
-//            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
-//            [[NSNotificationCenter defaultCenter] postNotification:notification];
+            //            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
+            //            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
+            //            [[NSNotificationCenter defaultCenter] postNotification:notification];
+            [DataManager sharedDataManager].isRandomLoginSelf=NO;
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"修改密码成功" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+            [alertView show];
         }else{
             [self showAlertRequestFailed:description];		
         }
@@ -240,7 +242,7 @@
     }else {
         [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
-
+    
 }
 
 

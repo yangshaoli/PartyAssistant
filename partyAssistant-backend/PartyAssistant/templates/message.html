@@ -25,6 +25,9 @@
     	    {% ifequal message 'publicenroll' %}
 		        报名成功！
 		    {% endifequal %}
+    	    {% ifequal message 'nopublicenroll' %}
+		        暂未开放报名方式！
+		    {% endifequal %}		    
 		    {% ifequal message 'late' %}
 		        来晚了，下次早点吧!
 		    {% endifequal %}        
@@ -36,6 +39,18 @@
 		    {% endifequal %}  
 		    {% ifequal message 'noexistkey' %}
 		        当前绑定链接已经失效.
+		    {% endifequal %}  
+		    {% ifequal message 'noexistusername' %}
+		        用户名不存在.
+		    {% endifequal %}  
+		    {% ifequal message 'nobinding' %}
+		        您没有绑定手机或是邮箱，请联系客服取回密码.
+		    {% endifequal %}  
+		    {% ifequal message 'sendtophone' %}
+		        临时密码已经发送到您绑定的手机，请使用临时密码登录后重新设置密码.
+		    {% endifequal %}  
+		    {% ifequal message 'sendtoemail' %}
+		        临时密码已经发送到您绑定的邮箱，请使用临时密码登录后重新设置密码.
 		    {% endifequal %}  
     	</h2>
 		<br />

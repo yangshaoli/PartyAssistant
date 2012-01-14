@@ -25,7 +25,7 @@
 @end
 
 @implementation DataManager
-
+@synthesize isRandomLoginSelf;
 static DataManager *sharedDataManager = nil;
 
 + (DataManager *)sharedDataManager {
@@ -50,6 +50,34 @@ static DataManager *sharedDataManager = nil;
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
     [av show];
 }
+- (void)getVersionFromRequestDic:(NSDictionary *)result{
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+    NSString *newVersionString = [result objectForKey:@"iphone_version"];
+    if(preVersionString==nil||[preVersionString isEqualToString:@""]){
+        [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+        //NSLog(@"前版本为空");
+        return;
+    }else{
+        if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
+            return;
+        }else{
+            //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
+            if([newVersionString floatValue]>[preVersionString floatValue]){
+                [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
+            }else{
+                [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
+            }
+        }
+        
+    }
+    
+    
+    
+}
+
 - (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name
                                                 pwd:(NSString *)pwd {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -75,15 +103,24 @@ static DataManager *sharedDataManager = nil;
         if ([request responseStatusCode] == 200) {
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
+            [self getVersionFromRequestDic:dic];
             NSString *description = [dic objectForKey:@"description"];
-            if ([description isEqualToString:@"ok"]) {
+            NSString *status = [dic objectForKey:@"status"];
+            NSDictionary *datasourceDic=[dic objectForKey:@"datasource"];
+            BOOL isRandomLogin=[[datasourceDic objectForKey:@"_israndomlogin"] boolValue];
+            if(isRandomLogin){
+                self.isRandomLoginSelf=YES;
+            }else{
+                self.isRandomLoginSelf=NO; 
+            }
+            if ([status isEqualToString:@"ok"]) {
                 dic = [NSMutableDictionary dictionaryWithDictionary:dic];
                 [dic setValue:name forKey:@"username"];
                 [self saveUsrData:dic];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
-
+                 [self showAlertRequestFailed:description];
             }
         }else if([request responseStatusCode] == 404){
             [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -137,8 +174,10 @@ static DataManager *sharedDataManager = nil;
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
             NSString *description = [dic objectForKey:@"description"];
+            [self getVersionFromRequestDic:dic];
+            NSString *status = [dic objectForKey:@"status"];   
             NSLog(@"%@",description);
-            if ([description isEqualToString:@"ok"]) {
+            if ([status isEqualToString:@"ok"]) {
                 [self saveUsrData:dic];
                 [pool release];
                 return NetWorkConnectionCheckPass;

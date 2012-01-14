@@ -40,6 +40,9 @@ $(document).bind("mobileinit", function(){
     	    {% ifequal message 'publicenroll' %}
 		        报名成功！
 		    {% endifequal %}
+    	    {% ifequal message 'nopublicenroll' %}
+		        暂未开放报名方式！
+		    {% endifequal %}
 		    {% ifequal message 'late' %}
 		        来晚了，下次早点吧!
 		    {% endifequal %}        

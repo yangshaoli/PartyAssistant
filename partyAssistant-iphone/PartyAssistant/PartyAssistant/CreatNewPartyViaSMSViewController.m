@@ -19,7 +19,10 @@
 #import "SegmentManagingViewController.h"
 #import "NotificationSettings.h"
 #import "AddressBookDBService.h"
+#import "UIViewControllerExtra.h"
 #import "PurchaseListViewController.h"
+#import "DataManager.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -73,6 +76,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.title = @"活动邀请";
     self.navigationController.navigationBar.tintColor = [UIColor redColor];
     [self.tableView setScrollEnabled:NO];
     UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
@@ -89,6 +94,12 @@
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
+    
+    //wxz
+    if([DataManager sharedDataManager].isRandomLoginSelf){
+        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -424,7 +435,7 @@
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     [request setPostValue:platform forKey:@"addressType"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -435,6 +446,8 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+   [self getVersionFromRequestDic:result];
+    
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {

@@ -21,4 +21,6 @@ urlpatterns = patterns('apis.accounts.views',
     url(r'^unbind/email/$', 'unbindContact', {'type':'email'}, name = 'unbindEmail'),
     url(r'^verify/phone/$', 'verifyContact', {'type':'phone'}, name = 'verifyPhone'),
     url(r'^verify/email/$', 'verifyContact', {'type':'email'}, name = 'verifyEmail'),
+    url(r'^change_password/$', 'changePassword', name = 'changePassword'),
+    url(r'^change_password_by_find_pwd/$', 'changePasswordByFinePWD', name = 'changePasswordByFinePWD'),
 )

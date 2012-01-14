@@ -15,7 +15,7 @@
 @interface PartyListTableVC : UITableViewController <RefreshTableHeaderDelegate>{
      
     NSMutableArray *partyList;
-    
+    NSArray *partyDictArraySelf;
     BOOL _reloading;
     float minBottomRefreshViewY;
     BottomRefreshTableView *bottomRefreshView;
@@ -26,15 +26,19 @@
     NSInteger lastID;
     BOOL _isAppend;
     ASIHTTPRequest *quest;
+    BOOL isRefreshImage;
+    
 }
 @property(nonatomic, assign)BOOL _isNeedRefresh;
 @property(nonatomic, assign)BOOL _isRefreshing;
+@property(nonatomic, assign)BOOL isRefreshImage;
 @property(nonatomic, assign)NSInteger lastID;
 @property(nonatomic, retain)ASIHTTPRequest *quest;
 @property(nonatomic, retain)NSMutableArray *partyList;
 @property(nonatomic, retain) BottomRefreshTableView *bottomRefreshView;
 @property(nonatomic, retain) TopRefreshTableView *topRefreshView;
 @property(nonatomic, retain)NSArray* peopleCountArray;
+@property(nonatomic, retain)NSArray *partyDictArraySelf;
 
 - (void)reloadTableViewDataSource;
 - (void)doneLoadingTopRefreshTableViewData;

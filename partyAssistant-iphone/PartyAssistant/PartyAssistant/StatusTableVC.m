@@ -14,7 +14,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
 #import "ResendPartyViaSMSViewController.h"
-
+#import "UIViewControllerExtra.h"
 
 @implementation StatusTableVC
 @synthesize clientsArray;
@@ -66,7 +66,7 @@
     }
 
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -77,10 +77,12 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
@@ -96,15 +98,11 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-         NSLog(@"在3");
     }else if([request responseStatusCode] == 500){
-         NSLog(@"在31");
         [self showAlertRequestFailed:REQUEST_ERROR_500];
     }else if([request responseStatusCode] == 502){
-         NSLog(@"在32");
         [self showAlertRequestFailed:REQUEST_ERROR_502];
     }else{
-         NSLog(@"在33");
         [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
@@ -153,17 +151,6 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
-
-////正则判断是否Email地址
-//- (BOOL) isEmailAddress:(NSString*)email { 
-//    
-//    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
-//    
-//    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
-//    
-//    return [emailTest evaluateWithObject:email]; 
-//    0
-//} 
 
 - (void)resendBtnAction{
     
@@ -309,8 +296,6 @@
         }else{
             
         }
-        
-        
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -338,6 +323,50 @@
         
         }else{
         
+        }
+        
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }else if([self.title isEqualToString:@"已邀请"]){
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        secondLb.tag=8;
+        
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+            
+            
+        }else{
+            
+        }
+        
+        secondLb.font=[UIFont systemFontOfSize:15];
+        secondLb.textAlignment = UITextAlignmentLeft;
+        //secondLb.textColor = [UIColor blueColor];
+        secondLb.backgroundColor = [UIColor clearColor];
+        [cell addSubview:secondLb];
+    }else if([self.title isEqualToString:@"未响应"]){
+        UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
+        secondLb.tag=8;
+        
+        NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        if(statusWordString.length){
+            if(statusWordString.length>19){
+                secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
+            }else{
+                secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
+            }
+            
+            
+        }else{
+            
         }
         
         secondLb.font=[UIFont systemFontOfSize:15];

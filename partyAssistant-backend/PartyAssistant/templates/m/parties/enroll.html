@@ -58,7 +58,7 @@ function ajaxGetClients(applystatus){
             client_count = data.client_count;
             clients = data.party_clients_datas;
             for (i in clients){
-                (clients[i].id == {{client.id}}) ? address = clients[i].address:address = maskAddress(clients[i].address);//自己的联系方式不打星
+                (clients[i].id == {{client.id|default:0}}) ? address = clients[i].address:address = maskAddress(clients[i].address);//自己的联系方式不打星
                 if (clients[i].name == clients[i].address || clients[i].name == ''){
                     row = '<li class="ui-li ui-li-static ui-body-c">'+address+"<span>"+address+"</span></li>";
                 } else {
@@ -111,7 +111,7 @@ function ajaxGetClients(applystatus){
 
             <label for="basic">姓名:</label>
             <input type="text" name="name" id="id_name" value=""  />
-            <font color='red'>{{ form.name.errors.0 }}</font>
+            <font color='red'>{{ form.name.errors.0 }}</font><br />
             <label for="client_email_list">联系方式</label>
             {{ form.phone_or_email }}<font color='red'>{{ form.phone_or_email.errors.0 }}</font>
             <p style="color:#999;">请填写手机号码，以免收不到活动具体通知</p>

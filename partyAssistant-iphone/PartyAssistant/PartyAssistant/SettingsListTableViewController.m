@@ -10,13 +10,14 @@
 #import "NicknameManageTableViewController.h"
 #import "DataManager.h"
 #import "PurchaseListViewController.h"
+#import "ChangePasswordTableVC.h"
 #import "BindingListViewController.h"
-
 #define NAVIGATION_CONTROLLER_TITLE @"设置"
 #define LogoutTag                   1
 #define NotPassTag                  2
 #define SuccessfulTag               3
 #define InvalidateNetwork           4
+#define versionRefreshTag           5
 
 @implementation SettingsListTableViewController
 
@@ -50,6 +51,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
 }
 
 - (void)viewDidUnload
@@ -96,7 +98,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 7;
+    return 8;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -123,6 +125,27 @@
         cell.textLabel.text = @"绑定";
     }else if(indexPath.row == 6){
         cell.textLabel.text = @"登出";
+    }else if(indexPath.row == 7){
+        
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        NSString *defaultVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        
+        NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+        BOOL isUpdateVersion=[isUpdateVersionDefault boolForKey:@"isUpdateVersion"];
+        
+        cell.textLabel.text = [[NSString alloc] initWithFormat:@"当前版本号：%@",defaultVersionString];
+      
+        UIView *oldLayout2 = nil;
+        oldLayout2 = [cell viewWithTag:2];
+        [oldLayout2 removeFromSuperview];
+        
+        if(isUpdateVersion){   
+    
+            UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(249, 10, 20, 20)];
+            cellImageView.image=[UIImage imageNamed:@"new1"];
+            cellImageView.tag=2;
+            [cell  addSubview:cellImageView];
+        }
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -184,9 +207,18 @@
         NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
         [self.navigationController pushViewController:nickChangeVc animated:YES];
     }
+    if(indexPath.row==1){
+        ChangePasswordTableVC *changePasswordTableVC=[[ChangePasswordTableVC alloc] initWithNibName:@"ChangePasswordTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordTableVC animated:YES];
+    }  
     if(indexPath.row == 2){
         WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
         [self.navigationController pushViewController:vc animated:YES];
+    }
+    if(indexPath.row == 3){
+        NSString *addressString=[[NSString alloc]initWithFormat:@"http://www.airenao.com/"];//评分
+        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
+
     }
     if(indexPath.row == 4){
         PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
@@ -201,7 +233,21 @@
         alertView.tag = LogoutTag;
         [alertView show];
     }
-    
+    if(indexPath.row == 6){
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        NSString *versionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if(versionString==nil&&[versionString isEqualToString:@""]){
+            return;
+        }else{
+            NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+            BOOL isUpdateVersion=[isUpdateVersionDefault boolForKey:@"isUpdateVersion"];
+            if(isUpdateVersion){
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"更新版本" message:@"确认更新?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+                alertView.tag = versionRefreshTag;
+                [alertView show];
+            }
+        }
+    }
 }
 
 #pragma mark -
@@ -225,6 +271,12 @@
         _HUD.delegate = self;
         
         [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
+    }
+    if((alertView.tag ==versionRefreshTag ) && ( buttonIndex == 1)){
+        NSString *addressString=[[NSString alloc]initWithFormat:@"itms://itunes.apple.com/cn/app/bubble-spelling/id476527756?mt=8"];//地址待定
+        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
+        
+    
     }
 }
 
