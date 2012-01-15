@@ -791,6 +791,10 @@
 //    list.contactDelegate = self;
 //    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
 //    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
+    if ([self.searchField isFirstResponder]) {
+        [self textFieldShouldReturn:self.searchField];
+    }
+    
     SegmentManagingViewController * segmentManagingViewController = [[SegmentManagingViewController alloc] init];
     segmentManagingViewController.contactDataDelegate = self;
     UINavigationController *pickersNav = [[UINavigationController alloc] initWithRootViewController:segmentManagingViewController];
