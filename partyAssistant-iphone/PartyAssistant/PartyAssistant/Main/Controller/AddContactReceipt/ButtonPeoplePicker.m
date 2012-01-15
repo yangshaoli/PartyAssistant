@@ -168,6 +168,9 @@
 	}
 
 	[self becomeFirstResponder];
+    CGRect toolbarRect = self.toolbar.frame;
+    toolbarRect.origin.y = 0;
+    self.toolbar.frame = toolbarRect;
 }
 
 #pragma mark - UIKeyInput protocol methods
@@ -184,6 +187,9 @@
         [self removePersonFromGroup:selectedPeople];
         searchField.text = [NSString stringWithFormat:@"%@%@", @"\u200B", text];
         [self.searchField becomeFirstResponder];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 0;
+        self.toolbar.frame = toolbarRect;
     }
 }
 
@@ -321,8 +327,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[self changePickerViewToStatus:ButtonPeoplePickerStatusShowing];
-
 	// Handle the special case
 	if (indexPath.row == filteredPeople.count)
     {
@@ -356,6 +360,8 @@
 	}
 
 	searchField.text = @"\u200B";
+    
+    //[self changePickerViewToStatus:ButtonPeoplePickerStatusShowing];
 }
 
 #pragma mark - Update the filteredPeople array based on the search text.
@@ -758,6 +764,9 @@
     [UIView commitAnimations];
     
 	[searchField becomeFirstResponder];
+    CGRect toolbarRect = self.toolbar.frame;
+    toolbarRect.origin.y = 0;
+    self.toolbar.frame = toolbarRect;
 }
 
 - (void)touchButton {
@@ -775,6 +784,9 @@
     
     if (lastButton) {
         [self becomeFirstResponder];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 0;
+        self.toolbar.frame = toolbarRect;
         selectedButton = lastButton;
         selectedButton.selected = YES;
     }
@@ -835,10 +847,11 @@
         
         pickerStatus = ButtonPeoplePickerStatusSearching;
         
-        self.searchField.inputAccessoryView = nil;
-        [self.toolbar removeFromSuperview];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 300;
+        self.toolbar.frame = toolbarRect;
         
-        [self reloadInputViews];
+        //[self reloadInputViews];
         
     } else {
         [self.uiTableView setHidden:YES];
@@ -852,11 +865,11 @@
         
         pickerStatus = ButtonPeoplePickerStatusShowing;
         
-        [self reloadInputViews];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 0;
+        self.toolbar.frame = toolbarRect;
         
-        self.searchField.inputAccessoryView = self.toolbar;
-        [self.searchField reloadInputViews];
-        
+        //[self reloadInputViews];
     }
 }
 
@@ -984,9 +997,9 @@
 
 #pragma input accessory view
 - (UIView *)inputAccessoryView {
-    if (pickerStatus == ButtonPeoplePickerStatusSearching) {
-        return nil;
-    }
+//    if (pickerStatus == ButtonPeoplePickerStatusSearching) {
+//        return nil;
+//    }
     return self.toolbar;
 }
 
