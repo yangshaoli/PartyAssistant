@@ -184,6 +184,10 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的手机中，请注意查收" delegate:self cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            av.tag = 11114;
+            [av show];
+            
             [self saveProfileDataFromResult:result];
         } else {
             [self saveProfileDataFromResult:result];
@@ -328,6 +332,10 @@
     }
     if (alertView.tag == 11113) {
         [self closePage];
+    }
+    if (alertView.tag == 11114) {
+        self.inputCodeTextField.text = nil;
+        [self.inputCodeTextField becomeFirstResponder];
     }
 }
 @end
