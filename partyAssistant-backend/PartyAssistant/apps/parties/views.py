@@ -520,7 +520,7 @@ def _public_enroll(request, party_id):
             party_client, create = PartiesClients.objects.get_or_create(client = client, party = party,  defaults = {'apply_status':'apply', 'is_check':False})            
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
-                party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                 party_client.is_check = False
                 party_client.save()
             
@@ -564,7 +564,10 @@ def _invite_enroll(request, party_id, invite_key):
         form = EnrollForm(request.POST) 
         if form.is_valid():
             #保存client的姓名
-            client.name = request.POST.get('name', '')
+            name = form.cleaned_data['name']
+            if name:
+                client.name = name
+                client.save()
 #            if client.invite_type == 'email':
 #                if request.POST.get('name'):
 #                    client.name = request.POST.get('name')
@@ -577,7 +580,7 @@ def _invite_enroll(request, party_id, invite_key):
 #                else:
 #                    if not client.name:
 #                        client.name = client.phone  
-            client.save()
+            
                
             if 'yes' in request.POST: #如果点击参加
                 if party.limit_count != 0:#有人数限制
@@ -587,7 +590,7 @@ def _invite_enroll(request, party_id, invite_key):
                 party_client.apply_status = u'apply'
                 leave_message = form.cleaned_data['leave_message']
                 if leave_message:
-                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                               
                 party_client.save()
                 
@@ -599,7 +602,7 @@ def _invite_enroll(request, party_id, invite_key):
                 party_client.apply_status = u'reject'
                 leave_message = form.cleaned_data['leave_message']
                 if leave_message:
-                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
               
                 party_client.save()
                 
