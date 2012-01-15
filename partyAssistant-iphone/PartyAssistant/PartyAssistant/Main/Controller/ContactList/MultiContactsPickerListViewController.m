@@ -113,6 +113,10 @@
     //去掉多余的section空白
     self.tableView.sectionHeaderHeight = 0.0f;
     self.tableView.sectionFooterHeight = 0.0f;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addressBookHasBeenUpdated) name:ADDRESSBOOK_UPDATED object:nil];
+    
+    isAddressBookDataNeedUpdate = YES;
 }
 
 - (void)viewDidUnload
@@ -165,7 +169,11 @@
 
 
 -(void)initData{
-	self.abData = [[AddressBookDataManager sharedAddressBookDataManager] getContactListData];
+	if (!isAddressBookDataNeedUpdate) {
+        return;
+    }
+    
+    self.abData = [[AddressBookDataManager sharedAddressBookDataManager] getContactListData];
     
     //self.contacts = contactorsArray; 
     if([self.abData count] <1)
@@ -224,6 +232,8 @@
             
 		} 
 	}
+    
+    isAddressBookDataNeedUpdate = NO;
 }
 
 
@@ -764,5 +774,9 @@
     CFRelease(tempAddressBook);
     
     return newClient;
+}
+
+- (void)addressBookHasBeenUpdated {
+    isAddressBookDataNeedUpdate = YES;
 }
 @end

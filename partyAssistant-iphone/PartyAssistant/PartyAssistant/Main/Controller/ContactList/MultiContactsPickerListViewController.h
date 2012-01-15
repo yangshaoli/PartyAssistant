@@ -39,6 +39,8 @@
 	NSArray *contacts;
     NSArray *abData;
 	NSString *sectionName;
+    
+    BOOL isAddressBookDataNeedUpdate;
 }
 
 @property(nonatomic,strong)NSArray *contactorsArray;
