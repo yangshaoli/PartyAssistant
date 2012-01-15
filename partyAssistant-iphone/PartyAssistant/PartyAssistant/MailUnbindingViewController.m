@@ -171,6 +171,8 @@
             av.tag = 11001;
             [av show];
         } else {
+            [self saveProfileDataFromResult:result];
+            
             [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
