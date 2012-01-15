@@ -45,6 +45,7 @@
 @synthesize doneButton;
 @synthesize toolbar;
 @synthesize footerView;
+@synthesize inputPhoneFormatter;
 #pragma mark - View lifecycle methods
 
 // Perform additional initialization after the nib file is loaded
@@ -109,6 +110,8 @@
     [self.addReceiptBGView addSubview:self.addReceiptButton];
     
     [self layoutNameButtons];
+    
+    self.inputPhoneFormatter = [[PhoneNumberFormatter alloc] init];
 }
 
 #pragma mark - Memory management
@@ -445,7 +448,29 @@
 	if (searchField.text.length > 1)
     {
         [self changePickerViewToStatus:ButtonPeoplePickerStatusSearching];
-		[self filterContentForSearchText:[searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""]];
+        NSString *searchString = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        searchString = [searchString stringByReplacingOccurrencesOfString:@" " withString:@""];
+        BOOL isPhone = YES;
+        
+        if ([searchString length] == 0) {
+            isPhone = NO;
+        }
+        
+        for(int i = 0; i < [searchString length]; i++) {
+            char c = [searchString characterAtIndex:i];
+            if(c == '+' ) continue;
+            if(c >= '0' && c <= '9') continue;
+            isPhone = NO;
+            break;
+        }
+        
+        if (isPhone) {
+            searchString  = [self.inputPhoneFormatter format:searchString withLocale:@"cn_check"];
+        } else {
+            searchString = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        }
+        
+		[self filterContentForSearchText:searchString];
 		[uiTableView reloadData];
 	}
 	else

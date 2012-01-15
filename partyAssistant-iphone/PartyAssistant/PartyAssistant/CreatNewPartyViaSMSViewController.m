@@ -315,13 +315,13 @@
                     if (i == 0) {
                         [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%d个联系人", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 } else {
                     if (i == 0) {
                         [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%d个联系人", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 }
                 break;

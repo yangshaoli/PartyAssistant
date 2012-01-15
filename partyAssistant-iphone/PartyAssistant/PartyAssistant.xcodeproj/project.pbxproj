@@ -55,6 +55,7 @@
 		75E4840714AC61CF00AB950A /* bottom-button-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840414AC61CF00AB950A /* bottom-button-bg.png */; };
 		75E4840814AC61CF00AB950A /* ButtonCorners.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840514AC61CF00AB950A /* ButtonCorners.png */; };
 		75E4840914AC61CF00AB950A /* ButtonCorners@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */; };
+		75E777E514C2CF06006268B9 /* PhoneNumberFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 75E777E414C2CF06006268B9 /* PhoneNumberFormatter.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A2CDD8B14A207C20054B723 /* BottomRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8714A207C20054B723 /* BottomRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A2CDD8C14A207C20054B723 /* TopRefreshTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD8A14A207C20054B723 /* TopRefreshTableView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		7A2CDD9814A2082F0054B723 /* AddressBookDBService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A2CDD9714A2082F0054B723 /* AddressBookDBService.m */; };
@@ -359,6 +360,8 @@
 		75E4840414AC61CF00AB950A /* bottom-button-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bottom-button-bg.png"; sourceTree = "<group>"; };
 		75E4840514AC61CF00AB950A /* ButtonCorners.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ButtonCorners.png; sourceTree = "<group>"; };
 		75E4840614AC61CF00AB950A /* ButtonCorners@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ButtonCorners@2x.png"; sourceTree = "<group>"; };
+		75E777E314C2CF06006268B9 /* PhoneNumberFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhoneNumberFormatter.h; path = Main/External/Phoneformat/PhoneNumberFormatter.h; sourceTree = "<group>"; };
+		75E777E414C2CF06006268B9 /* PhoneNumberFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PhoneNumberFormatter.m; path = Main/External/Phoneformat/PhoneNumberFormatter.m; sourceTree = "<group>"; };
 		7A2CDD8314A207960054B723 /* DBSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBSettings.h; sourceTree = "<group>"; };
 		7A2CDD8614A207C20054B723 /* BottomRefreshTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BottomRefreshTableView.h; sourceTree = "<group>"; };
 		7A2CDD8714A207C20054B723 /* BottomRefreshTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BottomRefreshTableView.m; sourceTree = "<group>"; };
@@ -926,6 +929,15 @@
 			path = Resources/ButtonPicker;
 			sourceTree = "<group>";
 		};
+		75E777E714C2CF0D006268B9 /* PhoneFormat */ = {
+			isa = PBXGroup;
+			children = (
+				75E777E314C2CF06006268B9 /* PhoneNumberFormatter.h */,
+				75E777E414C2CF06006268B9 /* PhoneNumberFormatter.m */,
+			);
+			name = PhoneFormat;
+			sourceTree = "<group>";
+		};
 		7A2CDD8514A207C20054B723 /* RefreshTableView */ = {
 			isa = PBXGroup;
 			children = (
@@ -1258,6 +1270,7 @@
 		89391AA414592EDB00721F90 /* External */ = {
 			isa = PBXGroup;
 			children = (
+				75E777E714C2CF0D006268B9 /* PhoneFormat */,
 				75BC083A14989113007B39CB /* RegexKit */,
 				89391B351459394400721F90 /* ASIHTTPRequest */,
 				89391AA614592EE500721F90 /* JsonFramework */,
@@ -1903,6 +1916,7 @@
 				7AF4B44C14BD80D300F1E787 /* UserInfoValidator.m in Sources */,
 				75908EAB14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m in Sources */,
 				CEAB66CA14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.m in Sources */,
+				75E777E514C2CF06006268B9 /* PhoneNumberFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
