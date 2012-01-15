@@ -15,3 +15,4 @@
 #define UpdateRemainCountFailed @"kUpdateSMSSendViaServerRemainCountFailed"
 #define UpdateRemainCountFinished @"kUpdateSMSSendViaServerRemainCountFinished"
 #define TOP_PRESENT_VIEW_APPEAR @"kViewWillAppearWhenAppBecomeActive"
+#define USER_LOGOUT_NOTIFICATION @"kUserLogoutNotification"

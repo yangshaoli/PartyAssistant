@@ -38,6 +38,7 @@
 }
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearData) name:USER_LOGOUT_NOTIFICATION object:nil];
     _isRefreshing = NO;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     return self;
@@ -353,6 +354,13 @@
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
     
+}
+
+- (void)clearData {
+    [partyList removeAllObjects];
+    [self.tableView reloadData];
+    
+    self.lastID = 0;
 }
 
 #pragma mark - Table view data source

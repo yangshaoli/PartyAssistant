@@ -14,6 +14,7 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "HTTPRequestErrorMSG.h"
+#import "NotificationSettings.h"
 
 @interface DataManager ()
 
@@ -247,6 +248,7 @@ static DataManager *sharedDataManager = nil;
                 [userData clearObject];
                 [userObjectService saveUserObject];
                 [self clearPartyListData];
+                [[NSNotificationCenter defaultCenter] postNotificationName:USER_LOGOUT_NOTIFICATION object:nil];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
