@@ -23,18 +23,27 @@
     ABRecordID contactorID;
     id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
     NSDictionary *clientDict;//服务器获得的数据
-    UITextView *messageTextView;
     PartyModel *partyObj;
     NSString *clientStatusFlag;
     ASIHTTPRequest *quest;
     
+    UITableViewCell *phoneCell;
+    UITableViewCell *messageCell;
+    
+    UILabel *phoneLabel;
+    UITextView *messageTextView;
 }
-@property(nonatomic, retain)UITextView *messageTextView;
 @property(nonatomic, assign)ABRecordID contactorID;
 @property(nonatomic, assign)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
 @property(nonatomic, retain)NSDictionary *clientDict;
 @property(nonatomic, retain)PartyModel *partyObj;
 @property(nonatomic, retain)NSString *clientStatusFlag;
 @property(nonatomic, retain)ASIHTTPRequest *quest;
+
+@property(nonatomic, retain)IBOutlet UITableViewCell *phoneCell;
+@property(nonatomic, retain)IBOutlet UITableViewCell *messageCell;
+
+@property(nonatomic, retain)IBOutlet UILabel *phoneLabel;
+@property(nonatomic, retain)IBOutlet UITextView *messageTextView;
 //- (BOOL) isEmailAddress:(NSString*)email;
 @end
