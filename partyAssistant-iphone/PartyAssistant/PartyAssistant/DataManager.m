@@ -201,6 +201,21 @@ static DataManager *sharedDataManager = nil;
     }
 }
 
+- (void)clearPartyListData {
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSMutableArray *getArrayFromFile;
+    if(![fm fileExistsAtPath:partyListPath]) {
+        getArrayFromFile = [[NSMutableArray alloc] initWithCapacity:0];
+    } else {
+        getArrayFromFile = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+    }
+    
+    [getArrayFromFile removeAllObjects];
+    
+    [getArrayFromFile  writeToFile:partyListPath  atomically:YES];
+}
+
 - (NetworkConnectionStatus)logoutUser {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
@@ -231,6 +246,7 @@ static DataManager *sharedDataManager = nil;
                 UserObject *userData = [userObjectService getUserObject];
                 [userData clearObject];
                 [userObjectService saveUserObject];
+                [self clearPartyListData];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
