@@ -15,6 +15,7 @@
 #import "UserObjectService.h"
 #import "HTTPRequestErrorMSG.h"
 #import "NotificationSettings.h"
+#import "UserInfoBindingStatusService.h"
 
 #define INVALID_NETWORK @"无法连接网络，请检查网络状态！"
 #define SERVER_CONNECTION_ERROR @"与服务器连接异常！请稍后重试！"
@@ -279,6 +280,9 @@ static DataManager *sharedDataManager = nil;
                 [userData clearObject];
                 [userObjectService saveUserObject];
                 [self clearPartyListData];
+                UserInfoBindingStatusService *statusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+                [statusService clearBindingStatusObject];
+                
                 [[NSNotificationCenter defaultCenter] postNotificationName:USER_LOGOUT_NOTIFICATION object:nil];
                 [pool release];
                 //return NetWorkConnectionCheckPass;

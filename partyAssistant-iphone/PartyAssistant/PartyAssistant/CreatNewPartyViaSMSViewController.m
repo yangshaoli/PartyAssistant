@@ -23,6 +23,7 @@
 #import "PurchaseListViewController.h"
 #import "DataManager.h"
 #import "ChangePasswordRandomLoginTableVC.h"
+#import "CustomTextView.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -90,7 +91,8 @@
         self.smsObject = [smsObjectService getSMSObject];
     }
     
-    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
+    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
@@ -201,20 +203,28 @@
         if ([self.editingTableViewCell.textView isFirstResponder]) {
             return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
         } else {
-            if (self.editingTableViewCell.textView.frame.size.height < 250) {
-                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 80) {
-                    return 80 + 11;
-                } else {
-                    return self.editingTableViewCell.textView.frame.size.height + 11;
-                }
-            } else {
-                return (250 + 11);
-            }
-            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+//            if (self.editingTableViewCell.textView.frame.size.height < 250) {
+//                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 200) {
+//                    return 200 + 11;
+//                } else {
+//                    return self.editingTableViewCell.textView.frame.size.height + 11;
+//                }
+//            } else {
+//                return (250 + 11);
+//            }
+//            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+            return 200 + 11;
         }
         
     }
     return 44.0f;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return @"短信内容";
+    }
+    return nil;
 }
 #pragma mark -
 #pragma mark EditableTableViewCellDelegate
@@ -239,6 +249,23 @@
     self.editingTableViewCell = editableTableViewCell;
     self.tableView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
     self.navigationItem.rightBarButtonItem = self.rightItem;
+    
+//   CGFloat newHeight = [self.editingTableViewCell suggestedHeight];
+    
+    CGRect oldFrame = self.editingTableViewCell.textView.frame;
+    CGRect newFrame = oldFrame;
+//    if (newHeight < 200.0f) {
+        newFrame.size.height = 200.0f;
+//    } else if (newHeight > 250.0f) {
+//        newFrame.size.height = 250.0f;
+//    } else {
+//        newFrame.size.height = newHeight;
+//    }
+    
+    self.editingTableViewCell.textView.frame = newFrame;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 
@@ -247,19 +274,30 @@
     CGRect oldFrame = self.editingTableViewCell.textView.frame;
     CGRect newFrame = oldFrame;
     if (newHeight < 80.0f) {
-        newFrame.size.height = 80.0f;
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            newFrame.size.height = 200.0f;
+        } else {
+            newFrame.size.height = 80.0f;
+        }
     } else if (newHeight > 100.0f) {
         if (![editableTableViewCell.textView isFirstResponder]) {
-            if (newHeight > 250.0f) {
-                newFrame.size.height = 250.0f;
-            } else {
-                newFrame.size.height = newHeight;
-            }
+//            if (newHeight > 250.0f) {
+//                newFrame.size.height = 250.0f;
+//            } else if (newHeight < 200.0f) {
+//                newFrame.size.height = 200.0f;
+//            } else {
+//                newFrame.size.height = newHeight;
+//            }
+            newFrame.size.height = 200.0f;
         } else {
             newFrame.size.height = 100.0f;
         }
     } else {
-        newFrame.size.height = newHeight;
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            newFrame.size.height = 200.0f;
+        } else {
+            newFrame.size.height = newHeight;
+        }
     }
     
     self.editingTableViewCell.textView.frame = newFrame;

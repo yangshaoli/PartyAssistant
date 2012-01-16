@@ -18,6 +18,7 @@
 #import "AddressBookDataManager.h"
 #import "UIViewControllerExtra.h"
 #import "AddressBookDBService.h"
+#import "CustomTextView.h"
 
 @interface ResendPartyViaSMSViewController ()
 
