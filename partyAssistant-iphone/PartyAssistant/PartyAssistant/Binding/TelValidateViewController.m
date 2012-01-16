@@ -26,6 +26,7 @@
 - (void)resendPhoneVerifyCode;
 - (void)sendPhoneVerify;
 - (void)closePage;
+- (void)resendPage;
 
 @end
 
@@ -36,6 +37,7 @@
 @synthesize telValidateCell = _telValidateCell;
 @synthesize telResendValidateCell = _telResendValidateCell;
 @synthesize pageStatus = _pageStatus;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -61,11 +63,11 @@
     [super viewDidLoad];
     
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"绑定";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
+        self.navigationItem.title = @"手机验证";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换手机号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
     } else if (self.pageStatus == StatusVerifyUnbinding){
-        self.navigationItem.title = @"解除绑定";
+        self.navigationItem.title = @"解绑验证";
     } else {
         self.navigationItem.title = @"未知错误状态";
     }
@@ -93,6 +95,19 @@
 
 #pragma mark _
 #pragma mark tableView delegate
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        NSString *title = @"手机号：";
+        if (self.pageStatus == StatusVerifyBinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingTel]];
+        } else if (self.pageStatus == StatusVerifyUnbinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel]];
+        }
+    }
+    return @"";
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
         return 3;
@@ -107,7 +122,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         return self.inputTelCell;
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section ==1) {
         return self.telValidateCell;
     } else if (indexPath.section == 2) {
         return self.telResendValidateCell;
@@ -117,9 +132,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 1) {
+    if (indexPath.section == 0) {
         [self sendPhoneVerify];
-    } else if (indexPath.section == 2) {
+    } else if (indexPath.section == 1) {
         [self resendPhoneVerifyCode];
     }
 }
@@ -296,21 +311,25 @@
 }
 
 - (void)closePage {
-    NSArray *controllers = self.navigationController.viewControllers;
-    BindingListViewController *bindingList = nil;
-    for (UIViewController *controller in controllers) {
-        if ([controller isMemberOfClass:[BindingListViewController class]]) {
-            bindingList = (BindingListViewController *)controller;
+    if (self.inSpecialProcess) {
+        [self resendPage];
+    } else {
+        NSArray *controllers = self.navigationController.viewControllers;
+        BindingListViewController *bindingList = nil;
+        for (UIViewController *controller in controllers) {
+            if ([controller isMemberOfClass:[BindingListViewController class]]) {
+                bindingList = (BindingListViewController *)controller;
+            }
         }
-    }
-    if (bindingList) {
-        CATransition *transition = [CATransition animation];
-        transition.duration = 0.5;
-        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        transition.type = kCATransitionReveal;
-        transition.subtype = kCATransitionFromBottom;
-        [self.navigationController.view.layer addAnimation:transition forKey:nil];
-        [self.navigationController popToViewController:bindingList animated:NO];
+        if (bindingList) {
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.5;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionReveal;
+            transition.subtype = kCATransitionFromBottom;
+            [self.navigationController.view.layer addAnimation:transition forKey:nil];
+            [self.navigationController popToViewController:bindingList animated:NO];
+        }
     }
 }
 

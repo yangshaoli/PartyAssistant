@@ -18,4 +18,6 @@
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *telBindingCell;
 
+@property (nonatomic) BOOL inSpecialProcess;
+
 @end

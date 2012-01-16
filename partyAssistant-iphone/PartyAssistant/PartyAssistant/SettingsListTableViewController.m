@@ -299,20 +299,27 @@
 }
 
 - (void)tryConnectToServer {
-    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            logoutUser];
+    //NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+    //                                        logoutUser];
+    NSString *networkStatus = nil;
+    networkStatus = [[DataManager sharedDataManager] logoutUser];
     [_HUD hide:YES];
     //may need to creat some other connection status
-    switch (networkStatus) {
-        case NetworkConnectionInvalidate:
-            [self showNotPassChekAlert];
-            break;
-        case NetWorkConnectionCheckPass:
-            [self showRegistSuccessfulAlert];
-            break;
-        default:
-            [self showNotPassChekAlert];
-            break;
+    if (networkStatus) {
+        [self showAlertWithMessage:networkStatus buttonTitle:@"确定" tag:NotPassTag];
+    } else {
+        [self showRegistSuccessfulAlert];
     }
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showNotPassChekAlert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self showRegistSuccessfulAlert];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
 }
 @end

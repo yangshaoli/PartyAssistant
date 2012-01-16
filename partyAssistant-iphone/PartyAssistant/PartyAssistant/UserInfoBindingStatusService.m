@@ -193,6 +193,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 
 - (void)clearBindingStatusObject {
     [self.bindingStatusObject clearObject];
+    [self saveBindingStatusObject];
 }
 
 - (BindingStatus)nicknameBindingStatus {

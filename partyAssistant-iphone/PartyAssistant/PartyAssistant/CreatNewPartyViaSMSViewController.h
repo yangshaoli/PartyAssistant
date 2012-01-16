@@ -26,6 +26,7 @@
  
 @property (nonatomic, strong) IBOutlet UITextField *contactNameTF;
 @property (nonatomic, strong) IBOutlet UILabel *sendModeNameLabel;
+@property (nonatomic, strong) IBOutlet UILabel *leftCountLabel;
 
 @property (nonatomic, strong) IBOutlet ButtonPeoplePicker *picker;
 

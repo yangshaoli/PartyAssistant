@@ -31,6 +31,7 @@
 @synthesize inputMailCell = _inputMailCell;
 @synthesize inputMailTextField = _inputMailTextField;
 @synthesize mailBindingCell = _mailBindingCell;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -54,6 +55,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.inputMailTextField becomeFirstResponder];
+    self.title=@"邮箱绑定";
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -111,6 +114,10 @@
     //verifyPage.pageStatus = verifyPageStatus;
     verifyPage.pageStatus = StatusVerifyBinding;
     
+    if (self.inSpecialProcess) {
+        verifyPage.inSpecialProcess = YES;
+    }
+    
     [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
@@ -163,7 +170,7 @@
             
             [self saveProfileDataFromResult:result];
             
-            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证链接已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11001;
             [av show];
 

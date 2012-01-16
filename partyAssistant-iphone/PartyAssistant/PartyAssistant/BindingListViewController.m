@@ -204,6 +204,7 @@
         case StatusNotBind:
             vc = [[TelBindingViewController alloc] initWithNibName:nil bundle:nil];
             [self.navigationController pushViewController:vc animated:YES];
+            [(TelBindingViewController *)vc setInSpecialProcess:YES];
             break;
         case StatusBinded :
             vc = [[TelUnbindingViewController alloc] initWithNibName:nil bundle:nil];
@@ -250,6 +251,7 @@
     switch (mailBindingStatus) {
         case StatusNotBind:
             vc = [[MailBindingViewController alloc] initWithNibName:nil bundle:nil];
+            [(MailBindingViewController *)vc setInSpecialProcess:YES];
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinded :
