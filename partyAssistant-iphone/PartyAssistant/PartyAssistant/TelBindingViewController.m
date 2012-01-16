@@ -58,7 +58,7 @@
     [super viewDidLoad];
     BindingStatus telStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] telBindingStatus];
     if (telStatus == StatusNotBind) {
-        self.navigationItem.title = @"绑定手机";
+        self.navigationItem.title = @"手机绑定";
     } else if (telStatus != StatusUnknown && telStatus != StatusBinded) {
         self.navigationItem.title = @"重新输入号码";
     }

@@ -61,8 +61,8 @@
     [super viewDidLoad];
     
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"手机验证";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换手机号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
+        self.navigationItem.title = @"绑定验证";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
     } else if (self.pageStatus == StatusVerifyUnbinding){
         self.navigationItem.title = @"解绑验证";
@@ -130,9 +130,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
+    if (indexPath.section == 1) {
         [self sendPhoneVerify];
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section == 2) {
         [self resendPhoneVerifyCode];
     }
 }
