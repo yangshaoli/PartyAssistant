@@ -59,10 +59,11 @@
     [super viewDidLoad];
     BindingStatus telStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] telBindingStatus];
     if (telStatus == StatusNotBind) {
-        self.navigationItem.title = @"绑定电话号码";
+        self.navigationItem.title = @"绑定手机";
     } else if (telStatus != StatusUnknown && telStatus != StatusBinded) {
         self.navigationItem.title = @"重新输入号码";
     }
+    [self.inputTelTextField becomeFirstResponder];
     // Do any additional setup after loading the view from its nib.
 }
 

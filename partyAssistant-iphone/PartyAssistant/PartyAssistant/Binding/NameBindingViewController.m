@@ -26,8 +26,9 @@
 
 @implementation NameBindingViewController
 @synthesize tableView = _tableView;
-@synthesize IDTitleLabel = _IDTitleLabel;
-@synthesize IDNameTextField = _IDNameTextField;
+//header
+//@synthesize IDTitleLabel = _IDTitleLabel;
+//@synthesize IDNameTextField = _IDNameTextField;
 //nameInput
 @synthesize inputNameCell = _inputNameCell;
 @synthesize nickNameInputTextField = _nickNameInputTextField;
@@ -56,6 +57,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.title=@"真实姓名";
+    [self.nickNameInputTextField becomeFirstResponder];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -74,7 +77,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
+//    self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
 }
 #pragma mark _
 #pragma mark tableView delegate
@@ -143,7 +146,7 @@
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
             [self saveProfileDataFromResult:result];
-            self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
+//            self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
             [self.navigationController popViewControllerAnimated:YES];
         } else {
             [self showBindOperationFailed:description];	

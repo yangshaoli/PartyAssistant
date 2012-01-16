@@ -59,11 +59,11 @@
 {
     [super viewDidLoad];
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"绑定";
+        self.navigationItem.title = @"绑定验证";
         UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换邮箱" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
     } else if (self.pageStatus == StatusVerifyUnbinding){
-        self.navigationItem.title = @"解除绑定";
+        self.navigationItem.title = @"解绑验证";
     } else {
         self.navigationItem.title = @"未知错误状态";
     }
@@ -88,6 +88,19 @@
 
 #pragma mark _
 #pragma mark tableView delegate
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        NSString *title = @"邮箱：";
+        if (self.pageStatus == StatusVerifyBinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingMail]];
+        } else if (self.pageStatus == StatusVerifyUnbinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
+        }
+    }
+    return @"";
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
         return 1;
