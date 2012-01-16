@@ -14,6 +14,7 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "HTTPRequestErrorMSG.h"
+#import "NotificationSettings.h"
 
 @interface DataManager ()
 
@@ -178,7 +179,9 @@ static DataManager *sharedDataManager = nil;
             NSString *status = [dic objectForKey:@"status"];   
             NSLog(@"%@",description);
             if ([status isEqualToString:@"ok"]) {
-                [self saveUsrData:dic];
+                NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:dic];
+                [info setValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
+                [self saveUsrData:info];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
@@ -199,6 +202,21 @@ static DataManager *sharedDataManager = nil;
         [pool release];
         return NetWorkConnectionCheckDeny;
     }
+}
+
+- (void)clearPartyListData {
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSMutableArray *getArrayFromFile;
+    if(![fm fileExistsAtPath:partyListPath]) {
+        getArrayFromFile = [[NSMutableArray alloc] initWithCapacity:0];
+    } else {
+        getArrayFromFile = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+    }
+    
+    [getArrayFromFile removeAllObjects];
+    
+    [getArrayFromFile  writeToFile:partyListPath  atomically:YES];
 }
 
 - (NetworkConnectionStatus)logoutUser {
@@ -231,6 +249,8 @@ static DataManager *sharedDataManager = nil;
                 UserObject *userData = [userObjectService getUserObject];
                 [userData clearObject];
                 [userObjectService saveUserObject];
+                [self clearPartyListData];
+                [[NSNotificationCenter defaultCenter] postNotificationName:USER_LOGOUT_NOTIFICATION object:nil];
                 [pool release];
                 return NetWorkConnectionCheckPass;
             } else {
@@ -284,7 +304,10 @@ static DataManager *sharedDataManager = nil;
         
     }
     
-    userData.userName = [jsonValue objectForKey:@"username"];
+    NSString *userName = [jsonValue objectForKey:@"username"];
+    if (userName) {
+        userData.userName = userName;
+    }
     
     [userObjectService saveUserObject];
 }

@@ -108,16 +108,16 @@
 }
 
 - (NSString *)telStatusString {
-    if (self.telBindingStatus == StatusBinded) {
-        return self.bindedTel;
-    }
+//    if (self.telBindingStatus == StatusBinded) {
+//        return self.bindedTel;
+//    }
     return [self translateStatusCodeToString:self.telBindingStatus];
 }
 
 - (NSString *)mailStatusString {
-    if (self.mailBindingStatus == StatusBinded) {
-        return self.bindedMail;
-    }
+//    if (self.mailBindingStatus == StatusBinded) {
+//        return self.bindedMail;
+//    }
     return [self translateStatusCodeToString:self.mailBindingStatus];
 }
 @end
@@ -245,7 +245,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
             return StatusVerifyUnbinding;
         } else {
             if ([[[self getBindingStatusObject] bindedMail] isEqualToString:@""]) {
-                return StatusVerifyUnbinding;
+                return StatusVerifyBinding;
             }
             return StatusVerifyBinding;
         }
@@ -261,7 +261,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
             return StatusVerifyUnbinding;
         } else {
             if ([[[self getBindingStatusObject] bindedTel] isEqualToString:@""]) {
-                return StatusVerifyUnbinding;
+                return StatusVerifyBinding;
             }
             return StatusVerifyBinding;
         }

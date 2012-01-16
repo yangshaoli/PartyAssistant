@@ -490,11 +490,11 @@ def _public_enroll(request, party_id):
             
             if party.invite_type == 'phone':
                 phone = form.cleaned_data['phone_or_email']
-                client, create = Client.objects.get_or_create(creator = creator, phone = phone)
+                client, create = Client.objects.get_or_create(creator = creator, phone = phone, defaults = {'invite_type':'public'})
                 
             else :
                 email = form.cleaned_data['phone_or_email']
-                client, create = Client.objects.get_or_create(creator = creator, email = email)
+                client, create = Client.objects.get_or_create(creator = creator, email = email, defaults = {'invite_type':'public'})
             #有人数限制
             if party.limit_count != 0 :
                 if PartiesClients.objects.filter(party = party, apply_status = 'apply').count() >= party.limit_count:
@@ -511,20 +511,19 @@ def _public_enroll(request, party_id):
 #                #向组织者的所有MoblieDevice发送推送
 #                push_notification_when_enroll(party_client, 'apply')
                 
-            if create:
-                client.invite_type = 'public'
-                client.save()
+#            if create:
+#                client.invite_type = 'public'
+#                client.save()
             client.name = name 
             client.save()    
             
-            party_client, create = PartiesClients.objects.get_or_create(client = client, party = party)            
+            party_client, create = PartiesClients.objects.get_or_create(client = client, party = party,  defaults = {'apply_status':'apply', 'is_check':False})            
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
-                party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-                 
-            party_client.apply_status = 'apply'
-            party_client.is_check = False    
-            party_client.save()
+                party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                party_client.is_check = False
+                party_client.save()
+            
             push_notification_when_enroll(party_client, 'apply') 
             if request.META['PATH_INFO'][0:3] == '/m/':
                 return TemplateResponse(request, 'm/message.html', {'title':u'报名成功', 'message': 'publicenrollsucess'})
@@ -561,24 +560,27 @@ def _invite_enroll(request, party_id, invite_key):
     party_client = get_object_or_404(PartiesClients, invite_key = invite_key)
     party_client.is_check = False
     client = party_client.client
-    
     if request.method == 'POST':
         form = EnrollForm(request.POST) 
         if form.is_valid():
             #保存client的姓名
-            if client.invite_type == 'email':
-                if request.POST.get('name'):
-                    client.name = request.POST.get('name')
-                else:
-                    if not client.name:
-                        client.name = client.email  
-            else:
-                if request.POST.get('name'):
-                    client.name = request.POST.get('name')
-                else:
-                    if not client.name:
-                        client.name = client.phone  
-            client.save()
+            name = form.cleaned_data['name']
+            if name:
+                client.name = name
+                client.save()
+#            if client.invite_type == 'email':
+#                if request.POST.get('name'):
+#                    client.name = request.POST.get('name')
+#                else:
+#                    if not client.name:
+#                        client.name = client.email  
+#            else:
+#                if request.POST.get('name'):
+#                    client.name = request.POST.get('name')
+#                else:
+#                    if not client.name:
+#                        client.name = client.phone  
+            
                
             if 'yes' in request.POST: #如果点击参加
                 if party.limit_count != 0:#有人数限制
@@ -588,7 +590,7 @@ def _invite_enroll(request, party_id, invite_key):
                 party_client.apply_status = u'apply'
                 leave_message = form.cleaned_data['leave_message']
                 if leave_message:
-                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
                               
                 party_client.save()
                 
@@ -600,7 +602,7 @@ def _invite_enroll(request, party_id, invite_key):
                 party_client.apply_status = u'reject'
                 leave_message = form.cleaned_data['leave_message']
                 if leave_message:
-                    party_client.leave_message = party_client.leave_message + ',' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
               
                 party_client.save()
                 

@@ -58,6 +58,8 @@ function bindingPhone(){
 function validate_phone_bingding(isbind){
     //alert(isbind);
     var v = $("#id_phonevalidate").val();
+    var p = $("#id_phone").val();
+    if (!checkInput(p, 'phone')) return false ;
     if (!v) {
         alert('请输入手机验证码');
         return false;
@@ -74,7 +76,8 @@ function validate_phone_bingding(isbind){
         type: 'POST',
         url: r_url,
         data: {
-            'key': v
+            'key': v,
+            'phone':p
         },
         statusCode: {
             200: function(response){
@@ -93,7 +96,17 @@ function validate_phone_bingding(isbind){
                  if(r_status=='null'){
                  	alert('验证码不能为空');
                  }
-                 
+                 if(r_status=='notexist'){
+                 	alert('验证码失效');
+                 	window.location.href='{% url profile %}';
+                 }
+                 if(r_status=='invalidate'){
+	                alert('手机号码不合法');
+                 }
+                 if(r_status=='phone_not_equal'){
+	                alert('验证码失效');
+	                window.location.href='{% url profile %}';
+                 }
             },
             500: function(response){
                  alert('服务器正忙，请稍后重试');
@@ -168,7 +181,16 @@ function validate_phone_bingding(isbind){
         var answer = confirm("是否解除该邮件的绑定？")
         if (answer){
             $.post('{%url unbinding %}', {'email': $("#id_email").val()}, function(response){
-                location.reload();
+                switch(response) {
+	                case 'record_already_exist': {
+                        alert('解除绑定邮件已经发送，请查看您的邮箱');
+                        break;
+                    }
+                    case 'success':{
+                        alert('解除绑定邮件发送成功，请查看您的邮箱');
+                        break;
+                    }
+                }
             })
         }
     }

@@ -24,13 +24,12 @@
     
     NSLog(@"bindInfos: %@",bindInfos);
     
+    BindingStatusObject *userObject = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+    
+    NSString *nickName = [bindInfos objectForKey:@"nickname"];
     NSString *email = [bindInfos objectForKey:@"email"];
     NSString *tel = [bindInfos objectForKey:@"phone"];
-    NSString *nickName = [bindInfos objectForKey:@"nickname"];
     
-    BindingStatusObject *userObject = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
-    [userObject setBindedTel:tel];
-    [userObject setBindedMail:email];
     if (nickName) {
         [userObject setBindedNickname:nickName];
     }
@@ -42,16 +41,39 @@
         [userObject setNicknameBindingStatus:StatusBinded];
     }
     
-    BindingStatus telCurrentStatus = [self translateToLocalStatusFromString:telStatus];
-    BindingStatus emailCurrentStatus = [self translateToLocalStatusFromString:emailStatus];
-    if (telCurrentStatus != StatusBinding) {
-        [userObject setBindingTel:@""];
+    if (telStatus) {
+        BindingStatus telCurrentStatus = [self translateToLocalStatusFromString:telStatus];
+        
+        if (telCurrentStatus != StatusBinding) {
+            [userObject setBindingTel:@""];
+            if (tel) {
+                [userObject setBindedTel:tel];
+            }
+        } else {
+            if (tel) {
+                [userObject setBindingTel:tel];
+            }
+        }
+        
+        [userObject setTelBindingStatus:telCurrentStatus];
     }
-    if (emailCurrentStatus != StatusBinding) {
-        [userObject setBindingMail:@""];
+    
+    if (emailStatus) {
+        BindingStatus emailCurrentStatus = [self translateToLocalStatusFromString:emailStatus];
+        
+        if (emailCurrentStatus != StatusBinding) {
+            [userObject setBindingMail:@""];
+            if (email) {
+                [userObject setBindedMail:email];
+            }
+        } else {
+            if (email) {
+                [userObject setBindingMail:email];
+            }
+        }
+        
+        [userObject setMailBindingStatus:emailCurrentStatus];
     }
-    [userObject setTelBindingStatus:telCurrentStatus];
-    [userObject setMailBindingStatus:emailCurrentStatus];
     
     [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] saveBindingStatusObject];
 }
@@ -78,7 +100,7 @@
 }
 
 - (void)showBindOperationFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag = 11112;
     [av show];
 }

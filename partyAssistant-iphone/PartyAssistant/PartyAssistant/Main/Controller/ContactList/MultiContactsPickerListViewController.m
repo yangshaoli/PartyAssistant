@@ -63,6 +63,7 @@
     //wxz
     CGRect viewFrame = self.tableView.frame;
     viewFrame.origin.y = 0.f;
+    viewFrame.size.height = 416.f;
     self.tableView.frame = viewFrame;
     // Create a search bar
 	self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 44.0f)];
@@ -112,6 +113,10 @@
     //去掉多余的section空白
     self.tableView.sectionHeaderHeight = 0.0f;
     self.tableView.sectionFooterHeight = 0.0f;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addressBookHasBeenUpdated) name:ADDRESSBOOK_UPDATED object:nil];
+    
+    isAddressBookDataNeedUpdate = YES;
 }
 
 - (void)viewDidUnload
@@ -164,7 +169,11 @@
 
 
 -(void)initData{
-	self.abData = [[AddressBookDataManager sharedAddressBookDataManager] getContactListData];
+	if (!isAddressBookDataNeedUpdate) {
+        return;
+    }
+    
+    self.abData = [[AddressBookDataManager sharedAddressBookDataManager] getContactListData];
     
     //self.contacts = contactorsArray; 
     if([self.abData count] <1)
@@ -223,6 +232,8 @@
             
 		} 
 	}
+    
+    isAddressBookDataNeedUpdate = NO;
 }
 
 
@@ -763,5 +774,9 @@
     CFRelease(tempAddressBook);
     
     return newClient;
+}
+
+- (void)addressBookHasBeenUpdated {
+    isAddressBookDataNeedUpdate = YES;
 }
 @end

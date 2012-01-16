@@ -117,6 +117,8 @@
 
 void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, void *context) {
 	[[AddressBookDataManager sharedAddressBookDataManager] setNeedsUpdate];
+    NSNotification *notification = [NSNotification notificationWithName:ADDRESSBOOK_UPDATED object:nil userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotification:notification];
 }
 
 #pragma mark -

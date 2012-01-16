@@ -61,14 +61,16 @@
     [super viewDidLoad];
     
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"绑定";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+        self.navigationItem.title = @"手机验证";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换手机号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
+    } else if (self.pageStatus == StatusVerifyUnbinding){
+        self.navigationItem.title = @"解绑验证";
     } else {
-        self.navigationItem.title = @"解除绑定";
+        self.navigationItem.title = @"未知错误状态";
     }
     
-    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleBordered target:self action:@selector(closePage)];
     self.navigationItem.leftBarButtonItem = closeBtn;
     
     
@@ -91,8 +93,24 @@
 
 #pragma mark _
 #pragma mark tableView delegate
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        NSString *title = @"手机号：";
+        if (self.pageStatus == StatusVerifyBinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingTel]];
+        } else if (self.pageStatus == StatusVerifyUnbinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel]];
+        }
+    }
+    return @"";
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
+        return 3;
+    }
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -102,7 +120,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         return self.inputTelCell;
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section ==1) {
         return self.telValidateCell;
     } else if (indexPath.section == 2) {
         return self.telResendValidateCell;
@@ -112,9 +130,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 1) {
+    if (indexPath.section == 0) {
         [self sendPhoneVerify];
-    } else if (indexPath.section == 2) {
+    } else if (indexPath.section == 1) {
         [self resendPhoneVerifyCode];
     }
 }
@@ -179,6 +197,10 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的手机中，请注意查收" delegate:self cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            av.tag = 11114;
+            [av show];
+            
             [self saveProfileDataFromResult:result];
         } else {
             [self saveProfileDataFromResult:result];
@@ -323,6 +345,10 @@
     }
     if (alertView.tag == 11113) {
         [self closePage];
+    }
+    if (alertView.tag == 11114) {
+        self.inputCodeTextField.text = nil;
+        [self.inputCodeTextField becomeFirstResponder];
     }
 }
 @end

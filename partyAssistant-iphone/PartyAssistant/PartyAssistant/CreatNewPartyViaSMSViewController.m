@@ -313,15 +313,15 @@
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipient", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipient", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 } else {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipients", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 }
                 break;
@@ -467,12 +467,13 @@
             [isCreatSucDefault setBool:YES forKey:@"isCreatSucDefault"];
             NSNumber *leftCount = [[result objectForKey:@"datasource"] objectForKey:@"sms_count_remaining"];
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[leftCount intValue]]]];
+
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.smsObject._isApplyTips) {
-                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"( 报名链接: %@ )",applyURL]];
                     }else{
                         vc.body = self.smsObject.smsContent;
                     };
@@ -533,10 +534,10 @@
                 [se clearEmailObject];
             }
                  
-        } else if ([status isEqualToString:@"lessRemain"]){
-            NSDictionary *infos = [result objectForKey:@"data"];
+        } else if ([status isEqualToString:@"error_no_remaining"]){
+            NSDictionary *infos = [result objectForKey:@"datasource"];
             NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"leftCount"];
+            leftCount = [infos objectForKey:@"remaining"];
             if (leftCount) {
                 [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
                 [self showLessRemainingCountAlert];
@@ -867,6 +868,10 @@
 - (void)setNewContactData : (NSArray *)newData {
     self.receipts = [NSMutableArray arrayWithArray:newData];
     [self rearrangeContactNameTFContent];
+}
+
+- (void)selectedCancelInController:(UIViewController *)vc {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
 }
 
 - (void)selectedFinishedInController:(UIViewController *)vc {

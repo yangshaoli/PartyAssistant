@@ -25,6 +25,7 @@
      </div>
      <a href="{%url forget_password %}"><font color="red">忘记密码？</font></a>
      <div class="submit_field">
+     <input type="hidden" name="next" value="{{ next }}" />
       <input id="id_login_submit" type="submit" value="登录" />
      </div>
     </fieldset>	
@@ -34,5 +35,6 @@
  <script>
 document.getElementsByClassName('menu')[0].children[1].className = '';
 document.getElementsByClassName('menu')[1].children[0].className = 'active';
+{% if request.session.temp_login %} location.href = '/accounts/reset_password' {% endif %}
 </script>
 {% endblock %}

@@ -56,6 +56,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[self mailTextField] setText:[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
+    self.title=@"邮箱解绑";
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -99,14 +101,24 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
         // go to verify view
-        MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-        [self.navigationController presentModalViewController:verifyPage animated:YES];
+        [self beginMailUpdate];
     }
 }
 
 - (void)jumpToVerify {
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-    [self.navigationController presentModalViewController:verifyPage animated:YES];
+    BindingStatus m_pageStatus = StatusVerifyUnbinding;
+    //verifyPage.pageStatus = m_pageStatus;
+    verifyPage.pageStatus = StatusVerifyUnbinding;
+    verifyPage.hidesBottomBarWhenPushed = YES;
+    
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
 - (void)beginMailUpdate {
@@ -156,10 +168,12 @@
             NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);
             [self saveProfileDataFromResult:result];
             
-            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
+            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证链接已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11001;
             [av show];
         } else {
+            [self saveProfileDataFromResult:result];
+            
             [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){

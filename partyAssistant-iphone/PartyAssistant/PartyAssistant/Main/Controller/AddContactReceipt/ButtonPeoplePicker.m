@@ -45,6 +45,7 @@
 @synthesize doneButton;
 @synthesize toolbar;
 @synthesize footerView;
+@synthesize inputPhoneFormatter;
 #pragma mark - View lifecycle methods
 
 // Perform additional initialization after the nib file is loaded
@@ -109,6 +110,8 @@
     [self.addReceiptBGView addSubview:self.addReceiptButton];
     
     [self layoutNameButtons];
+    
+    self.inputPhoneFormatter = [[PhoneNumberFormatter alloc] init];
 }
 
 #pragma mark - Memory management
@@ -168,6 +171,9 @@
 	}
 
 	[self becomeFirstResponder];
+    CGRect toolbarRect = self.toolbar.frame;
+    toolbarRect.origin.y = 0;
+    self.toolbar.frame = toolbarRect;
 }
 
 #pragma mark - UIKeyInput protocol methods
@@ -184,6 +190,9 @@
         [self removePersonFromGroup:selectedPeople];
         searchField.text = [NSString stringWithFormat:@"%@%@", @"\u200B", text];
         [self.searchField becomeFirstResponder];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 0;
+        self.toolbar.frame = toolbarRect;
     }
 }
 
@@ -268,7 +277,7 @@
 	// If this is the last row in filteredPeople, take special action
 	if (filteredPeople.count == indexPath.row)
     {
-		cell.textLabel.text	= @"Add Person";
+		cell.textLabel.text	= @"添加联系人";
 		cell.labelTF.text = nil;
         cell.phoneNumber = nil;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -321,23 +330,19 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[self changePickerViewToStatus:ButtonPeoplePickerStatusShowing];
-
 	// Handle the special case
 	if (indexPath.row == filteredPeople.count)
     {
 		//[self displayAddPersonViewController];
-        ClientObject *newClient = nil;
-        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
-        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
-        if ([newPhoneName length] == 0) {
-            return;
-        } else {
-            newClient = [[ClientObject alloc] init];
-            newClient.cVal = newPhoneName;
-            newClient.cName = @"";
-            [self addPersonToGroup:newClient];
-        }
+//        ClientObject *newClient = nil;
+//        NSString *newPhoneName = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+//        newPhoneName = [newPhoneName stringByReplacingOccurrencesOfString:@" " withString:@""];
+//        if ([newPhoneName length] == 0) {
+//            return;
+//        } else {
+        [self textFieldShouldReturn:self.searchField];
+//        }
+        return;
 	}
 	else
     {
@@ -358,6 +363,8 @@
 	}
 
 	searchField.text = @"\u200B";
+    
+    //[self changePickerViewToStatus:ButtonPeoplePickerStatusShowing];
 }
 
 #pragma mark - Update the filteredPeople array based on the search text.
@@ -441,7 +448,29 @@
 	if (searchField.text.length > 1)
     {
         [self changePickerViewToStatus:ButtonPeoplePickerStatusSearching];
-		[self filterContentForSearchText:[searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""]];
+        NSString *searchString = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        searchString = [searchString stringByReplacingOccurrencesOfString:@" " withString:@""];
+        BOOL isPhone = YES;
+        
+        if ([searchString length] == 0) {
+            isPhone = NO;
+        }
+        
+        for(int i = 0; i < [searchString length]; i++) {
+            char c = [searchString characterAtIndex:i];
+            if(c == '+' ) continue;
+            if(c >= '0' && c <= '9') continue;
+            isPhone = NO;
+            break;
+        }
+        
+        if (isPhone) {
+            searchString  = [self.inputPhoneFormatter format:searchString withLocale:@"cn_check"];
+        } else {
+            searchString = [searchField.text stringByReplacingOccurrencesOfString:@"\u200B" withString:@""];
+        }
+        
+		[self filterContentForSearchText:searchString];
 		[uiTableView reloadData];
 	}
 	else
@@ -577,7 +606,7 @@
 	CGFloat Begin_PADDING = 8.0f;
     CGFloat End_PADDING = 38.0f;
 	CGFloat maxWidth = buttonView.frame.size.width - Begin_PADDING - End_PADDING;
-	CGFloat xPosition = Begin_PADDING + 30.f;
+	CGFloat xPosition = Begin_PADDING + 65.f;
 	CGFloat yPosition = Ver_PADDING;
     CGFloat minWidth = maxWidth / 3;
     
@@ -661,9 +690,9 @@
 		} else {
             if (rowCount == 0) {
                 if (colCount == 0) {
-                    if (nameSize.width  > (self.buttonView.frame.size.width - (Begin_PADDING * 8)))
+                    if (nameSize.width  > (self.buttonView.frame.size.width - (Begin_PADDING * 13)))
                     {
-                        nameSize.width = self.buttonView.frame.size.width - (Begin_PADDING * 8);
+                        nameSize.width = self.buttonView.frame.size.width - (Begin_PADDING * 13);
                     }
                 } else {
                     if (nameSize.width  > (self.buttonView.frame.size.width - (Begin_PADDING * 4)))
@@ -760,6 +789,9 @@
     [UIView commitAnimations];
     
 	[searchField becomeFirstResponder];
+    CGRect toolbarRect = self.toolbar.frame;
+    toolbarRect.origin.y = 0;
+    self.toolbar.frame = toolbarRect;
 }
 
 - (void)touchButton {
@@ -777,6 +809,9 @@
     
     if (lastButton) {
         [self becomeFirstResponder];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 0;
+        self.toolbar.frame = toolbarRect;
         selectedButton = lastButton;
         selectedButton.selected = YES;
     }
@@ -793,6 +828,10 @@
 //    list.contactDelegate = self;
 //    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:list];
 //    [[(UIViewController *)[self delegate] navigationController] presentModalViewController:nav animated:YES];
+    if ([self.searchField isFirstResponder]) {
+        [self textFieldShouldReturn:self.searchField];
+    }
+    
     SegmentManagingViewController * segmentManagingViewController = [[SegmentManagingViewController alloc] init];
     segmentManagingViewController.contactDataDelegate = self;
     UINavigationController *pickersNav = [[UINavigationController alloc] initWithRootViewController:segmentManagingViewController];
@@ -830,11 +869,15 @@
 
         [UIView commitAnimations];
         
+        
         pickerStatus = ButtonPeoplePickerStatusSearching;
         
-        [self.buttonView reloadInputViews];
-        self.searchField.inputAccessoryView = nil;
-        [self.searchField reloadInputViews];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 300;
+        self.toolbar.frame = toolbarRect;
+        
+        //[self reloadInputViews];
+        
     } else {
         [self.uiTableView setHidden:YES];
         [self.toolbar setHidden:NO];
@@ -847,9 +890,11 @@
         
         pickerStatus = ButtonPeoplePickerStatusShowing;
         
-        [self.buttonView reloadInputViews];
-        self.searchField.inputAccessoryView = self.toolbar;
-        [self.searchField reloadInputViews];
+        CGRect toolbarRect = self.toolbar.frame;
+        toolbarRect.origin.y = 0;
+        self.toolbar.frame = toolbarRect;
+        
+        //[self reloadInputViews];
     }
 }
 
@@ -967,15 +1012,19 @@
     [self layoutNameButtons];
 }
 
+- (void)selectedCancelInController:(UIViewController *)vc {
+    [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
+}
+
 - (void)selectedFinishedInController:(UIViewController *)vc {
     [[(UIViewController *)[self delegate] navigationController]dismissModalViewControllerAnimated:YES];
 }
 
 #pragma input accessory view
 - (UIView *)inputAccessoryView {
-    if (pickerStatus == ButtonPeoplePickerStatusSearching) {
-        return nil;
-    }
+//    if (pickerStatus == ButtonPeoplePickerStatusSearching) {
+//        return nil;
+//    }
     return self.toolbar;
 }
 

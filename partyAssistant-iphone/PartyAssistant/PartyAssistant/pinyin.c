@@ -233,3 +233,14 @@ char pinyinFirstLetter(unsigned short hanzi)
 		return hanzi;
 	}
 }
+
+int checkIsEnglishLetter(unsigned short hanzi) {
+    int index = hanzi - HANZI_START;
+    if (index >= 0 && index <= HANZI_COUNT) {
+        return 0;
+    } else {
+        return 1;
+    }
+    return 0;
+    
+}
