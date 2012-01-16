@@ -12,7 +12,8 @@
 typedef enum {
     NetworkConnectionInvalidate,
     NetWorkConnectionCheckPass,
-    NetWorkConnectionCheckDeny
+    NetWorkConnectionCheckDeny,
+    NetworkConnection
 }NetworkConnectionStatus;
 
 
@@ -22,9 +23,9 @@ typedef enum {
 }
 @property(nonatomic,assign)BOOL isRandomLoginSelf;
 + (DataManager *)sharedDataManager;
-- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
-- (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
-- (NetworkConnectionStatus)logoutUser;
+- (NSString *)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
+- (NSString *)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
+- (NSString *)logoutUser;
 - (NetworkConnectionStatus)setNickName:(NSString *)nickName;
 - (NetworkConnectionStatus)setEmailInfo:(NSString *)emailInfo;
 - (NetworkConnectionStatus)setPhoneNum:(NSString *)phoneNum;

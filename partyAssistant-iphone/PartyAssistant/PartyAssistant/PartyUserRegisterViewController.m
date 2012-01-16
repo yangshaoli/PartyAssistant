@@ -255,21 +255,28 @@
                                                 ]
                               ];
     
-    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            registerUserWithUsrInfo:userInfo];
+//    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+//                                            registerUserWithUsrInfo:userInfo];
+    NSString *statusDescription = nil;
+    statusDescription = [[DataManager sharedDataManager]
+                                    registerUserWithUsrInfo:userInfo];;
     [_HUD hide:YES];
-    //may need to creat some other connection status
-    switch (networkStatus) {
-        case NetworkConnectionInvalidate:
-            [self showInvalidateNetworkalert];
-            break;
-        case NetWorkConnectionCheckPass:
-            [self showRegistSuccessfulAlert];
-            break;
-        default:
-            [self showNotPassChekAlert];
-            break;
+    
+    if (statusDescription) {
+        [self showAlertWithMessage:statusDescription buttonTitle:@"确定" tag:NotLegalTag];
     }
+    //may need to creat some other connection status
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showInvalidateNetworkalert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self showRegistSuccessfulAlert];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
 }
 
 #pragma mark -
