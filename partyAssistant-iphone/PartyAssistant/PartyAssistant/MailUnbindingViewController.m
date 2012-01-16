@@ -56,6 +56,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[self mailTextField] setText:[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -99,14 +100,24 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
         // go to verify view
-        MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-        [self.navigationController presentModalViewController:verifyPage animated:YES];
+        [self beginMailUpdate];
     }
 }
 
 - (void)jumpToVerify {
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-    [self.navigationController presentModalViewController:verifyPage animated:YES];
+    BindingStatus m_pageStatus = StatusVerifyUnbinding;
+    //verifyPage.pageStatus = m_pageStatus;
+    verifyPage.pageStatus = StatusVerifyUnbinding;
+    verifyPage.hidesBottomBarWhenPushed = YES;
+    
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
 - (void)beginMailUpdate {
@@ -160,6 +171,8 @@
             av.tag = 11001;
             [av show];
         } else {
+            [self saveProfileDataFromResult:result];
+            
             [self showBindOperationFailed:description];	
         }
     }else if([request responseStatusCode] == 404){

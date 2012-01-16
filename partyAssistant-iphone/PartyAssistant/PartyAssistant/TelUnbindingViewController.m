@@ -55,6 +55,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [[self telTextField] setText:[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel]];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -106,7 +108,18 @@
 
 - (void)jumpToVerify {
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-    [self.navigationController presentModalViewController:verifyPage animated:YES];
+    BindingStatus m_pageStatus = StatusVerifyUnbinding;
+    //verifyPage.pageStatus = m_pageStatus;
+    verifyPage.pageStatus = StatusVerifyUnbinding;
+    verifyPage.hidesBottomBarWhenPushed = YES;
+    
+    CATransition *transition = [CATransition animation];
+    transition.duration = 0.5;
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    transition.type = kCATransitionMoveIn;
+    transition.subtype = kCATransitionFromTop;
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
 - (void)beginPhoneUpdate {

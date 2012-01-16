@@ -45,8 +45,6 @@
 
 @implementation BindingListViewController
 @synthesize tableView = _tableView;
-@synthesize IDCell = _IDCell;
-@synthesize countCell = _countCell;
 @synthesize nameBindingCell = _nameBindingCell;
 @synthesize telBindingCell = _telBindingCell;
 @synthesize mailBindingCell = _mailBindingCell;
@@ -55,6 +53,8 @@
 @synthesize nameBindingStatusLabel = _nameBindingStatusLabel;
 @synthesize telBindingStatusLabel = _telBindingStatusLabel;
 @synthesize mailBindingStatusLabel = _mailBindingStatusLabel;
+@synthesize mailBindingInfoLabel = _mailBindingInfoLabel;
+@synthesize telBindingInfoLabel = _telBindingInfoLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -76,7 +76,8 @@
 #pragma mark - View lifecycle
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self refreshCurrentStatus];
+    
+    [self.tableView reloadData];
     
     self.userAccountLabel.text = @"更新中";
     
@@ -86,8 +87,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"用户绑定";
-    [self refreshCurrentStatus];
+    self.navigationItem.title = @"个人信息";
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
@@ -115,58 +115,39 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    [self refreshCurrentStatus];
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return 2;
-    } else if (section == 1) {
-        return 3;
-    }
-    return 0;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        switch (indexPath.row) {
-            case 0:
-                return self.IDCell;
-                break;
-            case 1:    
-                return self.countCell;
-                break;
-        } 
-    } else if (indexPath.section == 1) {
-        switch (indexPath.row) {
-            case 0:
-                return self.nameBindingCell;
-                break;
-            case 1:    
-                return self.telBindingCell;
-                break;
-            case 2:
-                return self.mailBindingCell;
-                break;
-        }
+       switch (indexPath.row) {
+        case 0:
+            return self.nameBindingCell;
+            break;
+        case 1:    
+            return self.telBindingCell;
+            break;
+        case 2:
+            return self.mailBindingCell;
+            break;
     }
     return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
     
-    } else if (indexPath.section == 1) {
-        if (indexPath.row == 0) {
-            NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
-            [self.navigationController pushViewController:nameBindingVC animated:YES]; 
-        } else if (indexPath.row == 1) {
-            [self decideToOpenWhichTelBindingPage];
-        } else if (indexPath.row == 2) {
-            [self decideToOpenWhichMailBindingPage];
-        }
-
+    if (indexPath.row == 0) {
+        NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:nameBindingVC animated:YES]; 
+    } else if (indexPath.row == 1) {
+        [self decideToOpenWhichTelBindingPage];
+    } else if (indexPath.row == 2) {
+        [self decideToOpenWhichMailBindingPage];
     }
 }
 
@@ -175,6 +156,33 @@
     self.nameBindingStatusLabel.text = [storedStatusService nickNameStatusString];
     self.telBindingStatusLabel.text = [storedStatusService telStatusString ];
     self.mailBindingStatusLabel.text = [storedStatusService mailStatusString];
+    
+    BindingStatus telBindingStatus = [storedStatusService detectTelBindingStatus];
+    BindingStatus mailBindingStatus = [storedStatusService detectMailBindingStatus];
+    
+    NSString *telInfoString = nil;
+    if (telBindingStatus == StatusVerifyBinding) {
+        telInfoString = [storedStatusService bindingTel]; 
+    } else if (telBindingStatus == StatusBinded) {
+        telInfoString = [storedStatusService bindedTel];
+    } else if (telBindingStatus == StatusVerifyUnbinding) {
+        telInfoString = @"";
+    } else {
+        telInfoString = @"";
+    }
+    self.telBindingInfoLabel.text = telInfoString;
+    
+    NSString *mailInfoString = nil;
+    if (mailBindingStatus == StatusVerifyBinding) {
+        mailInfoString = [storedStatusService bindingMail];
+    } else if (mailBindingStatus == StatusBinded) {
+        mailInfoString = [storedStatusService bindedMail];
+    } else if (mailBindingStatus == StatusVerifyUnbinding) {
+        mailInfoString = @"";
+    } else {
+        mailInfoString = @"";
+    }
+    self.mailBindingInfoLabel.text = mailInfoString;
 }
 
 - (void)decideToOpenWhichTelBindingPage {
@@ -248,7 +256,7 @@
                 
                 vc = nil;
                 
-                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectMailBindingStatus];
                 vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
                 [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
                 vc.navigationItem.hidesBackButton = YES;

@@ -96,10 +96,21 @@
     // Do any additional setup after loading the view from its nib.
     
     //wxz
-    if([DataManager sharedDataManager].isRandomLoginSelf){
-        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
-        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  
+        //tab.selectedIndex=1;
+    }else{
+        if([DataManager sharedDataManager].isRandomLoginSelf){
+            ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+            [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];  
+            NSLog(@"creat-----");
+        }
     }
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -302,15 +313,15 @@
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipient", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipient", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 } else {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipients", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 }
                 break;
@@ -450,17 +461,19 @@
     
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
+    NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            [isCreatSucDefault setBool:YES forKey:@"isCreatSucDefault"];
             NSNumber *leftCount = [[result objectForKey:@"datasource"] objectForKey:@"sms_count_remaining"];
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[leftCount intValue]]]];
-            
+
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.smsObject._isApplyTips) {
-                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"( 报名链接: %@ )",applyURL]];
                     }else{
                         vc.body = self.smsObject.smsContent;
                     };
@@ -521,10 +534,10 @@
                 [se clearEmailObject];
             }
                  
-        } else if ([status isEqualToString:@"lessRemain"]){
-            NSDictionary *infos = [result objectForKey:@"data"];
+        } else if ([status isEqualToString:@"error_no_remaining"]){
+            NSDictionary *infos = [result objectForKey:@"datasource"];
             NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"leftCount"];
+            leftCount = [infos objectForKey:@"remaining"];
             if (leftCount) {
                 [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
                 [self showLessRemainingCountAlert];
@@ -532,6 +545,7 @@
             }
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
         } else {
+            [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
             [self showAlertRequestFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
@@ -854,6 +868,10 @@
 - (void)setNewContactData : (NSArray *)newData {
     self.receipts = [NSMutableArray arrayWithArray:newData];
     [self rearrangeContactNameTFContent];
+}
+
+- (void)selectedCancelInController:(UIViewController *)vc {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
 }
 
 - (void)selectedFinishedInController:(UIViewController *)vc {

@@ -18,6 +18,7 @@
 #import "ShadowedTableView.h"
 #import "BottomSepratorLineView.h"
 #import "SegmentManagingViewController.h"
+#import "PhoneNumberFormatter.h"
 
 typedef enum {
     ButtonPeoplePickerStatusShowing,
@@ -55,6 +56,8 @@ typedef enum {
 
 @property (nonatomic, strong) IBOutlet UIToolbar *toolbar;
 @property (nonatomic, strong) IBOutlet UIView *footerView;
+
+@property (nonatomic, strong) PhoneNumberFormatter *inputPhoneFormatter;
 
 - (IBAction)cancelClick:(id)sender;
 - (IBAction)doneClick:(id)sender;

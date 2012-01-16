@@ -14,8 +14,11 @@
 #import "UITableViewControllerExtra.h"
 @implementation ContactorPhoneDetailsViewController
 @synthesize contactorID,phoneDetailDelegate,clientDict,partyObj,quest;
-@synthesize messageTextView;
 @synthesize clientStatusFlag;
+@synthesize phoneCell;
+@synthesize messageCell;
+@synthesize phoneLabel;
+@synthesize messageTextView;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -40,7 +43,7 @@
 {
     [super viewDidLoad];
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [goButton setFrame:CGRectMake(50, 360, 80, 40)];
+    [goButton setFrame:CGRectMake(0, 0, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
     [goButton setImage:[UIImage imageNamed:@"apply"] forState:UIControlStateNormal];
     
@@ -50,7 +53,7 @@
     [goButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [notGoButton setFrame:CGRectMake(200, 360,80, 40)];
+    [notGoButton setFrame:CGRectMake(0, 0, 80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
     [notGoButton setImage:[UIImage imageNamed:@"reject"] forState:UIControlStateNormal];
     //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
@@ -58,39 +61,52 @@
     notGoButton.backgroundColor=[UIColor clearColor];
     [notGoButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     
+    
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    
+    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, 100)];
+    footerView.backgroundColor = [UIColor clearColor];
+    
+    
     if([self.clientStatusFlag isEqualToString:@"donothing"]||[self.clientStatusFlag  isEqualToString:@"refused"]){
-         [self.view addSubview:goButton];
+        goButton.center = CGPointMake(bounds.size.width / 4, 50);
+        [footerView addSubview:goButton];
     }
      
     if([self.clientStatusFlag isEqualToString:@"donothing"]||[self.clientStatusFlag  isEqualToString:@"applied"]){
-        [self.view addSubview:notGoButton];
+        notGoButton.center = CGPointMake(bounds.size.width - (bounds.size.width / 4), 50);
+        [footerView addSubview:notGoButton];
     
     }
+    
+    self.tableView.tableFooterView = footerView;
     
     NSString *statusString=[self.clientDict objectForKey:@"status"];
     if([self.clientStatusFlag  isEqualToString:@"all"]){
         if([statusString  isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"reject"]){
-              [self.view addSubview:goButton];
+            goButton.center = CGPointMake(bounds.size.width / 4, 50);
+            [footerView addSubview:goButton];
         }
         if([statusString isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"apply"]){
-               [self.view addSubview:notGoButton];
+            notGoButton.center = CGPointMake(bounds.size.width - (bounds.size.width / 4), 50);
+            [footerView addSubview:notGoButton];
         }
     
     }
     
-    messageTextView=[[UITextView alloc] init];
-    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
-    if([self.partyObj.type isEqualToString:@"email"]){
-       messageTextView.frame=CGRectMake(100, 85, 200, 175);
-    }else{
-       messageTextView.frame=CGRectMake(100, 153, 200, 175);
-    
-    }
-    
-    messageTextView.font=[UIFont systemFontOfSize:15];
-    messageTextView.backgroundColor=[UIColor clearColor];
-    messageTextView.editable=NO;
-    [self.view addSubview:messageTextView];
+//    messageTextView=[[UITextView alloc] init];
+//    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
+//    if([self.partyObj.type isEqualToString:@"email"]){
+//       messageTextView.frame=CGRectMake(100, 85, 200, 175);
+//    }else{
+//       messageTextView.frame=CGRectMake(100, 153, 200, 175);
+//    
+//    }
+//    
+//    messageTextView.font=[UIFont systemFontOfSize:15];
+//    messageTextView.backgroundColor=[UIColor clearColor];
+//    messageTextView.editable=NO;
+//    [self.view addSubview:messageTextView];
    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -312,49 +328,91 @@
     }
     if([self.partyObj.type isEqualToString:@"email"]){
         if(indexPath.section==0){
-            cell.selectionStyle= UITableViewCellSelectionStyleNone;
-            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 40, 44)];
-            wordsLabel.text=@"留言";
-            wordsLabel.textAlignment = UITextAlignmentRight;
-            wordsLabel.textColor = [UIColor blueColor];
-            wordsLabel.backgroundColor = [UIColor clearColor];
+//            cell.selectionStyle= UITableViewCellSelectionStyleNone;
+//            UITextView *wordTextField = [[UITextView alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+//            wordTextField.text=@"留言";
+//            wordTextField.textAlignment = UITextAlignmentRight;
+//            wordTextField.textColor = [UIColor blueColor];
+//            wordTextField.backgroundColor = [UIColor clearColor];
+//            wordTextField.editable = NO;
             NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
             if(detailWordString.length>1){
                 messageTextView.text=[detailWordString substringFromIndex:1];
+                
+                CGFloat height = 0.f;
+                
+                CGSize textSize = [detailWordString sizeWithFont:[UIFont systemFontOfSize:14] forWidth:80.f lineBreakMode:UILineBreakModeClip];
+                if (textSize.height < 80) {
+                    height = 80.0f;
+                } else if (textSize.height > 160) {
+                    height = 160;
+                } else {
+                    height = textSize.height;
+                }
+                
+                CGRect from = messageTextView.frame;
+                CGRect to = from;
+                to.size.height = height;
+                
+                messageTextView.frame = to;
             }else{
             }
-            [cell addSubview:wordsLabel];
+            //[cell addSubview:wordTextField];
+            return self.messageCell;
         }
     
     }else{
         if(indexPath.section==0){
             //NSString *typeStr = (__bridge_transfer NSString*)ABAddressBookCopyLocalizedLabel(ABMultiValueCopyLabelAtIndex(self.phone, indexPath.row));
             // NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(self.phone, indexPath.row);
-            UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-            typeLb.text = @"联系方式";
-            typeLb.textAlignment = UITextAlignmentRight;
-            typeLb.textColor = [UIColor blueColor];
-            typeLb.backgroundColor = [UIColor clearColor];
-            [cell addSubview:typeLb];
-            UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
-            valLb.text = [clientDict objectForKey:@"cValue"];
-            valLb.backgroundColor = [UIColor clearColor];
-            cell.selectionStyle=UITableViewCellSelectionStyleNone;
-            [cell addSubview:valLb];
+            
+//            UILabel *typeLb = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+//            typeLb.text = @"联系方式";
+//            typeLb.textAlignment = UITextAlignmentRight;
+//            typeLb.textColor = [UIColor blueColor];
+//            typeLb.backgroundColor = [UIColor clearColor];
+//            [cell addSubview:typeLb];
+//            UILabel *valLb = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 200, 44)];
+//            valLb.text = [clientDict objectForKey:@"cValue"];
+//            valLb.backgroundColor = [UIColor clearColor];
+//            cell.selectionStyle=UITableViewCellSelectionStyleNone;
+//            [cell addSubview:valLb];
+            self.phoneLabel.text = [clientDict objectForKey:@"cValue"];
+            return self.phoneCell;
         }
         if(indexPath.section==1){
-            cell.selectionStyle= UITableViewCellSelectionStyleNone;
-            UILabel *wordsLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
-            wordsLabel.text=@"留言";
-            wordsLabel.textAlignment = UITextAlignmentRight;
-            wordsLabel.textColor = [UIColor blueColor];
-            wordsLabel.backgroundColor = [UIColor clearColor];
+//            cell.selectionStyle= UITableViewCellSelectionStyleNone;
+//            UITextView *wordTextField = [[UITextView alloc] initWithFrame:CGRectMake(10, 0, 80, 44)];
+//            wordTextField.text=@"留言";
+//            wordTextField.textAlignment = UITextAlignmentRight;
+//            wordTextField.textColor = [UIColor blueColor];
+//            wordTextField.backgroundColor = [UIColor clearColor];
+//            wordTextField.editable = NO;
             NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
             if(detailWordString.length>1){
                 messageTextView.text=[detailWordString substringFromIndex:1];
             }else{
             }
-            [cell addSubview:wordsLabel];
+            
+            CGFloat height = 0.f;
+            
+            CGSize textSize = [detailWordString sizeWithFont:[UIFont systemFontOfSize:14] forWidth:80.f lineBreakMode:UILineBreakModeClip];
+            if (textSize.height < 80) {
+                height = 80.0f;
+            } else if (textSize.height > 160) {
+                height = 160;
+            } else {
+                height = textSize.height;
+            }
+            
+            CGRect from = messageTextView.frame;
+            CGRect to = from;
+            to.size.height = height;
+            
+            messageTextView.frame = to;
+            
+//            [cell addSubview:wordTextField];
+            return self.messageCell;
         }
 
     }
@@ -482,15 +540,34 @@
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if([self.partyObj.type isEqualToString:@"email"]){
-        return 180;
+        NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+        CGSize textSize = [detailWordString sizeWithFont:[UIFont systemFontOfSize:14] forWidth:80.f lineBreakMode:UILineBreakModeClip];
+        if (textSize.height < 80) {
+            return 100;
+        } else if (textSize.height > 160) {
+            return 180;
+        } else {
+            return textSize.height + 20;
+        }
     }
     
    if(![self.partyObj.type isEqualToString:@"email"]){
        if(indexPath.section==1){
+           NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+           CGSize textSize = [detailWordString sizeWithFont:[UIFont systemFontOfSize:14] forWidth:80.f lineBreakMode:UILineBreakModeClip];
+           if (textSize.height < 80) {
+               return 100;
+           } else if (textSize.height > 160) {
                return 180;
+           } else {
+               return textSize.height + 20;
+           }
+           
        }
        return 44;
-    }     
+    }  
+    return 44.f;
+    
 }
 /*
 // Override to support conditional editing of the table view.
