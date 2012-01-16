@@ -26,7 +26,6 @@ from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
 from utils.tools.push_notification_to_apple_tool import \
     push_notification_when_enroll
-from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH
 import datetime
 import logging
 import time
@@ -187,9 +186,9 @@ def email_invite(request, party_id):
     else:
         apply_status = request.GET.get('apply', 'all')
         if apply_status == 'all':
-            clients = PartiesClients.objects.filter(party = party_id).exclude(client__invite_type = 'public')
+            clients = PartiesClients.objects.filter(party = party_id)
         else:
-            clients = PartiesClients.objects.filter(party = party_id).filter(apply_status = apply_status).exclude(client__invite_type = 'public')
+            clients = PartiesClients.objects.filter(party = party_id).filter(apply_status = apply_status)
 
         #生成默认内容
         userprofile = request.user.get_profile()
@@ -263,8 +262,7 @@ def sms_invite(request, party_id):
                     sms_message.content = form.cleaned_data['content']
                     sms_message.is_apply_tips = form.cleaned_data['is_apply_tips']
                     sms_message.save()
-                # 计算消息可转换为多少条短信    
-                number_of_message = (len(sms_message.content) + (SHORT_LINK_LENGTH if sms_message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
+
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
                 clients = Client.objects.filter(creator = request.user)
@@ -298,27 +296,47 @@ def sms_invite(request, party_id):
 
             send_status = 'sms_fail'
             sms_count = ''
+            client_phone_list = form.cleaned_data['client_phone_list'].split(',')
+            client_phone_list_len = len(client_phone_list)
+            userprofile = request.user.get_profile() 
+            sms_count = userprofile.available_sms_count
+            will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
+            if will_send_message_num > sms_count:#短信人数*短信数目>可发送的短信数目,拒绝发送
+                form.errors['client_phone_list'] = '将要发送的短信数量大于可用的短信数量。请调整后继续发送。'
+                
+                client_data = []
+                for client in Client.objects.filter(creator = request.user):
+                    if client.phone:
+                        client_data.append(client.phone)
+                noanswer_client = []
+                apply_client = []
+                reject_client = []
+                parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
+                for  party_client in parties_clients :
+                    if party_client.apply_status == 'noanswer':
+                        noanswer_client.append(party_client.client.phone)
+                    if party_client.apply_status == 'apply':
+                        apply_client.append(party_client.client.phone)
+                    if party_client.apply_status == 'reject':
+                        reject_client.append(party_client.client.phone)
+                
+                noanswer_client = ','.join(noanswer_client)
+                apply_client = ','.join(apply_client)
+                reject_client = ','.join(reject_client)
+                quickadd_client = {'noanswer_client':noanswer_client,
+                                   'apply_client':apply_client,
+                                   'reject_client':reject_client
+                                   }                    
+                return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
+            
+            
             with transaction.commit_on_success():
-                client_phone_list = form.cleaned_data['client_phone_list'].split(',')
-                client_phone_list_len = len(client_phone_list)
-                userprofile = request.user.get_profile() 
-                sms_count = userprofile.available_sms_count
-                will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
-                if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
-                    will_receive_clients_num = sms_count / number_of_message #将会收到短信的联系人数
-                    client_phone_list = client_phone_list[:will_receive_clients_num]
-                    userprofile.available_sms_count = userprofile.available_sms_count - number_of_message * will_receive_clients_num
-                    userprofile.used_sms_count = userprofile.used_sms_count + number_of_message * will_receive_clients_num
-                else:
-                    userprofile.available_sms_count = userprofile.available_sms_count - will_send_message_num
-                    userprofile.used_sms_count = userprofile.used_sms_count + will_send_message_num
-                userprofile.save()
-                client_phone_list = ','.join(client_phone_list)  
+                client_phone_list = form.cleaned_data['client_phone_list']
                 send_message = Outbox(address = client_phone_list, base_message = sms_message)
                 send_message.save()
                 send_status = 'sms_success'
-                sms_count = str(userprofile.available_sms_count)
-            request.session['sms_count'] = sms_count    
+                
+            request.session['sms_count'] = sms_count - will_send_message_num    
             request.session['send_status'] = send_status 
             return redirect('list_party')
         else:

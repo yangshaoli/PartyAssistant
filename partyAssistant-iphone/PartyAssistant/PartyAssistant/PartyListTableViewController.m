@@ -439,7 +439,7 @@
             NSIndexPath *index = [NSIndexPath indexPathForRow:self._currentDeletePartyCellIndex inSection:0];
             NSArray *indexPathArray = [NSArray arrayWithObject:index];
             [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
-            [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];
+            [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationNone];
             [self setBottomRefreshViewYandDeltaHeight];
         }else{
             [self showAlertRequestFailed:description];		

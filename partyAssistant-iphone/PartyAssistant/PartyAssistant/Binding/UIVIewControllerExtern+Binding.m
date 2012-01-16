@@ -42,8 +42,16 @@
         [userObject setNicknameBindingStatus:StatusBinded];
     }
     
-    [userObject setTelBindingStatus:[self translateToLocalStatusFromString:telStatus]];
-    [userObject setMailBindingStatus:[self translateToLocalStatusFromString:emailStatus]];
+    BindingStatus telCurrentStatus = [self translateToLocalStatusFromString:telStatus];
+    BindingStatus emailCurrentStatus = [self translateToLocalStatusFromString:emailStatus];
+    if (telCurrentStatus != StatusBinding) {
+        [userObject setBindingTel:@""];
+    }
+    if (emailCurrentStatus != StatusBinding) {
+        [userObject setBindingMail:@""];
+    }
+    [userObject setTelBindingStatus:telCurrentStatus];
+    [userObject setMailBindingStatus:emailCurrentStatus];
     
     [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] saveBindingStatusObject];
 }
@@ -67,5 +75,11 @@
         return StatusNotBind;
     }
     return StatusUnknown;
+}
+
+- (void)showBindOperationFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+    av.tag = 11112;
+    [av show];
 }
 @end

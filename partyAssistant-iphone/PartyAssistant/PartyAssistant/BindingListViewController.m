@@ -30,6 +30,10 @@
 //bind extern
 #import "UIVIewControllerExtern+Binding.h"
 
+#import "NotificationSettings.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+
 @interface BindingListViewController ()
 
 - (void)refreshCurrentStatus;
@@ -41,9 +45,13 @@
 
 @implementation BindingListViewController
 @synthesize tableView = _tableView;
+@synthesize IDCell = _IDCell;
+@synthesize countCell = _countCell;
 @synthesize nameBindingCell = _nameBindingCell;
 @synthesize telBindingCell = _telBindingCell;
 @synthesize mailBindingCell = _mailBindingCell;
+@synthesize userIDLabel = _userIDLabel;
+@synthesize userAccountLabel = _userAccountLabel;
 @synthesize nameBindingStatusLabel = _nameBindingStatusLabel;
 @synthesize telBindingStatusLabel = _telBindingStatusLabel;
 @synthesize mailBindingStatusLabel = _mailBindingStatusLabel;
@@ -69,16 +77,25 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self refreshCurrentStatus];
+    
+    self.userAccountLabel.text = @"更新中";
+    
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"绑定";
+    self.navigationItem.title = @"用户绑定";
     [self refreshCurrentStatus];
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
+    
+    self.userIDLabel.text = [[[UserObjectService sharedUserObjectService] getUserObject] userName];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -98,38 +115,59 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 3;
+    if (section == 0) {
+        return 2;
+    } else if (section == 1) {
+        return 3;
+    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    switch (indexPath.row) {
-        case 0:
-            return self.nameBindingCell;
-            break;
-        case 1:    
-            return self.telBindingCell;
-            break;
-        case 2:
-            return self.mailBindingCell;
-            break;
+    if (indexPath.section == 0) {
+        switch (indexPath.row) {
+            case 0:
+                return self.IDCell;
+                break;
+            case 1:    
+                return self.countCell;
+                break;
+        } 
+    } else if (indexPath.section == 1) {
+        switch (indexPath.row) {
+            case 0:
+                return self.nameBindingCell;
+                break;
+            case 1:    
+                return self.telBindingCell;
+                break;
+            case 2:
+                return self.mailBindingCell;
+                break;
+        }
     }
     return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 0) {
-        NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
-        [self.navigationController pushViewController:nameBindingVC animated:YES]; 
-    } else if (indexPath.row == 1) {
-        [self decideToOpenWhichTelBindingPage];
-    } else if (indexPath.row == 2) {
-        [self decideToOpenWhichMailBindingPage];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.section == 0) {
+    
+    } else if (indexPath.section == 1) {
+        if (indexPath.row == 0) {
+            NameBindingViewController *nameBindingVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
+            [self.navigationController pushViewController:nameBindingVC animated:YES]; 
+        } else if (indexPath.row == 1) {
+            [self decideToOpenWhichTelBindingPage];
+        } else if (indexPath.row == 2) {
+            [self decideToOpenWhichMailBindingPage];
+        }
+
     }
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)refreshCurrentStatus {
@@ -157,10 +195,28 @@
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
-            verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
-            vc = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-            [(TelValidateViewController *)vc setPageStatus:verifyPageStatus];
-            [self.navigationController presentModalViewController:vc animated:YES];
+            {
+                vc = [[TelBindingViewController alloc] initWithNibName:nil bundle:nil];
+                vc.navigationItem.hidesBackButton = YES;
+                
+                [self.navigationController pushViewController:vc animated:NO];
+                
+                vc = nil;
+                
+                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+                vc = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
+                [(TelValidateViewController *)vc setPageStatus:verifyPageStatus];
+                vc.navigationItem.hidesBackButton = YES;
+                vc.hidesBottomBarWhenPushed = YES;
+                
+                CATransition *transition = [CATransition animation];
+                transition.duration = 0.5;
+                transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                transition.type = kCATransitionMoveIn;
+                transition.subtype = kCATransitionFromTop;
+                [self.navigationController.view.layer addAnimation:transition forKey:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+            }
             break;
         default:
             return;
@@ -170,7 +226,7 @@
 
 - (void)decideToOpenWhichMailBindingPage {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
-    BindingStatus mailBindingStatus = [storedStatusService telBindingStatus];
+    BindingStatus mailBindingStatus = [storedStatusService mailBindingStatus];
     //1.goTo binding page
     //2.goTo UnBinding Page
     //3.goTo VerifyPage
@@ -186,10 +242,26 @@
             [self.navigationController pushViewController:vc animated:YES];
             break;
         case StatusBinding:
-            verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
-            vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
-            [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
-            [self.navigationController presentModalViewController:vc animated:YES];
+            {
+                vc = [[MailBindingViewController alloc] initWithNibName:nil bundle:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+                
+                vc = nil;
+                
+                verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+                vc = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
+                [(MailValidateViewController *)vc setPageStatus:verifyPageStatus];
+                vc.navigationItem.hidesBackButton = YES;
+                vc.hidesBottomBarWhenPushed = YES;
+                
+                CATransition *transition = [CATransition animation];
+                transition.duration = 0.5;
+                transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                transition.type = kCATransitionMoveIn;
+                transition.subtype = kCATransitionFromTop;
+                [self.navigationController.view.layer addAnimation:transition forKey:nil];
+                [self.navigationController pushViewController:vc animated:NO];
+            }
             break;
         default:
             return;
@@ -236,6 +308,8 @@
             [self saveProfileDataFromResult:result];
             [self.tableView reloadData];
         } else {
+            [self saveProfileDataFromResult:result];
+            
             [self showAlertRequestFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
@@ -256,5 +330,23 @@
     [self dismissWaiting];
 	NSError *error = [request error];
 	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+- (void)leftCountRefreshing:(NSNotification *)notify {
+    
+}
+
+- (void)leftCountRefreshed:(NSNotification *)notify {
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.userAccountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+}
+
+- (void)leftCountRefreshFailed:(NSNotification *)notify {
+    self.userAccountLabel.text = @"更新失败";
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end
