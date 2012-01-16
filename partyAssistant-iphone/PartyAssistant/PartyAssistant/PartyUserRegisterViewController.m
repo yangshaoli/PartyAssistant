@@ -227,7 +227,6 @@
 - (void)showNotLegalInput {
     [self showAlertWithMessage:@"注册内容不能为空！" buttonTitle:@"好的" tag:NotLegalTag];
 }
-
 - (void)showNotPassChekAlert {
     [self showAlertWithMessage:@"无法完成注册！" buttonTitle:@"好的" tag:NotPassTag];
 }
@@ -262,7 +261,7 @@
     //may need to creat some other connection status
     switch (networkStatus) {
         case NetworkConnectionInvalidate:
-            [self showNotPassChekAlert];
+            [self showInvalidateNetworkalert];
             break;
         case NetWorkConnectionCheckPass:
             [self showRegistSuccessfulAlert];

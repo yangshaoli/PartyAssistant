@@ -88,6 +88,7 @@
 {
     [super viewDidLoad];
     self.navigationItem.title = @"个人信息";
+    [self refreshCurrentStatus];
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;

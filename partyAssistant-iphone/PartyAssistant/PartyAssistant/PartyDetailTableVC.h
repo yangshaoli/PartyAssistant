@@ -11,8 +11,11 @@
 #import "PartyModel.h"
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
+#import "ContentTableVC.h"
+@protocol PartyDetailTableVCDelegate <NSObject>
 
-
+- (void)refreshBtnAction;//list页面的方法
+@end
 @interface PartyDetailTableVC : UITableViewController<UITableViewDelegate,UITableViewDataSource>{
    NSArray* myToolbarItems;
    PartyModel *partyObj;
@@ -21,6 +24,8 @@
    ASIHTTPRequest *quest;
    ASIHTTPRequest *seperatedListQuest; 
    ASIHTTPRequest *deleteQuest;
+   id<PartyDetailTableVCDelegate> delegate;
+    NSInteger rowLastPush;
 }
 
 @property(nonatomic, retain)NSArray* myToolbarItems;
@@ -30,6 +35,8 @@
 @property(nonatomic, retain)ASIHTTPRequest *quest;
 @property(nonatomic, retain)ASIHTTPRequest *seperatedListQuest;
 @property(nonatomic, retain)ASIHTTPRequest *deleteQuest;
+@property (nonatomic, retain)id<PartyDetailTableVCDelegate> delegate;
+@property(nonatomic, assign)NSInteger rowLastPush;
 - (void)loadClientCount;
 - (void)requestFinished:(ASIHTTPRequest *)request;
 - (void)requestFailed:(ASIHTTPRequest *)request;

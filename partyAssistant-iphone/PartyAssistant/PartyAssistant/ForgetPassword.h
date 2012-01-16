@@ -15,4 +15,5 @@
 }
 @property(nonatomic,retain)UITextField *inputTextField;
 //@property(nonatomic, retain)ASIHTTPRequest *quest;
+- (BOOL) isEmailAddress:(NSString*)email;
 @end
