@@ -180,11 +180,35 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            [self showBindInform:@"验证码已经发送到您的邮箱中，请注意查收"];
+            
             [self saveProfileDataFromResult:result];
         } else {
-            [self saveProfileDataFromResult:result];
-            
-            [self showBindOperationFailed:description];	
+            if (self.pageStatus == StatusVerifyBinding) {
+                if ([status isEqualToString:@"error_has_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else if ([status isEqualToString:@"error_different_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showNormalErrorInfo:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];	
+                }
+            } else if (self.pageStatus == StatusVerifyUnbinding) {
+                if ([status isEqualToString:@"error_different_unbinded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];	
+                }
+            }
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -245,6 +269,12 @@
     }
     if (alertView.tag == 11113) {
         [self closePage];
+    }
+    if (alertView.tag == 11114) {
+        
+    }
+    if (alertView.tag == 11116) {
+        
     }
 }
 @end
