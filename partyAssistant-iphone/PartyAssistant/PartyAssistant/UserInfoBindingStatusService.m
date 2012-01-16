@@ -24,6 +24,7 @@
 @synthesize bindingNickname;
 @synthesize bindingTel;
 @synthesize bindingMail;
+@synthesize updated;
 
 - (id)init
 {
@@ -38,6 +39,7 @@
         self.bindingNickname = @"";
         self.bindingTel = @"";
         self.bindingMail = @"";
+        self.updated = NO;
     }
     
     return self;
@@ -53,6 +55,12 @@
     [encoder encodeObject: self.bindingNickname forKey:@"bindingNickname"];
     [encoder encodeObject: self.bindingTel forKey:@"bindingTel"];
     [encoder encodeObject: self.bindingMail forKey:@"bindingMail"];
+    if (self.updated) {
+        [encoder encodeObject: @"YES" forKey:@"isUpdated"];
+    } else {
+        [encoder encodeObject: @"NO" forKey:@"isUpdated"];
+    }
+    
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -65,6 +73,13 @@
     self.bindingNickname = [decoder decodeObjectForKey:@"bindingNickname"];
     self.bindingTel = [decoder decodeObjectForKey:@"bindingTel"];
     self.bindingMail = [decoder decodeObjectForKey:@"bindingMail"];
+    NSString *isUpdated = [decoder decodeObjectForKey:@"isUpdated"];
+    if ([isUpdated isEqualToString:@"YES"]) {
+        self.updated = YES;
+    } else {
+        self.updated = NO;
+    }
+    
 	return self;
 }
 
@@ -78,6 +93,7 @@
     self.bindingNickname = @"";
     self.bindingTel = @"";
     self.bindingMail = @"";
+    self.updated = NO;
 }
 
 - (NSString *)translateStatusCodeToString : (BindingStatus)status {
@@ -237,6 +253,11 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 
 - (NSString *)bindingMail {
     return [[self getBindingStatusObject] bindingMail];
+}
+
+- (BOOL)isUpdated {
+    return 
+    [[self getBindingStatusObject] updated];
 }
 
 - (BindingStatus)detectMailBindingStatus {

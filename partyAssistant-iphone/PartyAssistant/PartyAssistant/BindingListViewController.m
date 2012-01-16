@@ -155,6 +155,7 @@
 
 - (void)refreshCurrentStatus {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+    
     self.nameBindingStatusLabel.text = [storedStatusService nickNameStatusString];
     self.telBindingStatusLabel.text = [storedStatusService telStatusString ];
     self.mailBindingStatusLabel.text = [storedStatusService mailStatusString];
@@ -185,6 +186,10 @@
         mailInfoString = @"";
     }
     self.mailBindingInfoLabel.text = mailInfoString;
+    
+    if (![storedStatusService isUpdated]) {
+        [self beginProfileUpdate];
+    }
 }
 
 - (void)decideToOpenWhichTelBindingPage {

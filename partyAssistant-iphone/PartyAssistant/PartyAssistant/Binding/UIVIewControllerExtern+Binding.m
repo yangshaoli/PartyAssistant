@@ -25,6 +25,7 @@
     NSLog(@"bindInfos: %@",bindInfos);
     
     BindingStatusObject *userObject = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+    userObject.updated = YES;
     
     NSString *nickName = [bindInfos objectForKey:@"nickname"];
     NSString *email = [bindInfos objectForKey:@"email"];
