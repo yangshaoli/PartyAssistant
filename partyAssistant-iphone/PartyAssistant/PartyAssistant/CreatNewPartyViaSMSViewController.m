@@ -54,6 +54,7 @@
 @synthesize smsObject;
 @synthesize HUD = _HUD;
 @synthesize editingTableViewCell = _editingTableViewCell;
+@synthesize leftCountLabel = _leftCountLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -113,14 +114,46 @@
         }
     }
     
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+    
+    self.sendModeNameLabel.clipsToBounds = YES;
+    self.leftCountLabel.clipsToBounds = YES;
+    
+    self.sendModeNameLabel.contentMode = UIViewContentModeScaleAspectFit;
+    self.leftCountLabel.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.smsObject._isSendBySelf) {
         self.sendModeNameLabel.text = @"用自己手机发送";
+        CGRect from = self.sendModeNameLabel.frame;
+        CGRect to = from;
+        to.size.height = 26;
+        self.sendModeNameLabel.frame = to;
+        
+        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+        
+        self.leftCountLabel.hidden = YES;
     } else {
         self.sendModeNameLabel.text = @"通过服务器发送";
+        
+        CGRect from = self.sendModeNameLabel.frame;
+        CGRect to = from;
+        to.size.height = 11;
+
+        self.sendModeNameLabel.frame = to;
+        
+        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+        
+        self.leftCountLabel.hidden = NO;
+        
+        self.leftCountLabel.text = @"更新中";
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
 }
 
@@ -191,9 +224,9 @@
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
-            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
-            vc.delegate = self;
-            [self.navigationController pushViewController:vc animated:YES];
+//            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
+//            vc.delegate = self;
+//            [self.navigationController pushViewController:vc animated:YES];
         }
     }
 }
@@ -944,5 +977,25 @@
 - (void)gotoPurchasPage {
     PurchaseListViewController *purchase = [[PurchaseListViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:purchase animated:YES];
+}
+
+#pragma mark - 
+#pragma mark notification method
+- (void)leftCountRefreshing:(NSNotification *)notify {
+    
+}
+
+- (void)leftCountRefreshed:(NSNotification *)notify {
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+}
+
+- (void)leftCountRefreshFailed:(NSNotification *)notify {
+    self.leftCountLabel.text = @"更新失败";
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end
