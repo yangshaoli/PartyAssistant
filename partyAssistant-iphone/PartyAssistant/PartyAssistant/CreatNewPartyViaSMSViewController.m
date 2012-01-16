@@ -140,7 +140,7 @@
         self.leftCountLabel.hidden = YES;
     } else {
         self.sendModeNameLabel.text = @"通过服务器发送";
-        
+         
         CGRect from = self.sendModeNameLabel.frame;
         CGRect to = from;
         to.size.height = 11;
@@ -323,13 +323,14 @@
 //            }
             newFrame.size.height = 200.0f;
         } else {
-            newFrame.size.height = 100.0f;
+            newFrame.size.height = 80.0f;
         }
     } else {
         if (![editableTableViewCell.textView isFirstResponder]) {
             newFrame.size.height = 200.0f;
         } else {
-            newFrame.size.height = newHeight;
+            //newFrame.size.height = newHeight;
+            newFrame.size.height = 80.0f;
         }
     }
     
