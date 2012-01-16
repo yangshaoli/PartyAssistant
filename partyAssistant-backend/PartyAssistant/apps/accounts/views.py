@@ -165,13 +165,14 @@ def buy_sms(request):
             'form':form
             }, context_instance = RequestContext(request))
 
+@commit_on_success
 def bought_success(request):
     if request.method == 'POST':
-#        total_fee = request.POST.get('total_fee', 0)
+        total_fee = request.POST.get('total_fee', 0)
         out_trade_no = request.POST.get('out_trade_no', '')
         receipt = UserAliReceipt.objects.get(receipt = out_trade_no)
         userprofile = receipt.user.get_profile()
-        userprofile.available_sms_count = userprofile.available_sms_count + receipt.item_count
+        userprofile.available_sms_count = int(int(userprofile.available_sms_count) + float(total_fee) * 10 )
         userprofile.save()
         return HttpResponse("success", mimetype = "text/html")
     else:
