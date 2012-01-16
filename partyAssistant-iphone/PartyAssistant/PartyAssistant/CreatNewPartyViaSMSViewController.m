@@ -55,6 +55,7 @@
 @synthesize HUD = _HUD;
 @synthesize editingTableViewCell = _editingTableViewCell;
 @synthesize leftCountLabel = _leftCountLabel;
+@synthesize sectionOneHeader = _sectionOneHeader;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -124,34 +125,35 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.smsObject._isSendBySelf) {
-        self.sendModeNameLabel.text = @"用自己手机发送";
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 26;
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+//        self.sendModeNameLabel.text = @"用自己手机发送";
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 26;
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
         
         self.leftCountLabel.hidden = YES;
     } else {
-        self.sendModeNameLabel.text = @"通过服务器发送";
-         
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 11;
-
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
-        
+//        self.sendModeNameLabel.text = @"通过服务器发送";
+//         
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 11;
+//
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+//        
         self.leftCountLabel.hidden = NO;
         
-        self.leftCountLabel.text = @"更新中";
+        self.leftCountLabel.text = @"帐户余额更新中";
         
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
@@ -177,7 +179,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return 2;
+        return 1;
     } 
     return 1;
 }
@@ -186,9 +188,10 @@
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
             return self.addContactCell;
-        } else if (indexPath.row == 1) {
-            return self.sendModelSelectCell;
         }
+//        else if (indexPath.row == 1) {
+//            return self.sendModelSelectCell;
+//        }
     } else {
         return self.editingTableViewCell;
     }
@@ -253,9 +256,16 @@
     return 44.0f;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (section == 1) {
-        return @"短信内容";
+        return 40.0f;
+    }
+    return 20;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return self.sectionOneHeader;
     }
     return nil;
 }
@@ -264,11 +274,11 @@
 
 - (void)editableTableViewCellDidBeginEditing:(EditableTableViewCell *)editableTableViewCell {
     self.editingTableViewCell = editableTableViewCell;
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     NSRange range = NSMakeRange(self.editingTableViewCell.textView.text.length - 1, 1);
     [self.editingTableViewCell.textView scrollRangeToVisible:range];
     
-    CGFloat offset = -100.0f;
+    CGFloat offset = -80.0f;
     self.tableView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
     
     self.navigationItem.rightBarButtonItem = nil;
@@ -993,7 +1003,7 @@
 }
 
 - (void)leftCountRefreshFailed:(NSNotification *)notify {
-    self.leftCountLabel.text = @"更新失败";
+    self.leftCountLabel.text = @"帐户余额更新失败";
 }
 
 - (void)dealloc {

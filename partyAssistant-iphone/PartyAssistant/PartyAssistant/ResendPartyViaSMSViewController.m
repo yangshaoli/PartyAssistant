@@ -78,29 +78,29 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.tempSMSObject._isSendBySelf) {
-        self.sendModeNameLabel.text = @"用自己手机发送";
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 26;
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+//        self.sendModeNameLabel.text = @"用自己手机发送";
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 26;
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
         
         self.leftCountLabel.hidden = YES;
     } else {
-        self.sendModeNameLabel.text = @"通过服务器发送";
-        
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 11;
-        
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
-        
+//        self.sendModeNameLabel.text = @"通过服务器发送";
+//        
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 11;
+//        
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+//        
         self.leftCountLabel.hidden = NO;
         
-        self.leftCountLabel.text = @"更新中";
+        self.leftCountLabel.text = @"帐户余额更新中";
         
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
