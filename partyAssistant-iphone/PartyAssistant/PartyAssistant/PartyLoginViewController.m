@@ -222,6 +222,8 @@
     if (statusDescription) {
         [self showAlertWithMessage:statusDescription
                        buttonTitle:@"确定" tag:NotLegalTag];
+    } else {
+        [self gotoContentVC];
     }
 
 //    switch (networkStatus) {

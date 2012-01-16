@@ -33,6 +33,7 @@
 @synthesize inputTelCell = _inputTelCell;
 @synthesize inputTelTextField = _inputTelTextField;
 @synthesize telBindingCell = _telBindingCell;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -117,6 +118,10 @@
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
     //verifyPage.pageStatus = verifyPageStatus;
     verifyPage.pageStatus = StatusVerifyBinding;
+    
+    if (self.inSpecialProcess) {
+        verifyPage.inSpecialProcess = YES;
+    }
     
     [self.navigationController pushViewController:verifyPage animated:NO];
 }

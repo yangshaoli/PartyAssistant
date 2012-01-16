@@ -18,4 +18,6 @@
 
 @property (nonatomic) BindingStatus pageStatus;
 
+@property (nonatomic) BOOL inSpecialProcess;
+
 @end

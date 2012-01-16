@@ -264,6 +264,8 @@
     
     if (statusDescription) {
         [self showAlertWithMessage:statusDescription buttonTitle:@"确定" tag:NotLegalTag];
+    } else {
+        [self showRegistSuccessfulAlert];
     }
     //may need to creat some other connection status
 //    switch (networkStatus) {

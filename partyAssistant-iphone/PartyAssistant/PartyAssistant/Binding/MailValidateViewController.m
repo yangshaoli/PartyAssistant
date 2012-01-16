@@ -25,6 +25,8 @@
 
 - (void)resendMailVerifyCode;
 - (void)sendMailVerify;
+- (void)resendPage;
+- (void)closePage;
 
 @end
 
@@ -32,6 +34,7 @@
 @synthesize tableView = _tableView;
 @synthesize mailResendValidateCell = _mailResendValidateCell;
 @synthesize pageStatus = _pageStatus;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -188,21 +191,26 @@
 }
 
 - (void)closePage {
-    NSArray *controllers = self.navigationController.viewControllers;
-    BindingListViewController *bindingList = nil;
-    for (UIViewController *controller in controllers) {
-        if ([controller isMemberOfClass:[BindingListViewController class]]) {
-            bindingList = (BindingListViewController *)controller;
+    if (self.inSpecialProcess) {
+        [self resendPage];
+    } else {
+        NSArray *controllers = self.navigationController.viewControllers;
+        BindingListViewController *bindingList = nil;
+        for (UIViewController *controller in controllers) {
+            if ([controller isMemberOfClass:[BindingListViewController class]]) {
+                bindingList = (BindingListViewController *)controller;
+            }
         }
-    }
-    if (bindingList) {
-        CATransition *transition = [CATransition animation];
-        transition.duration = 0.5;
-        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        transition.type = kCATransitionReveal;
-        transition.subtype = kCATransitionFromBottom;
-        [self.navigationController.view.layer addAnimation:transition forKey:nil];
-        [self.navigationController popToViewController:bindingList animated:NO];
+        if (bindingList) {
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.5;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionReveal;
+            transition.subtype = kCATransitionFromBottom;
+            [self.navigationController.view.layer addAnimation:transition forKey:nil];
+            [self.navigationController popToViewController:bindingList animated:NO];
+        }
+
     }
 }
 
