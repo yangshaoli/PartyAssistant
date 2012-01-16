@@ -112,19 +112,21 @@
     if(indexPath.row==0){
         cell.textLabel.text = @"输入新密码：";
         if (!nPasswordTextField) {
-            self.nPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+            self.nPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(110, 10, 200, 44)];
         }
         nPasswordTextField.textAlignment = UITextAlignmentLeft;
         nPasswordTextField.backgroundColor = [UIColor clearColor];
+        nPasswordTextField.placeholder=@"6-16位必填，大小写区分";
         [cell addSubview:nPasswordTextField];        
     }
     if(indexPath.row==1){
         cell.textLabel.text = @"确认新密码：";
         if (!resurePasswordTextField) {
-            self.resurePasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(120, 10, 180, 44)];
+            self.resurePasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(110, 10, 200, 44)];
         }
         resurePasswordTextField.textAlignment = UITextAlignmentLeft;
         resurePasswordTextField.backgroundColor = [UIColor clearColor];
+        resurePasswordTextField.placeholder=@"与新密码一致";
         [cell addSubview:resurePasswordTextField];        
     }        
     cell.selectionStyle = UITableViewCellSelectionStyleNone;

@@ -10,9 +10,9 @@
 #import "TopRefreshTableView.h"
 #import "JSON.h"
 #import "ASIFormDataRequest.h"
-
+#import "PartyDetailTableVC.h"
 #import "UserObjectService.h"
-@interface PartyListTableVC : UITableViewController <RefreshTableHeaderDelegate>{
+@interface PartyListTableVC : UITableViewController <RefreshTableHeaderDelegate,PartyDetailTableVCDelegate>{
      
     NSMutableArray *partyList;
     NSArray *partyDictArraySelf;
@@ -27,7 +27,7 @@
     BOOL _isAppend;
     ASIHTTPRequest *quest;
     BOOL isRefreshImage;
-    
+    NSInteger rowLastPush;
 }
 @property(nonatomic, assign)BOOL _isNeedRefresh;
 @property(nonatomic, assign)BOOL _isRefreshing;
@@ -39,6 +39,7 @@
 @property(nonatomic, retain) TopRefreshTableView *topRefreshView;
 @property(nonatomic, retain)NSArray* peopleCountArray;
 @property(nonatomic, retain)NSArray *partyDictArraySelf;
+@property(nonatomic, assign)NSInteger rowLastPush;
 
 - (void)reloadTableViewDataSource;
 - (void)doneLoadingTopRefreshTableViewData;

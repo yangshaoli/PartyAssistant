@@ -86,7 +86,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.navigationItem.title = @"用户绑定";
+    self.navigationItem.title = @"个人信息";
     [self refreshCurrentStatus];
     
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];

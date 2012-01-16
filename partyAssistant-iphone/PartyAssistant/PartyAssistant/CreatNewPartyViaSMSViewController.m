@@ -683,19 +683,19 @@
 #pragma mark - 
 #pragma mark alert method
 - (void)showAlertRequestSuccess{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:@"OK" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作成功!" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作成功!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作失败!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 

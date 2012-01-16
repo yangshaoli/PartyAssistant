@@ -291,6 +291,7 @@
 - (void)showRegistSuccessfulAlert {
     [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
     [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 - (void)showNotPassChekAlert {

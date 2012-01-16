@@ -23,7 +23,7 @@
 
 @implementation PartyDetailTableVC
 @synthesize myToolbarItems,peopleCountArray,clientsArray;
-@synthesize partyObj,quest,seperatedListQuest,deleteQuest;
+@synthesize partyObj,quest,seperatedListQuest,deleteQuest,delegate,rowLastPush;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -84,6 +84,10 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+    [refreshDetailContentDefault setBool:NO forKey:@"refreshDetailContentDefault"];
+
     
     [self.tableView reloadData];
 }
@@ -311,8 +315,6 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
-       
     UIView *oldLayout = nil;
     oldLayout = [cell viewWithTag:2];
     [oldLayout removeFromSuperview];
@@ -525,8 +527,16 @@
 }
 - (void)refreshItem{
     [self loadClientCount];
+    [self getPartyClientSeperatedList];
+//    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+//    [refreshDetailContentDefault setBool:YES forKey:@"refreshDetailContentDefault"];
+//    [delegate refreshBtnAction];
+//    
+//    NSUserDefaults *partyListArrayDefault=[NSUserDefaults standardUserDefaults];
+//    NSArray *partyListArray=[partyListArrayDefault objectForKey:@"partyListArrayDefaultForDetailContentRefresh"];
+//    self.partyObj=[partyListArray objectAtIndex:self.rowLastPush];
+//    NSLog(@"在refreshItem中打印：self.partyObj：%@",self.partyObj);
     [self.tableView reloadData];
-    
 }
 - (void)deleteParty
 {

@@ -27,7 +27,7 @@
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
 @synthesize peopleCountArray,partyDictArraySelf;
-@synthesize lastID,_isRefreshing,_isNeedRefresh,quest,isRefreshImage;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest,isRefreshImage,rowLastPush;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -266,6 +266,10 @@
                 tbi.badgeValue = [NSString stringWithFormat:@"%@",[dataSource objectForKey:@"unreadCount"]];
             }
             NSArray *partyDictArray = [dataSource objectForKey:@"partyList"];
+            
+            NSUserDefaults *partyListArrayDefault=[NSUserDefaults standardUserDefaults];
+            [partyListArrayDefault setObject:partyDictArray forKey:@"partyListArrayDefaultForDetailContentRefresh"];
+            
             if (!_isAppend) {
                 [self.partyList removeAllObjects];
             }
@@ -308,6 +312,7 @@
                 [self.partyList addObject:partyModel];
                 
             }
+            
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
            
@@ -383,8 +388,16 @@
     }else{
         [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
     }
+//    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+//    BOOL isrefreshDetailContent=[refreshDetailContentDefault  boolForKey:@"refreshDetailContentDefault"];
+//    if(isrefreshDetailContent){
+//        PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+//        partyDetailTableVC.delegate=self;
+//        partyDetailTableVC.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+//          partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:rowLastPush];
+//    }
 
-    
 }
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
@@ -551,9 +564,11 @@
     
     PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
+    self.rowLastPush=[indexPath row];//记忆
+    partyDetailTableVC.delegate=self;
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
-    
+    partyDetailTableVC.rowLastPush=self.rowLastPush;
     //
 }
 

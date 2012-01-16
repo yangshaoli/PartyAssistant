@@ -37,10 +37,11 @@
 {
     [super viewDidLoad];
     UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [goButton setFrame:CGRectMake(50, 100,150, 40)];
+    [goButton setFrame:CGRectMake(10, 120,300, 40)];
     [goButton setTitle:@"找回" forState:UIControlStateNormal];
     [goButton addTarget:self action:@selector(getPassword) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:goButton];
+    self.title=@"忘记密码";
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -86,7 +87,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
     if (section==0) {
-        return @"请输入绑定的邮箱或手机号码";
+        return @"请输入账户名称或绑定的邮箱或绑定的手机号码";
     }else{
         return @"";
     }
@@ -179,7 +180,16 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
 }
-
+//正则判断是否Email地址
+- (BOOL) isEmailAddress:(NSString*)email { 
+    
+    NSString *emailRegex = @"^\\w+((\\-\\w+)|(\\.\\w+))*@[A-Za-z0-9]+((\\.|\\-)[A-Za-z0-9]+)*.[A-Za-z0-9]+$"; 
+    
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex]; 
+    
+    return [emailTest evaluateWithObject:email]; 
+    
+} 
 - (void)getPassword{
     if(!self.inputTextField.text || [self.inputTextField.text isEqualToString:@""]){
         UIAlertView *alert=[[UIAlertView alloc]
@@ -224,10 +234,30 @@
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
-            [self.navigationController popViewControllerAnimated:YES];
 //            NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.partyObj,@"baseinfo", nil];
 //            NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS  object:nil userInfo:userinfo];
 //            [[NSNotificationCenter defaultCenter] postNotification:notification];
+            if([self isEmailAddress:self.inputTextField.text]){
+                UIAlertView *alert=[[UIAlertView alloc]
+                                    initWithTitle:@"发送成功"
+                                    message:@"已成功发送密码至绑定邮件"
+                                    delegate:self
+                                    cancelButtonTitle:@"好的，知道了"
+                                    otherButtonTitles: nil];
+                [alert show];
+
+            }else{
+                UIAlertView *alert=[[UIAlertView alloc]
+                                    initWithTitle:@"发送成功"
+                                    message:@"已成功发送密码至绑定手机"
+                                    delegate:self
+                                    cancelButtonTitle:@"好的，知道了"
+                                    otherButtonTitles: nil];
+                [alert show];
+            
+            
+            }
+            [self.navigationController popViewControllerAnimated:YES];
         }else{
             [self showAlertRequestFailed:description];		
         }

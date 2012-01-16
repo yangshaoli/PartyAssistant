@@ -200,7 +200,7 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     [request startAsynchronous];
 }
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作失败!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 
