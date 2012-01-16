@@ -528,6 +528,6 @@ def resendMsg(request):
         
         return {
                 'partyId':party.id,
-                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id]),
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
                 'sms_count_remaining':user.userprofile.available_sms_count,
                 }
