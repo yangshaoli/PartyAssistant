@@ -61,6 +61,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearData) name:USER_LOGOUT_NOTIFICATION object:nil];
     }
     return self;
 }
@@ -358,4 +359,9 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+- (void)clearData {
+    [self.tableView reloadData];
+}
+
 @end
