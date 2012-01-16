@@ -33,6 +33,8 @@ typedef enum {
     NSString *bindingNickname;
     NSString *bindingTel;
     NSString *bindingMail;
+    
+    BOOL updated;
 }
 
 @property (nonatomic) BindingStatus nicknameBindingStatus;
@@ -46,6 +48,8 @@ typedef enum {
 @property (nonatomic, strong) NSString *bindingNickname;
 @property (nonatomic, strong) NSString *bindingTel;
 @property (nonatomic, strong) NSString *bindingMail;
+
+@property (nonatomic, assign) BOOL updated;
 
 - (NSString *)nickNameStatusString;
 - (NSString *)telStatusString;
@@ -79,6 +83,7 @@ typedef enum {
 - (NSString *)bindingTel;
 - (NSString *)bindingMail;
 
+- (BOOL)isUpdated;
 - (BindingStatus)detectMailBindingStatus;
 - (BindingStatus)detectTelBindingStatus;
 @end

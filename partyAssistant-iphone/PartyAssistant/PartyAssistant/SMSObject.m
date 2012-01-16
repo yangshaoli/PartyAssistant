@@ -17,7 +17,11 @@
     if (self) {
 		self.smsID = -1;
         self.smsContent = @"";
-        self._isSendBySelf = YES;
+        if ([MFMessageComposeViewController canSendText]) {
+            self._isSendBySelf = YES;
+        } else {
+            self._isSendBySelf = NO;
+        }
         self._isApplyTips = YES;
         self.receiversArray = nil;
         self.receiversArrayJson = nil;
@@ -32,7 +36,11 @@
     if (self) {
 		self.smsID = -1;
         self.smsContent = @"";
-        self._isSendBySelf = YES;
+        if ([MFMessageComposeViewController canSendText]) {
+            self._isSendBySelf = YES;
+        } else {
+            self._isSendBySelf = NO;
+        }
         self._isApplyTips = YES;
         self.receiversArray = nil;
     }
@@ -71,7 +79,11 @@
 - (void)clearObject{
 	self.smsID = -1;
     self.smsContent = @"";
-    self._isSendBySelf = YES;
+    if ([MFMessageComposeViewController canSendText]) {
+        self._isSendBySelf = YES;
+    } else {
+        self._isSendBySelf = NO;
+    }
     self._isApplyTips = YES;
     self.receiversArray = nil;
     self.receiversArrayJson = nil;

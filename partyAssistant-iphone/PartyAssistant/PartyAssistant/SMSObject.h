@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MessageUI/MessageUI.h>
 #import "BaseInfoObject.h"
 #import "BaseInfoService.h"
 #import "ClientObject.h"

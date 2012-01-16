@@ -23,6 +23,7 @@
 #import "PurchaseListViewController.h"
 #import "DataManager.h"
 #import "ChangePasswordRandomLoginTableVC.h"
+#import "CustomTextView.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -53,6 +54,7 @@
 @synthesize smsObject;
 @synthesize HUD = _HUD;
 @synthesize editingTableViewCell = _editingTableViewCell;
+@synthesize leftCountLabel = _leftCountLabel;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -90,7 +92,8 @@
         self.smsObject = [smsObjectService getSMSObject];
     }
     
-    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
+    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
@@ -111,14 +114,46 @@
         }
     }
     
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+    
+    self.sendModeNameLabel.clipsToBounds = YES;
+    self.leftCountLabel.clipsToBounds = YES;
+    
+    self.sendModeNameLabel.contentMode = UIViewContentModeScaleAspectFit;
+    self.leftCountLabel.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.smsObject._isSendBySelf) {
         self.sendModeNameLabel.text = @"用自己手机发送";
+        CGRect from = self.sendModeNameLabel.frame;
+        CGRect to = from;
+        to.size.height = 26;
+        self.sendModeNameLabel.frame = to;
+        
+        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+        
+        self.leftCountLabel.hidden = YES;
     } else {
         self.sendModeNameLabel.text = @"通过服务器发送";
+        
+        CGRect from = self.sendModeNameLabel.frame;
+        CGRect to = from;
+        to.size.height = 11;
+
+        self.sendModeNameLabel.frame = to;
+        
+        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+        
+        self.leftCountLabel.hidden = NO;
+        
+        self.leftCountLabel.text = @"更新中";
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
 }
 
@@ -189,9 +224,9 @@
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
-            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
-            vc.delegate = self;
-            [self.navigationController pushViewController:vc animated:YES];
+//            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
+//            vc.delegate = self;
+//            [self.navigationController pushViewController:vc animated:YES];
         }
     }
 }
@@ -201,20 +236,28 @@
         if ([self.editingTableViewCell.textView isFirstResponder]) {
             return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
         } else {
-            if (self.editingTableViewCell.textView.frame.size.height < 250) {
-                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 80) {
-                    return 80 + 11;
-                } else {
-                    return self.editingTableViewCell.textView.frame.size.height + 11;
-                }
-            } else {
-                return (250 + 11);
-            }
-            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+//            if (self.editingTableViewCell.textView.frame.size.height < 250) {
+//                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 200) {
+//                    return 200 + 11;
+//                } else {
+//                    return self.editingTableViewCell.textView.frame.size.height + 11;
+//                }
+//            } else {
+//                return (250 + 11);
+//            }
+//            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+            return 200 + 11;
         }
         
     }
     return 44.0f;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return @"短信内容";
+    }
+    return nil;
 }
 #pragma mark -
 #pragma mark EditableTableViewCellDelegate
@@ -239,6 +282,23 @@
     self.editingTableViewCell = editableTableViewCell;
     self.tableView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
     self.navigationItem.rightBarButtonItem = self.rightItem;
+    
+//   CGFloat newHeight = [self.editingTableViewCell suggestedHeight];
+    
+    CGRect oldFrame = self.editingTableViewCell.textView.frame;
+    CGRect newFrame = oldFrame;
+//    if (newHeight < 200.0f) {
+        newFrame.size.height = 200.0f;
+//    } else if (newHeight > 250.0f) {
+//        newFrame.size.height = 250.0f;
+//    } else {
+//        newFrame.size.height = newHeight;
+//    }
+    
+    self.editingTableViewCell.textView.frame = newFrame;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 
@@ -247,19 +307,30 @@
     CGRect oldFrame = self.editingTableViewCell.textView.frame;
     CGRect newFrame = oldFrame;
     if (newHeight < 80.0f) {
-        newFrame.size.height = 80.0f;
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            newFrame.size.height = 200.0f;
+        } else {
+            newFrame.size.height = 80.0f;
+        }
     } else if (newHeight > 100.0f) {
         if (![editableTableViewCell.textView isFirstResponder]) {
-            if (newHeight > 250.0f) {
-                newFrame.size.height = 250.0f;
-            } else {
-                newFrame.size.height = newHeight;
-            }
+//            if (newHeight > 250.0f) {
+//                newFrame.size.height = 250.0f;
+//            } else if (newHeight < 200.0f) {
+//                newFrame.size.height = 200.0f;
+//            } else {
+//                newFrame.size.height = newHeight;
+//            }
+            newFrame.size.height = 200.0f;
         } else {
             newFrame.size.height = 100.0f;
         }
     } else {
-        newFrame.size.height = newHeight;
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            newFrame.size.height = 200.0f;
+        } else {
+            newFrame.size.height = newHeight;
+        }
     }
     
     self.editingTableViewCell.textView.frame = newFrame;
@@ -906,5 +977,25 @@
 - (void)gotoPurchasPage {
     PurchaseListViewController *purchase = [[PurchaseListViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:purchase animated:YES];
+}
+
+#pragma mark - 
+#pragma mark notification method
+- (void)leftCountRefreshing:(NSNotification *)notify {
+    
+}
+
+- (void)leftCountRefreshed:(NSNotification *)notify {
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+}
+
+- (void)leftCountRefreshFailed:(NSNotification *)notify {
+    self.leftCountLabel.text = @"更新失败";
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end

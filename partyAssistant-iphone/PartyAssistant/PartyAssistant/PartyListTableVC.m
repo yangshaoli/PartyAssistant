@@ -216,6 +216,9 @@
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     //NSLog(@"打印两数 %d---%d",user.uID,aLastID);
+    if (user.uID < 0) {
+        return;
+    }
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     
     if (self.quest) {
@@ -414,6 +417,7 @@
 - (void)clearData {
     [partyList removeAllObjects];
     [self.tableView reloadData];
+    [self.navigationController popToRootViewControllerAnimated:NO];
     
     self.lastID = 0;
 }

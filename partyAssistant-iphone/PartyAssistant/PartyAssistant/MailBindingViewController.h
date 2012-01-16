@@ -18,4 +18,6 @@
 
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailBindingCell;
 
+@property (nonatomic) BOOL inSpecialProcess;
+
 @end

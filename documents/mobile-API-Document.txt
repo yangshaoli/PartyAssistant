@@ -84,6 +84,7 @@
 				'refusedClientcount': Integer,
 				'donothingClientcount':Integer,
 				"newRefusedClientcount":Integer,
+				"party_content":String,
 				}
 		}
 

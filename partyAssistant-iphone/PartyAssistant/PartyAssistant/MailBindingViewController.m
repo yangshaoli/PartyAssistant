@@ -31,6 +31,7 @@
 @synthesize inputMailCell = _inputMailCell;
 @synthesize inputMailTextField = _inputMailTextField;
 @synthesize mailBindingCell = _mailBindingCell;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -112,6 +113,10 @@
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
     //verifyPage.pageStatus = verifyPageStatus;
     verifyPage.pageStatus = StatusVerifyBinding;
+    
+    if (self.inSpecialProcess) {
+        verifyPage.inSpecialProcess = YES;
+    }
     
     [self.navigationController pushViewController:verifyPage animated:NO];
 }

@@ -15,6 +15,11 @@
 #import "UserObjectService.h"
 #import "HTTPRequestErrorMSG.h"
 #import "NotificationSettings.h"
+#import "UserInfoBindingStatusService.h"
+
+#define INVALID_NETWORK @"无法连接网络，请检查网络状态！"
+#define SERVER_CONNECTION_ERROR @"与服务器连接异常！请稍后重试！"
+#define SERVER_OPERATION_ERROR @"操作失败！"
 
 @interface DataManager ()
 
@@ -79,13 +84,14 @@ static DataManager *sharedDataManager = nil;
     
 }
 
-- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name
+- (NSString *)validateCheckWithUsrName:(NSString *)name
                                                 pwd:(NSString *)pwd {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return NetworkConnectionInvalidate;
+        return INVALID_NETWORK;
+        //return NetworkConnectionInvalidate;
     }
     //2.post name and pwd
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_LOGIN]];
@@ -119,26 +125,39 @@ static DataManager *sharedDataManager = nil;
                 [dic setValue:name forKey:@"username"];
                 [self saveUsrData:dic];
                 [pool release];
-                return NetWorkConnectionCheckPass;
+                return nil;
             } else {
-                 [self showAlertRequestFailed:description];
+                 //[self showAlertRequestFailed:description];
+                if (description) {
+                    return description;
+                } else {
+                    return SERVER_CONNECTION_ERROR;
+                }
             }
         }else if([request responseStatusCode] == 404){
-            [self showAlertRequestFailed:REQUEST_ERROR_404];
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return REQUEST_ERROR_404;
         }else if([request responseStatusCode] == 500){
-            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return REQUEST_ERROR_500;
         }else if([request responseStatusCode] == 502){
-            [self showAlertRequestFailed:REQUEST_ERROR_502];
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return REQUEST_ERROR_502;
         } else {
-            [self showAlertRequestFailed:REQUEST_ERROR_504];
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return REQUEST_ERROR_504;
         } 
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     } else {
         //show error info
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     }
+    
+    return SERVER_CONNECTION_ERROR;
 }
 
 - (BOOL)networkValidate {
@@ -152,12 +171,13 @@ static DataManager *sharedDataManager = nil;
     //@"userId"
 }
 
-- (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo {
+- (NSString *)registerUserWithUsrInfo:(NSDictionary *)usrInfo {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return NetworkConnectionInvalidate;
+        //return NetworkConnectionInvalidate;
+        return INVALID_NETWORK;
     }
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
@@ -183,24 +203,33 @@ static DataManager *sharedDataManager = nil;
                 [info setValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
                 [self saveUsrData:info];
                 [pool release];
-                return NetWorkConnectionCheckPass;
+                //return NetWorkConnectionCheckPass;
+                return nil;
             } else {
-                
+                if (description) {
+                    return description;
+                } else {
+                    return SERVER_CONNECTION_ERROR;
+                }
             }
         }else if([request responseStatusCode] == 404){
-            [self showAlertRequestFailed:REQUEST_ERROR_404];
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return REQUEST_ERROR_404;
         }else if([request responseStatusCode] == 500){
-            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return REQUEST_ERROR_500;
         }else if([request responseStatusCode] == 502){
-            [self showAlertRequestFailed:REQUEST_ERROR_502];
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return REQUEST_ERROR_502;
         } else {
-            [self showAlertRequestFailed:REQUEST_ERROR_504];
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return REQUEST_ERROR_504;
         }  
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     } else {
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     }
 }
 
@@ -219,12 +248,13 @@ static DataManager *sharedDataManager = nil;
     [getArrayFromFile  writeToFile:partyListPath  atomically:YES];
 }
 
-- (NetworkConnectionStatus)logoutUser {
+- (NSString *)logoutUser {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return NetworkConnectionInvalidate;
+        //return NetworkConnectionInvalidate;
+        return INVALID_NETWORK;
     }
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
@@ -250,26 +280,42 @@ static DataManager *sharedDataManager = nil;
                 [userData clearObject];
                 [userObjectService saveUserObject];
                 [self clearPartyListData];
+                
+                UserInfoBindingStatusService *userInfoBindingService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+                [userInfoBindingService clearBindingStatusObject];
+                [userInfoBindingService saveBindingStatusObject];
+                
                 [[NSNotificationCenter defaultCenter] postNotificationName:USER_LOGOUT_NOTIFICATION object:nil];
                 [pool release];
-                return NetWorkConnectionCheckPass;
+                //return NetWorkConnectionCheckPass;
+                return nil;
             } else {
-                
+                if (description) {
+                   return description; 
+                } else {
+                    return SERVER_OPERATION_ERROR;
+                }
             }
         }else if([request responseStatusCode] == 404){
-            [self showAlertRequestFailed:REQUEST_ERROR_404];
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return REQUEST_ERROR_404;
         }else if([request responseStatusCode] == 500){
-            [self showAlertRequestFailed:REQUEST_ERROR_500];
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return REQUEST_ERROR_500;
         }else if([request responseStatusCode] == 502){
-            [self showAlertRequestFailed:REQUEST_ERROR_502];
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return REQUEST_ERROR_502;
         } else {
-            [self showAlertRequestFailed:REQUEST_ERROR_504];
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return REQUEST_ERROR_504;
         }  
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     } else {
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     }
 }
 

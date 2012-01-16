@@ -1,5 +1,6 @@
 #import "EditableTableViewCell.h"
 #import "JFTextViewNoInset.h"
+#import "CustomTextView.h"
 
 static const CGFloat kTextViewWidth = 320;
 
@@ -11,7 +12,7 @@ static const CGFloat kTopPadding = 6;
 static const CGFloat kBottomPadding = 6;
 
 static UIFont *textViewFont;
-static UITextView *dummyTextView;
+static CustomTextView *dummyTextView;
 
 @implementation EditableTableViewCell
 
@@ -19,8 +20,8 @@ static UITextView *dummyTextView;
 @synthesize textView;
 @synthesize text;
 
-+ (UITextView *)createTextView {
-    UITextView *newTextView = [[JFTextViewNoInset alloc] initWithFrame:CGRectZero];
++ (CustomTextView *)createTextView {
+    UITextView *newTextView = [[CustomTextView alloc] initWithFrame:CGRectZero];
     newTextView.font = textViewFont;
     newTextView.backgroundColor = [UIColor clearColor];
     newTextView.opaque = YES;
