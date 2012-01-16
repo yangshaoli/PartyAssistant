@@ -25,6 +25,8 @@
 
 - (void)resendMailVerifyCode;
 - (void)sendMailVerify;
+- (void)resendPage;
+- (void)closePage;
 
 @end
 
@@ -32,6 +34,7 @@
 @synthesize tableView = _tableView;
 @synthesize mailResendValidateCell = _mailResendValidateCell;
 @synthesize pageStatus = _pageStatus;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -56,11 +59,11 @@
 {
     [super viewDidLoad];
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"绑定";
+        self.navigationItem.title = @"绑定验证";
         UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换邮箱" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
     } else if (self.pageStatus == StatusVerifyUnbinding){
-        self.navigationItem.title = @"解除绑定";
+        self.navigationItem.title = @"解绑验证";
     } else {
         self.navigationItem.title = @"未知错误状态";
     }
@@ -85,6 +88,19 @@
 
 #pragma mark _
 #pragma mark tableView delegate
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        NSString *title = @"邮箱：";
+        if (self.pageStatus == StatusVerifyBinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingMail]];
+        } else if (self.pageStatus == StatusVerifyUnbinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
+        }
+    }
+    return @"";
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
         return 1;
@@ -188,21 +204,26 @@
 }
 
 - (void)closePage {
-    NSArray *controllers = self.navigationController.viewControllers;
-    BindingListViewController *bindingList = nil;
-    for (UIViewController *controller in controllers) {
-        if ([controller isMemberOfClass:[BindingListViewController class]]) {
-            bindingList = (BindingListViewController *)controller;
+    if (self.inSpecialProcess) {
+        [self resendPage];
+    } else {
+        NSArray *controllers = self.navigationController.viewControllers;
+        BindingListViewController *bindingList = nil;
+        for (UIViewController *controller in controllers) {
+            if ([controller isMemberOfClass:[BindingListViewController class]]) {
+                bindingList = (BindingListViewController *)controller;
+            }
         }
-    }
-    if (bindingList) {
-        CATransition *transition = [CATransition animation];
-        transition.duration = 0.5;
-        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        transition.type = kCATransitionReveal;
-        transition.subtype = kCATransitionFromBottom;
-        [self.navigationController.view.layer addAnimation:transition forKey:nil];
-        [self.navigationController popToViewController:bindingList animated:NO];
+        if (bindingList) {
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.5;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionReveal;
+            transition.subtype = kCATransitionFromBottom;
+            [self.navigationController.view.layer addAnimation:transition forKey:nil];
+            [self.navigationController popToViewController:bindingList animated:NO];
+        }
+
     }
 }
 
