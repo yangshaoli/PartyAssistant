@@ -354,7 +354,7 @@ def GetPartyClientMainCount(request, pid):
             client_counts['refusedClientcount'] += 1 
         if party_client.apply_status == 'reject' and party_client.is_check == False:
             client_counts['newRefusedClientcount'] += 1
-    client_counts['party_content'] = party.content
+    client_counts['party_content'] = party.description
     return client_counts
 
 @csrf_exempt
