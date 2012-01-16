@@ -170,10 +170,15 @@ def bought_success(request):
     if request.method == 'POST':
         total_fee = request.POST.get('total_fee', 0)
         out_trade_no = request.POST.get('out_trade_no', '')
-        receipt = UserAliReceipt.objects.get(receipt = out_trade_no)
-        userprofile = receipt.user.get_profile()
+        #处理因用户多次点击购买按钮在数据库中产生相同订单号的记录
+        latest_receipt = UserAliReceipt.objects.filter(receipt=out_trade_no).latest('create_time') #相同订单号中的最新一条记录
+        userprofile = latest_receipt.user.get_profile()
         userprofile.available_sms_count = int(int(userprofile.available_sms_count) + float(total_fee) * 10 )
         userprofile.save()
+        latest_receipt.payment = 'success'
+        latest_receipt.save()
+        #其他记录设置为支付失败
+        other_receipt = UserAliReceipt.objects.filter(receipt=out_trade_no).exclude(id=latest_receipt.id).update(payment='failed')
         return HttpResponse("success", mimetype = "text/html")
     else:
         return HttpResponse("", mimetype = "text/html")
