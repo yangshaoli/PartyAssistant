@@ -14,8 +14,8 @@
 
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 //header
-@property (nonatomic, strong) IBOutlet UILabel *IDTitleLabel;
-@property (nonatomic, strong) IBOutlet UITextField *IDNameTextField;
+//@property (nonatomic, strong) IBOutlet UILabel *IDTitleLabel;
+//@property (nonatomic, strong) IBOutlet UITextField *IDNameTextField;
 //nameInput
 @property (nonatomic, strong) IBOutlet UITableViewCell *inputNameCell;
 @property (nonatomic, strong) IBOutlet UITextField *nickNameInputTextField;

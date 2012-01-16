@@ -280,8 +280,10 @@ static DataManager *sharedDataManager = nil;
                 [userData clearObject];
                 [userObjectService saveUserObject];
                 [self clearPartyListData];
-                UserInfoBindingStatusService *statusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
-                [statusService clearBindingStatusObject];
+                
+                UserInfoBindingStatusService *userInfoBindingService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+                [userInfoBindingService clearBindingStatusObject];
+                [userInfoBindingService saveBindingStatusObject];
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:USER_LOGOUT_NOTIFICATION object:nil];
                 [pool release];

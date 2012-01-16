@@ -366,7 +366,11 @@
     [oldLayout6 removeFromSuperview];
     UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 0, 70, 20)];
     nameLb.tag=6;
-    nameLb.text=[clentDic objectForKey:@"cName"];
+    if([clentDic objectForKey:@"cName"]==nil||[[clentDic objectForKey:@"cName"] isEqualToString:@""]){
+        nameLb.text=[clentDic objectForKey:@"cValue"];
+    }else{
+        nameLb.text=[clentDic objectForKey:@"cName"];
+    }
     nameLb.font=[UIFont systemFontOfSize:15];
     nameLb.textAlignment = UITextAlignmentLeft;
     nameLb.textColor = [UIColor blueColor];
@@ -419,6 +423,7 @@
             
         }else{
             
+             secondLb.text=@"无留言";
         }
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
@@ -446,6 +451,7 @@
 
         
         }else{
+             secondLb.text=@"无留言";
         
         }
         
@@ -468,7 +474,7 @@
             
             
         }else{
-            
+             secondLb.text=@"无留言";
         }
         
         secondLb.font=[UIFont systemFontOfSize:15];
@@ -490,7 +496,7 @@
             
             
         }else{
-            
+             secondLb.text=@"无留言";
         }
         
         secondLb.font=[UIFont systemFontOfSize:15];

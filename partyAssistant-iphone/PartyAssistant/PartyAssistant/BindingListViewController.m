@@ -61,6 +61,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearData) name:USER_LOGOUT_NOTIFICATION object:nil];
     }
     return self;
 }
@@ -154,6 +155,7 @@
 
 - (void)refreshCurrentStatus {
     UserInfoBindingStatusService *storedStatusService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+    
     self.nameBindingStatusLabel.text = [storedStatusService nickNameStatusString];
     self.telBindingStatusLabel.text = [storedStatusService telStatusString ];
     self.mailBindingStatusLabel.text = [storedStatusService mailStatusString];
@@ -184,6 +186,10 @@
         mailInfoString = @"";
     }
     self.mailBindingInfoLabel.text = mailInfoString;
+    
+    if (![storedStatusService isUpdated]) {
+        [self beginProfileUpdate];
+    }
 }
 
 - (void)decideToOpenWhichTelBindingPage {
@@ -360,4 +366,9 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+- (void)clearData {
+    [self.tableView reloadData];
+}
+
 @end
