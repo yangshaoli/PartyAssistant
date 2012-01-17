@@ -142,7 +142,7 @@ public class CreateActivity extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				HttpHelper httpHelper = new HttpHelper();
-				String url = getString(R.string.editUrl);
+				String url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_EDIT_URL;
 				HashMap<String, String> params = new HashMap<String, String>();
 				params.put("partyID", activityFromDetail.getId() + "");
 
@@ -212,7 +212,7 @@ public class CreateActivity extends Activity implements OnClickListener {
 			@Override
 			public void run() {
 				HttpHelper httpHelper = new HttpHelper();
-				String url = getString(R.string.getPartyMsg);
+				String url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_PARTY_MSG_URL;
 				url = url + activityFromDetail.getId() + "/";
 				// myAirenaoActivity
 				String result = httpHelper.performGet(url, CreateActivity.this);

@@ -204,17 +204,7 @@
 	<string name="logining">登陆中...</string>
 	<string name="loginFalse">登陆失败</string>
 	<string name="respondMsg">服务器返回错误代码:</string>
-	<string name="registerUrl">http://192.168.1.15:43401/a/accounts/regist/</string>
-	<string name="loginUrl">http://192.168.1.15:43401/a/accounts/login/</string>
-	<string name="partyListUrl">http://192.168.1.15:43401/a/parties/partylist/</string>
-	<string name="partyCreateUrl">http://192.168.1.15:43401/a/parties/createparty/</string>
-	<string name="getClientsCountUrl">http://192.168.1.15:43401/a/parties/get_party_client_main_count/</string>
-	<string name="getPeopleInfoUrl">http://192.168.1.15:43401/a/parties/get_party_client_seperated_list/</string>
-	<string name="applayUrl">http://192.168.1.15:43401/a/parties/change_client_status/</string>
-	<string name="deleteUrl">http://192.168.1.15:43401/a/parties/deleteparty/</string>
-	<string name="editUrl">http://192.168.1.15:43401/a/parties/editparty/</string>
-	<string name="getPartyMsg">http://192.168.1.15:43401/a/parties/get_party_msg/</string>
-	<string name="partyResend">http://192.168.1.15:43401/a/parties/resendmsg/</string>
+	
 	
 	<string name="app_sina_consumer_key">999433557</string>
     <string name="app_sina_consumer_secret">8ebb477102459b3387da43686b21c963</string>

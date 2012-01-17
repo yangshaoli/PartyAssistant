@@ -274,7 +274,7 @@ public class LoginActivity extends Activity {
 		};
 
 		// 初始化登录线程
-		loginUrl = getString(R.string.loginUrl);
+		loginUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_LOGIN_URL;
 
 	}
 }

@@ -177,7 +177,7 @@ public class EditActivity extends Activity {
 			@Override
 			public void run() {
 				HttpHelper httpHelper = new HttpHelper();
-				String url = getString(R.string.editUrl);
+				String url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_EDIT_URL;
 				HashMap<String, String> params = new HashMap<String, String>();
 				partyId = activityFromDetail.getId();
 				params.put("partyID", partyId);
@@ -227,7 +227,7 @@ public class EditActivity extends Activity {
 			@Override
 			public void run() {
 				HttpHelper httpHelper = new HttpHelper();
-				String url = getString(R.string.getPeopleInfoUrl);
+				String url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_PEOPLE_INFO_URL;;
 				url = url + activityFromDetail.getId() + "/" + "all/";
 				// myAirenaoActivity
 				String result = httpHelper.performGet(url, EditActivity.this);
@@ -263,7 +263,7 @@ public class EditActivity extends Activity {
 
 						}
 
-						String reSendUrl = getString(R.string.partyResend);
+						String reSendUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_RESEND_URL;
 						HashMap<String, String> params = new HashMap<String, String>();
 						params.put("receivers", clientMap.toString());
 						params.put(Constants.CONTENT, edtActivityDes.getText()

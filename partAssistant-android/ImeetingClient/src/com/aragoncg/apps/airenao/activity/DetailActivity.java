@@ -217,7 +217,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			throw new NullPointerException("没有获得列表中的活动");
 		}
 		partyId = myAirenaoActivity.getId();
-		getClientsCountUrl = getString(R.string.getClientsCountUrl);
+		getClientsCountUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_CLIENTCOUNT_URL;
 	}
 
 	/**
@@ -297,7 +297,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						progressDialog = ProgressDialog.show(
 								DetailActivity.this, "", "删除中...", true, true);
 						// 删除
-						delteUrl = getString(R.string.deleteUrl);
+						delteUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_DELETE_URL;
 						Runnable remove = new Runnable() {
 
 							@Override

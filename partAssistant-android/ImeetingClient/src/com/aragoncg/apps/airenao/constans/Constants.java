@@ -121,4 +121,20 @@ public class Constants {
 	public static final String REFUSED_CLIENT_COUNT = "refusedClientcount";
 	public static final String NEW_REFUSED_CLIENT_COUNT = "newRefusedClientcount";
 	public static final String NEW_FLAG = "newFlag";
+	
+	/*
+	 * 配置域名
+	 */
+	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";
+	public static final String SUB_DOMAIN_REGISTER_URL = "/a/accounts/regist/";
+	public static final String SUB_DOMAIN_LOGIN_URL = "/a/accounts/login/";
+	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/partylist/";
+	public static final String SUB_DOMAIN_PARTY_CREATE_URL = "/a/parties/createparty/";
+	public static final String SUB_DOMAIN_GET_CLIENTCOUNT_URL = "/a/parties/get_party_client_main_count/";
+	public static final String SUB_DOMAIN_GET_PEOPLE_INFO_URL = "/a/parties/get_party_client_seperated_list/";
+	public static final String SUB_DOMAIN_APPLAY_URL = "/a/parties/change_client_status/";
+	public static final String SUB_DOMAIN_DELETE_URL = "/a/parties/deleteparty/";
+	public static final String SUB_DOMAIN_EDIT_URL = "/a/parties/editparty/";
+	public static final String SUB_DOMAIN_GET_PARTY_MSG_URL = "/a/parties/get_party_msg/";
+	public static final String SUB_DOMAIN_PARTY_RESEND_URL = "/a/parties/resendmsg/";
 }

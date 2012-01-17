@@ -314,7 +314,7 @@ public class MeetingListActivity extends ListActivity implements
 									final Integer partyID = Integer
 											.valueOf((String) map
 													.get(Constants.PARTY_ID));
-									final String delteUrl = getString(R.string.deleteUrl);
+									final String delteUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_DELETE_URL;
 									// userId
 									switch (which) {
 									case 2:// 删除并提醒
@@ -506,7 +506,7 @@ public class MeetingListActivity extends ListActivity implements
 			public void run() {
 				// 配置url
 				// list.clear();
-				partyListUrl = getString(R.string.partyListUrl);
+				partyListUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_LIST_URL;
 				partyListUrl = partyListUrl + userId + "/" + startId + "/";
 				HttpHelper myHttpHelper = new HttpHelper();
 				String dataResult = myHttpHelper.performGet(partyListUrl,
@@ -784,7 +784,7 @@ public class MeetingListActivity extends ListActivity implements
 
 							// 这里放你网络数据请求的方法，我在这里用线程休眠5秒方法来处理
 							startId = lastID;
-							partyListUrl = getString(R.string.partyListUrl)
+							partyListUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_LIST_URL
 									+ userId + "/" + startId + "/";
 							HttpHelper myHttpHelper = new HttpHelper();
 							String dataResult = myHttpHelper.performGet(

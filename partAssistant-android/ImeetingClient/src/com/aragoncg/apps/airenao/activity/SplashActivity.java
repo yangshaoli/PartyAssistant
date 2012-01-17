@@ -222,7 +222,7 @@ public class SplashActivity extends Activity {
 
 	public void login() {
 		// 初始化登录线程
-		final String loginUrl = getString(R.string.loginUrl);
+		final String loginUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_LOGIN_URL;
 		Runnable loginThread = new Runnable() {
 
 			@Override

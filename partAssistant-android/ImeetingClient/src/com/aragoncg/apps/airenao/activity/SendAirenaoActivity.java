@@ -464,10 +464,10 @@ public class SendAirenaoActivity extends Activity {
 		params.put(Constants.ADDRESS_TYPE, "android");
 		String url = "";
 		if(fromPeopleInfo){
-			url = getString(R.string.partyResend);
+			url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_RESEND_URL;
 			params.put("partyID", partyId);
 		}else{
-			url = getString(R.string.partyCreateUrl);
+			url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_CREATE_URL;
 			
 		}
 		HttpHelper httpHelper = new HttpHelper();

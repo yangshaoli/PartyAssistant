@@ -160,7 +160,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 
 	public void getData(Intent intent) {
 
-		applayUrl = getString(R.string.applayUrl);
+		applayUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_APPLAY_URL;
 
 		// 加载数据
 		mData = new ArrayList<Map<String, Object>>();
@@ -174,7 +174,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		editor.putInt(Constants.PEOPLE_TAG, peopleTag);
 		editor.commit();
 		partyId = intent.getStringExtra(Constants.PARTY_ID);
-		getPeopleInfoUrl = getString(R.string.getPeopleInfoUrl);
+		getPeopleInfoUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_PEOPLE_INFO_URL;;
 		if (peopleTag == -1 || "-1".equals(partyId)) {
 			throw new MyRuntimeException(PeopleInfoActivity.this,
 					getString(R.string.systemMistakeTitle),

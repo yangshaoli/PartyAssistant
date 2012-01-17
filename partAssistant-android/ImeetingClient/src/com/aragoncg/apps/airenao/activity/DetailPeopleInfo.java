@@ -147,7 +147,7 @@ public class DetailPeopleInfo extends Activity {
 	}
 
 	public void initWedgit() {
-		applayUrl = getString(R.string.applayUrl);
+		applayUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_APPLAY_URL;
 		name = (TextView) findViewById(R.id.txtName);
 		phoneNumber = (TextView)findViewById(R.id.txtNumberDPI);
 		txtMessage = (TextView) findViewById(R.id.txtMessageDetail);

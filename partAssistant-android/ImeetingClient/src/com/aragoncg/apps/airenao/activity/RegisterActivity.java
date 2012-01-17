@@ -107,8 +107,8 @@ public class RegisterActivity extends Activity {
 			}
 
 		};
-		registerUrl = getString(R.string.registerUrl);
-		loginUrl = getString(R.string.loginUrl);
+		registerUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_REGISTER_URL;
+		loginUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_LOGIN_URL;
 	}
 
 	/**
