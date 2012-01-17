@@ -21,4 +21,5 @@ urlpatterns = patterns('apps.accounts.views',
 #    url(r'^validate_phone_unbingding_ajax/$', 'validate_phone_unbingding_ajax', name='validate_phone_unbingding_ajax'),
     url(r'^email_binding/$', 'email_binding', name='email_binding'),
     url(r'^unbinding/$', 'unbinding', name='unbinding'),
+    url(r'^email_handle_url/(?P<type>\w+)/$', 'email_handle_url', name='email_handle_url'),
 )
