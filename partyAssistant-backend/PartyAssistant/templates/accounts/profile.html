@@ -318,7 +318,7 @@ function validate_phone_bingding(isbind){
                 </div>
                 <div class="field">
                     <label for="phone">手机：</label><!--{{userprofile.phone_binding_status}}{{ userprofile.phone}}-->
-                    <input style="border:0px;background:none;" name='phone' id='id_phone' placeholder='[未绑定]' value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
+                    <input style="border:0px;background:none;" name='phone' id='id_phone'  value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
                     </input>
                     {%  ifequal userprofile.phone_binding_status  'bind' %}
                     <a href="#" onclick="unbindingPhone()">[取消绑定]</a>
