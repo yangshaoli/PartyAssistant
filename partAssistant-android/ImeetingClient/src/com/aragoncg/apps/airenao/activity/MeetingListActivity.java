@@ -25,6 +25,7 @@ import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -90,7 +91,8 @@ public class MeetingListActivity extends ListActivity implements
 
 	public static final String LAST_ID = "lastID";
 	private int lastID;
-
+	private static final int MENU_PERSON_INFO = 0;
+	private static final int MENU_EXIT = 1; 
 	public static final String PARTY_LIST = "partyList";
 	public static final String PARTY_ID = "partyId";
 	public static final String POEPLE_MAXMUM = "peopleMaximum";
@@ -524,6 +526,59 @@ public class MeetingListActivity extends ListActivity implements
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
 	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		menu.addSubMenu(0, MENU_PERSON_INFO, 0, getString(R.string.menuPersonInfo));
+		menu.addSubMenu(0, MENU_EXIT, 1, getString(R.string.menuExit));
+		return super.onCreateOptionsMenu(menu);
+	}
+
+
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+			case MENU_PERSON_INFO:
+				break;
+			case MENU_EXIT:
+				AlertDialog noticeDialog = new AlertDialog.Builder(
+						MeetingListActivity.this)
+						.setCancelable(true)
+						.setTitle(R.string.sendLableTitle)
+						.setMessage(R.string.exitMessage)
+						.setNegativeButton(
+								R.string.btn_cancle,
+								new android.content.DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+
+									}
+								})
+						.setPositiveButton(
+								R.string.btn_ok,
+								new android.content.DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										AirenaoUtills.exitClient(mContext);
+
+									}
+
+								}).create();
+				noticeDialog.show();
+				break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+
+
+
 
 	/**
 	 * 

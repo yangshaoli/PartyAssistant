@@ -45,8 +45,7 @@
         </activity>
         
 		<activity 
-		android:name=".activity.MeetingListActivity"
-		android:screenOrientation="portrait">
+		android:name=".activity.MeetingListActivity">
 			
 		</activity>
 		

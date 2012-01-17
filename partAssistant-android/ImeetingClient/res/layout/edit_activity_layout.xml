@@ -33,6 +33,7 @@
 	<TextView android:layout_width="fill_parent"
 		android:textColor="#FFFFFF"
 		android:layout_height="37sp" android:text="编辑"
+		android:textSize="25sp"
 		android:gravity="center|center_horizontal" />
 	</RelativeLayout>
 	

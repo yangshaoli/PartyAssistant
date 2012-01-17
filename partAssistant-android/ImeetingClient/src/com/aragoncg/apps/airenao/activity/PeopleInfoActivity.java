@@ -31,6 +31,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aragoncg.apps.airenao.R;
@@ -62,7 +63,6 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	private String partyId = "-1";
 	private String getPeopleInfoUrl;
 	private String applayUrl;
-	private ProgressDialog myProgressDialog;
 	private MyAdapter myAdapter;
 	private Thread applyThread;
 	private String backendID;
@@ -157,23 +157,8 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		});
 	}
 
-	/**
-	 * 显示加载对话框
-	 * 
-	 * @param activity
-	 */
-
-	public void cancleProgressDialog() {
-		if (myProgressDialog != null) {
-			myProgressDialog.cancel();
-		}
-	}
 
 	public void getData(Intent intent) {
-		myProgressDialog = new ProgressDialog(PeopleInfoActivity.this);
-		myProgressDialog.setTitle("");
-		myProgressDialog.setMessage(getString(R.string.rgPgrsTitle));
-		myProgressDialog.show();
 
 		applayUrl = getString(R.string.applayUrl);
 
@@ -303,7 +288,8 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 				txtNoData.setVisibility(View.GONE);
 			}
 			myAdapter.notifyDataSetChanged();
-			cancleProgressDialog();
+			ProgressBar proBar = (ProgressBar)findViewById(R.id.proBar);
+			proBar.setVisibility(View.GONE);
 		}
 
 		public void analyzeJson(String result, String type) {

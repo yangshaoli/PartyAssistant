@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">AiReNao</string>
+	<string name="app_name">爱热闹</string>
 	
 	<string name="send">发送</string>
     <string name="close">关闭</string>
@@ -9,7 +9,7 @@
     <string name="send_sucess">分享成功！</string>
     <string name="send_failed">分享失败！</string>
     
-	
+	<string name="menuEdit">编辑</string>
 	<string name="create_activity">创建活动</string>
 	<string name="detailActivity">短信内容</string>
 	<string name="meeting_list">活动列表</string>
@@ -20,7 +20,7 @@
 	<string name="destination">去哪：</string>
 	<string name="people_limit">几人：</string>
 	<string name="desc_activity">短信内容：</string>
-	<string name="hint">必填项,请编辑内容...</string>
+	<string name="hint">本活动内容将会作为短信发送</string>
 	<string name="send_lable_content_tip">活动内容不能为空</string>
 	<string name="send_message">发送手机短信</string>
 	<string name="send_mail">发送电子邮件</string>
@@ -44,6 +44,8 @@
 	<string name="share">分享</string>
 	<string name="save">保存</string>
 	<string name="refresh">刷新</string>
+	<string name="menuPersonInfo">个人信息</string>
+	<string name="menuExit">登出</string>
 	<string name="login_label_username">帐号:</string>
 	<string name="login_label_password">密码:</string>
 	<string name="register_label_pass_insure">确认:</string>
@@ -64,7 +66,7 @@
 	<string name="find_lable_message">输入手机号或邮箱来获取临时密码</string>
 	<string name="find_lable_tip">手机号或邮箱</string>
 	<string name="error_email">输入的邮件格式不正确</string>
-	<string name="send_airenao_reciever">收件人</string>
+	<string name="send_airenao_reciever">参加者</string>
 	<string name="send_airenao_title">发送邀请</string>
 	<string name="reinvate">重新邀请</string>
 	<string name="sendTip">发送提醒</string>

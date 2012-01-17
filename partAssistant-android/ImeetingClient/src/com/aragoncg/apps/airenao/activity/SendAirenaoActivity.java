@@ -59,12 +59,10 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
-import com.aragoncg.apps.airenao.SDKimp.MultiAutoCompleteTextImp;
 import com.aragoncg.apps.airenao.SDKimp.MyMultiAutoCompleteTextView;
 import com.aragoncg.apps.airenao.activity.Collapser.Collapsible;
 import com.aragoncg.apps.airenao.constans.Constants;
@@ -464,10 +462,17 @@ public class SendAirenaoActivity extends Activity {
 
 		params.put("uID", userId);
 		params.put(Constants.ADDRESS_TYPE, "android");
-		String createUrl = getString(R.string.partyCreateUrl);
+		String url = "";
+		if(fromPeopleInfo){
+			url = getString(R.string.partyResend);
+			params.put("partyID", partyId);
+		}else{
+			url = getString(R.string.partyCreateUrl);
+			
+		}
 		HttpHelper httpHelper = new HttpHelper();
 		// 保存到后台，没有提示信息
-		String result = httpHelper.savePerformPost(createUrl, params,
+		String result = httpHelper.savePerformPost(url, params,
 				SendAirenaoActivity.this);
 		String resultOut = AirenaoUtills.linkResult(result);
 		try {

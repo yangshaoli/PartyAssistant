@@ -18,7 +18,9 @@
 	<include layout="@layout/user_layout"/>"
 	<TextView android:layout_width="fill_parent"
 		android:textColor="#FFFFFF"
-		android:layout_height="37sp" android:text="@string/send_airenao_title"
+		android:layout_height="37sp" 
+		android:textSize="25sp"
+		android:text="@string/send_airenao_title"
 		android:gravity="center|center_horizontal" />
 	</RelativeLayout>
 
@@ -114,7 +116,7 @@
 			android:layout_gravity="center_horizontal" android:layout_marginTop="14dp"
 			android:paddingLeft="40dp"
 			android:paddingRight="40dp"
-			android:text="发送"/>
+			android:text="发送短信"/>
 	</LinearLayout>
 	
 </LinearLayout>

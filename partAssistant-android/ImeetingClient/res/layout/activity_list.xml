@@ -16,6 +16,7 @@
 		android:text="@string/meeting_list"
 		android:layout_gravity="center_vertical"
 		android:gravity="center" 
+		android:textSize="25sp"
 		android:id="@+id/txtListTitle"
 		android:layout_centerInParent="true"/>
 		<Button

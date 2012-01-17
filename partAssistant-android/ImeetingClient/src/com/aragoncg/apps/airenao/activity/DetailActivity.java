@@ -85,6 +85,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private static final int MENU_REFRESH = 1;
 	private static final int MENU_SHARE = 2;
 	private static final int MENU_SETTINT = 3;
+	private static final int MENU_EDIT = 4;
 	private static final int MSG_ID_DELETE = 4;
 	private static final int MSG_ID_REFRESH = 5;
 	private ProgressDialog progressDialog;
@@ -180,10 +181,10 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		// 获得menu data
 		resImageArry = new int[] { R.drawable.delete_detail,
 				R.drawable.btn_synchronize, R.drawable.share_detail,
-				R.drawable.btn_setting };
+				R.drawable.btn_setting, R.drawable.menu_edit };
 		resMenuNameArry = new String[] { getString(R.string.delete),
 				getString(R.string.refresh), getString(R.string.share),
-				getString(R.string.btn_setting) };
+				getString(R.string.btn_setting), getString(R.string.menuEdit) };
 
 		/**
 		 * 得到menu的样式属性
@@ -350,6 +351,17 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					if (pw.isShowing()) {
 						pw.dismiss();
 
+					}
+					break;
+				case MENU_EDIT:
+					if (pw.isShowing()) {
+						pw.dismiss();
+						Intent intent = new Intent();
+						intent.setClass(DetailActivity.this, EditActivity.class);
+
+						intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
+						intent.putExtra(Constants.FROMDETAIL, true);
+						startActivity(intent);
 					}
 					break;
 				}
@@ -541,6 +553,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		myCache.txtContent = (EditText) findViewById(R.id.descrEditText);
 		myCache.txtContent.setBackgroundDrawable(null);
 		myCache.btnEdit = (Button) findViewById(R.id.btnDetailEdit);
+		myCache.btnEdit.setVisibility(View.GONE);
 	}
 
 	/**

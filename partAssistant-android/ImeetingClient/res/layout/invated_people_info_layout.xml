@@ -20,6 +20,7 @@
 		android:text="title"
 		android:layout_gravity="center_vertical"
 		android:gravity="center" 
+		android:textSize="25sp"
 		android:id="@+id/txtPeoPleInfo"
 		android:layout_centerInParent="true"/>
 		<Button
@@ -42,6 +43,11 @@
 		android:layout_height="wrap_content"
 		android:background="@drawable/bj"
 		android:layout_weight="1.0" android:paddingTop="5dip" android:cacheColorHint="#00000000"/>
+	<ProgressBar
+		style="?android:attr/progressBarStyleSmall"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/proBar"/>
 	<TextView
 		android:layout_width="fill_parent"
 		android:id="@+id/txtNoData"
