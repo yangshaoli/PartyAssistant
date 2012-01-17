@@ -100,6 +100,7 @@ class EnrollForm(forms.Form):
     name = forms.CharField(error_messages = {'max_length':u'留言长度不能超过14字符'}, max_length = 14, required = False)
     def clean_leave_message(self):
         if 'leave_message' in self.cleaned_data:
+            self.cleaned_data['leave_message'] = self.cleaned_data['leave_message'].replace('\r\n', '<br/>') #Ticket 1169
             leave_message = self.cleaned_data['leave_message']
             if len(leave_message) > 100:
                 raise forms.ValidationError(u'留言超过100字符')
