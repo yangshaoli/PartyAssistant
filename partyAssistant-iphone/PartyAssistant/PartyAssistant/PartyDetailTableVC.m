@@ -185,7 +185,7 @@
             
             NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[newAppliedClientcount stringValue],[refusedClientcount stringValue],[newRefusedClientcount stringValue],[donothingClientcount stringValue], nil];
             self.peopleCountArray = countArray;
-            //NSLog(@"DAYIN  self.peopleCountArray  %@",self.peopleCountArray);
+            self.partyObj.contentString=[dataSource objectForKey:@"party_content"];
             [self.tableView reloadData];
         }else{
              [self showAlertRequestFailed:description];		

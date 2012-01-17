@@ -89,6 +89,7 @@
         if ([status isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"now  打印array：：%@",self.clientsArray);
             //new sorting order
             self.clientsArray = [clientsArray sortedArrayUsingComparator:^(id obj1, id obj2)
              {
@@ -384,9 +385,8 @@
     UILabel *phoneLb= [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 80, 20)];
     phoneLb.tag=7;
     phoneLb.text=[clentDic objectForKey:@"cValue"];
-    phoneLb.font=[UIFont systemFontOfSize:10];
+    phoneLb.font=[UIFont systemFontOfSize:13];
     phoneLb.textAlignment = UITextAlignmentLeft;
-    phoneLb.textColor = [UIColor grayColor];
     phoneLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:phoneLb];
     
@@ -402,7 +402,7 @@
     
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
-        if(isCheck){
+        if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -411,6 +411,8 @@
         
         
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 290, 20)];
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         secondLb.tag=8;
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
@@ -432,7 +434,7 @@
         [cell addSubview:secondLb];
     }else if([self.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
-        if(isCheck){
+        if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -440,7 +442,8 @@
         }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
             if(statusWordString.length>19){
@@ -463,7 +466,8 @@
     }else if([self.title isEqualToString:@"已邀请"]){
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
             if(statusWordString.length>19){
@@ -485,7 +489,8 @@
     }else if([self.title isEqualToString:@"未响应"]){
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
             if(statusWordString.length>19){
