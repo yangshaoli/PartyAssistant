@@ -14,13 +14,10 @@
 
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 
-@property (nonatomic, strong) IBOutlet UITableViewCell *inputMailCell;
-@property (nonatomic, strong) IBOutlet UITextField *inputCodeTextField;
-
-@property (nonatomic, strong) IBOutlet UITableViewCell *mailValidateCell;
-
 @property (nonatomic, strong) IBOutlet UITableViewCell *mailResendValidateCell;
 
 @property (nonatomic) BindingStatus pageStatus;
+
+@property (nonatomic) BOOL inSpecialProcess;
 
 @end

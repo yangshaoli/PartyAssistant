@@ -24,6 +24,7 @@
 @synthesize bindingNickname;
 @synthesize bindingTel;
 @synthesize bindingMail;
+@synthesize updated;
 
 - (id)init
 {
@@ -38,6 +39,7 @@
         self.bindingNickname = @"";
         self.bindingTel = @"";
         self.bindingMail = @"";
+        self.updated = NO;
     }
     
     return self;
@@ -53,6 +55,12 @@
     [encoder encodeObject: self.bindingNickname forKey:@"bindingNickname"];
     [encoder encodeObject: self.bindingTel forKey:@"bindingTel"];
     [encoder encodeObject: self.bindingMail forKey:@"bindingMail"];
+    if (self.updated) {
+        [encoder encodeObject: @"YES" forKey:@"isUpdated"];
+    } else {
+        [encoder encodeObject: @"NO" forKey:@"isUpdated"];
+    }
+    
 }
 
 - (id) initWithCoder: (NSCoder *) decoder {
@@ -65,6 +73,13 @@
     self.bindingNickname = [decoder decodeObjectForKey:@"bindingNickname"];
     self.bindingTel = [decoder decodeObjectForKey:@"bindingTel"];
     self.bindingMail = [decoder decodeObjectForKey:@"bindingMail"];
+    NSString *isUpdated = [decoder decodeObjectForKey:@"isUpdated"];
+    if ([isUpdated isEqualToString:@"YES"]) {
+        self.updated = YES;
+    } else {
+        self.updated = NO;
+    }
+    
 	return self;
 }
 
@@ -78,6 +93,7 @@
     self.bindingNickname = @"";
     self.bindingTel = @"";
     self.bindingMail = @"";
+    self.updated = NO;
 }
 
 - (NSString *)translateStatusCodeToString : (BindingStatus)status {
@@ -104,20 +120,23 @@
     if (self.nicknameBindingStatus == StatusBinded) {
         return self.bindedNickname;
     }
+    if (self.nicknameBindingStatus == StatusNotBind) {
+        return @"请输入真实姓名";
+    }
     return [self translateStatusCodeToString:self.nicknameBindingStatus];
 }
 
 - (NSString *)telStatusString {
-    if (self.telBindingStatus == StatusBinded) {
-        return self.bindedTel;
-    }
+//    if (self.telBindingStatus == StatusBinded) {
+//        return self.bindedTel;
+//    }
     return [self translateStatusCodeToString:self.telBindingStatus];
 }
 
 - (NSString *)mailStatusString {
-    if (self.mailBindingStatus == StatusBinded) {
-        return self.bindedMail;
-    }
+//    if (self.mailBindingStatus == StatusBinded) {
+//        return self.bindedMail;
+//    }
     return [self translateStatusCodeToString:self.mailBindingStatus];
 }
 @end
@@ -177,6 +196,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
 
 - (void)clearBindingStatusObject {
     [self.bindingStatusObject clearObject];
+    [self saveBindingStatusObject];
 }
 
 - (BindingStatus)nicknameBindingStatus {
@@ -239,13 +259,18 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
     return [[self getBindingStatusObject] bindingMail];
 }
 
+- (BOOL)isUpdated {
+    return 
+    [[self getBindingStatusObject] updated];
+}
+
 - (BindingStatus)detectMailBindingStatus {
     if ([self mailBindingStatus] == StatusBinding) {
         if ([[[self getBindingStatusObject] bindingMail] isEqualToString:@""]) {
             return StatusVerifyUnbinding;
         } else {
             if ([[[self getBindingStatusObject] bindedMail] isEqualToString:@""]) {
-                return StatusVerifyUnbinding;
+                return StatusVerifyBinding;
             }
             return StatusVerifyBinding;
         }
@@ -261,7 +286,7 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(UserInfoBindingStatusService)
             return StatusVerifyUnbinding;
         } else {
             if ([[[self getBindingStatusObject] bindedTel] isEqualToString:@""]) {
-                return StatusVerifyUnbinding;
+                return StatusVerifyBinding;
             }
             return StatusVerifyBinding;
         }

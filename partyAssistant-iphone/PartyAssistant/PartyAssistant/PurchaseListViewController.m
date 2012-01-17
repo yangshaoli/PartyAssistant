@@ -165,7 +165,7 @@
     if ([SKPaymentQueue canMakePayments]) {
         [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifier, nil]];
     } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"出错啦" message:@"程序没有被设置允许购买" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"出错啦！" message:@"程序没有被设置允许购买" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil];
         alert.tag = 110;
         [alert show];
     }

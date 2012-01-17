@@ -336,91 +336,6 @@ AAgACAAIAAEAAQABAAE</bytes>
 				<reference key="IBUIFontDescription" ref="774511436"/>
 				<reference key="IBUIFont" ref="659162301"/>
 			</object>
-			<object class="IBUITableViewCell" id="781245130">
-				<reference key="NSNextResponder"/>
-				<int key="NSvFlags">292</int>
-				<object class="NSMutableArray" key="NSSubviews">
-					<bool key="EncodedWithXMLCoder">YES</bool>
-					<object class="IBUIView" id="681441446">
-						<reference key="NSNextResponder" ref="781245130"/>
-						<int key="NSvFlags">256</int>
-						<object class="NSMutableArray" key="NSSubviews">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="IBUILabel" id="765700537">
-								<reference key="NSNextResponder" ref="681441446"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{20, 11}, {71, 33}}</string>
-								<reference key="NSSuperview" ref="681441446"/>
-								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="576147767"/>
-								<string key="NSReuseIdentifierKey">_NS:311</string>
-								<bool key="IBUIOpaque">NO</bool>
-								<bool key="IBUIClipsSubviews">YES</bool>
-								<int key="IBUIContentMode">7</int>
-								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<string key="IBUIText">确认密码</string>
-								<reference key="IBUITextColor" ref="324770829"/>
-								<nil key="IBUIHighlightedColor"/>
-								<int key="IBUIBaselineAdjustment">1</int>
-								<float key="IBUIMinimumFontSize">10</float>
-								<reference key="IBUIFontDescription" ref="169041886"/>
-								<reference key="IBUIFont" ref="214369950"/>
-							</object>
-							<object class="IBUITextField" id="576147767">
-								<reference key="NSNextResponder" ref="681441446"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{93, 6}, {214, 31}}</string>
-								<reference key="NSSuperview" ref="681441446"/>
-								<reference key="NSWindow"/>
-								<string key="NSReuseIdentifierKey">_NS:294</string>
-								<bool key="IBUIOpaque">NO</bool>
-								<bool key="IBUIClipsSubviews">YES</bool>
-								<int key="IBUITag">103</int>
-								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								<int key="IBUIContentVerticalAlignment">0</int>
-								<string key="IBUIText"/>
-								<string key="IBUIPlaceholder">与密码一致</string>
-								<object class="NSColor" key="IBUITextColor">
-									<int key="NSColorSpace">3</int>
-									<bytes key="NSWhite">MAA</bytes>
-									<reference key="NSCustomColorSpace" ref="433326171"/>
-								</object>
-								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
-								<float key="IBUIMinimumFontSize">17</float>
-								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
-									<bool key="IBUISecureTextEntry">YES</bool>
-									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-								</object>
-								<reference key="IBUIFontDescription" ref="112622414"/>
-								<reference key="IBUIFont" ref="118648164"/>
-							</object>
-						</object>
-						<string key="NSFrame">{{1, 0}, {318, 43}}</string>
-						<reference key="NSSuperview" ref="781245130"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="765700537"/>
-						<string key="NSReuseIdentifierKey">_NS:370</string>
-						<reference key="IBUIBackgroundColor" ref="781746463"/>
-						<bool key="IBUIOpaque">NO</bool>
-						<bool key="IBUIClipsSubviews">YES</bool>
-						<int key="IBUIContentMode">4</int>
-						<bool key="IBUIMultipleTouchEnabled">YES</bool>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-					</object>
-				</object>
-				<string key="NSFrameSize">{320, 44}</string>
-				<reference key="NSSuperview"/>
-				<reference key="NSWindow"/>
-				<reference key="NSNextKeyView" ref="681441446"/>
-				<string key="NSReuseIdentifierKey">_NS:358</string>
-				<reference key="IBUIBackgroundColor" ref="346731399"/>
-				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-				<int key="IBUISelectionStyle">0</int>
-				<reference key="IBUIContentView" ref="681441446"/>
-				<reference key="IBUIFontDescription" ref="774511436"/>
-				<reference key="IBUIFont" ref="659162301"/>
-			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
 			<object class="NSMutableArray" key="connectionRecords">
@@ -467,27 +382,11 @@ AAgACAAIAAEAAQABAAE</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">pwdCheckCell</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="781245130"/>
-					</object>
-					<int key="connectionID">26</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">pwdTextField</string>
 						<reference key="source" ref="372490531"/>
 						<reference key="destination" ref="895245382"/>
 					</object>
 					<int key="connectionID">29</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">pwdCheckTextField</string>
-						<reference key="source" ref="372490531"/>
-						<reference key="destination" ref="576147767"/>
-					</object>
-					<int key="connectionID">30</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -586,28 +485,6 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<reference key="parent" ref="744330966"/>
 						<string key="objectName">Text Field - 输入密码</string>
 					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">18</int>
-						<reference key="object" ref="781245130"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="765700537"/>
-							<reference ref="576147767"/>
-						</object>
-						<reference key="parent" ref="0"/>
-						<string key="objectName">pwdCheckCell</string>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">19</int>
-						<reference key="object" ref="765700537"/>
-						<reference key="parent" ref="781245130"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">20</int>
-						<reference key="object" ref="576147767"/>
-						<reference key="parent" ref="781245130"/>
-						<string key="objectName">Text Field - 确认密码</string>
-					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -624,9 +501,6 @@ AAgACAAIAAEAAQABAAE</bytes>
 					<string>15.IBPluginDependency</string>
 					<string>16.IBPluginDependency</string>
 					<string>17.IBPluginDependency</string>
-					<string>18.IBPluginDependency</string>
-					<string>19.IBPluginDependency</string>
-					<string>20.IBPluginDependency</string>
 					<string>4.IBPluginDependency</string>
 					<string>8.IBPluginDependency</string>
 				</object>
@@ -635,9 +509,6 @@ AAgACAAIAAEAAQABAAE</bytes>
 					<string>PartyUserRegisterViewController</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>UIResponder</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>

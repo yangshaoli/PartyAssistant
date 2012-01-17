@@ -23,6 +23,7 @@
 #import "PurchaseListViewController.h"
 #import "DataManager.h"
 #import "ChangePasswordRandomLoginTableVC.h"
+#import "CustomTextView.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -53,6 +54,8 @@
 @synthesize smsObject;
 @synthesize HUD = _HUD;
 @synthesize editingTableViewCell = _editingTableViewCell;
+@synthesize leftCountLabel = _leftCountLabel;
+@synthesize sectionOneHeader = _sectionOneHeader;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -90,24 +93,69 @@
         self.smsObject = [smsObjectService getSMSObject];
     }
     
-    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
+    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
     
     //wxz
-    if([DataManager sharedDataManager].isRandomLoginSelf){
-        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
-        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  
+        //tab.selectedIndex=1;
+    }else{
+        if([DataManager sharedDataManager].isRandomLoginSelf){
+            ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+            [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];  
+            NSLog(@"creat-----");
+        }
     }
+    
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+    
+    self.sendModeNameLabel.clipsToBounds = YES;
+    self.leftCountLabel.clipsToBounds = YES;
+    
+    self.sendModeNameLabel.contentMode = UIViewContentModeScaleAspectFit;
+    self.leftCountLabel.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.smsObject._isSendBySelf) {
-        self.sendModeNameLabel.text = @"用自己手机发送";
+//        self.sendModeNameLabel.text = @"用自己手机发送";
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 26;
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+        
+        self.leftCountLabel.hidden = YES;
     } else {
-        self.sendModeNameLabel.text = @"通过服务器发送";
+//        self.sendModeNameLabel.text = @"通过服务器发送";
+//         
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 11;
+//
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+//        
+        self.leftCountLabel.hidden = NO;
+        
+        self.leftCountLabel.text = @"帐户余额更新中";
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
 }
 
@@ -131,7 +179,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return 2;
+        return 1;
     } 
     return 1;
 }
@@ -140,9 +188,10 @@
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
             return self.addContactCell;
-        } else if (indexPath.row == 1) {
-            return self.sendModelSelectCell;
         }
+//        else if (indexPath.row == 1) {
+//            return self.sendModelSelectCell;
+//        }
     } else {
         return self.editingTableViewCell;
     }
@@ -178,9 +227,9 @@
             
             //[UIView commitAnimations];
         } else if (indexPath.row == 1) {
-            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
-            vc.delegate = self;
-            [self.navigationController pushViewController:vc animated:YES];
+//            SendSMSModeChooseViewController *vc = [[SendSMSModeChooseViewController alloc] initWithNibName:nil bundle:nil];
+//            vc.delegate = self;
+//            [self.navigationController pushViewController:vc animated:YES];
         }
     }
 }
@@ -190,31 +239,46 @@
         if ([self.editingTableViewCell.textView isFirstResponder]) {
             return (self.editingTableViewCell.textView.frame.size.height > 80) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (80 + 11);
         } else {
-            if (self.editingTableViewCell.textView.frame.size.height < 250) {
-                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 80) {
-                    return 80 + 11;
-                } else {
-                    return self.editingTableViewCell.textView.frame.size.height + 11;
-                }
-            } else {
-                return (250 + 11);
-            }
-            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+//            if (self.editingTableViewCell.textView.frame.size.height < 250) {
+//                if ((self.editingTableViewCell.textView.frame.size.height + 11) < 200) {
+//                    return 200 + 11;
+//                } else {
+//                    return self.editingTableViewCell.textView.frame.size.height + 11;
+//                }
+//            } else {
+//                return (250 + 11);
+//            }
+//            return (self.editingTableViewCell.textView.frame.size.height < 250) ? (self.editingTableViewCell.textView.frame.size.height + 11) : (250 + 11);
+            return 200 + 11;
         }
         
     }
     return 44.0f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return 40.0f;
+    }
+    return 20;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return self.sectionOneHeader;
+    }
+    return nil;
 }
 #pragma mark -
 #pragma mark EditableTableViewCellDelegate
 
 - (void)editableTableViewCellDidBeginEditing:(EditableTableViewCell *)editableTableViewCell {
     self.editingTableViewCell = editableTableViewCell;
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     NSRange range = NSMakeRange(self.editingTableViewCell.textView.text.length - 1, 1);
     [self.editingTableViewCell.textView scrollRangeToVisible:range];
     
-    CGFloat offset = -100.0f;
+    CGFloat offset = -80.0f;
     self.tableView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
     
     self.navigationItem.rightBarButtonItem = nil;
@@ -228,6 +292,23 @@
     self.editingTableViewCell = editableTableViewCell;
     self.tableView.contentInset = UIEdgeInsetsMake(0.0f, 0.0f, 0.0f, 0.0f);
     self.navigationItem.rightBarButtonItem = self.rightItem;
+    
+//   CGFloat newHeight = [self.editingTableViewCell suggestedHeight];
+    
+    CGRect oldFrame = self.editingTableViewCell.textView.frame;
+    CGRect newFrame = oldFrame;
+//    if (newHeight < 200.0f) {
+        newFrame.size.height = 200.0f;
+//    } else if (newHeight > 250.0f) {
+//        newFrame.size.height = 250.0f;
+//    } else {
+//        newFrame.size.height = newHeight;
+//    }
+    
+    self.editingTableViewCell.textView.frame = newFrame;
+    
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 
@@ -236,19 +317,31 @@
     CGRect oldFrame = self.editingTableViewCell.textView.frame;
     CGRect newFrame = oldFrame;
     if (newHeight < 80.0f) {
-        newFrame.size.height = 80.0f;
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            newFrame.size.height = 200.0f;
+        } else {
+            newFrame.size.height = 80.0f;
+        }
     } else if (newHeight > 100.0f) {
         if (![editableTableViewCell.textView isFirstResponder]) {
-            if (newHeight > 250.0f) {
-                newFrame.size.height = 250.0f;
-            } else {
-                newFrame.size.height = newHeight;
-            }
+//            if (newHeight > 250.0f) {
+//                newFrame.size.height = 250.0f;
+//            } else if (newHeight < 200.0f) {
+//                newFrame.size.height = 200.0f;
+//            } else {
+//                newFrame.size.height = newHeight;
+//            }
+            newFrame.size.height = 200.0f;
         } else {
-            newFrame.size.height = 100.0f;
+            newFrame.size.height = 80.0f;
         }
     } else {
-        newFrame.size.height = newHeight;
+        if (![editableTableViewCell.textView isFirstResponder]) {
+            newFrame.size.height = 200.0f;
+        } else {
+            //newFrame.size.height = newHeight;
+            newFrame.size.height = 80.0f;
+        }
     }
     
     self.editingTableViewCell.textView.frame = newFrame;
@@ -302,15 +395,15 @@
                 int leftCount = [self.receipts count] - i;
                 if (leftCount == 1) {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipient", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipient", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 } else {
                     if (i == 0) {
-                        [contactNameTFContent appendFormat:@"%drecipients", leftCount];
+                        [contactNameTFContent appendFormat:@"%d个联系人", leftCount];
                     } else {
-                        [contactNameTFContent appendFormat:@"&%drecipients", leftCount];   
+                        [contactNameTFContent appendFormat:@"还有%d个联系人", leftCount];   
                     }
                 }
                 break;
@@ -450,17 +543,19 @@
     
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
+    NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            [isCreatSucDefault setBool:YES forKey:@"isCreatSucDefault"];
             NSNumber *leftCount = [[result objectForKey:@"datasource"] objectForKey:@"sms_count_remaining"];
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:[NSNumber numberWithInt:[leftCount intValue]]]];
-            
+
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
                 if([MFMessageComposeViewController canSendText]==YES){
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.smsObject._isApplyTips) {
-                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                        vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"( 报名链接: %@ )",applyURL]];
                     }else{
                         vc.body = self.smsObject.smsContent;
                     };
@@ -521,10 +616,10 @@
                 [se clearEmailObject];
             }
                  
-        } else if ([status isEqualToString:@"lessRemain"]){
-            NSDictionary *infos = [result objectForKey:@"data"];
+        } else if ([status isEqualToString:@"error_no_remaining"]){
+            NSDictionary *infos = [result objectForKey:@"datasource"];
             NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"leftCount"];
+            leftCount = [infos objectForKey:@"remaining"];
             if (leftCount) {
                 [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
                 [self showLessRemainingCountAlert];
@@ -532,6 +627,7 @@
             }
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
         } else {
+            [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
             [self showAlertRequestFailed:description];	
         }
     }else if([request responseStatusCode] == 404){
@@ -670,19 +766,19 @@
 #pragma mark - 
 #pragma mark alert method
 - (void)showAlertRequestSuccess{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:@"OK" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作成功!" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Success!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作成功!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"Hold on!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"操作失败!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 
@@ -856,6 +952,10 @@
     [self rearrangeContactNameTFContent];
 }
 
+- (void)selectedCancelInController:(UIViewController *)vc {
+    [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
 - (void)selectedFinishedInController:(UIViewController *)vc {
     [self.navigationController dismissModalViewControllerAnimated:YES];
 }
@@ -888,5 +988,25 @@
 - (void)gotoPurchasPage {
     PurchaseListViewController *purchase = [[PurchaseListViewController alloc] initWithNibName:nil bundle:nil];
     [self.navigationController pushViewController:purchase animated:YES];
+}
+
+#pragma mark - 
+#pragma mark notification method
+- (void)leftCountRefreshing:(NSNotification *)notify {
+    
+}
+
+- (void)leftCountRefreshed:(NSNotification *)notify {
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+}
+
+- (void)leftCountRefreshFailed:(NSNotification *)notify {
+    self.leftCountLabel.text = @"帐户余额更新失败";
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 @end

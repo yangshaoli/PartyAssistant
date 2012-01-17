@@ -34,7 +34,6 @@
                          tag:(int)tagNum;
 - (NSInteger)getInputFieldNonTextTag;
 - (void)showNotLegalInput;
-- (BOOL)pwdEqualToPwdCheck;
 - (void)showRegistSuccessfulAlert;
 - (void)showInvalidateNetworkalert;
 
@@ -44,11 +43,10 @@
 @synthesize tableView = _tableView;
 @synthesize userNameCell = _userNameCell;
 @synthesize pwdCell = _pwdCell;
-@synthesize pwdCheckCell = _pwdCheckCell;
+
 
 @synthesize userNameTextField = _userNameTextField;
 @synthesize pwdTextField = _pwdTextField;
-@synthesize pwdCheckTextField = _pwdCheckTextField;
 
 @synthesize delegate;
 - (void)dealloc {
@@ -58,12 +56,10 @@
     
     [_userNameCell release];
     [_pwdCell release];
-    [_pwdCheckCell release];
  
     
     [_userNameTextField release];
     [_pwdTextField release];
-    [_pwdCheckTextField release];
   
 }
 
@@ -133,25 +129,25 @@
         
     [self cleanKeyBoard];
     
-    BOOL isOk = [self pwdEqualToPwdCheck];
-    
-    if (!isOk) {
-        [self showAlertWithMessage:@"密码和确认密码内容不一致！" buttonTitle:@"OK" tag:NotLegalTag];
-        return;
-    }
+//    BOOL isOk = [self pwdEqualToPwdCheck];
+//    
+//    if (!isOk) {
+//        [self showAlertWithMessage:@"密码和确认密码内容不一致！" buttonTitle:@"好的" tag:NotLegalTag];
+//        return;
+//    }
     
     UserInfoValidator *validator = [UserInfoValidator sharedUserInfoValidator];
     ValidatorResultCode result = [validator validateUsername:self.userNameTextField.text];
     if (result != ValidatorResultPass) {
         NSString *errorMessge = [validator getUsernameErrorMessageByCode:result];
-        [self showAlertWithMessage:errorMessge buttonTitle:@"OK" tag:NotLegalTag];
+        [self showAlertWithMessage:errorMessge buttonTitle:@"好的" tag:NotLegalTag];
         return;
     }
     
     result = [validator validatePassword:self.pwdTextField.text];
     if (result != ValidatorResultPass) {
         NSString *errorMessge = [validator getPasswordErrorMessageByCode:result];
-        [self showAlertWithMessage:errorMessge buttonTitle:@"OK" tag:NotLegalTag];
+        [self showAlertWithMessage:errorMessge buttonTitle:@"好的" tag:NotLegalTag];
         return;
     }
     
@@ -176,8 +172,6 @@
         [_userNameTextField resignFirstResponder];
     } else if ([_pwdTextField isFirstResponder]) {
         [_pwdTextField resignFirstResponder];
-    } else if ([_pwdCheckTextField isFirstResponder]) {
-        [_pwdCheckTextField resignFirstResponder];
     }
 }
 
@@ -193,10 +187,7 @@
             case PwdTextFieldTag:
                 _pwdTextField.text = @"";
                 break;
-            case PwdCheckTextFieldTag:
-                _pwdCheckTextField.text = @"";
-                break;
-         }
+        }
         [self showNotLegalInput];
         return NO;
     }
@@ -207,17 +198,14 @@
         return UserNameTextFieldTag;
     } else if (!_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
         return PwdTextFieldTag;
-    } else if (!_pwdCheckTextField.text || [_pwdCheckTextField.text isEqualToString:@""]) {
-        return PwdCheckTextFieldTag;
-    } 
-    
+    }     
     return NullTextFieldTag;
 }
 
 - (void)showAlertWithMessage:(NSString *)message 
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
     [alert release];
@@ -225,31 +213,30 @@
 
 - (void)showInvalidateNetworkalert {
     [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
-                   buttonTitle:@"OK" 
+                   buttonTitle:@"好的" 
                            tag:InvalidateNetwork];
 }
 
 - (void)showRegistSuccessfulAlert {
-    [self showAlertWithMessage:@"注册成功！" buttonTitle:@"OK" tag:SuccessfulTag];
+    [self showAlertWithMessage:@"注册成功！" buttonTitle:@"好的" tag:SuccessfulTag];
 }
 - (IBAction)autoLogin{
     [delegate autoLogin];
     
 }
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"注册内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"注册内容不能为空！" buttonTitle:@"好的" tag:NotLegalTag];
 }
-
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"无法完成注册！" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"无法完成注册！" buttonTitle:@"好的" tag:NotPassTag];
 }
 
-- (BOOL)pwdEqualToPwdCheck {
-    if ([_pwdTextField.text isEqualToString:_pwdCheckTextField.text]) {
-        return YES;
-    }
-    return NO;
-}
+//- (BOOL)pwdEqualToPwdCheck {
+//    if ([_pwdTextField.text isEqualToString:_pwdCheckTextField.text]) {
+//        return YES;
+//    }
+//    return NO;
+//}
 
 - (void)tryConnectToServer {
     //TODO:register check method!
@@ -268,21 +255,30 @@
                                                 ]
                               ];
     
-    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            registerUserWithUsrInfo:userInfo];
+//    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+//                                            registerUserWithUsrInfo:userInfo];
+    NSString *statusDescription = nil;
+    statusDescription = [[DataManager sharedDataManager]
+                                    registerUserWithUsrInfo:userInfo];;
     [_HUD hide:YES];
-    //may need to creat some other connection status
-    switch (networkStatus) {
-        case NetworkConnectionInvalidate:
-            [self showNotPassChekAlert];
-            break;
-        case NetWorkConnectionCheckPass:
-            [self showRegistSuccessfulAlert];
-            break;
-        default:
-            [self showNotPassChekAlert];
-            break;
+    
+    if (statusDescription) {
+        [self showAlertWithMessage:statusDescription buttonTitle:@"确定" tag:NotLegalTag];
+    } else {
+        [self showRegistSuccessfulAlert];
     }
+    //may need to creat some other connection status
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showInvalidateNetworkalert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self showRegistSuccessfulAlert];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
 }
 
 #pragma mark -
@@ -292,7 +288,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 3;
+    return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -302,9 +298,7 @@
         return _userNameCell;
     } else if (indexPath.row == 1) {
         return _pwdCell;
-    } else if (indexPath.row == 2) {
-        return _pwdCheckCell;
-    }
+    } 
     return nil;
 }
 

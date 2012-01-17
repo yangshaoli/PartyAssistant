@@ -20,4 +20,8 @@
 
 - (void)showBindOperationFailed: (NSString *) theMessage;
 
+- (void)showBindInform:(NSString *) theMessage;
+
+- (void)showNormalErrorInfo: (NSString *) theMessage;
+
 @end

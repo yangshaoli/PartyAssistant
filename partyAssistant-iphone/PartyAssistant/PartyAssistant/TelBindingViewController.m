@@ -33,6 +33,7 @@
 @synthesize inputTelCell = _inputTelCell;
 @synthesize inputTelTextField = _inputTelTextField;
 @synthesize telBindingCell = _telBindingCell;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -58,10 +59,11 @@
     [super viewDidLoad];
     BindingStatus telStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] telBindingStatus];
     if (telStatus == StatusNotBind) {
-        self.navigationItem.title = @"绑定电话号码";
+        self.navigationItem.title = @"手机绑定";
     } else if (telStatus != StatusUnknown && telStatus != StatusBinded) {
         self.navigationItem.title = @"重新输入号码";
     }
+    [self.inputTelTextField becomeFirstResponder];
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -115,7 +117,12 @@
     
     BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-    verifyPage.pageStatus = verifyPageStatus;
+    //verifyPage.pageStatus = verifyPageStatus;
+    verifyPage.pageStatus = StatusVerifyBinding;
+    
+    if (self.inSpecialProcess) {
+        verifyPage.inSpecialProcess = YES;
+    }
     
     [self.navigationController pushViewController:verifyPage animated:NO];
 }
@@ -173,6 +180,14 @@
             av.tag = 11001;
             [av show];
             
+        } else if ([status isEqualToString:@"error_has_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
+        } else if ([status isEqualToString:@"error_different_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];
         } else {
             [self saveProfileDataFromResult:result];
             
@@ -206,6 +221,11 @@
     }
     if (alertView.tag == 11112) {
         [self.navigationController popViewControllerAnimated:YES];
+    }
+    if (alertView.tag == 11116) {
+        self.inputTelTextField.text = @"";
+        
+        [self.inputTelTextField becomeFirstResponder];
     }
 }
 @end

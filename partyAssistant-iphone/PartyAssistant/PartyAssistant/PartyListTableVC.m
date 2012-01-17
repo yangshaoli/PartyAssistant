@@ -27,7 +27,7 @@
 @implementation PartyListTableVC
 @synthesize partyList, topRefreshView, bottomRefreshView;
 @synthesize peopleCountArray,partyDictArraySelf;
-@synthesize lastID,_isRefreshing,_isNeedRefresh,quest,isRefreshImage;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest,isRefreshImage,rowLastPush;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -38,6 +38,7 @@
 }
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearData) name:USER_LOGOUT_NOTIFICATION object:nil];
     _isRefreshing = NO;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     return self;
@@ -120,9 +121,18 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    if([DataManager sharedDataManager].isRandomLoginSelf){
-        ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
-        [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];   
+    //wxz
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  //如果该用户活动条数非空
+        if([DataManager sharedDataManager].isRandomLoginSelf){
+            ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+            [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES]; 
+            NSLog(@"list------");
+        }
     }
     [self refreshBtnAction];
     [self.tableView reloadData];
@@ -147,6 +157,36 @@
         [self refreshBtnAction];
         [self.tableView reloadData];
     }
+    NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isCreatSucBool=[[isCreatSucDefault objectForKey:@"isCreatSucDefault"] boolValue];
+    if(isCreatSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
+    }
+    
+    
+    
+    NSUserDefaults *isDeleteSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isDeleteSucBool=[[isDeleteSucDefault objectForKey:@"isDeleteSucDefault"] boolValue];
+    if(isDeleteSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isDeleteSucDefault setBool:NO forKey:@"isDeleteSucDefault"];
+    }
+
+    
+    NSUserDefaults *isEditSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isEditSucBool=[[isEditSucDefault objectForKey:@"isEditSucDefault"] boolValue];
+    if(isEditSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isEditSucDefault setBool:NO forKey:@"isEditSucDefault"];
+    }
+    
+    
+    
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -176,6 +216,9 @@
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     //NSLog(@"打印两数 %d---%d",user.uID,aLastID);
+    if (user.uID < 0) {
+        return;
+    }
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     
     if (self.quest) {
@@ -227,6 +270,10 @@
                 tbi.badgeValue = [NSString stringWithFormat:@"%@",[dataSource objectForKey:@"unreadCount"]];
             }
             NSArray *partyDictArray = [dataSource objectForKey:@"partyList"];
+            
+            NSUserDefaults *partyListArrayDefault=[NSUserDefaults standardUserDefaults];
+            [partyListArrayDefault setObject:partyDictArray forKey:@"partyListArrayDefaultForDetailContentRefresh"];
+            
             if (!_isAppend) {
                 [self.partyList removeAllObjects];
             }
@@ -269,6 +316,7 @@
                 [self.partyList addObject:partyModel];
                 
             }
+            
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
            
@@ -344,15 +392,34 @@
     }else{
         [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
     }
+//    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+//    BOOL isrefreshDetailContent=[refreshDetailContentDefault  boolForKey:@"refreshDetailContentDefault"];
+//    if(isrefreshDetailContent){
+//        PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+//        partyDetailTableVC.delegate=self;
+//        partyDetailTableVC.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+//          partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:rowLastPush];
+//    }
 
-    
 }
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
+    NSString *badge = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    if ([badge intValue] <= 0) {
+        return;
+    }
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
-    tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    tbi.badgeValue = badge;
+}
+
+- (void)clearData {
+    [partyList removeAllObjects];
+    [self.tableView reloadData];
+    [self.navigationController popToRootViewControllerAnimated:NO];
     
+    self.lastID = 0;
 }
 
 #pragma mark - Table view data source
@@ -512,9 +579,11 @@
     
     PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
     partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
+    self.rowLastPush=[indexPath row];//记忆
+    partyDetailTableVC.delegate=self;
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
-    
+    partyDetailTableVC.rowLastPush=self.rowLastPush;
     //
 }
 

@@ -333,6 +333,7 @@ def GetPartyClientMainCount(request, pid):
     #各个活动的人数情况
     party_clients = PartiesClients.objects.select_related('client').filter(party = party)
     client_counts = {
+                     'party_content':'',
                     'allClientcount':0,
                     'appliedClientcount': 0,
                     'newAppliedClientcount':0,
@@ -353,7 +354,7 @@ def GetPartyClientMainCount(request, pid):
             client_counts['refusedClientcount'] += 1 
         if party_client.apply_status == 'reject' and party_client.is_check == False:
             client_counts['newRefusedClientcount'] += 1
-
+    client_counts['party_content'] = party.description
     return client_counts
 
 @csrf_exempt
@@ -527,6 +528,6 @@ def resendMsg(request):
         
         return {
                 'partyId':party.id,
-                'applyURL':DOMAIN_NAME + reverse('enroll', args = [party.id]),
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
                 'sms_count_remaining':user.userprofile.available_sms_count,
                 }

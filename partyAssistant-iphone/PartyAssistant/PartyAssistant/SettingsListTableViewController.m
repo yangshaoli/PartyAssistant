@@ -98,7 +98,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 8;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -122,10 +122,8 @@
     }else if(indexPath.row == 4){
         cell.textLabel.text = @"充值";
     }else if(indexPath.row == 5){
-        cell.textLabel.text = @"绑定";
-    }else if(indexPath.row == 6){
         cell.textLabel.text = @"登出";
-    }else if(indexPath.row == 7){
+    }else if(indexPath.row == 6){
         
         NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
         NSString *defaultVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
@@ -204,8 +202,8 @@
 //    WeiboService *s = [WeiboService sharedWeiboService];
 //    [s WeiboLogin];
     if(indexPath.row == 0){
-        NicknameManageTableViewController *nickChangeVc = [[NicknameManageTableViewController alloc] initWithNibName:@"NicknameManageTableViewController" bundle:nil];
-        [self.navigationController pushViewController:nickChangeVc animated:YES];
+        BindingListViewController *bindListVC = [[BindingListViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:bindListVC animated:YES];
     }
     if(indexPath.row==1){
         ChangePasswordTableVC *changePasswordTableVC=[[ChangePasswordTableVC alloc] initWithNibName:@"ChangePasswordTableVC" bundle:nil];
@@ -224,11 +222,7 @@
         PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
         [self.navigationController pushViewController:purchaseListVC animated:YES];
     }
-    if (indexPath.row == 5) {
-        BindingListViewController *bindListVC = [[BindingListViewController alloc] initWithNibName:nil bundle:nil];
-        [self.navigationController pushViewController:bindListVC animated:YES];
-    }
-    if(indexPath.row == 6){
+    if(indexPath.row == 5){
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"登出" message:@"确认登出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
         alertView.tag = LogoutTag;
         [alertView show];
@@ -266,7 +260,7 @@
         _HUD = [[MBProgressHUD alloc] initWithView:self.view];
         [self.navigationController.view addSubview:_HUD];
         
-        _HUD.labelText = @"Loading";
+        _HUD.labelText = @"载入中";
         
         _HUD.delegate = self;
         
@@ -283,41 +277,49 @@
 - (void)showAlertWithMessage:(NSString *)message 
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
 }
 
 - (void)showInvalidateNetworkalert {
     [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
-                   buttonTitle:@"OK" 
+                   buttonTitle:@"好的" 
                            tag:InvalidateNetwork];
 }
 
 - (void)showRegistSuccessfulAlert {
     [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
-    [self showAlertWithMessage:@"登出成功！" buttonTitle:@"OK" tag:SuccessfulTag];
+    [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"无法完成登出！" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"无法完成登出！" buttonTitle:@"好的" tag:NotPassTag];
 }
 
 - (void)tryConnectToServer {
-    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            logoutUser];
+    //NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+    //                                        logoutUser];
+    NSString *networkStatus = nil;
+    networkStatus = [[DataManager sharedDataManager] logoutUser];
     [_HUD hide:YES];
     //may need to creat some other connection status
-    switch (networkStatus) {
-        case NetworkConnectionInvalidate:
-            [self showNotPassChekAlert];
-            break;
-        case NetWorkConnectionCheckPass:
-            [self showRegistSuccessfulAlert];
-            break;
-        default:
-            [self showNotPassChekAlert];
-            break;
+    if (networkStatus) {
+        [self showAlertWithMessage:networkStatus buttonTitle:@"确定" tag:NotPassTag];
+    } else {
+        [self showRegistSuccessfulAlert];
     }
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showNotPassChekAlert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self showRegistSuccessfulAlert];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
 }
 @end

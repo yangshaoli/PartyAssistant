@@ -26,6 +26,7 @@
 - (void)resendPhoneVerifyCode;
 - (void)sendPhoneVerify;
 - (void)closePage;
+- (void)resendPage;
 
 @end
 
@@ -36,6 +37,7 @@
 @synthesize telValidateCell = _telValidateCell;
 @synthesize telResendValidateCell = _telResendValidateCell;
 @synthesize pageStatus = _pageStatus;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -61,14 +63,16 @@
     [super viewDidLoad];
     
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"绑定";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+        self.navigationItem.title = @"绑定验证";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
+    } else if (self.pageStatus == StatusVerifyUnbinding){
+        self.navigationItem.title = @"解绑验证";
     } else {
-        self.navigationItem.title = @"解除绑定";
+        self.navigationItem.title = @"未知错误状态";
     }
     
-    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleBordered target:self action:@selector(closePage)];
     self.navigationItem.leftBarButtonItem = closeBtn;
     
     
@@ -91,8 +95,24 @@
 
 #pragma mark _
 #pragma mark tableView delegate
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        NSString *title = @"手机号：";
+        if (self.pageStatus == StatusVerifyBinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingTel]];
+        } else if (self.pageStatus == StatusVerifyUnbinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel]];
+        }
+    }
+    return @"";
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
+        return 3;
+    }
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -102,7 +122,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         return self.inputTelCell;
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section ==1) {
         return self.telValidateCell;
     } else if (indexPath.section == 2) {
         return self.telResendValidateCell;
@@ -179,11 +199,37 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            UIAlertView *av = [[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的手机中，请注意查收" delegate:self cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            av.tag = 11114;
+            [av show];
+            
             [self saveProfileDataFromResult:result];
         } else {
-            [self saveProfileDataFromResult:result];
-            
-            [self showBindOperationFailed:description];	
+            if (self.pageStatus == StatusVerifyBinding) {
+                if ([status isEqualToString:@"error_has_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else if ([status isEqualToString:@"error_different_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }  else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }
+            } else if (self.pageStatus == StatusVerifyUnbinding) {
+                if ([status isEqualToString:@"error_different_unbinded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }
+            }
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -262,6 +308,14 @@
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证成功！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11113;
             [av show];
+        } else if ([status isEqualToString:@"error_has_binded_by_other"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
+        } else if ([status isEqualToString:@"error_invalid_verifier"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
         } else {
             [self saveProfileDataFromResult:result];
             
@@ -287,21 +341,25 @@
 }
 
 - (void)closePage {
-    NSArray *controllers = self.navigationController.viewControllers;
-    BindingListViewController *bindingList = nil;
-    for (UIViewController *controller in controllers) {
-        if ([controller isMemberOfClass:[BindingListViewController class]]) {
-            bindingList = (BindingListViewController *)controller;
+    if (self.inSpecialProcess) {
+        [self resendPage];
+    } else {
+        NSArray *controllers = self.navigationController.viewControllers;
+        BindingListViewController *bindingList = nil;
+        for (UIViewController *controller in controllers) {
+            if ([controller isMemberOfClass:[BindingListViewController class]]) {
+                bindingList = (BindingListViewController *)controller;
+            }
         }
-    }
-    if (bindingList) {
-        CATransition *transition = [CATransition animation];
-        transition.duration = 0.5;
-        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        transition.type = kCATransitionReveal;
-        transition.subtype = kCATransitionFromBottom;
-        [self.navigationController.view.layer addAnimation:transition forKey:nil];
-        [self.navigationController popToViewController:bindingList animated:NO];
+        if (bindingList) {
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.5;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionReveal;
+            transition.subtype = kCATransitionFromBottom;
+            [self.navigationController.view.layer addAnimation:transition forKey:nil];
+            [self.navigationController popToViewController:bindingList animated:NO];
+        }
     }
 }
 
@@ -323,6 +381,15 @@
     }
     if (alertView.tag == 11113) {
         [self closePage];
+    }
+    if (alertView.tag == 11114) {
+        self.inputCodeTextField.text = nil;
+        [self.inputCodeTextField becomeFirstResponder];
+    }
+    if (alertView.tag == 11116) {
+        self.inputCodeTextField.text = nil;
+        [self.inputCodeTextField becomeFirstResponder];
+
     }
 }
 @end

@@ -18,6 +18,7 @@
 #import "AddressBookDataManager.h"
 #import "UIViewControllerExtra.h"
 #import "AddressBookDBService.h"
+#import "CustomTextView.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -77,9 +78,31 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.tempSMSObject._isSendBySelf) {
-        self.sendModeNameLabel.text = @"用自己手机发送";
+//        self.sendModeNameLabel.text = @"用自己手机发送";
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 26;
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+        
+        self.leftCountLabel.hidden = YES;
     } else {
-        self.sendModeNameLabel.text = @"通过服务器发送";
+//        self.sendModeNameLabel.text = @"通过服务器发送";
+//        
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 11;
+//        
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+//        
+        self.leftCountLabel.hidden = NO;
+        
+        self.leftCountLabel.text = @"帐户余额更新中";
+        
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
 }
 
@@ -294,10 +317,10 @@
                 }
                 [self createPartySuc];
             }
-        }else if ([status isEqualToString:@"lessRemain"]){
-            NSDictionary *infos = [result objectForKey:@"data"];
+        }else if ([status isEqualToString:@"error_no_remaining"]){
+            NSDictionary *infos = [result objectForKey:@"datasource"];
             NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"leftCount"];
+            leftCount = [infos objectForKey:@"remaining"];
             if (leftCount) {
                 [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
                 [self showLessRemainingCountAlert];

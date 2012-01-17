@@ -16,6 +16,10 @@
 #import "ResendPartyViaSMSViewController.h"
 #import "UIViewControllerExtra.h"
 
+#import "ContactData.h"
+
+#import "pinyin.h"
+
 @implementation StatusTableVC
 @synthesize clientsArray;
 @synthesize clientStatusFlag;
@@ -85,6 +89,127 @@
         if ([status isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
+            NSLog(@"now  打印array：：%@",self.clientsArray);
+            //new sorting order
+            self.clientsArray = [clientsArray sortedArrayUsingComparator:^(id obj1, id obj2)
+             {
+                 NSDictionary *clientDic1 = obj1;
+                 NSDictionary *clientDic2 = obj2;
+                 
+                 BOOL isCheck1 = [[clientDic1  objectForKey:@"isCheck"] boolValue];
+                 BOOL isCheck2 = [[clientDic2  objectForKey:@"isCheck"] boolValue];
+                 
+                 if (isCheck1 == isCheck2) {
+                     NSString *name1 = [clientDic1 objectForKey:@"cName"];
+                     NSString *name2 = [clientDic2 objectForKey:@"cName"];
+                     
+                     NSString *standardString = nil;
+                     if (name1.length > name2.length) {
+                         standardString = name2;
+                     } else {
+                         standardString = name1;
+                     }
+                     
+                     
+                     
+                     for (int i=0; i<standardString.length; i++) {
+                         NSString *compareName1 = nil;
+                         NSString *compareName2 = nil;
+                        
+                         NSString *subString1 = [name1 substringWithRange:NSMakeRange(i, 1)];
+                         NSString *subString2 = [name2 substringWithRange:NSMakeRange(i, 1)];
+                         
+                         BOOL isEnglishLetter1 = checkIsEnglishLetter([[subString1 uppercaseString] characterAtIndex:0]);
+                         
+                         BOOL isEnglishLetter2 = checkIsEnglishLetter([[subString2 uppercaseString] characterAtIndex:0]);
+                         
+                         if (isEnglishLetter1 && isEnglishLetter2) {
+                             compareName1 = [NSString stringWithFormat:@"%c",pinyinFirstLetter([subString1  characterAtIndex:0])];
+                             NSUInteger firstLetter1 = [ENHANCEALPHA rangeOfString:[compareName1 substringToIndex:1]].location;
+                             
+                             compareName2 = [NSString stringWithFormat:@"%c",pinyinFirstLetter([subString2  characterAtIndex:0])];
+                             NSUInteger firstLetter2 = [ENHANCEALPHA rangeOfString:[compareName2 substringToIndex:1]].location;
+                             
+                             NSLog(@"%@,%d,%@,%d",compareName1,firstLetter1,compareName2,firstLetter2);
+                             
+                             if (firstLetter1 > firstLetter2) {
+                                 return NSOrderedDescending;
+                             } else if (firstLetter1 < firstLetter2) {
+                                 return NSOrderedAscending;
+                             }
+                             continue;
+                         } else {
+                             if (isEnglishLetter1) {
+                                 return NSOrderedAscending;
+                             } else if (isEnglishLetter2) {
+                                 return NSOrderedDescending;
+                             } else {
+                                 
+                             }
+                         }
+                         
+                         if([ContactData searchResult:subString1 searchText:@"曾"])
+                             compareName1 = @"Z";
+                         else if([ContactData searchResult:subString1 searchText:@"解"])
+                             compareName1 = @"X";
+                         else if([ContactData searchResult:subString1 searchText:@"仇"])
+                             compareName1 = @"Q";
+                         else if([ContactData searchResult:subString1 searchText:@"朴"])
+                             compareName1 = @"P";
+                         else if([ContactData searchResult:subString1 searchText:@"查"])
+                             compareName1 = @"Z";
+                         else if([ContactData searchResult:subString1 searchText:@"能"])
+                             compareName1 = @"N";
+                         else if([ContactData searchResult:subString1 searchText:@"乐"])
+                             compareName1 = @"Y";
+                         else if([ContactData searchResult:subString1 searchText:@"单"])
+                             compareName1 = @"S";
+                         else
+                             compareName1 = [[NSString stringWithFormat:@"%c",pinyinFirstLetter([[subString1 uppercaseString] characterAtIndex:0])] uppercaseString];
+                         NSUInteger firstLetter1 = [ALPHA rangeOfString:[compareName1 substringToIndex:1]].location;
+                         
+                         if([ContactData searchResult:subString2 searchText:@"曾"])
+                             compareName2 = @"Z";
+                         else if([ContactData searchResult:subString2 searchText:@"解"])
+                             compareName2 = @"X";
+                         else if([ContactData searchResult:subString2 searchText:@"仇"])
+                             compareName2 = @"Q";
+                         else if([ContactData searchResult:subString2 searchText:@"朴"])
+                             compareName2 = @"P";
+                         else if([ContactData searchResult:subString2 searchText:@"查"])
+                             compareName2 = @"Z";
+                         else if([ContactData searchResult:subString2 searchText:@"能"])
+                             compareName2 = @"N";
+                         else if([ContactData searchResult:subString2 searchText:@"乐"])
+                             compareName2 = @"Y";
+                         else if([ContactData searchResult:subString2 searchText:@"单"])
+                             compareName2 = @"S";
+                         else
+                             compareName2 = [[NSString stringWithFormat:@"%c",pinyinFirstLetter([[subString2 uppercaseString] characterAtIndex:0])] uppercaseString];
+                         NSUInteger firstLetter2 = [ALPHA rangeOfString:[compareName2 substringToIndex:1]].location;
+                         
+                         if (firstLetter1 > firstLetter2) {
+                             return NSOrderedDescending;
+                         } else if (firstLetter1 < firstLetter2) {
+                             return NSOrderedAscending;
+                         }
+                     }    
+                     
+                     if (standardString == name1) {
+                         return NSOrderedAscending;
+                     } else {
+                         return NSOrderedDescending;
+                     }
+                     
+                 } else {
+                     if (isCheck1) {
+                         return NSOrderedAscending;
+                     } else {
+                         return NSOrderedDescending;
+                     }
+                 }
+            }];
+            
             UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
             [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
             if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
@@ -242,7 +367,11 @@
     [oldLayout6 removeFromSuperview];
     UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 0, 70, 20)];
     nameLb.tag=6;
-    nameLb.text=[clentDic objectForKey:@"cName"];
+    if([clentDic objectForKey:@"cName"]==nil||[[clentDic objectForKey:@"cName"] isEqualToString:@""]){
+        nameLb.text=[clentDic objectForKey:@"cValue"];
+    }else{
+        nameLb.text=[clentDic objectForKey:@"cName"];
+    }
     nameLb.font=[UIFont systemFontOfSize:15];
     nameLb.textAlignment = UITextAlignmentLeft;
     nameLb.textColor = [UIColor blueColor];
@@ -256,9 +385,8 @@
     UILabel *phoneLb= [[UILabel alloc] initWithFrame:CGRectMake(120, 0, 80, 20)];
     phoneLb.tag=7;
     phoneLb.text=[clentDic objectForKey:@"cValue"];
-    phoneLb.font=[UIFont systemFontOfSize:10];
+    phoneLb.font=[UIFont systemFontOfSize:13];
     phoneLb.textAlignment = UITextAlignmentLeft;
-    phoneLb.textColor = [UIColor grayColor];
     phoneLb.backgroundColor = [UIColor clearColor];
     [cell addSubview:phoneLb];
     
@@ -274,7 +402,7 @@
     
     if([self.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
-        if(isCheck){
+        if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -283,6 +411,8 @@
         
         
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 290, 20)];
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         secondLb.tag=8;
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
@@ -295,6 +425,7 @@
             
         }else{
             
+             secondLb.text=@"无留言";
         }
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
@@ -303,7 +434,7 @@
         [cell addSubview:secondLb];
     }else if([self.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
-        if(isCheck){
+        if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
             cellImageView.image=[UIImage imageNamed:@"new2"];
             cellImageView.tag=5;
@@ -311,7 +442,8 @@
         }
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
             if(statusWordString.length>19){
@@ -322,6 +454,7 @@
 
         
         }else{
+             secondLb.text=@"无留言";
         
         }
         
@@ -333,7 +466,8 @@
     }else if([self.title isEqualToString:@"已邀请"]){
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
             if(statusWordString.length>19){
@@ -344,7 +478,7 @@
             
             
         }else{
-            
+             secondLb.text=@"无留言";
         }
         
         secondLb.font=[UIFont systemFontOfSize:15];
@@ -355,7 +489,8 @@
     }else if([self.title isEqualToString:@"未响应"]){
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
-        
+        secondLb.textColor=[UIColor grayColor];
+        secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
         if(statusWordString.length){
             if(statusWordString.length>19){
@@ -366,7 +501,7 @@
             
             
         }else{
-            
+             secondLb.text=@"无留言";
         }
         
         secondLb.font=[UIFont systemFontOfSize:15];
@@ -452,5 +587,12 @@
     self.quest = nil;
 }
 
-
+- (void)reorderSubjects : (NSArray *)newSubjects {
+    //1 isCheck == NO
+    //2 isCheck == YES
+    
+    //combine two array
+    
+    //reorder each on by name
+}
 @end

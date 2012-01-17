@@ -26,8 +26,11 @@
  
 @property (nonatomic, strong) IBOutlet UITextField *contactNameTF;
 @property (nonatomic, strong) IBOutlet UILabel *sendModeNameLabel;
+@property (nonatomic, strong) IBOutlet UILabel *leftCountLabel;
 
 @property (nonatomic, strong) IBOutlet ButtonPeoplePicker *picker;
+
+@property (nonatomic, strong) IBOutlet UIView *sectionOneHeader;
 
 @property (nonatomic, strong) UIBarButtonItem *rightItem;
 
@@ -38,6 +41,7 @@
 @property (nonatomic, strong) MBProgressHUD *HUD;
 
 @property (nonatomic, strong) EditableTableViewCell *editingTableViewCell;
+
 
 - (IBAction)callContactList;
 - (void)saveSMSInfo;

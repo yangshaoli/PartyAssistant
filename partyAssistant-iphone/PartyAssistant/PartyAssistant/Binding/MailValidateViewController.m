@@ -25,16 +25,16 @@
 
 - (void)resendMailVerifyCode;
 - (void)sendMailVerify;
+- (void)resendPage;
+- (void)closePage;
 
 @end
 
 @implementation MailValidateViewController
 @synthesize tableView = _tableView;
-@synthesize inputMailCell = _inputMailCell;
-@synthesize inputCodeTextField = inputCodeTextField;
-@synthesize mailValidateCell = _mailValidateCell;
 @synthesize mailResendValidateCell = _mailResendValidateCell;
 @synthesize pageStatus = _pageStatus;
+@synthesize inSpecialProcess = _inSpecialProcess;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -59,14 +59,16 @@
 {
     [super viewDidLoad];
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"绑定";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换邮箱" style:UIBarButtonSystemItemCancel target:self action:@selector(resendPage)];
+        self.navigationItem.title = @"绑定验证";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换邮箱" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
+    } else if (self.pageStatus == StatusVerifyUnbinding){
+        self.navigationItem.title = @"解绑验证";
     } else {
-        self.navigationItem.title = @"解除绑定";
+        self.navigationItem.title = @"未知错误状态";
     }
     
-    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonSystemItemCancel target:self action:@selector(closePage)];
+    UIBarButtonItem *closeBtn = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleBordered target:self action:@selector(closePage)];
     self.navigationItem.leftBarButtonItem = closeBtn;
     // Do any additional setup after loading the view from its nib.
 }
@@ -86,8 +88,24 @@
 
 #pragma mark _
 #pragma mark tableView delegate
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    if (section==0) {
+        NSString *title = @"邮箱：";
+        if (self.pageStatus == StatusVerifyBinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingMail]];
+        } else if (self.pageStatus == StatusVerifyUnbinding) {
+            return [NSString stringWithFormat:@"%@%@",title,[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
+        }
+    }
+    return @"";
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 3;
+    if (self.pageStatus == StatusVerifyBinding || self.pageStatus == StatusVerifyUnbinding) {
+        return 1;
+    }
+    return 0;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -95,23 +113,12 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        return self.inputMailCell;
-    } else if (indexPath.section == 1) {
-        return self.mailValidateCell;
-    } else if (indexPath.section == 2) {
-        return self.mailResendValidateCell;
-    }
-    return nil;
+    return self.mailResendValidateCell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 1) {
-        [self sendMailVerify];
-    } else if (indexPath.section == 2) {
-        [self resendMailVerifyCode];
-    }
+    [self resendMailVerifyCode];
 }
 
 - (void)resendMailVerifyCode {
@@ -173,11 +180,35 @@
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
+            [self showBindInform:@"验证码已经发送到您的邮箱中，请注意查收"];
+            
             [self saveProfileDataFromResult:result];
         } else {
-            [self saveProfileDataFromResult:result];
-            
-            [self showBindOperationFailed:description];	
+            if (self.pageStatus == StatusVerifyBinding) {
+                if ([status isEqualToString:@"error_has_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else if ([status isEqualToString:@"error_different_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showNormalErrorInfo:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];	
+                }
+            } else if (self.pageStatus == StatusVerifyUnbinding) {
+                if ([status isEqualToString:@"error_different_unbinded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];	
+                }
+            }
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -196,105 +227,27 @@
 	[self showAlertRequestFailed: error.localizedDescription];
 }
 
-- (void)sendMailVerify {
-    NSString *mailText = nil;
-    if (self.pageStatus == StatusVerifyBinding) {
-        mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingMail];
-    } else {
-        mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail];
-    }
-    
-    if (!mailText) {
-        return;
-    }
-    
-    //mail validate check
-    BOOL isValid = [self validateEmailCheck:mailText];
-    if (isValid) {
-        
-    } else {
-        return;
-    }
-    
-    UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-    
-    if (user.uID == -1) {
-        return;
-    }
-    
-    NSURL *url = [NSURL URLWithString:EMAIL_VERIFY];
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    
-    [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uid"];
-    [request setPostValue:mailText forKey:@"value"];
-    [request setPostValue:@"mail" forKey:@"type"];
-    [request setPostValue:self.inputCodeTextField.text forKey:@"verifier"];
-    
-    request.timeOutSeconds = 15;
-    [request setDelegate:self];
-    [request setDidFinishSelector:@selector(sendEmailVerifyRequestFinished:)];
-    [request setDidFailSelector:@selector(sendEmailVerifyRequestFailed:)];
-    
-    [request setShouldAttemptPersistentConnection:NO];
-    [request startAsynchronous];  
-    
-    [self showWaiting];
-}
-
-- (void)sendEmailVerifyRequestFinished:(ASIHTTPRequest *)request{
-    [self dismissWaiting];
-	NSString *response = [request responseString];
-	SBJsonParser *parser = [[SBJsonParser alloc] init];
-	NSDictionary *result = [parser objectWithString:response];
-    NSString *status = [result objectForKey:@"status"];
-	NSString *description = [result objectForKey:@"description"];
-    if ([request responseStatusCode] == 200) {
-        if ([status isEqualToString:@"ok"]) {
-            [self saveProfileDataFromResult:result];
-        
-            UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证成功！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
-            av.tag = 11113;
-            [av show];
-        } else {
-            [self saveProfileDataFromResult:result];
-            
-            [self showBindOperationFailed:description];	
-        }
-    }else if([request responseStatusCode] == 404){
-        [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else if([request responseStatusCode] == 500){
-        [self showAlertRequestFailed:REQUEST_ERROR_500];
-    }else if([request responseStatusCode] == 502){
-        [self showAlertRequestFailed:REQUEST_ERROR_502];
-    }else{
-        [self showAlertRequestFailed:REQUEST_ERROR_504];
-    }
-	
-}
-
-- (void)sendEmailVerifyRequestFailed:(ASIHTTPRequest *)request
-{
-    [self dismissWaiting];
-	NSError *error = [request error];
-	[self showAlertRequestFailed: error.localizedDescription];
-}
-
 - (void)closePage {
-    NSArray *controllers = self.navigationController.viewControllers;
-    BindingListViewController *bindingList = nil;
-    for (UIViewController *controller in controllers) {
-        if ([controller isMemberOfClass:[BindingListViewController class]]) {
-            bindingList = (BindingListViewController *)controller;
+    if (self.inSpecialProcess) {
+        [self resendPage];
+    } else {
+        NSArray *controllers = self.navigationController.viewControllers;
+        BindingListViewController *bindingList = nil;
+        for (UIViewController *controller in controllers) {
+            if ([controller isMemberOfClass:[BindingListViewController class]]) {
+                bindingList = (BindingListViewController *)controller;
+            }
         }
-    }
-    if (bindingList) {
-        CATransition *transition = [CATransition animation];
-        transition.duration = 0.5;
-        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        transition.type = kCATransitionReveal;
-        transition.subtype = kCATransitionFromBottom;
-        [self.navigationController.view.layer addAnimation:transition forKey:nil];
-        [self.navigationController popToViewController:bindingList animated:NO];
+        if (bindingList) {
+            CATransition *transition = [CATransition animation];
+            transition.duration = 0.5;
+            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            transition.type = kCATransitionReveal;
+            transition.subtype = kCATransitionFromBottom;
+            [self.navigationController.view.layer addAnimation:transition forKey:nil];
+            [self.navigationController popToViewController:bindingList animated:NO];
+        }
+
     }
 }
 
@@ -316,6 +269,12 @@
     }
     if (alertView.tag == 11113) {
         [self closePage];
+    }
+    if (alertView.tag == 11114) {
+        
+    }
+    if (alertView.tag == 11116) {
+        
     }
 }
 @end

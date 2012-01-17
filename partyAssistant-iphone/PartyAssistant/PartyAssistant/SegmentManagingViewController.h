@@ -14,6 +14,7 @@
 - (NSArray *)getCurrentContactData;
 - (void)setNewContactData : (NSArray *)newData;
 - (void)selectedFinishedInController:(UIViewController *)vc;
+- (void)selectedCancelInController:(UIViewController *)vc;
 
 @end
 

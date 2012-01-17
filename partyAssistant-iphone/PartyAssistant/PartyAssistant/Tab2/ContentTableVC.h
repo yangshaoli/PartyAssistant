@@ -18,5 +18,5 @@
 @property (nonatomic,retain) UITextView *contentTextView;
 @property (nonatomic,retain) PartyModel *partyObj;
 @property(nonatomic, retain)ASIHTTPRequest *quest;
-
+- (void)doneBtnAction;
 @end

@@ -57,8 +57,11 @@
 
     [self didChangeSegmentControl:self.segmentedControl]; // kick everything off
     
+    UIBarButtonItem *left = [[UIBarButtonItem alloc] initWithTitle:@"取消" style:UIBarButtonItemStyleDone target:self action:@selector(selectContactCancel)];
+    
     UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(selectContactFinished)];
     
+    self.navigationItem.leftBarButtonItem = left;
     self.navigationItem.rightBarButtonItem = right;
 }
 
@@ -155,6 +158,10 @@
 #pragma mark Mutil contact list delegate
 - (NSMutableArray *)dataSourceForContactList:(UIViewController *)contactList {
     return self.currentContactData;
+}
+
+- (void)selectContactCancel {
+    [self.contactDataDelegate selectedCancelInController:self];
 }
 
 - (void)selectContactFinished {

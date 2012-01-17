@@ -212,21 +212,31 @@
 
 - (void)tryConnectToServer {
     //TODO:login check method!
-    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
+//    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+//                                            validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
+    NSString *statusDescription = nil;
+    statusDescription = [[DataManager sharedDataManager]
+     validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
-
-    switch (networkStatus) {
-        case NetworkConnectionInvalidate:
-            [self showInvalidateNetworkalert];
-            break;
-        case NetWorkConnectionCheckPass:
-            [self gotoContentVC];
-            break;
-        default:
-            [self showNotPassChekAlert];
-            break;
+    
+    if (statusDescription) {
+        [self showAlertWithMessage:statusDescription
+                       buttonTitle:@"确定" tag:NotLegalTag];
+    } else {
+        [self gotoContentVC];
     }
+
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showInvalidateNetworkalert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self gotoContentVC];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
 }
 
 - (void)cleanKeyBoard {
@@ -240,7 +250,7 @@
 - (void)showAlertWithMessage:(NSString *)message  
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
     [alert release];
@@ -277,11 +287,11 @@
 }
 
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"好的" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"登录失败" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"登录失败" buttonTitle:@"好的" tag:NotPassTag];
 }
 
 - (void)registerUser {
