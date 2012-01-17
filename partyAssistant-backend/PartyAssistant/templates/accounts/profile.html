@@ -15,7 +15,10 @@
 <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js">
 </script>
 <script type="text/javascript">
-    
+function changePhoneNumber(){
+	$('#id_phone').removeAttr('disabled');
+}
+
 function bindingPhone(){
     var v = $("#id_phone").val();
     if (!checkInput(v, 'phone')) return false ;
@@ -29,9 +32,25 @@ function bindingPhone(){
             },
             statusCode: {
                 200: function(response){
-	                 if(response=='success'){   
-	                    $('#id_phone').after('验证码：<input id="id_phonevalidate" style="width:100px;" />');
-                        $('#id_phonevalidate').next().attr('onclick',"validate_phone_bingding('bind')").text('[确认]');
+	                 if(response=='success'){//replaceWith   
+	                    $('#id_phone').attr('disabled','true');
+	                    
+	                  	var nextall = $('#id_phone').nextAll();
+	                    nextall.each(function(){
+							$(this).remove();
+	                    });
+	                    $('#id_phone').after('<lable>验证码：</lable><input id="id_phonevalidate" style="width:100px;" />');
+                        
+                        var str_cf = '<a href="#" onclick="validate_phone_bingding(\'bind\')">[确认]</a>'
+                        $(str_cf).appendTo($('#id_phonevalidate').parent());
+                                                
+                        var str_rs = '<a href="#" onclick="bindingPhone()" name="rs" id="id_rs">[重发验证码]</a>';
+                        $(str_rs).appendTo($('#id_phonevalidate').parent());
+                        
+                        var str_cg = '<a href="#" onclick="changePhoneNumber()">[更换手机号码]</a>';
+                        $(str_cg).appendTo($('#id_phonevalidate').parent()); 
+                        
+                        
 	                    alert('验证码已经发送到您的手机中，请注意查收');
 	                 }
 	                 if(response=='used'){
@@ -69,6 +88,9 @@ function validate_phone_bingding(isbind){
     if(isbind=='bind'){
         r_url='{% url validate_phone_bingding_ajax %}';
         alert_success='绑定成功';
+    }else if(isbind=='unbind'){
+        r_url='{% url validate_phone_unbingding_ajax %}';
+        alert_success='取消绑定成功';
     }else{
        return;
     }   
@@ -103,7 +125,7 @@ function validate_phone_bingding(isbind){
                  if(r_status=='invalidate'){
 	                alert('手机号码不合法');
                  }
-                 if(r_status=='phone_not_equal'){
+                 if(r_status=='flush'){
 	                alert('验证码失效');
 	                window.location.href='{% url profile %}';
                  }
@@ -195,17 +217,66 @@ function validate_phone_bingding(isbind){
         }
     }
     function unbindingPhone(){
-        var answer = confirm("是否解除该手机的绑定？")
-        if (answer){
-            $.post('{%url unbinding %}', {'phone': $("#id_phone").val()}, function(response){
-                location.reload();
-            })
-        }
+    var v = $("#id_phone").val();
+    if (!checkInput(v, 'phone')) return false ;
+    var answer = confirm("要给" + v + "发送验证码吗？");
+    if (answer) {
+        $.ajax({
+            type: 'POST',
+            url: '{% url apply_phone_unbingding_ajax %}',
+            data: {
+                'phone': v
+            },
+            statusCode: {
+                200: function(response){
+	                 if(response=='success'){   
+	                    //$('#id_phone').after('验证码：<input id="id_phonevalidate" style="width:100px;" />');
+                        //$('#id_phonevalidate').next().attr('onclick',"validate_phone_bingding('unbind')").text('[确认]');
+                        
+	                  	var nextall = $('#id_phone').nextAll();
+	                    nextall.each(function(){
+							$(this).remove();
+	                    });
+	                    $('#id_phone').after('<lable>验证码：</lable><input id="id_phonevalidate" style="width:100px;" />');
+                        
+                        var str_cf = '<a href="#" onclick="validate_phone_bingding(\'unbind\')">[确认]</a>'
+                        $(str_cf).appendTo($('#id_phonevalidate').parent());
+                                                
+                        var str_rs = '<a href="#" onclick="unbindingPhone()" name="rs" id="id_rs">[重发验证码]</a>';
+                        $(str_rs).appendTo($('#id_phonevalidate').parent());                        
+                        
+                        
+	                    alert('验证码已经发送到您的手机中，请注意查收');
+	                 }
+	                 if(response=='used'){
+	                 	alert('该手机号码，已经被绑定');
+	                 }
+	                 if(response=='invalidate'){
+	                 	alert('手机号码不合法');
+	                 }
+	                 if(response.match(/time:/)){
+                         for (var i =1; i < response.match(/\d+/); i++ ){
+                             //window.setTimeout( function() { document.getElementById("countdown").innerText = i; console.log(i)}, i*1000);
+                         }
+	                 	alert('验证码已经发送，请'+response.match(/\d+/)+'秒后再次点击');
+	                 }
+                },
+                500: function(response){
+                	alert('服务器正忙，请稍后');
+                }
+            }
+        })
+    }      
+   
     }
     $(document).ready(function(){
         $("#tips").delay(3000).fadeOut();
         $("#id_email, #id_phone").bind('click', function(){
-           $(this).attr('style','').val('').next().show(); 
+           if($(this).val()=='[未绑定]'){
+           	  $(this).attr('style','').val('').next().show();
+           }else{
+              $(this).attr('style','').next().show();
+           } 
         });
     })
 </script>
@@ -246,12 +317,11 @@ function validate_phone_bingding(isbind){
                     </red>
                 </div>
                 <div class="field">
-                    <label for="phone">手机：</label>
-                    <input style="border:0px;background:none;" name='phone' id='id_phone' value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
+                    <label for="phone">手机：</label><!--{{userprofile.phone_binding_status}}{{ userprofile.phone}}-->
+                    <input style="border:0px;background:none;" name='phone' id='id_phone'  value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
                     </input>
-                    
                     {%  ifequal userprofile.phone_binding_status  'bind' %}
-                    <a href="#" onclick="unbindingPhone()">[解除绑定]</a>
+                    <a href="#" onclick="unbindingPhone()">[取消绑定]</a>
                     {% endifequal %}
                     {%  ifequal userprofile.phone_binding_status  'unbind' %}
                     <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
@@ -262,6 +332,7 @@ function validate_phone_bingding(isbind){
                     {%  ifequal userprofile.phone_binding_status  'waitingbind' %}
                     <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
                     {% endifequal %}
+                    
                     <span id="countdown"></span>
                 </div>
                 <div class="field">
