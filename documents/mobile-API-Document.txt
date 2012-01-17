@@ -1,4 +1,4 @@
-1. createParty
+1. createParty
 	url:"/a/parties/createparty/"
 	method:POST
 	input:{

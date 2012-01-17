@@ -59,7 +59,7 @@
     [super viewDidLoad];
     BindingStatus telStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] telBindingStatus];
     if (telStatus == StatusNotBind) {
-        self.navigationItem.title = @"绑定手机";
+        self.navigationItem.title = @"手机绑定";
     } else if (telStatus != StatusUnknown && telStatus != StatusBinded) {
         self.navigationItem.title = @"重新输入号码";
     }
@@ -180,6 +180,14 @@
             av.tag = 11001;
             [av show];
             
+        } else if ([status isEqualToString:@"error_has_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
+        } else if ([status isEqualToString:@"error_different_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];
         } else {
             [self saveProfileDataFromResult:result];
             
@@ -213,6 +221,11 @@
     }
     if (alertView.tag == 11112) {
         [self.navigationController popViewControllerAnimated:YES];
+    }
+    if (alertView.tag == 11116) {
+        self.inputTelTextField.text = @"";
+        
+        [self.inputTelTextField becomeFirstResponder];
     }
 }
 @end

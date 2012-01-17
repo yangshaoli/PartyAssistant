@@ -172,6 +172,10 @@
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证码已经发送到您的手机中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11001;
             [av show];
+        } else if ([status isEqualToString:@"error_different_unbinded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];
         } else {
             [self saveProfileDataFromResult:result];
             
