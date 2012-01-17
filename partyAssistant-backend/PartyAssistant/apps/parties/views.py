@@ -517,7 +517,11 @@ def _public_enroll(request, party_id):
             client.name = name 
             client.save()    
             
-            party_client, create = PartiesClients.objects.get_or_create(client = client, party = party,  defaults = {'apply_status':'apply', 'is_check':False})            
+            party_client, create = PartiesClients.objects.get_or_create(client = client, party = party, defaults = {'apply_status':'apply', 'is_check':False})            
+            if not create:
+                party_client.apply_status = 'apply'
+                party_client.is_check = False
+                party_client.save()
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
                 party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
@@ -632,8 +636,8 @@ def _invite_enroll(request, party_id, invite_key):
             'apply_status' : apply_status
         }
         return TemplateResponse(request, 'parties/enroll.html', data)
-
-@transaction.commit_on_success        
+        
+@commit_on_success
 def enroll(request, party_id):
     try:
         get_object_or_404(Party, id = party_id)
@@ -764,9 +768,9 @@ def _invite_list(request, party_id):
     party = get_object_or_404(Party, id = party_id)
     
     if apply_status == 'all':
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('is_check','client__name')
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).order_by('is_check', 'client__name')
     else:
-        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status).order_by('is_check','client__name')
+        party_clients_list = PartiesClients.objects.select_related('client').filter(party = party).filter(apply_status = apply_status).order_by('is_check', 'client__name')
     
     party_clients_datas = []
     for party_client in party_clients_list:
