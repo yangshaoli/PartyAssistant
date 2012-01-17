@@ -24,6 +24,7 @@
 #import "DataManager.h"
 #import "ChangePasswordRandomLoginTableVC.h"
 #import "CustomTextView.h"
+#import "Reachability.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -439,6 +440,12 @@
         [alert show];
         return;
     }else{
+        //1.check network status
+        if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            return;
+        }
+        
         [self saveSMSInfo];
         if ([self.smsObject.receiversArray count] == 0) {
             UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加有效的收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];

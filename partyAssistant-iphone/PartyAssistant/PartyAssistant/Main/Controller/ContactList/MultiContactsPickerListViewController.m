@@ -63,7 +63,7 @@
     //wxz
     CGRect viewFrame = self.tableView.frame;
     viewFrame.origin.y = 0.f;
-    viewFrame.size.height = 416.f;
+    //viewFrame.size.height = 416.f;
     self.tableView.frame = viewFrame;
     // Create a search bar
 	self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 44.0f)];

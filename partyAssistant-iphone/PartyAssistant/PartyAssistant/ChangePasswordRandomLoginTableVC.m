@@ -15,6 +15,7 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "DataManager.h"
+#import "Reachability.h"
 
 @implementation ChangePasswordRandomLoginTableVC
 @synthesize nPasswordTextField,resurePasswordTextField;
@@ -195,6 +196,12 @@
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"输入不正确" message:@"两次输入的新密码不匹配" delegate:self cancelButtonTitle:nil otherButtonTitles:@"点击请重新输入", nil];
         [alertView show];
     }else{
+        //1.check network status
+        if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            return;
+        }
+        
         [self showWaiting];
         NSURL *url = [NSURL URLWithString:CHANGE_PASSWORD_RANDOM_LOGIN];
         //        if (self.quest) {
