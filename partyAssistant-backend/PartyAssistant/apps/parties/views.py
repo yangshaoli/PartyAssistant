@@ -637,6 +637,7 @@ def _invite_enroll(request, party_id, invite_key):
         }
         return TemplateResponse(request, 'parties/enroll.html', data)
         
+@commit_on_success
 def enroll(request, party_id):
     try:
         get_object_or_404(Party, id = party_id)
