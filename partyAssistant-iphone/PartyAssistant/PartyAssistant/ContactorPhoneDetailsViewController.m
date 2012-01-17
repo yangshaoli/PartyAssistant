@@ -80,7 +80,6 @@
     }
     
     self.tableView.tableFooterView = footerView;
-    
     NSString *statusString=[self.clientDict objectForKey:@"status"];
     if([self.clientStatusFlag  isEqualToString:@"all"]){
         if([statusString  isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"reject"]){
