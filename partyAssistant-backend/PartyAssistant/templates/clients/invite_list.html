@@ -71,7 +71,7 @@ function ajaxGetClients(applystatus){
             for (i in clients){
                 var new_status = !clients[i].is_check?'<img src="/static/images/icon_new.png" width="30" height="14" alt="new" />':'';
                 var action = clientAction(clients[i].id, applystatus);//判断applystatus，显示相应按钮
-                var leave_messages = clients[i].leave_message.split(",");
+                var leave_messages = clients[i].leave_message.split("\n");
                 var leave_message = ''
                 for ( k in leave_messages){
                     if (leave_messages[k].replace(/^\s+|\s+$/g, "") != ""){
