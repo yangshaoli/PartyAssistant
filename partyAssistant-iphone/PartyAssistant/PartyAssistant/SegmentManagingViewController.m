@@ -1,16 +1,9 @@
-    //
-//  SegmentManagingViewController.m
-//  SegmentedControlExample
-//
-//  Created by Marcus Crafter on 24/05/10.
-//  Copyright 2010 Red Artisan. All rights reserved.
-//
 
 #import "SegmentManagingViewController.h"
 #import "NSArray+PerformSelector.h"
 #import "MultiContactsPickerListViewController.h"
 #import "MultiFavoritesContactsList.h"
-//#import "AustraliaViewController.h"
+#import "AddressBookDBService.h"
 
 @interface SegmentManagingViewController ()
 
@@ -41,10 +34,16 @@
     self.segmentedViewControllers = [self segmentedViewControllerContent];
 
     NSArray * segmentTitles = [self.segmentedViewControllers arrayByPerformingSelector:@selector(title)];
-    //NSArray *segmentTitles = [NSArray arrayWithObjects:@"test", @"test", nil];
     
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:segmentTitles];
-    self.segmentedControl.selectedSegmentIndex = 0;
+    
+    NSArray *dataSource = [[AddressBookDBService sharedAddressBookDBService] myFavorites];
+    if ([dataSource count] == 0) {
+        self.segmentedControl.selectedSegmentIndex = 1;
+    } else {
+        self.segmentedControl.selectedSegmentIndex = 0;
+    }
+    
     self.segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
 
     [self.segmentedControl addTarget:self

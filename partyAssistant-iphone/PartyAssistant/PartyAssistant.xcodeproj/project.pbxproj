@@ -22,6 +22,7 @@
 		7574BEA814B2D7CF007651EE /* NameBindingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7574BEA614B2D7CF007651EE /* NameBindingViewController.xib */; };
 		75908EAB14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m in Sources */ = {isa = PBXBuildFile; fileRef = 75908EAA14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m */; };
 		7598EB0A14C416A700E3B046 /* CustomTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7598EB0914C416A700E3B046 /* CustomTextView.m */; };
+		759F82D514C5191300094D99 /* MultiContactsPhoneDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 759F82D414C5191300094D99 /* MultiContactsPhoneDetailViewController.xib */; };
 		75A0476A14AC0D9F00B2532C /* JFTextViewNoInset.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */; };
 		75A0476E14AC0DAA00B2532C /* EditableTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A0476C14AC0DAA00B2532C /* EditableTableViewCell.m */; };
 		75A2265914AEE2400025BFC3 /* BottomSepratorLineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A2265814AEE23F0025BFC3 /* BottomSepratorLineView.m */; };
@@ -306,6 +307,7 @@
 		75908EAA14BED49C001CEFD8 /* UIVIewControllerExtern+Binding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIVIewControllerExtern+Binding.m"; path = "Binding/UIVIewControllerExtern+Binding.m"; sourceTree = "<group>"; };
 		7598EB0814C416A700E3B046 /* CustomTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTextView.h; sourceTree = "<group>"; };
 		7598EB0914C416A700E3B046 /* CustomTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTextView.m; sourceTree = "<group>"; };
+		759F82D414C5191300094D99 /* MultiContactsPhoneDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MultiContactsPhoneDetailViewController.xib; sourceTree = "<group>"; };
 		75A0476814AC0D9F00B2532C /* JFTextViewNoInset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JFTextViewNoInset.h; sourceTree = "<group>"; };
 		75A0476914AC0D9F00B2532C /* JFTextViewNoInset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JFTextViewNoInset.m; sourceTree = "<group>"; };
 		75A0476B14AC0DAA00B2532C /* EditableTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableTableViewCell.h; sourceTree = "<group>"; };
@@ -776,6 +778,7 @@
 				75E0393B14B5388D0071BF1D /* MultiContactsPickerListViewController.m */,
 				75E0394B14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.h */,
 				75E0394C14B5ADB60071BF1D /* MultiContactsPhoneDetailViewController.m */,
+				759F82D414C5191300094D99 /* MultiContactsPhoneDetailViewController.xib */,
 			);
 			name = ContactList;
 			path = Main/Controller/ContactList;
@@ -1754,6 +1757,7 @@
 				CE0B288D14BBDE57001EAEE8 /* ForgetPassword.xib in Resources */,
 				CEAB66B114BFD04F006A42FE /* ChangePasswordTableVC.xib in Resources */,
 				CEAB66CB14C002F2006A42FE /* ChangePasswordRandomLoginTableVC.xib in Resources */,
+				759F82D514C5191300094D99 /* MultiContactsPhoneDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

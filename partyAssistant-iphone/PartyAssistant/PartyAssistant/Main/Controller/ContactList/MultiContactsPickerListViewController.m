@@ -544,7 +544,7 @@
             [aTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
         }else{
             if (ABMultiValueGetCount(phone) >= 1) {//wxz
-                MultiContactsPhoneDetailViewController *contactorPhoneDetailsViewController = [[MultiContactsPhoneDetailViewController alloc] initWithNibName:@"ContactorPhoneDetailsViewController" bundle:[NSBundle mainBundle]];
+                MultiContactsPhoneDetailViewController *contactorPhoneDetailsViewController = [[MultiContactsPhoneDetailViewController alloc] initWithNibName:@"MultiContactsPhoneDetailViewController" bundle:[NSBundle mainBundle]];
                 ClientObject *selectedClientInfo = nil;
                 for (ClientObject *client in self.selectedContactorsArray) {
                     if (recordID == client.cID) {
