@@ -367,7 +367,14 @@ public class EditActivity extends Activity {
 						"保存并发送中...");
 				myHandler.post(editSaveTask);
 				myHandler.post(getClientTask);
+				Intent intent = new Intent();
+				intent.setClass(EditActivity.this, DetailActivity.class);
+				activityFromDetail.setActivityContent(edtActivityDes.getText()
+						.toString());
+				intent.putExtra(Constants.TO_DETAIL_ACTIVITY, activityFromDetail);
+				startActivity(intent);
 				finish();
+				
 			}
 		});
 	}

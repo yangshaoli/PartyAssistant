@@ -89,6 +89,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private static final int MSG_ID_DELETE = 4;
 	private static final int MSG_ID_REFRESH = 5;
 	private ProgressDialog progressDialog;
+	private boolean fromEdit;
 
 	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private List<Map<String, Object>> dataList;
@@ -362,6 +363,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
 						intent.putExtra(Constants.FROMDETAIL, true);
 						startActivity(intent);
+						finish();
 					}
 					break;
 				}
@@ -565,10 +567,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	 * 
 	 */
 	public void initFormData() {
-		myCache.txtTime.setText(myAirenaoActivity.getActivityTime());
-		myCache.txtPosition.setText(myAirenaoActivity.getActivityPosition());
-		myCache.txtNum.setText(String.valueOf(myAirenaoActivity
-				.getPeopleLimitNum()));
 		myCache.txtContent.setText(myAirenaoActivity.getActivityContent());
 		myCache.btnEdit.setOnClickListener(new OnClickListener() {
 
@@ -580,7 +578,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
 				intent.putExtra(Constants.FROMDETAIL, true);
 				startActivity(intent);
-
+				finish();
 			}
 		});
 	}
