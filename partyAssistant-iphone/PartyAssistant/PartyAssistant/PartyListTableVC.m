@@ -381,9 +381,9 @@
     //    self._isRefreshing = YES;
     [self requestDataWithLastID:0];
     
-    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [acv startAnimating];
-    self.navigationItem.rightBarButtonItem.customView = acv;
+//    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+//    [acv startAnimating];
+//    self.navigationItem.rightBarButtonItem.customView = acv;
     
     ////////////////////自己新增文件 
     NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
