@@ -12,6 +12,7 @@
 #import "ClientObject.h"
 #import "PartyModel.h"
 #import "ASIFormDataRequest.h"
+#import "MBProgressHUD.h"
 @protocol ContactorPhoneDetailsViewControllerDelegate <NSObject>
 
 - (void)contactDetailSelectedWithUserInfo:(NSDictionary *)info;
@@ -32,6 +33,13 @@
     
     UILabel *phoneLabel;
     UITextView *messageTextView;
+    
+    UIView *footerView;
+    UIButton *goButton;
+    UIButton *notGoButton;
+    UIActivityIndicatorView *activity;
+    MBProgressHUD *_HUD;
+    CGRect bounds;
 }
 @property(nonatomic, assign)ABRecordID contactorID;
 @property(nonatomic, assign)id<ContactorPhoneDetailsViewControllerDelegate> phoneDetailDelegate;
@@ -42,7 +50,10 @@
 
 @property(nonatomic, retain)IBOutlet UITableViewCell *phoneCell;
 @property(nonatomic, retain)IBOutlet UITableViewCell *messageCell;
-
+@property(nonatomic, retain)UIView *footerView;
+@property(nonatomic, retain)UIButton *goButton;
+@property(nonatomic, retain)UIButton *notGoButton;
+@property(nonatomic, retain)UIActivityIndicatorView *activity;
 @property(nonatomic, retain)IBOutlet UILabel *phoneLabel;
 @property(nonatomic, retain)IBOutlet UITextView *messageTextView;
 //- (BOOL) isEmailAddress:(NSString*)email;
