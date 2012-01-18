@@ -13,28 +13,30 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnClickListener;
+import android.view.View.OnCreateContextMenuListener;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -44,6 +46,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AbsListView.OnScrollListener;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
@@ -55,6 +58,7 @@ import com.aragoncg.apps.airenao.utills.HttpHelper;
 public class MeetingListActivity extends ListActivity implements
 		OnScrollListener {
 
+	private static final String LOG_TAG = "MeetingListActivity";
 	private List<Map<String, Object>> mData = new ArrayList<Map<String,Object>>();
 	private MyAdapter myDaAdapter;
 
@@ -65,7 +69,7 @@ public class MeetingListActivity extends ListActivity implements
 	private Handler handler;
 	private Context mContext;
 	private ListView myListView;
-	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+	private List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private String partyListUrl;
 	private Button btnRefresh;
 	private String userName = "";
@@ -93,12 +97,6 @@ public class MeetingListActivity extends ListActivity implements
 	private int lastID;
 	private static final int MENU_PERSON_INFO = 0;
 	private static final int MENU_EXIT = 1; 
-	public static final String PARTY_LIST = "partyList";
-	public static final String PARTY_ID = "partyId";
-	public static final String POEPLE_MAXMUM = "peopleMaximum";
-	public static final String PARTY_DESCRIPTION = "description";
-	public static final String PARTY_START_TIME = "starttime";
-	public static final String PARTY_LOCATION = "location";
 	public static final int MSG_ID_DELETE = 2;
 	public static final int MSG_ID_SCROLL = 1;
 	public static final int MENU_SET = 0;
@@ -125,6 +123,7 @@ public class MeetingListActivity extends ListActivity implements
 		init();
 		needRefresh = getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
 		myListView = getListView();
+		
 		getData();
 		
 		footerView = LayoutInflater.from(this).inflate(R.layout.load_layout,
@@ -165,6 +164,11 @@ public class MeetingListActivity extends ListActivity implements
 				startActivity(mIntent);
 			}
 		});
+		
+		IntentFilter createdActivityFilter = new IntentFilter(
+				Constants.RECEIVE_CREATED_ACTIVITY);
+		registerReceiver(createdActivityReceiver, createdActivityFilter);
+		
 		// 处理刷新事件
 		setButtonRefresh();
 	}
@@ -172,13 +176,6 @@ public class MeetingListActivity extends ListActivity implements
 	@Override
 	protected void onRestart() {
 		startId = 0;
-		needRefresh = true;
-		if (needRefresh) {
-			
-			getData();
-			/*myDaAdapter.notifyDataSetChanged();
-			myListView.requestFocusFromTouch();*/
-		}
 		super.onRestart();
 	}
 
@@ -865,7 +862,7 @@ public class MeetingListActivity extends ListActivity implements
 
 				dataSource = output.getJSONObject(Constants.DATA_SOURCE);
 				lastID = Integer.valueOf(dataSource.getString(LAST_ID));
-				myJsonArray = dataSource.getJSONArray(PARTY_LIST);
+				myJsonArray = dataSource.getJSONArray(Constants.PARTY_LIST);
 				tempCount = myJsonArray.length();
 				if (tempCount > 0) {
 					if (!separatePage) {
@@ -939,8 +936,8 @@ public class MeetingListActivity extends ListActivity implements
 		HashMap<String, Object> map = new HashMap<String, Object>();
 
 		try {
-			description = data.getString(PARTY_DESCRIPTION);
-			map.put(Constants.PARTY_ID, data.get(PARTY_ID) + "");
+			description = data.getString(Constants.DESCRIPTION);
+			map.put(Constants.PARTY_ID, data.get(Constants.PARTY_ID) + "");
 			if (description.length() < 22) {
 				map.put(Constants.ACTIVITY_NAME, description);
 			} else {
@@ -971,8 +968,8 @@ public class MeetingListActivity extends ListActivity implements
 	public AirenaoActivity organizeOneActivity(JSONObject data) {
 		AirenaoActivity myActivity = new AirenaoActivity();
 		try {
-			myActivity.setId(data.getString(PARTY_ID));
-			String content = data.getString(PARTY_DESCRIPTION);
+			myActivity.setId(data.getString(Constants.PARTY_ID));
+			String content = data.getString(Constants.DESCRIPTION);
 			if (content.length() > 22) {
 				myActivity.setActivityName(content.substring(0, 22) + "...");
 			} else {
@@ -995,6 +992,42 @@ public class MeetingListActivity extends ListActivity implements
 		return myActivity;
 	}
 
+	private BroadcastReceiver createdActivityReceiver = new BroadcastReceiver() {
+		public void onReceive(final Context context, final Intent intent) {
+			
+			Bundle bl = intent.getExtras();
+			
+			HashMap<String, Object> map = new HashMap<String, Object>();
+			
+			map.put(Constants.PARTY_ID, bl.getString(Constants.PARTY_ID));
+			if (bl.getString(Constants.ACTIVITY_CONTENT).length() < 22) {
+				map.put(Constants.ACTIVITY_NAME, bl.getString(Constants.ACTIVITY_CONTENT));
+			} else {
+				map.put(Constants.ACTIVITY_NAME, bl.getString(Constants.ACTIVITY_CONTENT).substring(0, 22)
+						+ "...");
+			}
+			map.put(Constants.ALL_CLIENT_COUNT, bl.getString(Constants.ALL_CLIENT_COUNT));
+			map.put(Constants.APPLIED_CLIENT_COUNT, bl.getString(Constants.APPLIED_CLIENT_COUNT));
+			map.put(Constants.NEW_APPLIED_CLIENT_COUNT, bl.getString(Constants.NEW_APPLIED_CLIENT_COUNT));
+			map.put(Constants.DONOTHING_CLIENT_COUNT, bl.getString(Constants.DONOTHING_CLIENT_COUNT));
+			map.put(Constants.REFUSED_CLIENT_COUNT, bl.getString(Constants.REFUSED_CLIENT_COUNT));
+			map.put(Constants.NEW_REFUSED_CLIENT_COUNT, bl.getString(Constants.NEW_APPLIED_CLIENT_COUNT));
+			map.put(Constants.ACTIVITY_CONTENT, bl.getString(Constants.ACTIVITY_CONTENT));
+			
+			mData.add(0, map);
+			
+			myDaAdapter.notifyDataSetChanged();
+		}
+	};
+	
+	public void unregisterReceiver() {
+		try {
+			unregisterReceiver(createdActivityReceiver);
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "unregisterReceiver--error: " + e.getMessage());
+		}
+	}
+	
 	/*
 	 * @Override public boolean onCreateOptionsMenu(Menu menu) { menu.add(0,
 	 * SHARE_SET, 0, getString(R.string.share)); menu.add(0, DELETE_SET, 0,

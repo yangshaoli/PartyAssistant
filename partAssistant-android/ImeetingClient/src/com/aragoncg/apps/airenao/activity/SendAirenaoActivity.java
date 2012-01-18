@@ -488,6 +488,8 @@ public class SendAirenaoActivity extends Activity {
 					stringLink = applyURL;
 				}
 
+				notifyChangedToList(partyId);
+				
 				smsContent = "";
 				smsContent ="【爱热闹】"+ txtSendLableContent.getText().toString() + "\n"
 						+"快来报名："+stringLink;
@@ -518,6 +520,20 @@ public class SendAirenaoActivity extends Activity {
 			message.setData(bundle);
 			myHandler.sendMessage(message);
 		}
+	}
+
+	private void notifyChangedToList(String partyId) {
+		Intent it = new Intent(Constants.RECEIVE_CREATED_ACTIVITY);
+		it.putExtra(Constants.PARTY_ID, partyId);
+		it.putExtra(Constants.ALL_CLIENT_COUNT, clientDicts.size());
+		it.putExtra(Constants.APPLIED_CLIENT_COUNT, 0);
+		it.putExtra(Constants.NEW_APPLIED_CLIENT_COUNT, 0);
+		it.putExtra(Constants.DONOTHING_CLIENT_COUNT, clientDicts.size());
+		it.putExtra(Constants.REFUSED_CLIENT_COUNT, 0);
+		it.putExtra(Constants.NEW_REFUSED_CLIENT_COUNT, 0);
+		it.putExtra(Constants.ACTIVITY_CONTENT, txtSendLableContent.getText().toString());
+		
+		sendBroadcast(it);
 	}
 
 	/**

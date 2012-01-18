@@ -99,72 +99,67 @@ public class SplashActivity extends Activity {
 			case MSG_ID_LOG_CREATE_NULL:
 				finish();
 				Intent intentTh = new Intent(SplashActivity.this,
-
-				MeetingListActivity.class);
+						MeetingListActivity.class);
 				startActivity(intentTh);
 				break;
 			case MSG_ID_NET_DOWN:
 				// show dialog
 				AlertDialog netDig = new AlertDialog.Builder(
-						SplashActivity.this)
-						.setTitle(getString(R.string.netdown))
-						.setPositiveButton(R.string.btn_ok,
-								new OnClickListener() {
+						SplashActivity.this).setTitle(
+						getString(R.string.netdown)).setPositiveButton(
+						R.string.btn_ok, new OnClickListener() {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										Intent intent = new Intent(
-												"android.settings.WIRELESS_SETTINGS");
-										startActivity(intent);
-										finish();
-									}
-								}).setMessage(getString(R.string.netdownTip))
-						.create();
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Intent intent = new Intent(
+										"android.settings.WIRELESS_SETTINGS");
+								startActivity(intent);
+								finish();
+							}
+						}).setMessage(getString(R.string.netdownTip)).create();
 
 				netDig.show();
 				break;
 			case MSG_ID_NET_UP:
-			
-					SharedPreferences mySharedPreferences = AirenaoUtills
-							.getMySharedPreferences(SplashActivity.this);
-					userName = mySharedPreferences.getString(
-							Constants.AIRENAO_USER_NAME, null);
-					passWord = mySharedPreferences.getString(
-							Constants.AIRENAO_PASSWORD, null);
-					if ("".equals(userName) || userName == null
-							|| "".equals(passWord) || passWord == null) {
-						mHandler.sendEmptyMessageDelayed(MSG_ID_CLOSE, 3000);
-					} else {
-						//
-						login();
-					}
+
+				SharedPreferences mySharedPreferences = AirenaoUtills
+						.getMySharedPreferences(SplashActivity.this);
+				userName = mySharedPreferences.getString(
+						Constants.AIRENAO_USER_NAME, null);
+				passWord = mySharedPreferences.getString(
+						Constants.AIRENAO_PASSWORD, null);
+				if ("".equals(userName) || userName == null
+						|| "".equals(passWord) || passWord == null) {
+					mHandler.sendEmptyMessageDelayed(MSG_ID_CLOSE, 3000);
+				} else {
+					//
+					login();
+				}
 				break;
 			case MSG_ID_SDCARD_DOWN:
 				// show dialog
 				AlertDialog sdcardDig = new AlertDialog.Builder(
-						SplashActivity.this)
-						.setPositiveButton(R.string.btn_ok,
-								new OnClickListener() {
+						SplashActivity.this).setPositiveButton(R.string.btn_ok,
+						new OnClickListener() {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										finish();
-									}
-								}).setMessage(getString(R.string.chkSdcard))
-						.create();
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								finish();
+							}
+						}).setMessage(getString(R.string.chkSdcard)).create();
 
 				sdcardDig.show();
 				break;
 			case EXCEPTION:
-				Toast.makeText(SplashActivity.this,"后台出现异常",2000).show();
+				Toast.makeText(SplashActivity.this, "后台出现异常", 2000).show();
 				mHandler.postDelayed(new Runnable() {
-					
+
 					@Override
 					public void run() {
 						System.exit(0);
-						
+
 					}
 				}, 3000);
 				break;
@@ -177,7 +172,7 @@ public class SplashActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		mHandler.removeMessages(MSG_ID_CLOSE);
-		
+
 		super.onBackPressed();
 	}
 
@@ -201,17 +196,16 @@ public class SplashActivity extends Activity {
 	}
 
 	public void createDb() {
-		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(SplashActivity.this);
+		SharedPreferences mySharedPreferences = AirenaoUtills
+				.getMySharedPreferences(SplashActivity.this);
 		boolean dbCreate = mySharedPreferences.getBoolean("dbCreate", false);
-		if(!dbCreate){
+		if (!dbCreate) {
 			DbHelper.getInstance(SplashActivity.this);
 			Editor myEditor = mySharedPreferences.edit();
 			myEditor.putBoolean("dbCreate", true);
 			myEditor.commit();
 		}
-		
-		
-		
+
 	}
 
 	@Override
@@ -222,7 +216,8 @@ public class SplashActivity extends Activity {
 
 	public void login() {
 		// 初始化登录线程
-		final String loginUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_LOGIN_URL;
+		final String loginUrl = Constants.DOMAIN_NAME
+				+ Constants.SUB_DOMAIN_LOGIN_URL;
 		Runnable loginThread = new Runnable() {
 
 			@Override
@@ -231,7 +226,8 @@ public class SplashActivity extends Activity {
 				params.put("username", userName);
 				params.put("password", passWord);
 				params.put("device_token", "");
-				String loginResult = new HttpHelper().savePerformPost(loginUrl, params, SplashActivity.this);
+				String loginResult = new HttpHelper().savePerformPost(loginUrl,
+						params, SplashActivity.this);
 				String result = "";
 				result = AirenaoUtills.linkResult(loginResult);
 				JSONObject jsonObject;
@@ -276,7 +272,9 @@ public class SplashActivity extends Activity {
 						Message message = new Message();
 						message.what = MSG_ID_LOG;
 						Bundle bundle = new Bundle();
-						bundle.putString(Constants.HENDLER_MESSAGE, description);
+						bundle
+								.putString(Constants.HENDLER_MESSAGE,
+										description);
 						message.setData(bundle);
 						mHandler.sendMessage(message);
 						// myProgressDialog.cancel();

@@ -1,9 +1,5 @@
 package com.aragoncg.apps.airenao.constans;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
 import android.os.Build;
 
 public class Constants {
@@ -62,6 +58,11 @@ public class Constants {
 	public static final String HENDLER_MESSAGE = "hendMessage";
 
 	/**
+	 * Receives
+	 */
+	public static final String RECEIVE_CREATED_ACTIVITY = "created_activity";
+	
+	/**
 	 * 获取list列表中的数据
 	 */
 	public static final String URL_GET_DATA = "";
@@ -110,6 +111,7 @@ public class Constants {
 	public static final String LOCATION = "location";
 	public static final String POEPLE_MAXIMUM = "peopleMaximum";
 	public static final String NEED_REFRESH = "refresh";
+	public static final String PARTY_LIST = "partyList";
 
 	public static final String IS_SUPER_PRIMARY = "isSuperPrimary";
 	public static final String PEOPLE_TAG = "peopleTag";
