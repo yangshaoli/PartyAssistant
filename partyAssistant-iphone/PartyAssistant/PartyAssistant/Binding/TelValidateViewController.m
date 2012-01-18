@@ -63,8 +63,8 @@
     [super viewDidLoad];
     
     if (self.pageStatus == StatusVerifyBinding) {
-        self.navigationItem.title = @"手机验证";
-        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换手机号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
+        self.navigationItem.title = @"绑定验证";
+        UIBarButtonItem *resendBtn = [[UIBarButtonItem alloc] initWithTitle:@"更换号码" style:UIBarButtonItemStyleBordered target:self action:@selector(resendPage)];
         self.navigationItem.rightBarButtonItem = resendBtn;
     } else if (self.pageStatus == StatusVerifyUnbinding){
         self.navigationItem.title = @"解绑验证";
@@ -132,9 +132,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
+    if (indexPath.section == 1) {
         [self sendPhoneVerify];
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section == 2) {
         [self resendPhoneVerifyCode];
     }
 }
@@ -205,9 +205,31 @@
             
             [self saveProfileDataFromResult:result];
         } else {
-            [self saveProfileDataFromResult:result];
-            
-            [self showBindOperationFailed:description];	
+            if (self.pageStatus == StatusVerifyBinding) {
+                if ([status isEqualToString:@"error_has_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else if ([status isEqualToString:@"error_different_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }  else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }
+            } else if (self.pageStatus == StatusVerifyUnbinding) {
+                if ([status isEqualToString:@"error_different_unbinded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }
+            }
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -286,6 +308,14 @@
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证成功！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11113;
             [av show];
+        } else if ([status isEqualToString:@"error_has_binded_by_other"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
+        } else if ([status isEqualToString:@"error_invalid_verifier"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
         } else {
             [self saveProfileDataFromResult:result];
             
@@ -355,6 +385,11 @@
     if (alertView.tag == 11114) {
         self.inputCodeTextField.text = nil;
         [self.inputCodeTextField becomeFirstResponder];
+    }
+    if (alertView.tag == 11116) {
+        self.inputCodeTextField.text = nil;
+        [self.inputCodeTextField becomeFirstResponder];
+
     }
 }
 @end

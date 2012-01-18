@@ -354,7 +354,7 @@ def GetPartyClientMainCount(request, pid):
             client_counts['refusedClientcount'] += 1 
         if party_client.apply_status == 'reject' and party_client.is_check == False:
             client_counts['newRefusedClientcount'] += 1
-    client_counts['party_content'] = party.content
+    client_counts['party_content'] = party.description
     return client_counts
 
 @csrf_exempt
@@ -455,48 +455,34 @@ def resendMsg(request):
                 
                 if msgType == 'SMS':
                     client_list = Client.objects.filter(phone = receiver['cValue'],
-                                                        name = receiver['cName'],
                                                         creator = user
                                                         )
                     if client_list:
                         client = client_list[0]
-                    else:
-                        empty_name_client_list = Client.objects.filter(phone = receiver['cValue'],
-                                                                       name = '',
-                                                                       creator = user
-                                                                       )
-                        if empty_name_client_list:
-                            client = empty_name_client_list[0]
+                        if client.name == '':
                             client.name = receiver['cName']
                             client.save()
-                        else:
-                            client = Client.objects.create(phone = receiver['cValue'],
-                                                           name = receiver['cName'],
-                                                           creator = user,
-                                                           invite_type = 'phone'
-                                                           )
+                    else:
+                        client = Client.objects.create(phone = receiver['cValue'],
+                                                       name = receiver['cName'],
+                                                       creator = user,
+                                                       invite_type = 'phone'
+                                                       )
                 else:
                     client_list = Client.objects.filter(email = receiver['cValue'],
-                                                        name = receiver['cName'],
                                                         creator = user
                                                         )
                     if client_list:
                         client = client_list[0]
-                    else:
-                        empty_name_client_list = Client.objects.filter(email = receiver['cValue'],
-                                                                       name = '',
-                                                                       creator = user
-                                                                       )
-                        if empty_name_client_list:
-                            client = empty_name_client_list[0]
+                        if client.name == '':
                             client.name = receiver['cName']
                             client.save()
-                        else:
-                            client = Client.objects.create(email = receiver['cValue'],
-                                                           name = receiver['cName'],
-                                                           creator = user,
-                                                           invite_type = 'phone'
-                                                           )
+                    else:
+                        client = Client.objects.create(email = receiver['cValue'],
+                                                       name = receiver['cName'],
+                                                       creator = user,
+                                                       invite_type = 'phone'
+                                                       )
                 PartiesClients.objects.get_or_create(
                                                   party = party,
                                                   client = client,

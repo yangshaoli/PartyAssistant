@@ -174,6 +174,14 @@
             av.tag = 11001;
             [av show];
 
+        } else if ([status isEqualToString:@"error_has_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];
+        } else if ([status isEqualToString:@"error_different_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
         } else {
             [self saveProfileDataFromResult:result];
             
@@ -206,6 +214,11 @@
     }
     if (alertView.tag == 11112) {
         [self.navigationController popViewControllerAnimated:YES];
+    }
+    if (alertView.tag == 11116) {
+        self.inputMailTextField.text = @"";
+        
+        [self.inputMailTextField becomeFirstResponder];
     }
 }
 @end

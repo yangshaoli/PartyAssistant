@@ -171,6 +171,10 @@
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证链接已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11001;
             [av show];
+        } else if ([status isEqualToString:@"error_different_unbinded"]) {
+            [self showBindOperationFailed:description];
+            
+            [self saveProfileDataFromResult:result];
         } else {
             [self saveProfileDataFromResult:result];
             
