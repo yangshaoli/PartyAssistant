@@ -390,7 +390,7 @@
 //            wordTextField.backgroundColor = [UIColor clearColor];
 //            wordTextField.editable = NO;
             NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
-            [detailWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
+           detailWordString = [detailWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
             if(detailWordString.length>1){
                 messageTextView.text=[detailWordString substringFromIndex:1];
                 
@@ -444,7 +444,7 @@
 //            wordTextField.backgroundColor = [UIColor clearColor];
 //            wordTextField.editable = NO;
             NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
-            [detailWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
+            detailWordString=[detailWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
             if(detailWordString.length>1){
                 messageTextView.text=[detailWordString substringFromIndex:1];
             }else{
@@ -503,16 +503,25 @@
 - (ABRecordRef)getContactorImageData{
     NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
     NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
+    NSLog(@"姓名：：%@   电话：：%@",contactorNameString,contactorPhoneString);
         ABAddressBookRef addressBook = ABAddressBookCreate();
-        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
+        CFArrayRef searchNameResult =  ABAddressBookCopyPeopleWithName (
                                                                     addressBook,
                                                                     (__bridge CFStringRef)contactorNameString);
     
-  NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
+    
+    CFArrayRef searchPhoneResult =  ABAddressBookCopyPeopleWithName (
+                                                                     addressBook,
+                                                                     (__bridge CFStringRef)contactorPhoneString);
+    
+    NSArray *array2=(__bridge_transfer NSArray*)searchPhoneResult;  
+
+    
+  NSArray *array1=(__bridge_transfer NSArray*)searchNameResult;  
   if(array1.count>0){
-    for (int i=0; i<CFArrayGetCount(searchResult); )
+    for (int i=0; i<CFArrayGetCount(searchNameResult); )
            {
-            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
+            ABRecordRef card = CFArrayGetValueAtIndex(searchNameResult, i);
             if(!card){
                 continue;
             }
@@ -524,7 +533,6 @@
                 NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
                 NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
                 if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
-                    //self.cID = ABRecordGetRecordID(card);
                     if(ABPersonHasImageData(card)){
                           return card;
                     }else{
@@ -538,10 +546,27 @@
             return nil;   
                
         }
+  }else if(array2.count>0){
+          for (int i=0; i<CFArrayGetCount(searchPhoneResult); )
+          {
+              ABRecordRef card = CFArrayGetValueAtIndex(searchPhoneResult, i);
+              if(!card){
+                  continue;
+              }
+             
+              if(ABPersonHasImageData(card)){
+                  return card;
+              }else{
+                  return nil;
+              }
+              
+         } 
+        return nil;   
+
   }else{
       return nil;
+
   }
-    return nil;
 }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -575,7 +600,13 @@
 //            personMName = @"";
 //        }
        // lblV.text = [NSString stringWithFormat:@"%@ %@ %@",personFName,personMName,personLName];
-        lblV.text=[self.clientDict objectForKey:@"cName"];
+        
+        
+        if([self.clientDict objectForKey:@"cName"]==nil||[[self.clientDict objectForKey:@"cName"] isEqualToString:@""]){
+            lblV.text=[self.clientDict objectForKey:@"cValue"];
+        }else{
+            lblV.text=[self.clientDict objectForKey:@"cName"];
+        }
         lblV.backgroundColor = [UIColor clearColor];
         [headV addSubview:lblV];
         return headV;
