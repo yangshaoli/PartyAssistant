@@ -9,6 +9,8 @@
 #import "PartyAssistantAppDelegate.h"
 #import "AddressBookDataManager.h"
 #import "UIViewControllerExtra.h"
+#import "Reachability.h"
+
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -269,6 +271,10 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 #pragma mark -
 #pragma mark update remain count
 - (void)updateRemainCount {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+        return;
+    }    
     if (self.remainCountRequest) {
         if (![self.remainCountRequest isFinished]) {
             return;

@@ -53,6 +53,7 @@
 @synthesize nameBindingStatusLabel = _nameBindingStatusLabel;
 @synthesize telBindingStatusLabel = _telBindingStatusLabel;
 @synthesize mailBindingStatusLabel = _mailBindingStatusLabel;
+@synthesize nameBindingInfoLabel = _nameBindingInfoLabel;
 @synthesize mailBindingInfoLabel = _mailBindingInfoLabel;
 @synthesize telBindingInfoLabel = _telBindingInfoLabel;
 
@@ -162,6 +163,10 @@
     
     BindingStatus telBindingStatus = [storedStatusService detectTelBindingStatus];
     BindingStatus mailBindingStatus = [storedStatusService detectMailBindingStatus];
+    
+    NSString *nameInfoString = nil;
+    nameInfoString = [storedStatusService bindedNickname];
+    self.nameBindingInfoLabel.text = nameInfoString;
     
     NSString *telInfoString = nil;
     if (telBindingStatus == StatusVerifyBinding) {

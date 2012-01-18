@@ -118,12 +118,18 @@
 
 - (NSString *)nickNameStatusString {
     if (self.nicknameBindingStatus == StatusBinded) {
-        return self.bindedNickname;
-    }
-    if (self.nicknameBindingStatus == StatusNotBind) {
+        if ([self.bindedNickname isEqualToString:@""]) {
+            return @"请输入真实姓名";
+        }
+        return @"";
+    } else {
         return @"请输入真实姓名";
     }
-    return [self translateStatusCodeToString:self.nicknameBindingStatus];
+    return @"";
+//    if (self.nicknameBindingStatus == StatusNotBind) {
+//        return @"请输入真实姓名";
+//    }
+//    return [self translateStatusCodeToString:self.nicknameBindingStatus];
 }
 
 - (NSString *)telStatusString {
