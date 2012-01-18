@@ -308,7 +308,6 @@ def fullPartyList(request, uid, start_id = 0):
         }
         for party_client in party_clients:
             clientObjectDict = {}
-            client = clientObjectDict.client
             if party.invite_type == 'email':
                 cValue = party_client.client.email
             else:
