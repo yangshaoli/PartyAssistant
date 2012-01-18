@@ -58,10 +58,19 @@
 - (void) encodeWithCoder: (NSCoder *) encoder {
     self.receiversArrayJson = [self setupReceiversArrayData];
     [encoder encodeObject: [NSNumber numberWithInteger: self.smsID] forKey:@"smsID"];
-	[encoder encodeObject: self.smsContent forKey:@"smsContent"];
+	if (smsContent) {
+        [encoder encodeObject: self.smsContent forKey:@"smsContent"];
+    } else {
+        [encoder encodeObject:@"" forKey:@"smsContent"];
+    }
+    
 	[encoder encodeObject: [NSNumber numberWithBool:self._isSendBySelf] forKey:@"_isSendBySelf"];
 	[encoder encodeObject: [NSNumber numberWithBool:self._isApplyTips] forKey:@"_isApplyTips"];
-    [encoder encodeObject: self.receiversArray forKey:@"receiversArray"];
+    if (receiversArray) {
+        [encoder encodeObject: self.receiversArray forKey:@"receiversArray"];
+    } else {
+        [encoder encodeObject:[NSArray array] forKey:@"receiversArray"];
+    }
     [encoder encodeObject: self.receiversArrayJson  forKey:@"receiversArrayJson"];
 }
 

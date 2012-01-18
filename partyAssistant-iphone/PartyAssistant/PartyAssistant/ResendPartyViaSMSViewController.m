@@ -480,4 +480,9 @@
         [self showWaiting];
     }
 } 
+
+
+- (void)applicationWillTerminate:(NSNotification *)notify {
+
+}
 @end

@@ -57,6 +57,7 @@
 @synthesize editingTableViewCell = _editingTableViewCell;
 @synthesize leftCountLabel = _leftCountLabel;
 @synthesize sectionOneHeader = _sectionOneHeader;
+@synthesize isResendPage = _isResendPage;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -89,16 +90,32 @@
     self.rightItem = right;
     self.receipts = [NSMutableArray arrayWithCapacity:10];
     
-    if (!smsObject) {
-        SMSObjectService *smsObjectService = [SMSObjectService sharedSMSObjectService];
-        self.smsObject = [smsObjectService getSMSObject];
-    }
-    
     self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
     [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
+    
+    if (!self.isResendPage) {
+        if (!smsObject) {
+            SMSObjectService *smsObjectService = [SMSObjectService sharedSMSObjectService];
+            self.smsObject = [smsObjectService getSMSObject];
+        }
+        
+        if (smsObject.receiversArray) {
+            [self.receipts addObjectsFromArray:smsObject.receiversArray];
+        }
+        
+        if (smsObject.smsContent) {
+            self.editingTableViewCell.text = [NSMutableString stringWithString:smsObject.smsContent];
+        }
+        
+        NSLog(@"%@",smsObject.receiversArray);
+        NSLog(@"%@",smsObject.smsContent);
+        
+        [self rearrangeContactNameTFContent];
+    }
+    
     
     //wxz
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -126,6 +143,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 
 }
 
@@ -1011,6 +1030,19 @@
 
 - (void)leftCountRefreshFailed:(NSNotification *)notify {
     self.leftCountLabel.text = @"帐户余额更新失败";
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notify {
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
+    for (ClientObject *receipt in self.receipts) {
+        [array addObject:receipt];
+    }
+    
+    self.smsObject.receiversArray = array;
+    
+    self.smsObject.smsContent = [self.editingTableViewCell.textView text];
+
+    [[SMSObjectService sharedSMSObjectService] saveSMSObject];
 }
 
 - (void)dealloc {
