@@ -380,6 +380,9 @@ def email_binding(request):
             key = hashlib.md5(email).hexdigest()
             if UserBindingTemp.objects.filter(key = key).count() == 0:
                 UserBindingTemp.objects.create(user = request.user, binding_type = 'email', key = key, binding_address = email)
+                userprofile = UserProfile.objects.get(user=request.user)
+                userprofile.email_binding_status = 'waitingbind'
+                userprofile.save()
                 return HttpResponse("success")
             else:
                 return HttpResponse("record_already_exist")
