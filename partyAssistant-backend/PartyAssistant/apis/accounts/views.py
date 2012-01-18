@@ -62,6 +62,8 @@ def accountLogin(request):
                     'uid':user.id,
                     'name':user.userprofile.true_name,
                      "_israndomlogin":_israndomlogin,
+                     "user_remaining":user.userprofile.available_sms_count,
+                     "username":user.username
                     }
         else:
             print 'error'
@@ -238,7 +240,7 @@ def bindContact(request, type):
             raise myException(ERROR_BINDING_INVAILID_EMAIL_FORMMAT)
         if type == 'phone' and not re_phone.match(regPhoneNum(value)):
             raise myException(ERROR_BINDING_INVAILID_PHONE_FORMMAT)
-            
+        #用户已经绑定了
         if type == 'email' and user.userprofile.email_binding_status == 'bind':
             if user.userprofile.email == value:
                 raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
@@ -249,6 +251,7 @@ def bindContact(request, type):
                 raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
             else:
                 raise myException(ERROR_BINDING_BY_PHONE_DIFFERENT_BINDED, status = ERROR_STATUS_DIFFERENT_BINDED, data = data)
+        #被别人绑定
         if type == 'email' and UserProfile.objects.filter(email = value, email_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_BINDING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
@@ -257,7 +260,7 @@ def bindContact(request, type):
             value = regPhoneNum(value)
         binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
         if not created:
-            binding_temp.binding_addres = value
+            binding_temp.binding_address = value
             binding_temp.key = userkey
             binding_temp.save()
         profile = user.get_profile()
@@ -419,3 +422,16 @@ def changePasswordByFinePWD(request):
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
         user.set_password(newpassword)
         user.save()
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def bindDevice(request):
+    if request.method == 'POST':
+        user = User.objects.get(pk = request.POST['uid'])
+        device_token = request.POST['device_token']
+        if device_token:
+            usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+            if usertoken.user != user:
+                usertoken.user = user
+                usertoken.save()

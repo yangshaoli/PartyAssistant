@@ -383,8 +383,11 @@ def email_binding(request):
                 return HttpResponse("success")
             else:
                 return HttpResponse("record_already_exist")
-    else:
-        key = request.GET.get('key', '')
+
+@commit_on_success
+def email_handle_url(request, type):
+    key = request.GET.get('key', '')
+    if type == 'binding':
         if key:
             try:
                 UserBindingTemp.objects.get(key = key)
@@ -396,6 +399,21 @@ def email_binding(request):
             userprofile = user.get_profile()
             userprofile.email = record.binding_address
             userprofile.email_binding_status = 'bind'
+            userprofile.save()
+            record.delete()
+            return HttpResponseRedirect('/accounts/profile')
+    if type == 'unbinding':
+        if key:
+            try:
+                UserBindingTemp.objects.get(key = key)
+            except:
+                return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
+            else:
+                record = UserBindingTemp.objects.get(key = key)
+            user = User.objects.get(pk = record.user.id)
+            userprofile = user.get_profile()
+            userprofile.email = ''
+            userprofile.email_binding_status = 'unbind'
             userprofile.save()
             record.delete()
             return HttpResponseRedirect('/accounts/profile')
@@ -420,22 +438,6 @@ def unbinding(request):
 #            userprofile.phone_binding_status = 'unbind'
 #        userprofile.save()
         return HttpResponse("success")
-    else:
-        key = request.GET.get('key', '')
-        if key:
-            try:
-                UserBindingTemp.objects.get(key = key)
-            except:
-                return TemplateResponse(request, 'message.html', {'message': 'noexistkey'})
-            else:
-                record = UserBindingTemp.objects.get(key = key)
-            user = User.objects.get(pk = record.user.id)
-            userprofile = user.get_profile()
-            userprofile.email = ''
-            userprofile.email_binding_status = 'unbind'
-            userprofile.save()
-            record.delete()
-            return HttpResponseRedirect('/accounts/profile')
 
         
 @commit_on_success

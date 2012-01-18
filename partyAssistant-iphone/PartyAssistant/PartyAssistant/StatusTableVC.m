@@ -89,7 +89,6 @@
         if ([status isEqualToString:@"ok"]) {
             NSDictionary *dict = [result objectForKey:@"datasource"];
             self.clientsArray = [dict objectForKey:@"clientList"];
-            NSLog(@"now  打印array：：%@",self.clientsArray);
             //new sorting order
             self.clientsArray = [clientsArray sortedArrayUsingComparator:^(id obj1, id obj2)
              {
@@ -415,6 +414,7 @@
         secondLb.font=[UIFont systemFontOfSize:13];
         secondLb.tag=8;
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        [statusWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
         if(statusWordString.length){
             if(statusWordString.length>19){
                 secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
@@ -445,6 +445,7 @@
         secondLb.textColor=[UIColor grayColor];
         secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        [statusWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
         if(statusWordString.length){
             if(statusWordString.length>19){
                 secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
@@ -469,6 +470,7 @@
         secondLb.textColor=[UIColor grayColor];
         secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        [statusWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
         if(statusWordString.length){
             if(statusWordString.length>19){
                 secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
@@ -492,6 +494,7 @@
         secondLb.textColor=[UIColor grayColor];
         secondLb.font=[UIFont systemFontOfSize:13];
         NSString *statusWordString=[clentDic objectForKey:@"msg"];
+        [statusWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
         if(statusWordString.length){
             if(statusWordString.length>19){
                 secondLb.text = [[statusWordString  substringFromIndex:1]  substringToIndex:19];//去掉留言逗号后截取18个字符
