@@ -258,7 +258,7 @@ def bindContact(request, type):
         if type == 'phone':
             value = regPhoneNum(value)
         with transaction.commit_on_success():
-            profile = user.get_profile()
+            profile = user.userprofile
             if type == 'phone':
                 profile.phone = value
                 profile.phone_binding_status = 'waitingbind'
