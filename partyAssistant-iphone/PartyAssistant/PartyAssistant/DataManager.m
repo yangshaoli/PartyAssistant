@@ -121,8 +121,6 @@ static DataManager *sharedDataManager = nil;
                 self.isRandomLoginSelf=NO; 
             }
             if ([status isEqualToString:@"ok"]) {
-                dic = [NSMutableDictionary dictionaryWithDictionary:dic];
-                [dic setValue:name forKey:@"username"];
                 [self saveUsrData:dic];
                 [pool release];
                 return nil;
@@ -349,7 +347,7 @@ static DataManager *sharedDataManager = nil;
         
     }
     
-    NSString *userName = [jsonValue objectForKey:@"username"];
+    NSString *userName = [datasource objectForKey:@"username"];
     if (userName) {
         userData.userName = userName;
     }
