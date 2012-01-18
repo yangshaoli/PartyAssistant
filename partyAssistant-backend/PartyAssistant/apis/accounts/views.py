@@ -62,6 +62,8 @@ def accountLogin(request):
                     'uid':user.id,
                     'name':user.userprofile.true_name,
                      "_israndomlogin":_israndomlogin,
+                     "user_remaining":user.userprofile.available_sms_count,
+                     "username":user.username
                     }
         else:
             print 'error'
@@ -420,3 +422,16 @@ def changePasswordByFinePWD(request):
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
         user.set_password(newpassword)
         user.save()
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def bindDevice(request):
+    if request.method == 'POST':
+        user = User.objects.get(pk = request.POST['uid'])
+        device_token = request.POST['device_token']
+        if device_token:
+            usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+            if usertoken.user != user:
+                usertoken.user = user
+                usertoken.save()
