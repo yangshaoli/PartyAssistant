@@ -4,7 +4,7 @@ Created on 2011-11-7
 
 @author: liuxue
 '''
-
+from django.db import transaction
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
