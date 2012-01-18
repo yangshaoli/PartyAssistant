@@ -10,6 +10,7 @@
 #import "AddressBookDataManager.h"
 #import "UIViewControllerExtra.h"
 #import "DataManager.h"
+#import "GuideViewController.h"
 
 @implementation PartyAssistantAppDelegate
 
@@ -75,9 +76,21 @@
         addressBook = ABAddressBookCreate();
         ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
     }
+    
+    GuideViewController *gViewController = [[GuideViewController alloc] initWithNibName:nil bundle:nil];
     PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
     _nav = [[UINavigationController alloc] initWithRootViewController:login];
     [self.window addSubview:_nav.view];
+    
+    //Show the user guide, if the new version app is comming
+    NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    
+    NSString *savedVersion = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppBundleVersion"];
+    if (![versionString isEqualToString:savedVersion]) {
+        [self.window addSubview:gViewController.view];
+        [[NSUserDefaults standardUserDefaults] setValue:versionString forKey:@"AppBundleVersion"];
+    }
+    
     [login release];
     
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0

@@ -119,6 +119,7 @@
             originPasswordTextField.textAlignment = UITextAlignmentLeft;
             originPasswordTextField.backgroundColor = [UIColor clearColor];
             originPasswordTextField.placeholder=@"6-16位必填，大小写区分";
+            originPasswordTextField.secureTextEntry = YES;
             [cell addSubview:originPasswordTextField];        
         }
         if(indexPath.row==1){
@@ -129,6 +130,7 @@
             nPasswordTextField.textAlignment = UITextAlignmentLeft;
             nPasswordTextField.backgroundColor = [UIColor clearColor];
             nPasswordTextField.placeholder=@"6-16位必填，大小写区分";
+            nPasswordTextField.secureTextEntry = YES;
             [cell addSubview:nPasswordTextField];        
         }
         if(indexPath.row==2){
@@ -139,6 +141,7 @@
             resurePasswordTextField.textAlignment = UITextAlignmentLeft;
             resurePasswordTextField.backgroundColor = [UIColor clearColor];
             resurePasswordTextField.placeholder=@"与新密码一致";
+            resurePasswordTextField.secureTextEntry = YES;
             [cell addSubview:resurePasswordTextField];        
         }        
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
