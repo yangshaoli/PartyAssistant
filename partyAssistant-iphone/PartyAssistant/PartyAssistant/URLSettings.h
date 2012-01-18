@@ -51,3 +51,8 @@
 #define EMAIL_BIND [NSString stringWithFormat:@"%@/a/accounts/bind/email/",DOMAIN_NAME]
 #define EMAIL_UNBIND [NSString stringWithFormat:@"%@/a/accounts/unbind/email/",DOMAIN_NAME]
 #define EMAIL_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/phone/",DOMAIN_NAME]
+
+//评分
+#define  SCORE_MARK @"http://www.baidu.com"//暂时拿百度测试
+//版本号更新
+#define  VERSION_UPDATE @"itms://itunes.apple.com/cn/app/bubble-spelling/id476527756?mt=8"

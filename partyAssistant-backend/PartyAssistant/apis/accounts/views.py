@@ -4,7 +4,7 @@ Created on 2011-11-7
 
 @author: liuxue
 '''
-
+from django.db import transaction
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
@@ -62,6 +62,8 @@ def accountLogin(request):
                     'uid':user.id,
                     'name':user.userprofile.true_name,
                      "_israndomlogin":_israndomlogin,
+                     "user_remaining":user.userprofile.available_sms_count,
+                     "username":user.username
                     }
         else:
             print 'error'
@@ -212,7 +214,6 @@ def forgetPassword(request):
             temp_pwd_data.save()
 
 @csrf_exempt
-@commit_on_success
 @apis_json_response_decorator
 def bindContact(request, type):
     if request.method == 'POST':
@@ -256,19 +257,24 @@ def bindContact(request, type):
             raise myException(ERROR_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         if type == 'phone':
             value = regPhoneNum(value)
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
-        if not created:
-            binding_temp.binding_address = value
-            binding_temp.key = userkey
-            binding_temp.save()
-        profile = user.get_profile()
-        if type == 'phone':
-            profile.phone = value
-            profile.phone_binding_status = 'waitingbind'
-        else:
-            profile.email = value
-            profile.email_binding_status = 'waitingbind'
-        profile.save()
+        with transaction.commit_on_success():
+            profile = user.userprofile
+            if type == 'phone':
+                profile.phone = value
+                profile.phone_binding_status = 'waitingbind'
+            else:
+                profile.email = value
+                profile.email_binding_status = 'waitingbind'
+            profile.save()
+        with transaction.commit_on_success():
+            binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+            if not created:
+                binding_temp.binding_address = value
+                binding_temp.key = userkey
+                binding_temp.save()
+        print profile.email
+        print value
+        print user.userprofile.email
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
@@ -420,3 +426,16 @@ def changePasswordByFinePWD(request):
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
         user.set_password(newpassword)
         user.save()
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def bindDevice(request):
+    if request.method == 'POST':
+        user = User.objects.get(pk = request.POST['uid'])
+        device_token = request.POST['device_token']
+        if device_token:
+            usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+            if usertoken.user != user:
+                usertoken.user = user
+                usertoken.save()

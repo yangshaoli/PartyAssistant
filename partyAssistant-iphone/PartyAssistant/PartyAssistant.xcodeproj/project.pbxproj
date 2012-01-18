@@ -2151,7 +2151,7 @@
 				INFOPLIST_FILE = "PartyAssistant/PartyAssistant-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "64951833-0E69-42F9-B3D8-8424A6756965";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "F9799A72-A673-4D53-AC3D-C66935CACE15";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
