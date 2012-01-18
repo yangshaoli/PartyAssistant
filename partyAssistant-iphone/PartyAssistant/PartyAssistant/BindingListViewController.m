@@ -287,6 +287,10 @@
 }
 
 - (void)refreshBtnAction {
+    self.userAccountLabel.text = @"更新中";
+    
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
+    
     [self beginProfileUpdate];
 }
 

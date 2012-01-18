@@ -168,6 +168,7 @@
         img = [UIImage imageNamed:@"contact_with_no-pic.png"];
         [imgV setImage:img];
     }
+    
     imgV.backgroundColor = [UIColor whiteColor];
     [headV addSubview:imgV];
     

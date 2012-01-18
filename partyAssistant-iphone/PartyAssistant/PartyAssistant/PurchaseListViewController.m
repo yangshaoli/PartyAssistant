@@ -12,7 +12,7 @@
 #import "UserObjectService.h"
 #import "Reachability.h"
 
-#define kMyFeatureIdentifier @"com.aragoncg.AiReNaoTest.TestProductTwo"
+#define kMyFeatureIdentifier @"com.airenao.productLevelOne"
 
 @implementation PurchaseListViewController
 @synthesize tableView;
