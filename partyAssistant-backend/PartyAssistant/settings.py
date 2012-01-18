@@ -12,11 +12,11 @@ ADMINS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'dev.db'), # Or path to database file if using sqlite3.
-        'USER': '', # Not used with sqlite3.
-        'PASSWORD': '', # Not used with sqlite3.
-        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
+        'ENGINE': 'mysql', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'airenao', # Or path to database file if using sqlite3.
+        'USER': 'airenao', # Not used with sqlite3.
+        'PASSWORD': 'ai_leige_renao', # Not used with sqlite3.
+        'HOST': 'db01', # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -190,11 +190,17 @@ LOGGING = {
     }
 }
 
-SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
-DOMAIN_NAME = 'http://192.168.1.15:43401'
+SYS_EMAIL_ADDRESS = 'airenao@orilong.com'
+DOMAIN_NAME = 'http://www.airenao.com'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
+'''
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
+'''
+EMAIL_HOST = '10.11.12.178'
+EMAIL_HOST_USER = 'airenao@orilong.com'
+EMAIL_HOST_PASSWORD = 'aragon888'
+EMAIL_PORT = '25'
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
