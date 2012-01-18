@@ -82,16 +82,17 @@
 
 - (void)didChangeSegmentControl:(UISegmentedControl *)control {
     if (self.activeViewController) {
-        [self.activeViewController viewWillDisappear:NO];
+        [self.activeViewController viewWillDisappear:YES];
         [self.activeViewController.view removeFromSuperview];
-        [self.activeViewController viewDidDisappear:NO];
+        [self.activeViewController viewDidDisappear:YES];
     }
 
     self.activeViewController = [self.segmentedViewControllers objectAtIndex:control.selectedSegmentIndex];
 
-    [self.activeViewController viewWillAppear:NO];
+    [self.activeViewController viewWillAppear:YES];
+//    self.activeViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     [self.view addSubview:self.activeViewController.view];
-    [self.activeViewController viewDidAppear:NO];
+    [self.activeViewController viewDidAppear:YES];
 
     NSString * segmentTitle = [control titleForSegmentAtIndex:control.selectedSegmentIndex];
     self.navigationItem.backBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:segmentTitle style:UIBarButtonItemStylePlain target:nil action:nil];
