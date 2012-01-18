@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:Android = "http://schemas.android.com/apk/res/android">  
+<!-- 定义按钮按下时的图片 -->  
+<item  
+Android:state_enabled = "false"  
+Android:drawable = "@drawable/btn_active_03"  
+/>
+<item  
+Android:state_pressed = "true"  
+Android:drawable = "@drawable/btn_active_03"  
+/>    
+<!-- 定义按钮默认的图片 -->  
+<item Android:drawable = "@drawable/btn_03" />  
+</selector>  

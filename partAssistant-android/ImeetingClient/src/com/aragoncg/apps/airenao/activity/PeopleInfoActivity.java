@@ -204,7 +204,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			asynTask.execute(getPeopleInfoUrl);
 		}
 		if (peopleTag == UNRESPONSED_PEOPLE) {
-			// 获得为参加人的信息
+			// 获得未参加人的信息
 			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId,
 					TYPE_REFUSED);
 			asynTask.execute(getPeopleInfoUrl);
@@ -297,6 +297,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			String description;
 			String isCheck;
 			JSONObject datasource;
+			String msg;
 
 			try {
 				JSONObject outPut = new JSONObject(result)
@@ -319,12 +320,15 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 									.getString("status");
 							isCheck = jsonArray.getJSONObject(i)
 									.getString("isCheck");
+							msg = jsonArray.getJSONObject(i)
+									.getString("msg");
 							HashMap<String, Object> map = new HashMap<String, Object>();
 							map.put(Constants.PEOPLE_NAME, cName);
 							map.put(Constants.PEOPLE_CONTACTS, cValue);
 							map.put(Constants.CLIENT_ID, backendID);
 							map.put(Constants.STATUS, myStatus);
 							map.put(Constants.IS_CHECK, isCheck);
+							map.put(Constants.MSG, msg);
 							mData.add(map);
 						}
 					} else {
@@ -337,11 +341,14 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 									"backendID");
 							isCheck = jsonArray.getJSONObject(i)
 									.getString("isCheck");
+							msg = jsonArray.getJSONObject(i)
+									.getString("msg");
 							HashMap<String, Object> map = new HashMap<String, Object>();
 							map.put(Constants.PEOPLE_NAME, cName);
 							map.put(Constants.PEOPLE_CONTACTS, cValue);
 							map.put(Constants.CLIENT_ID, backendID);
 							map.put(Constants.IS_CHECK, isCheck);
+							map.put(Constants.MSG, msg);
 							mData.add(map);
 						}
 					}
@@ -451,8 +458,13 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		public void bindView(final ViewHolder viewHolder, final int position) {
 			viewHolder.peopleName.setText((String) mData.get(position).get(
 					Constants.PEOPLE_NAME));
-			viewHolder.peoPleContacts.setText((String) mData.get(position).get(
-					Constants.PEOPLE_CONTACTS));
+			if(peopleTag == SIGNED_PEOPLE || peopleTag == UNRESPONSED_PEOPLE){
+				viewHolder.peoPleContacts.setText((String) mData.get(position).get(
+						Constants.MSG));
+			}else{
+				viewHolder.peoPleContacts.setVisibility(View.GONE);
+			}
+			
 
 			viewHolder.btnRegister.setOnClickListener(new OnClickListener() {
 
@@ -512,7 +524,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		transIntent.putExtra(Constants.PARTY_ID, partyId);
 		transIntent.putExtra(Constants.BACK_END_ID, clientId);
 		startActivity(transIntent);
-		finish();
+		
 	}
 
 }
