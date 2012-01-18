@@ -19,7 +19,7 @@
 	<string name="end_time">结束时间：</string>
 	<string name="destination">去哪：</string>
 	<string name="people_limit">几人：</string>
-	<string name="desc_activity">短信内容：</string>
+	<string name="desc_activity">活动内容：</string>
 	<string name="hint">本活动内容将会作为短信发送</string>
 	<string name="send_lable_content_tip">活动内容不能为空</string>
 	<string name="send_message">发送手机短信</string>
@@ -77,9 +77,9 @@
 	<string name="send_airenao_SMS_in_mine">使用自己的手机发送</string>
 	<string name="send_airenao_retrieve">恢复默认设置</string>
 	<string name="to_detail_activity">toDetailActivity</string>
-	<string name="invited_number">邀请人</string>
+	<string name="invited_number">已邀请</string>
 	<string name="signed_number">已报名</string>
-	<string name="unsiged_number">未报名</string>
+	<string name="unsiged_number">未响应</string>
 	<string name="unjion">未参加</string>
 	<string name="button_edit">编辑</string>
 	<string name="user_off">注销</string>

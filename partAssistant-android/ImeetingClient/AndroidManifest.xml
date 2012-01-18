@@ -49,8 +49,7 @@
 			
 		</activity>
 		
-		<activity android:name=".activity.PeopleInfoActivity"
-			 android:theme="@android:style/Theme.Dialog">
+		<activity android:name=".activity.PeopleInfoActivity">
 			
 		</activity>
 		<activity android:name=".activity.DetailPeopleInfo">

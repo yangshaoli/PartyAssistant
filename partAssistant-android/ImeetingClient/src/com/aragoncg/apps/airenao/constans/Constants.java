@@ -93,7 +93,7 @@ public class Constants {
 	public static final String TRANSFER_DATA = "TransferData";
 
 	// 解析 Json 常用数据
-
+	public static final String MSG = "msg";
 	public static final String OUT_PUT = "output";
 	public static final String STATUS = "status";
 	public static final String IS_CHECK = "isCheck";
@@ -125,7 +125,7 @@ public class Constants {
 	/*
 	 * 配置域名
 	 */
-	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";
+	public static final String DOMAIN_NAME = "http://www.airenao.com";
 	public static final String SUB_DOMAIN_REGISTER_URL = "/a/accounts/regist/";
 	public static final String SUB_DOMAIN_LOGIN_URL = "/a/accounts/login/";
 	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/partylist/";
