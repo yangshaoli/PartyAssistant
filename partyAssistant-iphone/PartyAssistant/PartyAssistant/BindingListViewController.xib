@@ -54,8 +54,9 @@
 									<object class="IBUILabel" id="1048215620">
 										<reference key="NSNextResponder" ref="56947392"/>
 										<int key="NSvFlags">292</int>
-										<string key="NSFrame">{{20, 20}, {91, 32}}</string>
+										<string key="NSFrame">{{17, 43}, {91, 32}}</string>
 										<reference key="NSSuperview" ref="56947392"/>
+										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="177440860"/>
 										<string key="NSReuseIdentifierKey">_NS:129</string>
 										<bool key="IBUIOpaque">NO</bool>
@@ -84,8 +85,9 @@
 									<object class="IBUILabel" id="177440860">
 										<reference key="NSNextResponder" ref="56947392"/>
 										<int key="NSvFlags">292</int>
-										<string key="NSFrame">{{116, 25}, {173, 21}}</string>
+										<string key="NSFrame">{{116, 43}, {173, 18}}</string>
 										<reference key="NSSuperview" ref="56947392"/>
+										<reference key="NSWindow"/>
 										<string key="NSReuseIdentifierKey">_NS:129</string>
 										<bool key="IBUIOpaque">NO</bool>
 										<bool key="IBUIClipsSubviews">YES</bool>
@@ -111,8 +113,9 @@
 									<object class="IBUILabel" id="485825455">
 										<reference key="NSNextResponder" ref="56947392"/>
 										<int key="NSvFlags">292</int>
-										<string key="NSFrame">{{116, 60}, {173, 21}}</string>
+										<string key="NSFrame">{{116, 69}, {173, 18}}</string>
 										<reference key="NSSuperview" ref="56947392"/>
+										<reference key="NSWindow"/>
 										<string key="NSReuseIdentifierKey">_NS:129</string>
 										<bool key="IBUIOpaque">NO</bool>
 										<bool key="IBUIClipsSubviews">YES</bool>
@@ -131,6 +134,7 @@
 								</object>
 								<string key="NSFrameSize">{320, 100}</string>
 								<reference key="NSSuperview" ref="443691284"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="1048215620"/>
 								<string key="NSReuseIdentifierKey">_NS:49</string>
 								<object class="NSColor" key="IBUIBackgroundColor" id="479096854">
@@ -142,6 +146,7 @@
 						</object>
 						<string key="NSFrameSize">{320, 460}</string>
 						<reference key="NSSuperview" ref="191373211"/>
+						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="56947392"/>
 						<string key="NSReuseIdentifierKey">_NS:175</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
@@ -217,6 +222,7 @@ AAgACAAIAAEAAQABAAE</bytes>
 				</object>
 				<string key="NSFrame">{{0, 20}, {320, 460}}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="443691284"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
 					<int key="NSColorSpace">3</int>
@@ -720,8 +726,8 @@ AAgACAAIAAEAAQABAAE</bytes>
 						<reference key="object" ref="56947392"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="177440860"/>
 							<reference ref="1048215620"/>
+							<reference ref="177440860"/>
 							<reference ref="485825455"/>
 						</object>
 						<reference key="parent" ref="443691284"/>
@@ -820,7 +826,114 @@ AAgACAAIAAEAAQABAAE</bytes>
 			<nil key="sourceID"/>
 			<int key="maxID">40</int>
 		</object>
-		<object class="IBClassDescriber" key="IBDocument.Classes"/>
+		<object class="IBClassDescriber" key="IBDocument.Classes">
+			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<object class="IBPartialClassDescription">
+					<string key="className">BindingListViewController</string>
+					<string key="superclassName">UIViewController</string>
+					<object class="NSMutableDictionary" key="outlets">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>mailBindingCell</string>
+							<string>mailBindingInfoLabel</string>
+							<string>mailBindingStatusLabel</string>
+							<string>nameBindingCell</string>
+							<string>nameBindingStatusLabel</string>
+							<string>tableView</string>
+							<string>telBindingCell</string>
+							<string>telBindingInfoLabel</string>
+							<string>telBindingStatusLabel</string>
+							<string>userAccountLabel</string>
+							<string>userIDLabel</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>UITableViewCell</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UITableViewCell</string>
+							<string>UILabel</string>
+							<string>UITableView</string>
+							<string>UITableViewCell</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+							<string>UILabel</string>
+						</object>
+					</object>
+					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>mailBindingCell</string>
+							<string>mailBindingInfoLabel</string>
+							<string>mailBindingStatusLabel</string>
+							<string>nameBindingCell</string>
+							<string>nameBindingStatusLabel</string>
+							<string>tableView</string>
+							<string>telBindingCell</string>
+							<string>telBindingInfoLabel</string>
+							<string>telBindingStatusLabel</string>
+							<string>userAccountLabel</string>
+							<string>userIDLabel</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mailBindingCell</string>
+								<string key="candidateClassName">UITableViewCell</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mailBindingInfoLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">mailBindingStatusLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">nameBindingCell</string>
+								<string key="candidateClassName">UITableViewCell</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">nameBindingStatusLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">tableView</string>
+								<string key="candidateClassName">UITableView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">telBindingCell</string>
+								<string key="candidateClassName">UITableViewCell</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">telBindingInfoLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">telBindingStatusLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userAccountLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">userIDLabel</string>
+								<string key="candidateClassName">UILabel</string>
+							</object>
+						</object>
+					</object>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./Classes/BindingListViewController.h</string>
+					</object>
+				</object>
+			</object>
+		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaTouchFramework</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">

@@ -12,6 +12,7 @@
 #import "PurchaseListViewController.h"
 #import "ChangePasswordTableVC.h"
 #import "BindingListViewController.h"
+#import "URLSettings.h"
 #define NAVIGATION_CONTROLLER_TITLE @"设置"
 #define LogoutTag                   1
 #define NotPassTag                  2
@@ -214,7 +215,7 @@
         [self.navigationController pushViewController:vc animated:YES];
     }
     if(indexPath.row == 3){
-        NSString *addressString=[[NSString alloc]initWithFormat:@"http://www.airenao.com/"];//评分
+        NSString *addressString=[[NSString alloc]initWithFormat:SCORE_MARK];//评分
         [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
 
     }
@@ -231,14 +232,18 @@
         NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
         NSString *versionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
         if(versionString==nil&&[versionString isEqualToString:@""]){
+            
             return;
         }else{
             NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
             BOOL isUpdateVersion=[isUpdateVersionDefault boolForKey:@"isUpdateVersion"];
             if(isUpdateVersion){
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"更新版本" message:@"确认更新?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
-                alertView.tag = versionRefreshTag;
+                    NSString *addressString=[[NSString alloc]initWithFormat:VERSION_UPDATE];//版本更新
+                    [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
+            }else{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"当前已是最新版本" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:nil, nil];
                 [alertView show];
+            
             }
         }
     }
@@ -266,12 +271,7 @@
         
         [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
     }
-    if((alertView.tag ==versionRefreshTag ) && ( buttonIndex == 1)){
-        NSString *addressString=[[NSString alloc]initWithFormat:@"itms://itunes.apple.com/cn/app/bubble-spelling/id476527756?mt=8"];//地址待定
-        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
-        
     
-    }
 }
 
 - (void)showAlertWithMessage:(NSString *)message 

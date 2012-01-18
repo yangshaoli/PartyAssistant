@@ -12,6 +12,8 @@
 #import "ASIFormDataRequest.h"
 #import "HTTPRequestErrorMSG.h"
 #import "UITableViewControllerExtra.h"
+#import "PartyAssistantAppDelegate.h"
+
 @implementation ContactorPhoneDetailsViewController
 @synthesize contactorID,phoneDetailDelegate,clientDict,partyObj,quest;
 @synthesize clientStatusFlag;
@@ -19,6 +21,7 @@
 @synthesize messageCell;
 @synthesize phoneLabel;
 @synthesize messageTextView;
+@synthesize footerView,goButton,notGoButton,activity;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -42,8 +45,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    UIButton *goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [goButton setFrame:CGRectMake(0, 0, 80, 40)];
+    goButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [goButton setFrame:CGRectMake(20, 0, 80, 40)];
     [goButton setTitle:@"参加" forState:UIControlStateNormal];
     [goButton setImage:[UIImage imageNamed:@"apply"] forState:UIControlStateNormal];
     
@@ -52,8 +55,8 @@
     goButton.backgroundColor=[UIColor  clearColor];
     [goButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton *notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [notGoButton setFrame:CGRectMake(0, 0, 80, 40)];
+    notGoButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [notGoButton setFrame:CGRectMake(100, 0, 80, 40)];
     [notGoButton setTitle:@"不参加" forState:UIControlStateNormal];
     [notGoButton setImage:[UIImage imageNamed:@"reject"] forState:UIControlStateNormal];
     //    [goButton addTarget:self action:@selector(nil) forControlEvents:UIControlEventTouchUpInside];
@@ -62,34 +65,46 @@
     [notGoButton addTarget:self action:@selector(changeClientStatus:) forControlEvents:UIControlEventTouchUpInside];
     
     
-    CGRect bounds = [[UIScreen mainScreen] bounds];
+    bounds = [[UIScreen mainScreen] bounds];
     
-    UIView *footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, 100)];
+    footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, bounds.size.width, 100)];
     footerView.backgroundColor = [UIColor clearColor];
-    
-    
-    if([self.clientStatusFlag isEqualToString:@"donothing"]||[self.clientStatusFlag  isEqualToString:@"refused"]){
-        goButton.center = CGPointMake(bounds.size.width / 4, 50);
-        [footerView addSubview:goButton];
-    }
-     
-    if([self.clientStatusFlag isEqualToString:@"donothing"]||[self.clientStatusFlag  isEqualToString:@"applied"]){
-        notGoButton.center = CGPointMake(bounds.size.width - (bounds.size.width / 4), 50);
-        [footerView addSubview:notGoButton];
-    
-    }
-    
     self.tableView.tableFooterView = footerView;
+    [footerView addSubview:goButton];
+    [footerView addSubview:notGoButton];
     
+    if([self.clientStatusFlag isEqualToString:@"donothing"]){
+        //goButton.center = CGPointMake(bounds.size.width / 4, 50);
+        //[footerView addSubview:goButton];
+        goButton.hidden=NO;
+        notGoButton.hidden=NO;
+    }else if([self.clientStatusFlag  isEqualToString:@"applied"]){
+        goButton.hidden=YES;
+        notGoButton.hidden=NO;
+            
+    }else if([self.clientStatusFlag  isEqualToString:@"refused"]){
+       // notGoButton.center = CGPointMake(bounds.size.width - (bounds.size.width / 4), 50);
+        //[footerView addSubview:notGoButton];
+        goButton.hidden=NO;
+        notGoButton.hidden=YES;
+        
+
+    }
+    
+   
     NSString *statusString=[self.clientDict objectForKey:@"status"];
     if([self.clientStatusFlag  isEqualToString:@"all"]){
-        if([statusString  isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"reject"]){
-            goButton.center = CGPointMake(bounds.size.width / 4, 50);
-            [footerView addSubview:goButton];
-        }
-        if([statusString isEqualToString:@"noanswer"]||[statusString  isEqualToString:@"apply"]){
-            notGoButton.center = CGPointMake(bounds.size.width - (bounds.size.width / 4), 50);
-            [footerView addSubview:notGoButton];
+        if([statusString  isEqualToString:@"noanswer"]){
+            //goButton.center = CGPointMake(bounds.size.width / 4, 50);
+            goButton.hidden=NO;
+            notGoButton.hidden=NO;
+        }else if([statusString  isEqualToString:@"apply"]){
+            goButton.hidden=YES;
+            notGoButton.hidden=NO;
+        }else if([statusString  isEqualToString:@"reject"]){
+           // notGoButton.center = CGPointMake(bounds.size.width - (bounds.size.width / 4), 50);
+            goButton.hidden=NO;
+            notGoButton.hidden=YES;           
         }
     
     }
@@ -173,7 +188,30 @@
         NSString *appliedKeyString=[[NSString alloc] initWithFormat:@"%dappliedIscheck",[self.partyObj.partyId intValue]];
         NSInteger currentInt=[isChenkDefault integerForKey:appliedKeyString];
         [isChenkDefault  setInteger:currentInt+1  forKey:appliedKeyString]; 
-        [btn setImage:[UIImage imageNamed:@"apply_gray"] forState:UIControlStateNormal];
+        //[btn setImage:[UIImage imageNamed:@"apply_gray"] forState:UIControlStateNormal];
+        NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
+        if (self.quest) {
+            [self.quest clearDelegatesAndCancel];
+        }
+        ASIFormDataRequest *request1 = [ASIFormDataRequest requestWithURL:url];
+        [request1 setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
+        [request1 setPostValue:statusAction forKey:@"cpAction"];
+        request1.timeOutSeconds = 20;
+        [request1 setDelegate:self];
+        [request1 setShouldAttemptPersistentConnection:NO];
+//        activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//        activity.frame = activity.frame = CGRectMake(200,200, 60, 60);
+//        [activity startAnimating];
+//        [self.view addSubview:activity];
+        _HUD = [[MBProgressHUD alloc] initWithView:self.tableView];
+        [self.tableView addSubview:_HUD];
+        _HUD.labelText = @"变更此人状态";
+        [_HUD show:YES];
+
+        [request1 setDidFinishSelector:nil];
+        [request1 setDidFailSelector:nil];
+        [request1 startSynchronous];
+        self.quest=request1;
     
     }else if(btn.tag==24){
         statusAction=@"reject";
@@ -181,7 +219,31 @@
         NSString *refusedKeyString=[[NSString alloc] initWithFormat:@"%drefusedIscheck",[self.partyObj.partyId intValue]];
         NSInteger currentInt=[isChenkDefault integerForKey:refusedKeyString];
         [isChenkDefault setInteger:currentInt-1 forKey:refusedKeyString];
-        [btn setImage:[UIImage imageNamed:@"reject_gray"] forState:UIControlStateNormal];
+        //[btn setImage:[UIImage imageNamed:@"reject_gray"] forState:UIControlStateNormal];
+        
+        NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
+        
+        if (self.quest) {
+            [self.quest clearDelegatesAndCancel];
+        }
+        ASIFormDataRequest *request2 = [ASIFormDataRequest requestWithURL:url];
+        [request2 setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
+        [request2 setPostValue:statusAction forKey:@"cpAction"];
+        request2.timeOutSeconds = 20;
+        [request2 setDelegate:self];
+        [request2 setShouldAttemptPersistentConnection:NO];
+//        activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//        activity.frame = CGRectMake(20,20, 50, 50);
+//        [activity startAnimating];
+//        [self.view addSubview:activity];
+       _HUD = [[MBProgressHUD alloc] initWithView:self.tableView];
+        [self.tableView addSubview:_HUD];
+        _HUD.labelText = @"变更此人状态";        
+        [_HUD show:YES];
+        [request2 setDidFinishSelector:nil];
+        [request2 setDidFailSelector:nil];
+        [request2 startSynchronous];
+        self.quest=request2;
     
     }
 //    if ([self.clientStatusFlag isEqualToString:@"all"]) {
@@ -198,36 +260,31 @@
 //        }
 //    }
     
-    NSInteger backendID=[[clientDict  objectForKey:@"backendID"] intValue];
     
-    if (self.quest) {
-        [self.quest clearDelegatesAndCancel];
-    }
-    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
-    [request setPostValue:[NSNumber numberWithInteger:backendID] forKey:@"cpID"];
-    [request setPostValue:statusAction forKey:@"cpAction"];
-    request.timeOutSeconds = 20;
-    [request setDelegate:self];
-    [request setShouldAttemptPersistentConnection:NO];
-    //btn.hidden = YES;
-    btn.enabled = NO;
-//    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-//    activity.frame = btn.frame;
-//    [activity startAnimating];
-//    [cell addSubview:activity];
-    [request setDidFinishSelector:nil];
-    [request setDidFailSelector:nil];
-    [request startSynchronous];
-    self.quest=request;
-    NSError *error = [request error];
+    
+    
+    NSError *error = [self.quest error];
     if (!error) {
         //[activity removeFromSuperview];
-        NSString *response = [request responseString];
+        NSString *response = [self.quest responseString];
         SBJsonParser *parser = [[SBJsonParser alloc] init];
         NSDictionary *result = [parser objectWithString:response];
         NSString *description = [result objectForKey:@"description"];
-        if ([request responseStatusCode] == 200) {
-            if ([description isEqualToString:@"ok"]) {
+        NSString *status = [result objectForKey:@"status"];
+        if ([self.quest responseStatusCode] == 200) {
+            if ([status isEqualToString:@"ok"]) {
+                NSLog(@"请求发送成功－－－－－");
+                if(btn.tag==23){//点击参加
+                    goButton.hidden=YES;
+                    notGoButton.hidden=NO;
+                }else if(btn.tag==24){
+                    goButton.hidden=NO;
+                    notGoButton.hidden=YES;
+                }
+//                [activity stopAnimating];
+//                [activity removeFromSuperview];
+                [_HUD hide:YES];
+                [self.tableView reloadData];
                 //[btn removeFromSuperview];
 //                for (int i=0; i<[[cell subviews] count]; i++) {
 //                    if ([[[cell subviews] objectAtIndex:i] isMemberOfClass:[UILabel class]]) {
@@ -240,23 +297,22 @@
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
                 NSString *keyString=[[NSString alloc] initWithFormat:@"%disStatusChanged",[self.partyObj.partyId intValue]];
                 [defaults setInteger:1  forKey:keyString];    //wxz
-
+                 
                         //}
                     //}
                // }
             } else {
                 btn.enabled = YES;
-               // btn.hidden = NO;
             }
-        }else if([request responseStatusCode] == 404){
+        }else if([self.quest responseStatusCode] == 404){
             [self showAlertRequestFailed:REQUEST_ERROR_404];
-            btn.hidden = NO;
             btn.enabled = YES;
-        }else if([request responseStatusCode] == 500){
+            btn.hidden = NO;
+        }else if([self.quest responseStatusCode] == 500){
             [self showAlertRequestFailed:REQUEST_ERROR_500];
-            btn.hidden = NO;
             btn.enabled = YES;
-        }else if([request responseStatusCode] == 502){
+            btn.hidden = NO;
+        }else if([self.quest responseStatusCode] == 502){
             [self showAlertRequestFailed:REQUEST_ERROR_502];
             btn.hidden = NO;
             btn.enabled = YES;
@@ -336,6 +392,7 @@
 //            wordTextField.backgroundColor = [UIColor clearColor];
 //            wordTextField.editable = NO;
             NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+           detailWordString = [detailWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
             if(detailWordString.length>1){
                 messageTextView.text=[detailWordString substringFromIndex:1];
                 
@@ -389,6 +446,7 @@
 //            wordTextField.backgroundColor = [UIColor clearColor];
 //            wordTextField.editable = NO;
             NSString *detailWordString=[self.clientDict objectForKey:@"msg"];
+            detailWordString=[detailWordString stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"]; 
             if(detailWordString.length>1){
                 messageTextView.text=[detailWordString substringFromIndex:1];
             }else{
@@ -445,47 +503,86 @@
 
 //通过姓名和电话找出此联系人的头像数据
 - (ABRecordRef)getContactorImageData{
+//    NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
+//    NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
+//    NSLog(@"姓名：：%@   电话：：%@",contactorNameString,contactorPhoneString);
+//        ABAddressBookRef addressBook = ABAddressBookCreate();
+//        CFArrayRef searchNameResult =  ABAddressBookCopyPeopleWithName (
+//                                                                    addressBook,
+//                                                                    (__bridge CFStringRef)contactorNameString);
+//    
+//    
+//    CFArrayRef searchPhoneResult =  ABAddressBookCopyPeopleWithName (
+//                                                                     addressBook,
+//                                                                     (__bridge CFStringRef)contactorPhoneString);
+//    
+//    NSArray *array2=(__bridge_transfer NSArray*)searchPhoneResult;  
+//
+//    
+//  NSArray *array1=(__bridge_transfer NSArray*)searchNameResult;  
+//  if(array1.count>0){
+//    for (int i=0; i<CFArrayGetCount(searchNameResult); )
+//           {
+//            ABRecordRef card = CFArrayGetValueAtIndex(searchNameResult, i);
+//            if(!card){
+//                continue;
+//            }
+//            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
+//            if(!phone){
+//                continue;
+//            }
+//            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
+//                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
+//                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
+//                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
+//                    if(ABPersonHasImageData(card)){
+//                          return card;
+//                    }else{
+//                        return nil;
+//                    }
+//                }else{
+//                    continue;
+//                }
+//               
+//            }
+//            return nil;   
+//               
+//        }
+//  }else if(array2.count>0){
+//          for (int i=0; i<CFArrayGetCount(searchPhoneResult); )
+//          {
+//              ABRecordRef card = CFArrayGetValueAtIndex(searchPhoneResult, i);
+//              if(!card){
+//                  continue;
+//              }
+//             
+//              if(ABPersonHasImageData(card)){
+//                  return card;
+//              }else{
+//                  return nil;
+//              }
+//              
+//         } 
+//        return nil;   
+//
+//  }else{
+//      return nil;
+//
+//  }
     NSString *contactorNameString=[self.clientDict objectForKey:@"cName"];
     NSString *contactorPhoneString=[self.clientDict objectForKey:@"cValue"];
-        ABAddressBookRef addressBook = ABAddressBookCreate();
-        CFArrayRef searchResult =  ABAddressBookCopyPeopleWithName (
-                                                                    addressBook,
-                                                                    (__bridge CFStringRef)contactorNameString);
     
-  NSArray *array1=(__bridge_transfer NSArray*)searchResult;  
-  if(array1.count>0){
-    for (int i=0; i<CFArrayGetCount(searchResult); )
-           {
-            ABRecordRef card = CFArrayGetValueAtIndex(searchResult, i);
-            if(!card){
-                continue;
-            }
-            ABMultiValueRef phone = ABRecordCopyValue(card, kABPersonPhoneProperty);
-            if(!phone){
-                continue;
-            }
-            for (int j=0; j<ABMultiValueGetCount(phone); j++) {
-                NSString *valStr = (__bridge_transfer NSString*)ABMultiValueCopyValueAtIndex(phone, j);
-                NSString *getCleanPhoneString=[self getCleanPhoneNumber:valStr]; 
-                if ([getCleanPhoneString  isEqualToString:contactorPhoneString]) {
-                    //self.cID = ABRecordGetRecordID(card);
-                    if(ABPersonHasImageData(card)){
-                          return card;
-                    }else{
-                        return nil;
-                    }
-                }else{
-                    continue;
-                }
-               
-            }
-            return nil;   
-               
-        }
-  }else{
-      return nil;
-  }
-    return nil;
+    ClientObject *newClient = [[ClientObject alloc] init];
+    newClient.cName = contactorNameString;
+    newClient.cVal = contactorPhoneString;
+    
+    [newClient searchClientIDByPhone];
+    
+    if (newClient.cID == -1) {
+        return nil;
+    } else {
+        return ABAddressBookGetPersonWithRecordID(addressBook, newClient.cID);
+    }
 }
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -493,16 +590,28 @@
         UIView *headV = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 85.0f)];
         ABRecordRef getCard=[self getContactorImageData];
         
-        UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
+        UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 62, 62)];
         imgV.backgroundColor = [UIColor whiteColor];
         UIImage *person = nil;
-        if(getCard){
-            CFDataRef imgData = ABPersonCopyImageData(getCard);
-            UIGraphicsBeginImageContext(CGSizeMake(62, 62));
-            [[UIImage imageWithData:(NSData *)imgData] drawInRect:CGRectMake(0, 0, 65, 65)];
-            person  = UIGraphicsGetImageFromCurrentImageContext();
-            CFRelease(imgData);
+    
+        if (getCard) {
+            if (ABPersonHasImageData(getCard)) {
+                NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(getCard);
+                
+                UIGraphicsBeginImageContext(CGSizeMake(62.0f, 62.0f));
+                [[UIImage imageWithData:imgData] drawInRect:CGRectMake(0.f, 0.f, 62.f, 62.f)];
+                person = UIGraphicsGetImageFromCurrentImageContext();
+            }
+            
+            if (person) {
+                [imgV setImage:person];
+            } else {
+                person = [UIImage imageNamed:@"contact_with_no-pic.png"];
+                [imgV setImage:person];
+            }
+
         }
+        
         [imgV setImage:person];
         [headV addSubview:imgV];
         UILabel *lblV = [[UILabel alloc] initWithFrame:CGRectMake(100, 10, 210, 65)];
@@ -519,7 +628,13 @@
 //            personMName = @"";
 //        }
        // lblV.text = [NSString stringWithFormat:@"%@ %@ %@",personFName,personMName,personLName];
-        lblV.text=[self.clientDict objectForKey:@"cName"];
+        
+        
+        if([self.clientDict objectForKey:@"cName"]==nil||[[self.clientDict objectForKey:@"cName"] isEqualToString:@""]){
+            lblV.text=[self.clientDict objectForKey:@"cValue"];
+        }else{
+            lblV.text=[self.clientDict objectForKey:@"cName"];
+        }
         lblV.backgroundColor = [UIColor clearColor];
         [headV addSubview:lblV];
         return headV;
