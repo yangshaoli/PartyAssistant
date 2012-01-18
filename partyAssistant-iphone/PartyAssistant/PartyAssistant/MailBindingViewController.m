@@ -56,7 +56,16 @@
 {
     [super viewDidLoad];
     [self.inputMailTextField becomeFirstResponder];
-    self.title=@"邮箱绑定";
+    BindingStatus mailStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] mailBindingStatus];
+    if (mailStatus == StatusNotBind) {
+        self.navigationItem.title = @"邮箱绑定";
+    } else if (mailStatus != StatusUnknown && mailStatus != StatusBinded) {
+        self.navigationItem.title = @"重新输入邮箱";
+        
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleDone target:self action:@selector(jumpToVerify)];
+        
+        self.navigationItem.leftBarButtonItem = closeButton;
+    }
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -118,6 +127,8 @@
         verifyPage.inSpecialProcess = YES;
     }
     
+    self.inputMailTextField.text = @"";
+    
     [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
@@ -167,6 +178,8 @@
         if ([status isEqualToString:@"ok"]) {
             BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
             userStatus.bindingMail = self.inputMailTextField.text;
+            
+            self.inputMailTextField.text = @"";
             
             [self saveProfileDataFromResult:result];
             
