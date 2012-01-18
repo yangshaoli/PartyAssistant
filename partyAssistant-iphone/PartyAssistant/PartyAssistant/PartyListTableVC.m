@@ -131,7 +131,6 @@
         if([DataManager sharedDataManager].isRandomLoginSelf){
             ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
             [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES]; 
-            NSLog(@"list------");
         }
     }
     [self refreshBtnAction];
@@ -153,8 +152,10 @@
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
     [self showTabBar:self.tabBarController];
-    if(isRefreshImage){
+   
+    if(self.isRefreshImage){
         [self refreshBtnAction];
+        self.isRefreshImage=NO;
         [self.tableView reloadData];
     }
     NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
@@ -215,7 +216,6 @@
 - (void)requestDataWithLastID:(NSInteger)aLastID {
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    //NSLog(@"打印两数 %d---%d",user.uID,aLastID);
     if (user.uID < 0) {
         return;
     }
@@ -477,8 +477,6 @@
         cellImageView.tag=2;
         [cell  addSubview:cellImageView];
     
-    }else{
-        self.isRefreshImage=NO;
     }
     
     
