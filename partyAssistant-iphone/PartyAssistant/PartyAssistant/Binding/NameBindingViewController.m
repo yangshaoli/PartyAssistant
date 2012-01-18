@@ -59,6 +59,11 @@
     [super viewDidLoad];
     self.title=@"真实姓名";
     [self.nickNameInputTextField becomeFirstResponder];
+    
+    NSString *bindedNickName = nil;
+    bindedNickName = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
+    self.nickNameInputTextField.text = bindedNickName;
+    
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -77,6 +82,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
 //    self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
 }
 #pragma mark _
