@@ -18,6 +18,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import "WBRequest.h"
+#import "WeiboSettings.h"
 
 @protocol WBSendViewDelegate;
 
@@ -62,6 +63,8 @@
 //show and dismiss the sendview 
 - (void)show;
 - (void)dismiss:(BOOL)animated;
+
+-(void)sendBtnTouched;
 
 @end
 

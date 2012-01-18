@@ -1,4 +1,5 @@
 {% extends 'login_base.html' %}
+{% load string_filter %}
 {% block style %}
 <link href="/static/libs/jquery-ui-1/css/ui-lightness/jquery-ui-1.8.16.custom.css" type="text/css" rel="stylesheet" />
 <style>
@@ -16,7 +17,7 @@
      */ * html .ui-autocomplete {
         height: 100px;
     }
-    a {
+    .field a {
     color: #2319FD;
     text-decoration :underline;  
       }
@@ -28,7 +29,44 @@
 <script src="/static/libs/jquery-ui-1/js/jquery-ui-1.8.16.custom.min.js">
 </script>
 <script type="text/javascript">
+/**
+ *取出重复的联系人
+ *
+ */
+function distinct(){
+	 client_email_list = $('#id_client_email_list').val().split(',');
+     client_email_list_length = client_email_list.length;     
+	 array = new Array();
+	 array_length = 0;   
+     for (i = 0; i < client_email_list_length; i++) {
+         client_email = client_email_list[i].replace(/^\s+|\s+$/g, ""); 
+         if (client_email != "") {
+             array_length = array.length;
+             add = 1 ;
+             for(k=0;k<=array_length;k++){
+                 if(array[k] == client_email){
+                 	add = 0;
+                 	break;
+                 }
+                 if(k == array_length){
+                    add = 1;
+                 }
+             }  
+             if(add==1){
+             	array.push(client_email);
+             }  
+         }
+     }//endfor
+     client_emails = array.join(',');
+//     if(client_emails.length!=0){
+//	     if(client_emails.lastIndexOf(',')!=(client_emails.length-1)){
+//	        client_emails = client_emails+',';
+//	     }
+//     }
+     $('#id_client_email_list').val(client_emails);
+}
     function calculate_send_email_count(){
+    	distinct();
         client_email_list = $('#id_client_email_list').val().split(',');
         client_email_list_length = client_email_list.length;
         count = 0;
@@ -37,8 +75,33 @@
                 count = count + 1;
             }
         }
-        $('#id_send_email_count').html("收件人人数统计： " + count);
+        $('#id_send_email_count').html("共 " + count + " 人");
     }
+    
+/**
+ * 获得最近活动邀请的人
+ * @param int party.id
+ */
+function getRecentPartiesAddressee(v){
+    if (v != 0) {
+           $.ajax({
+            type : 'GET',
+            url: '/parties/invite_list_ajax/'+v+'/',
+            statusCode : {
+            200: function(response){
+                clients = JSON.parse(response);
+                client_list = [];
+                for (i in clients){
+                    client_list[i] = clients[i].address;
+                }
+                $("#id_client_email_list").val(client_list.join(','));
+                calculate_send_email_count();
+            },
+            500: function(){ alert('没有获取到用户列表')}
+            }
+        });
+    }
+}
     
     var availableTags = eval({{client_data|safe}});
     $(function(){
@@ -51,7 +114,10 @@
             return split(term).pop();
         }
         $('#id_client_email_list').bind("keyup", function(event){
-			calculate_send_email_count();
+		   if(event.keyCode==188){
+            return;
+          }
+		  calculate_send_email_count();
 		});
         $("#id_client_email_list") // don't navigate away from the field on tab when selecting an item
     .bind("keydown", function(event){
@@ -87,7 +153,7 @@
     $(document).ready(function(){
  	$('#id_is_apply_tips').change(function(){
 		if(!this.checked){
-		   if (window.confirm("关闭报名提示后，在发送给邀请人的短信中将不包含报名链接，确定吗?")){
+		   if (window.confirm("关闭报名提示后，在发送给邀请人的邮件中将不包含报名链接，确定吗?")){
 		   	  this.checked=false;
 		   }else{
 		      this.checked=true;
@@ -111,10 +177,11 @@
             {% csrf_token %}
             <div class="field">
                 <label for="client_email_list">
-                    收件人
+                    收件人<font color='red'>*</font>
+                <p id="id_send_email_count">共 0 人</p>
                 </label>
-                {{ form.client_email_list.errors }}
-                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_email_list.value }}</textarea>
+                <textarea id="id_client_email_list" rows="4" cols="40" name="client_email_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ime-mode:disabled;">{{ form.client_email_list.value }}</textarea>
+                &nbsp;<font color='red'>{{ form.client_email_list.errors.0 }}</font>
                 {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
                 <script>
                   var reject = '{{ quickadd_client.reject_client }}';
@@ -159,34 +226,36 @@
 	                 	}else{
 	                 	    $('#id_client_email_list').val(temp)
 	                 	}
+	                 	calculate_send_email_count();
 	                } 	
                   }
                 
                 </script>
-                <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">已报名</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">犹豫的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
+                <br/>快速添加：&nbsp;&nbsp;<a href='#' onclick="quickadd('all');">所有人</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('apply');">来的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('noanswer');">待定的</a>&nbsp;&nbsp;<a href='#' onclick="quickadd('reject');">不来的</a>
                 {% endif %}
             </div>
             <div class="field">
-                <label for="id_send_email_count">
-                    &nbsp;
-                </label>
-                <p id="id_send_email_count">
-                    收件人人数统计： 0
-                </p>
+                <label for="id_recent_parties">最近联系人</label>
+                <select id="id_recent_parties" onchange="getRecentPartiesAddressee(this.value)"  style="width:410px">
+                    <option value="0">未选择</option>
+                    {% for party in recent_parties %}
+                    <option value="{{party.id}}">{{party.description|truncatestring:"40"}}</option>
+                    {% endfor %}
+                </select>
             </div>
             <div class="field">
                 <label for="id_content">
-                    邮件内容
+                    邮件内容<font color='red'>*</font>
                 </label>
-                {{ form.content.errors }}
-                {{ form.content }}
+                <font color='red'>{{ form.content.errors.0 }}</font>
+                <textarea name='content' id='id_content' cols='70' rows='15'>{{ form.content.value|default:'' }}</textarea>
             </div>
             <div class="field">
                 <label for="id_is_apply_tips">
                     &nbsp;
                 </label>
                 <p>
-                    {{ form.is_apply_tips }}带报名链接
+                <input type='checkbox' name='is_apply_tips' id='id_is_apply_tips' {% if form.is_apply_tips.value %}checked='checked'{% endif %}></input>带报名链接
                 </p>
             </div>
             <div class="field">

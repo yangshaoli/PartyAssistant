@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
+@protocol PartyUserRegisterDelegate <NSObject>
+
+- (void)autoLogin;//自动登录
+@end
 
 @interface PartyUserRegisterViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, MBProgressHUDDelegate>{
     
@@ -19,13 +23,13 @@
     
     UITableViewCell *_userNameCell;
     UITableViewCell *_pwdCell;
-    UITableViewCell *_pwdCheckCell;
-    UITableViewCell *_nickNameCell;
+    
+    //UITableViewCell *_nickNameCell;
     
     UITextField *_userNameTextField;
     UITextField *_pwdTextField;
-    UITextField *_pwdCheckTextField;
-    UITextField *_nickNameTextField;
+    //UITextField *_nickNameTextField;
+    id<PartyUserRegisterDelegate> delegate;
     
     MBProgressHUD *_HUD;
 }
@@ -34,11 +38,11 @@
 
 @property (nonatomic, retain) IBOutlet UITableViewCell *userNameCell;
 @property (nonatomic, retain) IBOutlet UITableViewCell *pwdCell;
-@property (nonatomic, retain) IBOutlet UITableViewCell *pwdCheckCell;
-@property (nonatomic, retain) IBOutlet UITableViewCell *nickNameCell;
+//@property (nonatomic, retain) IBOutlet UITableViewCell *nickNameCell;
 
 @property (nonatomic, retain) IBOutlet UITextField *userNameTextField;
 @property (nonatomic, retain) IBOutlet UITextField *pwdTextField;
-@property (nonatomic, retain) IBOutlet UITextField *pwdCheckTextField;
-@property (nonatomic, retain) IBOutlet UITextField *nickNameTextField;
+//@property (nonatomic, retain) IBOutlet UITextField *nickNameTextField;
+@property (nonatomic, retain) id<PartyUserRegisterDelegate> delegate;
+- (IBAction)autoLogin;
 @end

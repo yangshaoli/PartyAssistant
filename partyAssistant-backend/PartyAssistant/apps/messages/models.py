@@ -15,8 +15,8 @@ class BaseMessage(models.Model):
     createtime = models.DateTimeField(auto_now_add = True)
     party = models.ForeignKey(Party)
     is_apply_tips = models.BooleanField(default = True)
-    is_send_by_self = models.BooleanField(default = True)
-    last_modified_time = models.DateTimeField(auto_now=True)
+    is_send_by_self = models.BooleanField(default = False)
+    last_modified_time = models.DateTimeField(auto_now = True)
     
     def get_subclass_type(self):
         if hasattr(self, "emailmessage"):
@@ -29,19 +29,32 @@ class BaseMessage(models.Model):
             return self.emailmessage
         else:
             return self.smsmessage
+        
+    def __unicode__(self):
+        return '%s (%s)' % (self.get_subclass_obj().content[:10], self.party.creator.username)
 
 class EmailMessage(BaseMessage):
     subject = models.CharField(max_length = 256)
     content = models.TextField()
+    def __unicode__(self):
+        return '%s (%s)' % (self.content[:10], self.party.creator.username)
 
 class SMSMessage(BaseMessage):
     content = models.TextField()
+    def __unicode__(self):
+        return '%s (%s)' % (self.content[:10], self.party.creator.username)
     
 class Outbox(models.Model):
     address = models.TextField()
     base_message = models.ForeignKey(BaseMessage)
     
-def thread_send_message(sender=None, instance=None, **kwargs):
+    def __unicode__(self):
+        return '%s (%s)' % (self.base_message.get_subclass_obj().content[:10], self.base_message.party.creator.username)
+    
+def thread_send_message(sender = None, instance = None, **kwargs):
+    if instance.base_message.get_subclass_obj().is_send_by_self:
+        return
+    
     message = instance.base_message.get_subclass_obj()
     party = message.party
     

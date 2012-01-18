@@ -21,7 +21,7 @@
  
 
 //check whether the device is and iPad or not
-BOOL WBIsDeviceIPad() {
+static BOOL WBIsDeviceIPad() {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 30200
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
 		return YES;
@@ -54,6 +54,7 @@ BOOL WBIsDeviceIPad() {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code.
+        
     }
     return self;
 }
@@ -63,61 +64,65 @@ BOOL WBIsDeviceIPad() {
 	self = [super initWithFrame:CGRectMake(0,0,320,480)];
     if (self) {
         // Initialization code.
-		
+		if (!_weibo) {
+            _weibo = [[WeiBo alloc] initWithAppKey:WEIBOPRIVATEAPPKEY withAppSecret:WEIBOPRIVATEAPPSECRETE];
+        }
 		//make the background semi-transparent
 		self.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7f];
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
  		
 		
 		//add the panel view
-		_panelView = [[UIView alloc] initWithFrame:CGRectMake(16, 73, 288, 335)];
-		_panelImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 288, 335)];
-		_panelImageView.image = [[UIImage imageNamed:@"bg.png"] stretchableImageWithLeftCapWidth:18 topCapHeight:18];
- 
-		[_panelView addSubview:_panelImageView];
+		_panelView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 440)];
+        _panelView.backgroundColor = [UIColor whiteColor];
+//		_panelImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 288, 335)];
+//		_panelImageView.image = [[UIImage imageNamed:@"bg.png"] stretchableImageWithLeftCapWidth:18 topCapHeight:18];
+// 
+//		[_panelView addSubview:_panelImageView];
   		[self addSubview:_panelView];
  		
-		//add buttons and title
-		UIButton * closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		closeButton.showsTouchWhenHighlighted = YES;
-		closeButton.frame = CGRectMake(15, 13, 48, 30);
-		[closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[closeButton setBackgroundImage:[UIImage imageNamed:@"btn.png"] forState:UIControlStateNormal];
-		[closeButton setTitle:NSLocalizedStringFromTable(@"关闭",@"SendViewLocalize",nil) forState:UIControlStateNormal];
-		closeButton.titleLabel.font = [UIFont boldSystemFontOfSize: 13.0f];
-		[closeButton addTarget:self action:@selector(closeBtnTouched:) forControlEvents:UIControlEventTouchUpInside];
-		[_panelView addSubview:closeButton];
+//		//add buttons and title
+//		UIButton * closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		closeButton.showsTouchWhenHighlighted = YES;
+//		closeButton.frame = CGRectMake(15, 13, 48, 30);
+//		[closeButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//		[closeButton setBackgroundImage:[UIImage imageNamed:@"btn.png"] forState:UIControlStateNormal];
+//		[closeButton setTitle:NSLocalizedStringFromTable(@"关闭",@"SendViewLocalize",nil) forState:UIControlStateNormal];
+//		closeButton.titleLabel.font = [UIFont boldSystemFontOfSize: 13.0f];
+//		[closeButton addTarget:self action:@selector(closeBtnTouched:) forControlEvents:UIControlEventTouchUpInside];
+//		[_panelView addSubview:closeButton];
  		
-		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(200, 12, 140, 30)];
-		_titleLabel.text = NSLocalizedStringFromTable(@"新浪微博",@"SendViewLocalize",nil);
-		_titleLabel.textColor = [UIColor blackColor];
-		_titleLabel.backgroundColor = [UIColor clearColor];
-		_titleLabel.textAlignment = UITextAlignmentCenter;
-		_titleLabel.center = CGPointMake(144, 27);
-		[_titleLabel setShadowOffset:CGSizeMake(0, 1)];
-		[_titleLabel setShadowColor:[UIColor whiteColor]];
-		_titleLabel.font = [UIFont systemFontOfSize:19];
-		[_panelView addSubview:_titleLabel];
+//		_titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(200, 12, 140, 30)];
+//		_titleLabel.text = NSLocalizedStringFromTable(@"新浪微博",@"SendViewLocalize",nil);
+//		_titleLabel.textColor = [UIColor blackColor];
+//		_titleLabel.backgroundColor = [UIColor clearColor];
+//		_titleLabel.textAlignment = UITextAlignmentCenter;
+//		_titleLabel.center = CGPointMake(144, 27);
+//		[_titleLabel setShadowOffset:CGSizeMake(0, 1)];
+//		[_titleLabel setShadowColor:[UIColor whiteColor]];
+//		_titleLabel.font = [UIFont systemFontOfSize:19];
+//		[_panelView addSubview:_titleLabel];
 		
-		_sendWeiboButton = [UIButton buttonWithType:UIButtonTypeCustom];
-		_sendWeiboButton.showsTouchWhenHighlighted = YES;
-		_sendWeiboButton.frame = CGRectMake(288-15-48, 13, 48, 30);
-		[_sendWeiboButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[_sendWeiboButton setBackgroundImage:[UIImage imageNamed:@"btn.png"] forState:UIControlStateNormal];
-		[_sendWeiboButton setTitle: NSLocalizedStringFromTable(@"发送",@"SendViewLocalize",nil)  forState:UIControlStateNormal];
-		_sendWeiboButton.titleLabel.font = [UIFont boldSystemFontOfSize: 13.0f];
-		[_sendWeiboButton addTarget:self action:@selector(sendBtnTouched:) forControlEvents:UIControlEventTouchUpInside];
-		[_panelView addSubview:_sendWeiboButton];
+//		_sendWeiboButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//		_sendWeiboButton.showsTouchWhenHighlighted = YES;
+//		_sendWeiboButton.frame = CGRectMake(288-15-48, 13, 48, 30);
+//		[_sendWeiboButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+//		[_sendWeiboButton setBackgroundImage:[UIImage imageNamed:@"btn.png"] forState:UIControlStateNormal];
+//		[_sendWeiboButton setTitle: NSLocalizedStringFromTable(@"发送",@"SendViewLocalize",nil)  forState:UIControlStateNormal];
+//		_sendWeiboButton.titleLabel.font = [UIFont boldSystemFontOfSize: 13.0f];
+//		[_sendWeiboButton addTarget:self action:@selector(sendBtnTouched:) forControlEvents:UIControlEventTouchUpInside];
+//		[_panelView addSubview:_sendWeiboButton];
 		
-		_weiboContentTextView = [[UITextView alloc] initWithFrame:CGRectMake(13,60,288-26,150)];
+		_weiboContentTextView = [[UITextView alloc] initWithFrame:CGRectMake(0,0,320,130)];
 		_weiboContentTextView.editable = YES;
 		_weiboContentTextView.delegate = self;
 		_weiboContentTextView.text = weiboText;
 		_weiboContentTextView.backgroundColor = [UIColor clearColor];
 		_weiboContentTextView.font = [UIFont systemFontOfSize:16];// [UIFont systemFontOfSize:[UIFont labelFontSize]];
+        [_weiboContentTextView becomeFirstResponder];
  		[_panelView addSubview:_weiboContentTextView];
 		
-		_wordCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(210,190,30,30)];
+		_wordCountLabel = [[UILabel alloc] initWithFrame:CGRectMake(250,130,30,30)];
 		_wordCountLabel.backgroundColor = [UIColor clearColor];
 		_wordCountLabel.textColor = [UIColor darkGrayColor];
 		_wordCountLabel.font = [UIFont systemFontOfSize:16];
@@ -126,7 +131,7 @@ BOOL WBIsDeviceIPad() {
 		
 		_clearTextButton = [UIButton buttonWithType:UIButtonTypeCustom];
 		_clearTextButton.showsTouchWhenHighlighted = YES;
-		_clearTextButton.frame = CGRectMake(240,191,30,30);
+		_clearTextButton.frame = CGRectMake(280,131,30,30);
 		[_clearTextButton setContentMode:UIViewContentModeCenter];
  		[_clearTextButton setImage:[UIImage imageNamed:@"delete.png"] forState:UIControlStateNormal];
 		[_clearTextButton addTarget:self action:@selector(clearBtnTouched:) forControlEvents:UIControlEventTouchUpInside];
@@ -235,9 +240,8 @@ BOOL WBIsDeviceIPad() {
 	[self dismiss:YES];
 }
 
--(void)sendBtnTouched:(id)sender
+-(void)sendBtnTouched
 {
-
 	if ([_weiboContentTextView.text isEqual: @""]) {
 		UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedStringFromTable(@"新浪微博",@"SendViewLocalize",nil)  message:NSLocalizedStringFromTable(@"请输入微博内容",@"SendViewLocalize",nil) delegate:nil cancelButtonTitle:NSLocalizedStringFromTable(@"确定",@"SendViewLocalize",nil) otherButtonTitles:nil];
 		[alertView show];
@@ -366,7 +370,7 @@ BOOL WBIsDeviceIPad() {
 - (void)deviceOrientationDidChange:(void*)object {
 	
 	
-	UIDeviceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+	UIDeviceOrientation orientation = (UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation;
 	if ( [self shouldRotateToOrientation:orientation]) {
  		
 		CGFloat duration = [UIApplication sharedApplication].statusBarOrientationAnimationDuration;
@@ -399,7 +403,7 @@ BOOL WBIsDeviceIPad() {
 								 screenFrame.origin.x + ceil(screenFrame.size.width/2),
 								 screenFrame.origin.y + ceil(screenFrame.size.height/2));
 	 
-	_orientation = [UIApplication sharedApplication].statusBarOrientation;
+	_orientation = (UIDeviceOrientation)[UIApplication sharedApplication].statusBarOrientation;
 	if (UIInterfaceOrientationIsLandscape(_orientation)) {
 		
 		self.frame = CGRectMake(0, 0, 480, 320);
@@ -590,8 +594,7 @@ BOOL WBIsDeviceIPad() {
 -(int)calculateTextNumber:(NSString *) textA
 {
 	float number = 0.0;
-	int index = 0;
-	for (index; index < [textA length]; index++) {
+	for (int index=0; index < [textA length]; index++) {
 		
 		NSString *character = [textA substringWithRange:NSMakeRange(index, 1)];
 		
@@ -607,19 +610,27 @@ BOOL WBIsDeviceIPad() {
 #pragma mark WBRequest CALLBACK_API
 - (void)request:(WBRequest *)request didFailWithError:(NSError *)error
 {
+//    NSLog(@"error:%@",error);
+//    NSLog(@"request:%@",[request responseText]);
 	if ([_delegate respondsToSelector:@selector(request:didFailWithError:)]) 
 	{
 		[_delegate request:request didFailWithError:error];
 	}
+//    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"发送失败，请重试" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+//    [alertV show];
 }
 
  
 - (void)request:(WBRequest *)request didLoad:(id)result
 {
+//    NSLog(@"request:%@",[request responseText]);
+//    NSLog(@"load:%@",result);
 	if ([_delegate respondsToSelector:@selector(request:didLoad:)]) 
 	{
 		[_delegate request:request didLoad:result];
 	}
+//    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"" message:@"发送成功" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil];
+//    [alertV show];
 }
 
 @end

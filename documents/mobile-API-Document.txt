@@ -1,35 +1,39 @@
-1. createParty
+1. createParty
 	url:"/a/parties/createparty/"
 	method:POST
 	input:{
-		"receivers":Array of Client Object,
-		"content":String of SMS/Email Content,
-		"subject":String of Email Subject;sms will be blank,
-		"_isapplytips":BOOL/Integer(Transfer to BOOL),
-		"msgType":String of "SMS" or "Email",
-		"starttime":Datetime Type,
-		"location":String,
-		"description":String,
-		"peopleMaximum":Int,
+		"receivers":Array of Client Dict,
+		"content":String of SMS Content,
+		"_issendbyself":"0" or "1",
 		"uID":Int,
+		"addressType":"iphone" or "android"
 		}
 	output:Success- {
 			"status":'ok',
 			"description":"ok",
-			"data":{}
+			"data":{
+                		'partyId':Integer,
+                		'applyURL':String,
+				'sms_count_remaining':Integer,
+                		},
+			'iphone_version':IPHONE_APP_VERSION(String),
+        	'android_version':ANDROID_APP_VERSION(String),
 			}
 		Error - {
 			"status":'error',
 			"description":Error Msg,
-			"data":{}
+			"data":{},
+			'iphone_version':IPHONE_APP_VERSION(String),
+            'android_version':ANDROID_APP_VERSION(String),
 			}
-	ClientObject:{
+	ClientDict:{
 			"cName":String,
 			"cVal":Email/Phone Num
 			"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")
 			}
+			
 2. PartyList
-	url:"/a/parties/partylist/(userid)/(page_num)/"
+	url:"/a/parties/partylist/(userid)/(start_id)/"
 	method:GET
 	input:{
 		
@@ -38,40 +42,32 @@
 		"status":"ok",
 		"description":"ok",
 		"dataSource":{
-				"page":Integer,
-				"partyList":PartyObjectArray,
-				}
+				"lastID":Integer,
+				"partyList":PartyDictArray,
+				},
+		'iphone_version':IPHONE_APP_VERSION(String),
+        'android_version':ANDROID_APP_VERSION(String),
 		}
 
-	PartyObject:{
-			"starttime":Datetime,
+	PartyDict:{
+			"clientsData":Dict
 			"description":String,
-			"peopleMaximum":Integer,
-			"location":String,
-			"partyId":int
+			"partyId":int,
+			"type":"phone"/"email"
 			}
 
-3. GetPartyMsg
-	url:"/a/parties/get_party_msg/(party id)/"
-	method:GET
-	input:{
-		
-		}
-	output:{
-		"status":"ok",
-		"description":"ok",
-		"dataSource":{
-				"msgType":"SMS"/"Email",
-				"receiverArray":clientsObjectsArray,
-				'content':String,
-				'subject':String,
-				'_isApplyTips':BOOL,
-				'_isSendBySelf':BOOL
-				}
-		}
-	这个API的逻辑是给你一个Party ID，返回我在这个Party中发送的一封短信或邮件内容及其收件人
-	ClientObjects同上
+#1	start_id is the ID of the start query id, it will return the parties whose id is smaller than the start_id
+	and it will also return the smallest id of the parties
 
+#2	every party dict has a attr：
+		clientsData{
+			appliedClientcount:Integer,
+			newAppliedClientcount:Integer,
+			donothingClientcount:Integer,
+			refusedClientcount:Integer,
+			newRefusedClientcount:Integer,
+		}
+		
 4. GetClientsCount:
 	url:"/a/parties/get_party_client_main_count/(party id)/"
 	method:GET
@@ -84,8 +80,11 @@
 		"datasource":{
 				"allClientcount": Integer,
 				"appliedClientcount": Integer,
+				"newAppliedClientcount":Integer,
 				'refusedClientcount': Integer,
 				'donothingClientcount':Integer,
+				"newRefusedClientcount":Integer,
+				"party_content":String,
 				}
 		}
 
@@ -95,6 +94,7 @@
 	input:{
 		"username":String(not null),
 		"password":String(not null),
+                "device_token":String(not null)
 		}
 	output:{
 		"status":"ok",
@@ -110,12 +110,403 @@
 	input:{
 		"username":String(not null),
 		"password":String(not null),
+                "device_token":String(not null)
 		}
 	output:{
+                "_israndomlogin":"0" or "1",
 		"status":"ok",
 		"description":"ok",
 		"datasource":{
 				"uid":Integer,
 				"name":String,
+				"username":String,
+				"user_remaining":Integer,
 				}
 		}
+
+7. EditParty:
+	url:"/a/parties/editparty/",
+	method:"POST",
+	input:{
+		"partyID":Integer,
+		"description":description,
+		"uID":Integer
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+8 DelParty:
+	url:"/a/partie/deleteparty/",
+	method:"POST",
+	input:{
+		"pID":Integer(party ID),
+		"uID":Integer(user ID),
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+9 GetPartyClientSeperatedList
+	url:"/a/parties/get_party_client_seperated_list/(party id)/( type name)/",<party id> Integer   < type name > String of "all","applied","refused","donothing"
+	method:"GET",
+	input:{},
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+				'clientList':Client Array
+				'unreadCount':Integer
+				}
+		}
+	Client Array:	[		
+			{
+                   	'cName':clientparty.client.name,
+                   	'cValue':cValue,
+                   	'backendID':clientparty.id,
+                   	'status':clientparty.apply_status,
+			'msg':String,
+			'isCheck':BOOL,
+                   	}
+			]
+			
+10 ChangeClientStatus
+	url:"/a/parties/change_client_status/"
+	method:"POST",
+	input:{
+		"cpID":Integer(clientparty.id),
+		"cpAction":"reject" or "apply"
+		},
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+11 resendMsg
+	url:"/a/parties/resendmsg/"
+	method:"POST",
+	input:{
+		"receivers":Array of Client Dict,
+		"content":String of SMS Content,
+		"_issendbyself":"0" or "1",
+		"uID":Int,
+		"addressType":"iphone" or "android",
+		"partyID":Integer
+		},
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{
+                		'partyId':Integer,
+                		'applyURL':String,
+				        'sms_count_remaining':Integer,
+                		}
+		}
+		
+12. GetBadgeNumber:
+        url:"/a/accounts/get_badge_num/?id=xx",
+        method:"GET",
+        input:{
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "badgeNum":Integer,
+                                }
+                }
+                
+13. getAccountRemaining:
+        url:"/a/accounts/get_account_remaining/?id=xx",
+        method:"GET",
+        input:{
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "remaining":Integer,
+                                }
+                }
+                
+14. forgetPassword:
+	url:"/a/accounts/forget_password/",
+	method:"POST",
+	input:{
+		"value":String(not null) 
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+14. changePassword:
+	url:"/a/accounts/change_password/",
+	method:"POST",
+	input:{
+		"uID":Int,
+                "originalpassword":String(not null), 
+                "newpassword":String(not null)  
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+
+14. changePasswordrandomlogin:
+	url:"/a/accounts/change_password_random_login/",
+	method:"POST",
+	input:{
+		"uID":Int,
+                "newpassword":String(not null)  
+		}
+	output:{
+		"status":"ok",
+		"description":"ok",
+		"datasource":{}
+		}
+
+
+
+		
+15. AccountLogout:
+        url:"/a/accounts/logout/",
+        method:"POST",
+        input:{
+		"id":Integer
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                }
+                }
+
+16. bindPhone:
+        url:"/a/accounts/bind/phone/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "value":String(phone num),
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error",
+                "description":String to Show,
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error_has_binded",
+                "description":"",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                "status":"error_different_binded",
+                "description":"您的账号已绑定了另一个手机号，请您解绑后再次绑定",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+
+17. bindEmail:
+        url:"/a/accounts/bind/email/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "value":String(email),
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error",
+                "description":String to Show,
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error_has_binded",
+                "description":"",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                "status":"error_different_binded",
+                "description":"您的账号已绑定了另一个邮箱，请您解绑后再次绑定",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+
+18. unbindPhone:
+        url:"/a/accounts/unbind/phone/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "value":String(phone num),
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error",
+                "description":String to Show,
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error_different_unbinded",
+                "description":"解除绑定失败，请重新解除绑定",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                
+19. unbindEmail:
+        url:"/a/accounts/unbind/email/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "value":String(Email),
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error",
+                "description":String to Show,
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error_different_unbinded",
+                "description":"解除绑定失败，请重新解除绑定",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                
+20. verifyPhone:
+        url:"/a/accounts/verify/bind/phone/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "verifier":String,
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error",
+                "description":String to Show,
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error_has_binded_by_other",
+                "description":"该手机号已被其他用户绑定，请重新输入手机号",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+                {
+                "status":"error_invalid_verifier",
+                "description":"该验证码已经失效，请重新获取验证码",
+                "datasource":{
+                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
+                                }
+                }
+
+21. bindDevice:
+        url:"/a/accounts/bind_device/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "device_token":String,
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{}
+                }
+22. getFullPartyListInfoForAndroid:
+    url:"/a/parties/fullpartylist/(userid)/(start_id)/"
+    method:GET
+    input:{
+        }
+    output:{
+        "status":"ok",
+        "description":"ok",
+        "dataSource":{
+                "lastID":Integer,
+                "partyList":PartyDictArray,
+                },
+        'iphone_version':IPHONE_APP_VERSION(String),
+        'android_version':ANDROID_APP_VERSION(String),
+        }
+
+    PartyDict:{
+            "clientsData":Dict
+            "description":String,
+            "partyId":int,
+            "type":"phone"/"email"
+            }
+
+#1  start_id is the ID of the start query id, it will return the parties whose id is smaller than the start_id
+    and it will also return the smallest id of the parties
+
+#2  every party dict has a attr：
+        clientsData{
+            appliedClientcount:Integer,
+            newAppliedClientcount:Integer,
+            donothingClientcount:Integer,
+            refusedClientcount:Integer,
+            newRefusedClientcount:Integer,
+            clientArray:Client_Array,
+        }
+#3 Client Content:
+    {
+    'cName':clientparty.client.name,
+    'cValue':cValue,
+    'backendID':clientparty.id,
+    'status':clientparty.apply_status,
+    'msg':String,
+    'isCheck':BOOL,
+    }

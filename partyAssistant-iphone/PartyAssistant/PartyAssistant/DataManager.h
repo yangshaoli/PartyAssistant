@@ -7,22 +7,35 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "DeviceTokenService.h"
 
 typedef enum {
     NetworkConnectionInvalidate,
     NetWorkConnectionCheckPass,
-    NetWorkConnectionCheckDeny
+    NetWorkConnectionCheckDeny,
+    NetworkConnection
 }NetworkConnectionStatus;
 
 
 @interface DataManager : NSObject
-
+{
+    BOOL isRandomLoginSelf;
+}
+@property(nonatomic,assign)BOOL isRandomLoginSelf;
 + (DataManager *)sharedDataManager;
-- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
-- (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
+- (NSString *)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
+- (NSString *)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
+- (NSString *)logoutUser;
 - (NetworkConnectionStatus)setNickName:(NSString *)nickName;
+- (NetworkConnectionStatus)setEmailInfo:(NSString *)emailInfo;
+- (NetworkConnectionStatus)setPhoneNum:(NSString *)phoneNum;
 - (NetworkConnectionStatus)setNickNameForUserWithUID:(NSInteger)uid 
                                      withNewNickName:(NSString *)nickName;
+- (NetworkConnectionStatus)setPhoneNumForUserWithUID:(NSInteger)uid 
+                                     withNewPhoneNum:(NSString *)phoneNum;
+
+- (NetworkConnectionStatus)setEmailInfoForUserWithUID:(NSInteger)uid 
+                                      withNewEmailInfo:(NSString *)emailInfo;
 - (BOOL)checkIfUserNameSaved;
 
 @end

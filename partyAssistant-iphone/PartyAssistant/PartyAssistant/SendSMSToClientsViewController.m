@@ -7,14 +7,16 @@
 //
 
 #import "SendSMSToClientsViewController.h"
-
+#import "AddNewPartyBaseInfoTableViewController.h"
+#import "UIViewControllerExtra.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
 #define DONE_ALERT_TAG 13
 
+
 @implementation SendSMSToClientsViewController
 @synthesize receiverArray,contentTextView,receiversView,_isShowAllReceivers,countlbl,smsObject,receiverCell;
-
+@synthesize delegate;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -117,7 +119,11 @@
 {
     // Return the number of rows in the section.
     if (section == 2) {
-        return 2;
+        if([MFMessageComposeViewController canSendText]==YES){
+            return 2;
+        }else{
+            self.smsObject._isSendBySelf = FALSE;
+        }
     }
     return 1;
 }
@@ -143,8 +149,10 @@
             }
             contentTextView.text = self.smsObject.smsContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"短信内容";
+            
+            cell.textLabel.text  = @"短信内容:";
         }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
@@ -153,11 +161,13 @@
                 cell.textLabel.text = @"带报名提示：";
                 [cell addSubview:applyTipsSwitch];
             }else if (indexPath.row == 1){
-                UISwitch *sendBySelfSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
-                [sendBySelfSwitch setOn:self.smsObject._isSendBySelf];
-                [sendBySelfSwitch addTarget:self action:@selector(sendBySelfSwitchAction:) forControlEvents:UIControlEventValueChanged];
-                cell.textLabel.text = @"通过自己的手机发送：";
-                [cell addSubview:sendBySelfSwitch];
+                if([MFMessageComposeViewController canSendText]==YES){//wxz
+                    UISwitch *sendBySelfSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
+                    [sendBySelfSwitch setOn:self.smsObject._isSendBySelf];
+                    [sendBySelfSwitch addTarget:self action:@selector(sendBySelfSwitchAction:) forControlEvents:UIControlEventValueChanged];
+                    cell.textLabel.text = @"通过自己的手机发送：";
+                    [cell addSubview:sendBySelfSwitch];
+                }
             }
         }else if (indexPath.section == 3){
             UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -290,7 +300,22 @@
     [self.navigationController popToRootViewControllerAnimated:NO];
 }
 
+- (IBAction)clearAddNewPartyBaseInfo{
+    [delegate clearAddNewPartyBaseInfo];
+
+}
 - (void)doneBtnAction{
+  if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"短信内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        
+        
+  }else{
     [self saveSMSInfo];
     if ([self.receiverArray count] == 0) {
         UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的短信未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
@@ -299,11 +324,16 @@
     }else{
         [self sendCreateRequest];
     }
+  }
+//    //清空AddNewPartyBaseInfoVc
+//    [self clearAddNewPartyBaseInfo];
+//    NSLog(@"调用done");
 }
 - (void)sendCreateRequest{
     [self showWaiting];
     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
     BaseInfoObject *baseinfo = [bs getBaseInfo];
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
@@ -321,7 +351,7 @@
     [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
 
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -331,31 +361,41 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
-                MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
-                if (self.smsObject._isApplyTips) {
-                    vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
-                }else{
-                    vc.body = self.smsObject.smsContent;
-                };
-                NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
-                for(int i=0;i<[self.receiverArray count];i++){
-                    [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
-                }
-                vc.recipients = aArray;
-                vc.messageComposeDelegate = self;
-                [self presentModalViewController:vc animated:YES];
-                SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
-                [s clearSMSObject];
-                BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-                [bs clearBaseInfo];
-                EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                [se clearEmailObject];
+              if([MFMessageComposeViewController canSendText]==YES){
+                  MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
+                  if (self.smsObject._isApplyTips) {
+                      vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                  }else{
+                      vc.body = self.smsObject.smsContent;
+                  };
+                  NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+                  for(int i=0;i<[self.receiverArray count];i++){
+                      [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                  }
+                  vc.recipients = aArray;
+                  vc.messageComposeDelegate = self;
+                  [self presentModalViewController:vc animated:YES];
+                  SMSObjectService *s = [SMSObjectService sharedSMSObjectService];
+                  [s clearSMSObject];
+                  BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+                  [bs clearBaseInfo];
+                  EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
+                  [se clearEmailObject];                  
+              }else{
+                    [self createPartySuc];
+                    #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
+                         return;
+                    #endif
+              }
+                
             }else{
                 [self createPartySuc];
             }
@@ -364,8 +404,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

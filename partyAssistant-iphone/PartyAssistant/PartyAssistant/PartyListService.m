@@ -7,7 +7,7 @@
 //
 
 #import "PartyListService.h"
-
+#import "ContactData.h"
 @implementation PartyListService
 @synthesize partyList;
 
@@ -16,12 +16,17 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
 - (id)init
 {
     self = [super init];
-    if (self) {
-        // Initialization code here.
-    }
-    
+    self.partyList = [self getPartyList];
     return self;
 }
+
+
+- (NSString *)filePathString{
+    NSArray *paths=NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *fileDirectory=[paths objectAtIndex:0];
+    return [fileDirectory stringByAppendingPathComponent:PARTYLISTFILE];
+}
+
 
 - (NSArray *)getPartyList
 {
@@ -42,9 +47,10 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     } else {
         self.partyList = [[NSMutableArray alloc] initWithCapacity:0];
     }
-    
     return self.partyList;
 }
+
+
 - (void)savePartyList
 {
     if (!self.partyList) {
@@ -65,11 +71,14 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(PartyListService)
     [theData writeToFile:fullPathToFile atomically:YES];
 }
 
-- (NSArray *)addPartyList:(BaseInfoObject *)baseinfo
+
+
+- (NSArray *)addPartyList:(PartyModel *)partyObj
 {
-    [self.partyList addObject:baseinfo];
+    [self.partyList addObject:partyObj];
     return partyList;
 }
+
 - (void)clearPartyList
 {
     self.partyList = [[NSMutableArray alloc]initWithCapacity:0];

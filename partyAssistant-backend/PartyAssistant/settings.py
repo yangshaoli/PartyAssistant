@@ -3,11 +3,18 @@
 import os
 PROJECT_ROOT = os.path.dirname(__file__)
 
+IPHONE_APP_VERSION = "1.0"
+ANDROID_APP_VERSION = "1.0"
+WEB_VERSION = "1.0"
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+SESSION_COOKIE_AGE = 1800#30*60s
+SESSION_SAVE_EVERY_REQUEST = True
+
 ADMINS = (
-    ('AIMeeting', 'airenao@cn-acg.com'),
+    ('airenao', 'airenao@cn-acg.com'),
 )
 
 DATABASES = {
@@ -104,6 +111,12 @@ MIDDLEWARE_CLASSES = (
     'middlewares.variant_template_middleware.VariantTemplateMiddleware',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.request",
+)
+
+
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
@@ -128,10 +141,9 @@ INSTALLED_APPS = (
     'apps.accounts',
     'apps.clients',
     'apps.parties',
-    'apps.messages', 
-    'apps.common', 
+    'apps.messages',
+    'apps.common',
 )
-
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -139,34 +151,34 @@ INSTALLED_APPS = (
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
 LOGGING = {
-    'version': 1, 
-    'disable_existing_loggers': True, 
+    'version': 1,
+    'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        }, 
+        },
         'simple': {
             'format': '%(levelname)s %(asctime)s %(message)s'
         },
     },
     'handlers': {
         'null': {
-            'level': 'DEBUG', 
+            'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
-        }, 
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'file': {
-            'level': 'DEBUG', 
-            'class': 'logging.handlers.RotatingFileHandler', 
-            'formatter': 'simple', 
-            'filename': 'airenao.log', 
-            'maxBytes': 1048576, 
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'simple',
+            'filename': 'airenao.log',
+            'maxBytes': 1048576,
             'backupCount': 10
-        }, 
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
@@ -192,6 +204,7 @@ LOGGING = {
 
 SYS_EMAIL_ADDRESS = 'airenao@orilong.com'
 DOMAIN_NAME = 'http://www.airenao.com'
+SHORT_DOMAIN_NAME = 'http://arn.bz'
 LOGIN_REDIRECT_URL = '/parties/list/'
 
 '''
@@ -204,3 +217,7 @@ EMAIL_HOST_PASSWORD = 'aragon888'
 EMAIL_PORT = '25'
 
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+
+ALIPAY_PARTNER = '2088701462122036'
+ALIPAY_KEY = 'jut7uqx5fodoajps5jomwwz03rs0516y'
+ALIPAY_SELLER_EMAIL = 'payment@orilong.com'

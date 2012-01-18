@@ -5,7 +5,7 @@
 //  Created by 超 李 on 11-11-12.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
+#import "UIViewControllerExtra.h"
 #import "ResendSMSTableViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
@@ -66,6 +66,7 @@
         [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
         [receiverCell addSubview:addBTN];
     }
+    self.title=@"再次邀请";
 }
 
 - (void)viewDidUnload
@@ -139,6 +140,7 @@
             }
             contentTextView.text = self.smsObject.smsContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
             cell.textLabel.text  = @"短信内容";
         }else if(indexPath.section == 2){
@@ -300,7 +302,7 @@
     //        [request addFile:imageFile withFileName:nil andContentType:@"image/jpeg" forKey:@"images"];
     //    }
     //    [request setDelegate:self];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -312,10 +314,12 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             if (self.smsObject._isSendBySelf) {
                 MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                 if (self.smsObject._isApplyTips) {
@@ -339,8 +343,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

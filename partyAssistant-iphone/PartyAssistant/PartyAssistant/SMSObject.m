@@ -17,7 +17,11 @@
     if (self) {
 		self.smsID = -1;
         self.smsContent = @"";
-        self._isSendBySelf = YES;
+        if ([MFMessageComposeViewController canSendText]) {
+            self._isSendBySelf = YES;
+        } else {
+            self._isSendBySelf = NO;
+        }
         self._isApplyTips = YES;
         self.receiversArray = nil;
         self.receiversArrayJson = nil;
@@ -32,7 +36,11 @@
     if (self) {
 		self.smsID = -1;
         self.smsContent = @"";
-        self._isSendBySelf = YES;
+        if ([MFMessageComposeViewController canSendText]) {
+            self._isSendBySelf = YES;
+        } else {
+            self._isSendBySelf = NO;
+        }
         self._isApplyTips = YES;
         self.receiversArray = nil;
     }
@@ -71,7 +79,11 @@
 - (void)clearObject{
 	self.smsID = -1;
     self.smsContent = @"";
-    self._isSendBySelf = YES;
+    if ([MFMessageComposeViewController canSendText]) {
+        self._isSendBySelf = YES;
+    } else {
+        self._isSendBySelf = NO;
+    }
     self._isApplyTips = YES;
     self.receiversArray = nil;
     self.receiversArrayJson = nil;
@@ -82,7 +94,7 @@
     NSMutableArray *nArray = [[NSMutableArray alloc] initWithCapacity:[self.receiversArray count]];
     for (int i=0; i<[receiversArray count]; i++) {
         ClientObject *client = [self.receiversArray objectAtIndex:i];
-        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:client.cID],@"cID",client.cName,@"cName",client.cVal,@"cValue", nil];
+        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:client.cID],@"cId",client.cName,@"cName",client.cVal,@"cValue", nil];
         [nArray addObject:dic];
     }
     return [nArray JSONRepresentation];

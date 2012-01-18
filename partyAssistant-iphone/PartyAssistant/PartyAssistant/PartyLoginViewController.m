@@ -5,19 +5,30 @@
 //  Created by Wang Jun on 11/4/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
+#import "PartyListTableVC.h"
+#import "ForgetPassword.h"
 
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "CreatNewPartyViaSMSViewController.h"
 #import "DataManager.h"
 #import "GlossyButton.h"
 #import "PartyListTableViewController.h"
 #import "PartyLoginViewController.h"
 #import "PartyUserRegisterViewController.h"
 #import "SettingsListTableViewController.h"
-
+#import "PartyListService.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+#import "HTTPRequestErrorMSG.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "URLSettings.h"
+#import "NotificationSettings.h"
+#import "ChangePasswordRandomLoginTableVC.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
-
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
 @interface PartyLoginViewController()
 
 - (void)cleanKeyBoard;
@@ -43,6 +54,8 @@
 @synthesize pwdTextField = _pwdTextField;
 @synthesize modal = _modal;
 @synthesize parentVC = _parentVC;
+@synthesize partyList;
+@synthesize appTab;
 
 - (void)dealloc {
     [super dealloc];
@@ -80,6 +93,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
+    
     CGSize windowSize = self.view.bounds.size;
     UIView *tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, windowSize.width, 100)];
     
@@ -101,15 +117,58 @@
     
     UIBarButtonItem *registerButton = [[UIBarButtonItem alloc] initWithTitle:@"注册" style:UIBarButtonItemStylePlain target:self action:@selector(registerUser)];
     
-    self.navigationItem.rightBarButtonItem = registerButton;
-    [registerButton release];
+    self.navigationItem.leftBarButtonItem = registerButton;
     
+    
+    UIBarButtonItem *forgetPasswordButton = [[UIBarButtonItem alloc] initWithTitle:@"忘记密码" style:UIBarButtonItemStylePlain target:self action:@selector(forgetPassword)];
+    
+    self.navigationItem.rightBarButtonItem = forgetPasswordButton;
+
+    
+    
+    [registerButton release];
+    [forgetPasswordButton release];
     [tableFooterView release];
+   
+    
+    
+    //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
+    
+    
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+//    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+ //  NSLog(@"当前用户名称:%@及》》》》id值:%d",user.userName,user.uID);
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+//    NSInteger  getDefaulUserId=[defaults integerForKey:keyString];
+   // [keyString release]; 
+    
+    if(user){
+        if(user.uID > 0){
+            [self pushToContentVC];
+        }else{
+            return;
+        }    
+    }else{
+        return;
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appBecomeActive) name: UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.navigationController.navigationBarHidden = NO;
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    if(user){
+        if(user.uID > 0){
+        } else {
+            self.navigationController.navigationBarHidden = NO;
+        }
+    }
+
+    
+    self.appTab = nil;
 }
 
 - (void)viewDidUnload
@@ -127,6 +186,7 @@
 
 - (void)loginCheck {
     //check usrname and pwd is not nil and legal( length > 3?)
+  //为了调试暂时先注释掉  
     if (!_userNameTextField.text || [_userNameTextField.text isEqualToString:@""]
         || !_pwdTextField.text || [_pwdTextField.text isEqualToString:@""]) {
         [self showNotLegalInput];
@@ -145,24 +205,38 @@
     [_HUD show:YES];
    
     [self tryConnectToServer];
+    
+    //[self gotoContentVC];//调试新加的无用语句
+    
 }
 
 - (void)tryConnectToServer {
     //TODO:login check method!
-    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
-                                            validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
+//    NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+//                                            validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
+    NSString *statusDescription = nil;
+    statusDescription = [[DataManager sharedDataManager]
+     validateCheckWithUsrName:self.userNameTextField.text  pwd:self.pwdTextField.text];
     [_HUD hide:YES];
-    switch (networkStatus) {
-        case NetworkConnectionInvalidate:
-            [self showInvalidateNetworkalert];
-            break;
-        case NetWorkConnectionCheckPass:
-            [self gotoContentVC];
-            break;
-        default:
-            [self showNotPassChekAlert];
-            break;
+    
+    if (statusDescription) {
+        [self showAlertWithMessage:statusDescription
+                       buttonTitle:@"确定" tag:NotLegalTag];
+    } else {
+        [self gotoContentVC];
     }
+
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showInvalidateNetworkalert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self gotoContentVC];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
 }
 
 - (void)cleanKeyBoard {
@@ -176,7 +250,7 @@
 - (void)showAlertWithMessage:(NSString *)message  
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
     [alert release];
@@ -185,16 +259,25 @@
 - (void)gotoContentVC {
     //use different work flow
     
+//    //登陆连接服务器成功后   保存用户信息到本地   登出时需要清空才可
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//   
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+//    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+//    [defaults setInteger:user.uID  forKey:keyString];    
+//    [keyString  release];
+    
+
     //1.modal
     
     //2.nav
     if (self.isModal) {
-        
+            
     } else {
-        //2
+            //2
         [self pushToContentVC];
     }
-
 }
 
 - (void)showInvalidateNetworkalert {
@@ -204,59 +287,106 @@
 }
 
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"好的" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"登录失败" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"登录失败" buttonTitle:@"好的" tag:NotPassTag];
 }
 
 - (void)registerUser {
     //TODO: got register view
     PartyUserRegisterViewController *registerVC = [[PartyUserRegisterViewController alloc] initWithNibName:nil bundle:nil];
+    registerVC.delegate=self;
     [self.navigationController pushViewController:registerVC animated:YES];
     [registerVC release];
 }
 
+- (void)forgetPassword{
+    ForgetPassword *forgetPasswordVC=[[ForgetPassword alloc] initWithNibName:@"ForgetPassword" bundle:nil];
+    [self.navigationController  pushViewController:forgetPasswordVC animated:YES];
+}
+
 - (void)pushToContentVC {
-    self.navigationController.navigationBarHidden = YES;
+    self.userNameTextField.text = @"";
+    self.pwdTextField.text = @"";
     
-    PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
-    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
+    self.navigationController.navigationBarHidden = YES;
+    PartyListTableVC  *pattyListTableVC=[[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
+    
+    
+    //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
+    
+//    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
     SettingsListTableViewController *settings = [[SettingsListTableViewController alloc] initWithNibName:@"SettingsListTableViewController" bundle:nil];
     
-    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:list];
-    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
-    UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
+    UINavigationController *listNav = [[UINavigationController alloc] initWithRootViewController:pattyListTableVC];
+    CreatNewPartyViaSMSViewController *creat = [[CreatNewPartyViaSMSViewController alloc] initWithNibName:nil bundle:nil];
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"趴列表" image:nil tag:1];
-    UITabBarItem *addPageBarItem = [[UITabBarItem alloc] initWithTitle:@"开新趴" image:nil tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"个人设置" image:nil tag:3];
+//    UINavigationController *addPageNav = [[UINavigationController alloc] initWithRootViewController:addPage];
+    UINavigationController *settingNav = [[UINavigationController alloc] initWithRootViewController:settings];
+    UINavigationController *creatNav = [[UINavigationController alloc] 
+        initWithRootViewController:creat];
+    
+    
+    UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
+    UIImage *creatPageBarImage = [UIImage imageNamed:@"new_icon"];
+    UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
+    
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:listBarImage tag:1];
+    UITabBarItem *creatPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:creatPageBarImage tag:2];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
     
     listNav.tabBarItem = listBarItem;
-    addPageNav.tabBarItem = addPageBarItem;
+    creatNav.tabBarItem = creatPageBarItem;
     settingNav.tabBarItem = settingBarItem;
     
     [listBarItem release];
-    [addPageBarItem release];
+    [creatPageBarItem release];
     [settingBarItem release];
     
     UITabBarController *tab = [[UITabBarController alloc] init];
-    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+    self.appTab = tab;
+//    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+    tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
     [self.navigationController pushViewController:tab animated:YES];
-    
-    [listNav release];
-    [addPageNav release];
-    [settingNav release];
-    
-    [list release];
-    [addPage release];
-    [settings release];
-    
-    //add suggest user input name page here?
-    [self checkIfUserNameSaved];
-}
 
+    [listNav release];
+    [creatNav release];
+    [settingNav release];
+//    [creatNav release];
+    
+    //[list release];
+    [pattyListTableVC release];
+//    [addPage release];
+    [settings release];
+    [creat release];
+    
+     //add suggest user input name page here?
+//    [self checkIfUserNameSaved];
+    
+    
+    //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  
+        tab.selectedIndex=1;
+    }else{
+        tab.selectedIndex=0;
+        
+    }
+    [keyString release];
+    NSLog(@"打印isRandomLoginSelf  %@",BOOLStringOutput([DataManager sharedDataManager].isRandomLoginSelf));
+    
+}
+//wxz
+- (void)autoLogin{
+    [self pushToContentVC];
+
+}
 #pragma mark -
 #pragma tableViewDelegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -317,11 +447,25 @@
         return;
     }
     //2.show viewController
-    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
-    vc.delegate = self;
-    [self presentModalViewController:vc animated:YES];
-    [vc release];
-}
+//    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//    vc.delegate = self;
+//    [self presentModalViewController:vc animated:YES];
+//    [vc release];
+    
+//    //wxz判断   只在用户首次登陆才执行
+//    UserObjectService *us = [UserObjectService sharedUserObjectService];
+//    UserObject *user = [us getUserObject];
+//    NSString *keyString1=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
+//    NSUserDefaults *defaults1 = [NSUserDefaults standardUserDefaults];  
+//    NSInteger  getDefaulUserId=[defaults1 integerForKey:keyString1];
+//    if(-1==getDefaulUserId){
+//        PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
+//        vc.delegate = self;
+//        [self presentModalViewController:vc animated:YES];
+//        [vc release];
+//    }
+//    [keyString1 release];
+} 
 
 - (void)cancleInput {
     [self.navigationController dismissModalViewControllerAnimated:YES];
@@ -347,5 +491,14 @@
 - (void)saveInputFailed {
     [_HUD hide:YES];
     [self.navigationController dismissModalViewControllerAnimated:YES];
+}
+
+- (void)appBecomeActive {
+    if (self.appTab) {
+        UINavigationController *nav = [[self.appTab viewControllers] objectAtIndex:self.appTab.selectedIndex];
+        if (nav.presentedViewController) {
+            [nav.presentedViewController viewWillAppear:YES];
+        }
+    }
 }
 @end

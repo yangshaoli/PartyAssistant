@@ -17,14 +17,17 @@
 #import "EditPartyTableViewController.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "NumberLabel.h"
 
 
 @interface PartyDetailTableViewController : UITableViewController<UITableViewDelegate>{
     BaseInfoObject *baseinfo;
     NSArray *peopleCountArray;
+    NSArray* myToolbarItems;
 }
 
 @property(nonatomic, retain)BaseInfoObject *baseinfo;
 @property(nonatomic, retain)NSArray *peopleCountArray;
+@property(nonatomic, retain)NSArray* myToolbarItems;
 
 @end

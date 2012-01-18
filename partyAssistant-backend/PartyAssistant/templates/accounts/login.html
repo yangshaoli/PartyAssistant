@@ -13,28 +13,28 @@
      <p style="margin-bottom:10px; color:red;"> {{ form.non_field_errors.0 }}</p>
      <div class="field">
      <label for="username">
-     用户名
+     用户名<font color="red">*</font>
      </label>
-     <input id='id_username' name='username' type='text' value="{{ form.username.value|default:'' }}" placeholder='必填项'></input>
-     <font color="red">{{ form.username.errors.0 }}</font>
+     <input id='id_username' name='username' type='text' value="{{ form.username.value|default:'' }}" placeholder='6-14字符'></input><font color="red">{{ form.username.errors.0 }}</font>
      </div>
      <div class="field">
      <label for="password">
-     密码
+     密码<font color="red">*</font>
      </label>
-     <input name='password' type='password' placeholder="必填项" id="id_password"><font color="red">{{ form.password.errors.0 }}</font>
+     <input name='password' type='password'  id="id_password" placeholder='6-16字符'><font color="red">{{ form.password.errors.0 }}</font>
      </div>
-     <!--div class="field">
-     	<label>
-     		&nbsp;
-     	</label>
-     	<font color="red">{{ form.non_field_errors.0 }}</font>
-     </div-->
+     <a href="{%url forget_password %}"><font color="red">忘记密码？</font></a>
      <div class="submit_field">
+     <input type="hidden" name="next" value="{{ next }}" />
       <input id="id_login_submit" type="submit" value="登录" />
      </div>
     </fieldset>	
 </form>
   </div>
  </div>
+ <script>
+document.getElementsByClassName('menu')[0].children[1].className = '';
+document.getElementsByClassName('menu')[1].children[0].className = 'active';
+{% if request.session.temp_login %} location.href = '/accounts/reset_password' {% endif %}
+</script>
 {% endblock %}

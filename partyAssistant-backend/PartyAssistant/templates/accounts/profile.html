@@ -1,33 +1,346 @@
 {% extends 'login_base.html' %}
-
 {% block title %} 用户信息  {% endblock %}
-{% block script %}
-<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
-<script type="text/javascript">
-function changetoAble(o){
-   $(document.getElementById(o)).removeAttr('readonly');
-   
+{% block style %}
+<style>
+::-webkit-input-placeholder {
+   color: red;
 }
+
+:-moz-placeholder {
+   color: red;
+}
+</style>
+{% endblock %}
+{% block script %}
+<script type="text/javascript" src="/static/js/jquery-1.6.4.min.js">
+</script>
+<script type="text/javascript">
+function changePhoneNumber(){
+	$('#id_phone').removeAttr('disabled');
+}
+
+function bindingPhone(){
+    var v = $("#id_phone").val();
+    if (!checkInput(v, 'phone')) return false ;
+    var answer = confirm("要给" + v + "发送验证码吗？")
+    if (answer) {
+        $.ajax({
+            type: 'POST',
+            url: '{% url apply_phone_bingding_ajax %}',
+            data: {
+                'phone': v
+            },
+            statusCode: {
+                200: function(response){
+	                 if(response=='success'){//replaceWith   
+	                    $('#id_phone').attr('disabled','true');
+	                    
+	                  	var nextall = $('#id_phone').nextAll();
+	                    nextall.each(function(){
+							$(this).remove();
+	                    });
+	                    $('#id_phone').after('<lable>验证码：</lable><input id="id_phonevalidate" style="width:100px;" />');
+                        
+                        var str_cf = '<a href="#" onclick="validate_phone_bingding(\'bind\')">[确认]</a>'
+                        $(str_cf).appendTo($('#id_phonevalidate').parent());
+                                                
+                        var str_rs = '<a href="#" onclick="bindingPhone()" name="rs" id="id_rs">[重发验证码]</a>';
+                        $(str_rs).appendTo($('#id_phonevalidate').parent());
+                        
+                        var str_cg = '<a href="#" onclick="changePhoneNumber()">[更换手机号码]</a>';
+                        $(str_cg).appendTo($('#id_phonevalidate').parent()); 
+                        
+                        
+	                    alert('验证码已经发送到您的手机中，请注意查收');
+	                 }
+	                 if(response=='used'){
+	                 	alert('该手机号码，已经被绑定');
+	                 }
+	                 if(response=='invalidate'){
+	                 	alert('手机号码不合法');
+	                 }
+	                 if(response.match(/time:/)){
+                         for (var i =1; i < response.match(/\d+/); i++ ){
+                             //window.setTimeout( function() { document.getElementById("countdown").innerText = i; console.log(i)}, i*1000);
+                         }
+	                 	alert('验证码已经发送，请'+response.match(/\d+/)+'秒后再次点击');
+	                 }
+                },
+                500: function(response){
+                
+                }
+            }
+        })
+    }
+}
+    
+function validate_phone_bingding(isbind){
+    //alert(isbind);
+    var v = $("#id_phonevalidate").val();
+    var p = $("#id_phone").val();
+    if (!checkInput(p, 'phone')) return false ;
+    if (!v) {
+        alert('请输入手机验证码');
+        return false;
+    }
+    var r_url= '';
+    var alert_success='';
+    if(isbind=='bind'){
+        r_url='{% url validate_phone_bingding_ajax %}';
+        alert_success='绑定成功';
+    }else if(isbind=='unbind'){
+        r_url='{% url validate_phone_unbingding_ajax %}';
+        alert_success='取消绑定成功';
+    }else{
+       return;
+    }   
+    $.ajax({
+        type: 'POST',
+        url: r_url,
+        data: {
+            'key': v,
+            'phone':p
+        },
+        statusCode: {
+            200: function(response){
+            	 r = JSON.parse(response);
+            	 r_status = r.status;
+                 if(r_status=='success'){   
+					alert(alert_success);
+	                window.location.href='{% url profile %}';     
+                 }
+                 if(r_status=='used'){
+                 	alert('已经被绑定');
+                 }
+                 if(r_status=='wrongkey'){
+                 	alert('验证码错误');
+                 }
+                 if(r_status=='null'){
+                 	alert('验证码不能为空');
+                 }
+                 if(r_status=='notexist'){
+                 	alert('验证码失效');
+                 	window.location.href='{% url profile %}';
+                 }
+                 if(r_status=='invalidate'){
+	                alert('手机号码不合法');
+                 }
+                 if(r_status=='flush'){
+	                alert('验证码失效');
+	                window.location.href='{% url profile %}';
+                 }
+            },
+            500: function(response){
+                 alert('服务器正忙，请稍后重试');
+            }
+        }
+    })
+   
+
+}    
+    
+    
+    function checkInput(v, type){
+        if (!v) {
+            (type == 'email') ? alert('请输入邮件地址') : alert('请输入电话号码')
+            return false;
+        }
+        if (type == 'email') {
+            if (!(/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/).test(v)){
+                alert('请输入一个有效的 e-mail 地址');
+                return false;
+            }
+        }
+        if (type == 'phone') {
+            if (v.length!=11){
+            	alert('手机号码不规范');
+            	return false;
+            }
+            if(!v.match(/^1\d{10}/)){
+                alert('手机号码不规范');
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    function bindingEmail(){
+        var v = $('#id_email').val();
+        if (!checkInput(v, 'email'))  return false ;
+        var answer = confirm("要给" + v + "发送确认邮件吗？")
+        if (answer) {
+            $.ajax({
+                type: 'POST',
+                url: '{%url email_binding %}',
+                data: {'email': v},
+                statusCode: {
+                    200: function(response){
+                        switch(response) {
+    		                case 'record_already_exist': {
+                                alert('确认邮件已经发送，请查看您的邮箱');
+                                break;
+                            }
+                            case 'email_already_exist': {
+                                alert('邮箱已经被绑定，请使用其他邮箱');
+                                break;
+                            }
+    	                    case 'success':{
+                                $("#id_email").val('').attr('placeholder',v+' 待验证，请登录您绑定邮箱进行确认');
+                                alert('发送成功，请查看您的确认邮件');
+                                break;
+                            }
+                        }
+                    },
+                    500: function(response){
+                    
+                    }
+                }
+            })
+        }
+    }
+    
+    function unBindingEmail(){
+        var answer = confirm("是否解除该邮件的绑定？")
+        if (answer){
+            $.post('{%url unbinding %}', {'email': $("#id_email").val()}, function(response){
+                switch(response) {
+	                case 'record_already_exist': {
+                        alert('解除绑定邮件已经发送，请查看您的邮箱');
+                        break;
+                    }
+                    case 'success':{
+                        alert('解除绑定邮件发送成功，请查看您的邮箱');
+                        break;
+                    }
+                }
+            })
+        }
+    }
+    function unbindingPhone(){
+    var v = $("#id_phone").val();
+    if (!checkInput(v, 'phone')) return false ;
+    var answer = confirm("要给" + v + "发送验证码吗？");
+    if (answer) {
+        $.ajax({
+            type: 'POST',
+            url: '{% url apply_phone_unbingding_ajax %}',
+            data: {
+                'phone': v
+            },
+            statusCode: {
+                200: function(response){
+	                 if(response=='success'){   
+	                    //$('#id_phone').after('验证码：<input id="id_phonevalidate" style="width:100px;" />');
+                        //$('#id_phonevalidate').next().attr('onclick',"validate_phone_bingding('unbind')").text('[确认]');
+                        
+	                  	var nextall = $('#id_phone').nextAll();
+	                    nextall.each(function(){
+							$(this).remove();
+	                    });
+	                    $('#id_phone').after('<lable>验证码：</lable><input id="id_phonevalidate" style="width:100px;" />');
+                        
+                        var str_cf = '<a href="#" onclick="validate_phone_bingding(\'unbind\')">[确认]</a>'
+                        $(str_cf).appendTo($('#id_phonevalidate').parent());
+                                                
+                        var str_rs = '<a href="#" onclick="unbindingPhone()" name="rs" id="id_rs">[重发验证码]</a>';
+                        $(str_rs).appendTo($('#id_phonevalidate').parent());                        
+                        
+                        
+	                    alert('验证码已经发送到您的手机中，请注意查收');
+	                 }
+	                 if(response=='used'){
+	                 	alert('该手机号码，已经被绑定');
+	                 }
+	                 if(response=='invalidate'){
+	                 	alert('手机号码不合法');
+	                 }
+	                 if(response.match(/time:/)){
+                         for (var i =1; i < response.match(/\d+/); i++ ){
+                             //window.setTimeout( function() { document.getElementById("countdown").innerText = i; console.log(i)}, i*1000);
+                         }
+	                 	alert('验证码已经发送，请'+response.match(/\d+/)+'秒后再次点击');
+	                 }
+                },
+                500: function(response){
+                	alert('服务器正忙，请稍后');
+                }
+            }
+        })
+    }      
+   
+    }
+    $(document).ready(function(){
+        $("#tips").delay(3000).fadeOut();
+        $("#id_email, #id_phone").bind('click', function(){
+           if($(this).val()=='[未绑定]'){
+           	  $(this).attr('style','').val('').next().show();
+           }else{
+              $(this).attr('style','').next().show();
+           } 
+        });
+    })
 </script>
 {% endblock %}
 {% block content %}
+{% ifequal profile_status 'success' %}
+<div id="tips">
+    保存成功 
+</div>
+{% endifequal %}
+{% ifequal password_status 'success' %}
+<div id="tips">
+    密码修改成功 
+</div>
+{% endifequal %}
 <div id="content">
-  <div class="grid_a">
-   <h2 class="title">用户信息</h2>
-    欢迎你, {{user.username}}<br/><br/>
-<br />
-<a href="{% url change_password %}">修改密码</a><br/>
-<form method='post' action='{% url profile %}'>
-姓&nbsp;&nbsp;&nbsp;&nbsp;名：{{ form.true_name }}{{ form.true_name.errors.0 }}</input><a href="#" onclick="changetoAble('id_true_name')" >更改?</a><br/>
-电子邮件:{{ form.email }}{{ form.email.errors.0 }}</input><a href="#" onclick="changetoAble('id_email')" >更改?</a><br/>
-手&nbsp;&nbsp;&nbsp;&nbsp;机：{{ form.phone }}{{ form.phone.errors.0 }}<a href="#" onclick="changetoAble('id_phone')">更改?</a><br/>
-剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="#">充值?</a>
-<br><input type='submit' value='保存'></input>
-</form>
-{% if profile_status %}
-{{ profile_status }}
-{% endif%}
-  </div>
- </div>
-
-{% endblock %}
+    <div class="grid_a">
+        <h2 class="title">用户信息</h2>
+        欢迎你, <strong>{{user.username}}</strong>&nbsp;&nbsp;<a href="{% url change_password %}" style="font-size:9pt; color:#237237237; text-decoration:underline;">修改密码</a>
+        <br/>
+        <br/>
+        <br/>
+        <form method='post' action='{% url profile %}' class="creat_exercise">
+            {% csrf_token %}
+            <fieldset>
+                <div class="field">
+                    <label for="true_name">姓名：</label>
+                    <input name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}'>
+                    </input>
+                    <font color='red'>{{ form.true_name.errors.0 }}</red>
+                </div>
+                <div class="field">
+                    <label for="email">邮箱：</label>
+                    <input style="border:0px;background:none;" name='email' id='id_email' value='{{ userprofile.email|default:'[未绑定]' }}' {%  if userprofile.email %}  disabled="true" {%  endif %}>
+                    </input><a style="display:none;" onclick="bindingEmail()">[绑定]</a>
+                    {% if userprofile.email %}<a href="#" onclick="unBindingEmail()">[取消绑定]</a>{% endif %}
+                    <font color='red'>{{ form.email.errors.0 }}
+                    </red>
+                </div>
+                <div class="field">
+                    <label for="phone">手机：</label><!--{{userprofile.phone_binding_status}}{{ userprofile.phone}}-->
+                    <input style="border:0px;background:none;" name='phone' id='id_phone'  value='{{ userprofile.phone|default:'[未绑定]' }}' {%  ifequal userprofile.phone_binding_status 'bind' %}  disabled="true" {%  endifequal %}>
+                    </input>
+                    {%  ifequal userprofile.phone_binding_status  'bind' %}
+                    <a href="#" onclick="unbindingPhone()">[取消绑定]</a>
+                    {% endifequal %}
+                    {%  ifequal userprofile.phone_binding_status  'unbind' %}
+                    <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
+                    {% endifequal %}
+                    {%  ifequal userprofile.phone_binding_status  '' %}
+                    <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
+                    {% endifequal %}
+                    {%  ifequal userprofile.phone_binding_status  'waitingbind' %}
+                    <a href="#" style="display:none;" onclick="bindingPhone()">[绑定]</a>
+                    {% endifequal %}
+                    
+                    <span id="countdown"></span>
+                </div>
+                <div class="field">
+                    剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a>
+                </div>
+                <input type='submit' value='保存' name='save'>
+                </input>
+                </fieldset>
+            </form>
+        </div>
+    </div> {% endblock %}

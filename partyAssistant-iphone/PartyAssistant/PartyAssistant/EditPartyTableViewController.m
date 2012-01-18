@@ -7,7 +7,7 @@
 //
 
 #import "EditPartyTableViewController.h"
-
+#import "UIViewControllerExtra.h"
 @implementation EditPartyTableViewController
 @synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
@@ -41,6 +41,17 @@
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.rightBarButtonItem = doneBtn;
     self.navigationItem.leftBarButtonItem.title = @"取消";
+    //wxz
+    NSString *titleString;
+    if (baseInfoObject.description.length>3) {
+        titleString=[[NSString alloc]initWithFormat:@"%@...",[baseInfoObject.description substringToIndex:3]];
+    }else{
+        titleString = baseInfoObject.description;
+    }
+    
+    self.title=titleString;
+    buttonIndexInteger=1;//默认为时间待定
+    peoplebuttonIndex=1;//默认人数无限制
 }
 
 - (void)viewDidUnload
@@ -116,9 +127,14 @@
         UILabel *starttimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 0, 190, 44)];
         starttimeLabel.textAlignment = UITextAlignmentRight;
         starttimeLabel.backgroundColor = [UIColor clearColor];
-        starttimeLabel.text = baseInfoObject.starttimeStr;
-        //            starttimeLabel.text = @"2011-11-11 11:00";
+        if(buttonIndexInteger==0){
+             starttimeLabel.text = baseInfoObject.starttimeStr;        
+        }else{
+            starttimeLabel.text =@"待定";
+        }
         [cell addSubview:starttimeLabel];
+        //            starttimeLabel.text = @"2011-11-11 11:00";
+       
     }else if(indexPath.row == 1){
         cell.textLabel.text = @"地点:";
         if (!locationTextField) {
@@ -134,11 +150,17 @@
         peopleStrLable.backgroundColor = [UIColor clearColor];
         peopleStrLable.textAlignment = UITextAlignmentRight;
         peopleStrLable.text = @"人";
-        [cell addSubview:peopleStrLable];
+        
         UILabel *peoplemaximumLabel = [[UILabel alloc] initWithFrame:CGRectMake(80, 0, 180, 44)];
         peoplemaximumLabel.backgroundColor = [UIColor clearColor];
         peoplemaximumLabel.textAlignment = UITextAlignmentRight;
-        peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
+        if(peoplebuttonIndex==1){
+            peoplemaximumLabel.text=@"无限制";
+        }else{
+            [cell addSubview:peopleStrLable];
+           peoplemaximumLabel.text = [baseInfoObject.peopleMaximum stringValue];
+        }
+        
         //peoplemaximumLabel.text = @"1";
         if (![peoplemaximumLabel.text isEqualToString:@"0"]) {
             peoplemaximumLabel.textColor = [UIColor redColor];
@@ -151,12 +173,13 @@
         }
         descriptionTextView.text = baseInfoObject.description;
         descriptionTextView.backgroundColor = [UIColor clearColor];
+        descriptionTextView.font=[UIFont systemFontOfSize:15];
         //descriptionTextView.text = baseInfoObject.description;
         [cell addSubview:descriptionTextView];
     }
     return cell;
 }
-
+//
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -198,9 +221,9 @@
 #pragma mark - Save the Info
 
 - (void)saveInfo{
-    self.baseInfoObject.description = self.descriptionTextView.text;
-    self.baseInfoObject.location = self.locationTextField.text;
-    [self.baseInfoObject formatDateToString];
+        self.baseInfoObject.description = self.descriptionTextView.text;
+        self.baseInfoObject.location = self.locationTextField.text;
+        [self.baseInfoObject formatDateToString];
 }
 
 #pragma mark - Table view delegate
@@ -217,7 +240,7 @@
     [self saveInfo];
     if (indexPath.row == 0) {
         NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:@"时间待定" destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
         actionSheet.tag = 0;
         if (!self.datePicker) {
             self.datePicker = [[UIDatePicker alloc] init];
@@ -229,9 +252,11 @@
         }
         [actionSheet addSubview:datePicker];
         [actionSheet showInView:self.tabBarController.view];
+               
+        
     }else if(indexPath.row == 2){
         NSString *actionsheetTitle = @"\n\n\n\n\n\n\n\n\n\n\n";
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:actionsheetTitle delegate:self cancelButtonTitle:@"无限制" destructiveButtonTitle:nil otherButtonTitles:@"选择", nil];
         actionSheet.tag = 1;
         if(!peoplemaxiumPicker){
             self.peoplemaxiumPicker = [[UIPickerView alloc] init];
@@ -250,15 +275,27 @@
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
+{   
     if (actionSheet.tag == 0) {
-        self.baseInfoObject.starttimeDate = [datePicker date];
-        [self.baseInfoObject formatDateToString];
+        if(buttonIndex==0){
+            self.baseInfoObject.starttimeDate = [datePicker date];
+            [self.baseInfoObject formatDateToString];
+            buttonIndexInteger=0;
+        }else{
+            buttonIndexInteger=1;
+        }
     }else{
-        NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
-        NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
-        NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
-        self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
+        if(buttonIndex==0){
+            NSInteger hundreds= [peoplemaxiumPicker selectedRowInComponent:0];
+            NSInteger tens= [peoplemaxiumPicker selectedRowInComponent:1];
+            NSInteger nums= [peoplemaxiumPicker selectedRowInComponent:2];
+            self.baseInfoObject.peopleMaximum = [NSNumber numberWithInt:hundreds*100 + tens*10 + nums];
+            peoplebuttonIndex=0;
+        }else{
+            peoplebuttonIndex=1;
+        
+        }
+       
     }
     [self saveInfo];
     [self.tableView reloadData];
@@ -283,7 +320,20 @@
     return [NSString stringWithFormat:@"%d",row];
 }
 
+
 - (void)doneBtnAction{
+  if(!self.descriptionTextView.text || [self.descriptionTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"描述内容不可以为空"
+                            message:@"描述为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+      return;
+        
+ }else{
+
     [self saveInfo];
     [self showWaiting];
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -297,21 +347,23 @@
     [request setPostValue:self.baseInfoObject.partyId forKey:@"partyID"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
-
+ }
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             [self.navigationController popViewControllerAnimated:YES];
             NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.baseInfoObject,@"baseinfo", nil];
             NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS object:nil userInfo:userinfo];
@@ -321,8 +373,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

@@ -27,6 +27,13 @@
 @synthesize tableView = _tableView;
 @synthesize userNameTableCell = _userNameTableCell;
 @synthesize userNameTextField = _userNameTextField;
+//wxz
+@synthesize emailInfoTableCell = _emailInfoTableCell;
+@synthesize emailInfoTextField = _emailInfoTextField;
+
+@synthesize phoneNumTableCell =_phoneNumTableCell;
+@synthesize phoneNumTextField =_phoneNumTextField;
+
 @synthesize delegate;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -74,7 +81,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 1;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView 
@@ -83,8 +90,14 @@
     if (indexPath.row == 0) {
         return _userNameTableCell;
     }
-    
+    if (indexPath.row == 1) {
+        return _emailInfoTableCell;
+    }
+    if (indexPath.row ==2) {
+        return _phoneNumTableCell;
+    }
     return nil;
+    
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView
@@ -102,15 +115,27 @@
     //check username textField
     BOOL isEmpty = (!_userNameTextField.text 
                     || [_userNameTextField.text isEqualToString:@""]);
-    if (isEmpty) {
+  
+    //wxz
+    BOOL isEmailEmpty = (!_emailInfoTextField.text 
+                    || [_emailInfoTextField.text isEqualToString:@""]);
+    
+    BOOL isPhoneEmpty = (!_phoneNumTextField.text 
+                         || [_phoneNumTextField.text isEqualToString:@""]);
+
+    if (isEmailEmpty || isEmpty || isPhoneEmpty) {
         [self showNotLegalInput];
         return;
     }
+    
     [self cleanKeyBoard];
     [delegate saveInputDidBegin];
     NetworkConnectionStatus status = [[DataManager sharedDataManager] 
                                        setNickName:_userNameTextField.text];
-    if (status == NetWorkConnectionCheckPass) {
+    NetworkConnectionStatus emailStatus = [[DataManager sharedDataManager] setEmailInfo:_emailInfoTextField.text];
+    
+    NetworkConnectionStatus phoneStatus =[[DataManager  sharedDataManager] setPhoneNum:_phoneNumTextField.text];
+    if (status == NetWorkConnectionCheckPass && emailStatus == NetWorkConnectionCheckPass && phoneStatus == NetWorkConnectionCheckPass) {
         [delegate saveInputFinished];
     } else {
         [self showNotPassChekAlert];
@@ -122,21 +147,24 @@
     if ([_userNameTextField isFirstResponder]) {
         [_userNameTextField resignFirstResponder];
     } 
+    if([_emailInfoTextField isFirstResponder]){
+        [_emailInfoTextField resignFirstResponder];
+    }
 }
 
 - (void)showAlertWithMessage:(NSString *)message  
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
 }
 
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"登陆内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"内容不能为空！" buttonTitle:@"好的" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"操作失败" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"操作失败" buttonTitle:@"好的" tag:NotPassTag];
 }
 @end

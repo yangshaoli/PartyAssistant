@@ -11,7 +11,7 @@
 #define NAVIGATION_TITILE @"活动详情"
 
 @implementation PartyDetailTableViewController
-@synthesize baseinfo, peopleCountArray;
+@synthesize baseinfo, peopleCountArray, myToolbarItems;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -36,12 +36,16 @@
 {
     [super viewDidLoad];
 
+    self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
+    [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];
+    [self.navigationController.toolbar sizeToFit];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
+    
     self.navigationController.title = @"活动详情";
     self.editButtonItem.action = @selector(editBtnAction);
     self.editButtonItem.title = @"编辑";
@@ -51,6 +55,36 @@
     if (!peopleCountArray) {
         self.peopleCountArray = [[NSArray alloc] initWithObjects:@"...",@"...",@"...",@"...", nil];
     }
+    
+    if (!self.myToolbarItems) {
+        UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
+        self.myToolbarItems = [NSArray arrayWithObjects:
+                               flexButton,  
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(shareAction)], 
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"refresh_word"]
+                                                                style:UIBarButtonItemStylePlain 
+                                                               target:self
+                                                               action:@selector(refreshItem:)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"del_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(deleteParty)],
+                               flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"edit_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(editBtnAction)],
+                               flexButton, 
+                               nil];
+        
+        [self setToolbarItems:myToolbarItems animated:YES];
+    }
+    
 }
 
 - (void)viewDidUnload
@@ -63,6 +97,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    self.navigationController.toolbarHidden = NO;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -73,6 +109,8 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -162,23 +200,27 @@
             UITextView *descriptionTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 190, 100)];
             descriptionTextView.text = self.baseinfo.description;
             descriptionTextView.backgroundColor = [UIColor clearColor];
+            descriptionTextView.font=[UIFont systemFontOfSize:15];
             descriptionTextView.editable = NO;
             [cell addSubview:descriptionTextView];
         }
     }else if(indexPath.section == 1){
         if (indexPath.row == 0) {
             cell.textLabel.text = @"邀请人:";
-            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            NumberLabel *lb_1 = [[NumberLabel alloc] initWithBlueNumber:[self.peopleCountArray objectAtIndex:0] withFrame:CGRectMake(10, 14, 280, 44)];
+            
             lb_1.tag = 1;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:0]];
             lb_1.textAlignment = UITextAlignmentRight;
-            lb_1.backgroundColor = [UIColor clearColor];
+//            lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
+//            UIImageView *imgV = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"new_tips"]];
+//            imgV.frame = CGRectMake(200, 7, imgV.frame.size.width, imgV.frame.size.height);
+//            [cell addSubview:imgV];
         }else if(indexPath.row == 1){
             cell.textLabel.text = @"已报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 2;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:1]];
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -186,7 +228,7 @@
             cell.textLabel.text = @"不报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 3;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:2]];
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:2]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -194,7 +236,7 @@
             cell.textLabel.text = @"未报名:";
             UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
             lb_1.tag = 4;
-            lb_1.text = [NSString stringWithFormat:@"%@ 人",[self.peopleCountArray objectAtIndex:3]];
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:3]];
             lb_1.textAlignment = UITextAlignmentRight;
             lb_1.backgroundColor = [UIColor clearColor];
             [cell addSubview:lb_1];
@@ -208,6 +250,7 @@
         [cell addSubview:delBtn];
         cell.backgroundColor = [UIColor clearColor];
     }
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
     return cell;
 }
 
@@ -278,43 +321,19 @@
     }
 }
 
-- (void)loadClientCount
-{
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@" ,GET_PARTY_CLIENT_MAIN_COUNT,self.baseinfo.partyId]];
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
-    [request setDelegate:self];
-    [request setShouldAttemptPersistentConnection:NO];
-    [request startAsynchronous];
-}
 
-- (void)requestFinished:(ASIHTTPRequest *)request{
+- (void)shareAction
+{
     
-	NSString *response = [request responseString];
-	SBJsonParser *parser = [[SBJsonParser alloc] init];
-	NSDictionary *result = [parser objectWithString:response];
-	NSString *description = [result objectForKey:@"description"];
-    if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
-            NSDictionary *dataSource = [result objectForKey:@"datasource"];
-            NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
-            NSNumber *appliedClientcount = [dataSource objectForKey:@"appliedClientcount"];
-            NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
-            NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
-            NSArray *countArray = [NSArray arrayWithObjects:allClientcount,appliedClientcount,refusedClientcount,donothingClientcount, nil];
-            self.peopleCountArray = countArray;
-            [self.tableView reloadData];
-        }else{
-            [self showAlertRequestFailed:description];		
-        }
-    }
-}
-
-- (void)requestFailed:(ASIHTTPRequest *)request
-{
-//	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
+//    if ([delegate respondsToSelector:@selector(UserLogin)]) 
+//    {
+//        [delegate UserLogin];
+//    }
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    rootVC.baseinfo = baseinfo;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
+    
 }
 
 - (void)editBtnAction{
@@ -348,7 +367,7 @@
             [request setPostValue:self.baseinfo.partyId forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
             
-            request.timeOutSeconds = 30;
+            request.timeOutSeconds = 20;
             [request setDelegate:self];
             [request setDidFinishSelector:@selector(deleteRequestFinished:)];
             [request setDidFailSelector:@selector(deleteRequestFailed:)];
@@ -375,8 +394,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

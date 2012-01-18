@@ -5,13 +5,16 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>爱热闹</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
-	<array/>
+	<array>
+		<string>icons.png</string>
+		<string>icons@2x.png</string>
+	</array>
 	<key>CFBundleIdentifier</key>
-	<string>com.aragoncg.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>com.aragoncg.AiReNaoTest</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -26,11 +29,20 @@
 	<string>1.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIMainStoryboardFile</key>
-	<string>MainStoryboard</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.aragoncg.AiReNaoTest</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>PAS</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

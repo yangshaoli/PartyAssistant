@@ -5,7 +5,7 @@
 //  Created by 超 李 on 11-10-28.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
+#import "UIViewControllerExtra.h"
 #import "SendEmailToClientsViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
@@ -110,14 +110,18 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 5;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if (section == 3) {
-        return 2;
+    if (section == 2) {
+        if([MFMailComposeViewController canSendMail]==YES){
+            return 2;
+        }else{
+            self.emailObject._isSendBySelf = FALSE;
+        }
     }
     return 1;
 }
@@ -136,23 +140,24 @@
         
         // Configure the cell...
         if (indexPath.section == 0) {
+       // }else if(indexPath.section == 1){
+//            if(!subjectTextField){
+//                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
+//            }
+//            subjectTextField.text = self.emailObject.emailSubject;
+//            subjectTextField.backgroundColor = [UIColor clearColor];
+//            [cell addSubview:subjectTextField];
+//            cell.textLabel.text = @"邮件主题";
         }else if(indexPath.section == 1){
-            if(!subjectTextField){
-                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
-            }
-            subjectTextField.text = self.emailObject.emailSubject;
-            subjectTextField.backgroundColor = [UIColor clearColor];
-            [cell addSubview:subjectTextField];
-            cell.textLabel.text = @"邮件主题";
-        }else if(indexPath.section == 2){
             if (!contentTextView) {
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.emailObject.emailContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font = [UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"邮件内容";
-        }else if(indexPath.section == 3){
+            cell.textLabel.text  = @"邮件内容:";
+        }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
                 [applyTipsSwitch setOn:self.emailObject._isApplyTips];
@@ -166,7 +171,7 @@
                 cell.textLabel.text = @"通过自己的手机发送：";
                 [cell addSubview:sendBySelfSwitch];
             }
-        }else if (indexPath.section == 4){
+        }else if (indexPath.section == 3){
             UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
             [setDefaultBtn setFrame:CGRectMake(10, 0, 300, 44)];
             [setDefaultBtn setTitle:@"恢复默认内容" forState:UIControlStateNormal];
@@ -196,7 +201,7 @@
 
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 2) {
+    if (indexPath.section == 1) {
         return 180;
     }else if(indexPath.section == 0){
         return 44.0*3;
@@ -281,14 +286,31 @@
 }
 
 - (void)doneBtnAction{
-    [self saveEmailInfo];
-    if ([self.receiverArray count] == 0) {
-        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的邮件未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
-        alertV.tag = DONE_ALERT_TAG;
-        [alertV show];
-    }else{
-        [self sendCreateRequest];
-    }
+    if(!self.contentTextView.text || [self.contentTextView.text isEqualToString:@""]){
+        UIAlertView *alert=[[UIAlertView alloc]
+                            initWithTitle:@"邮件内容不可以为空"
+                            message:@"内容为必填项"
+                            delegate:self
+                            cancelButtonTitle:@"请点击输入内容"
+                            otherButtonTitles: nil];
+        [alert show];
+        
+    
+  }else{
+      [self saveEmailInfo];
+      if ([self.receiverArray count] == 0) {
+          UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您的邮件未指定任何收件人，继续保存？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+          alertV.tag = DONE_ALERT_TAG;
+          [alertV show];
+      }else{
+          [self sendCreateRequest];
+      }  
+  }
+    //完成后清空所有内容
+    self.contentTextView.text=nil;
+    self.receiverArray=nil;
+ 
+    
 }
 - (void)sendCreateRequest{
     [self showWaiting];
@@ -311,7 +333,7 @@
     [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -321,35 +343,44 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
-                /* */
-                MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
-                if (self.emailObject._isApplyTips) {
-                    NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
-                    [vc setMessageBody:emailcontent isHTML:NO];
-                }else{
-                    NSString *emailcontent = self.emailObject.emailContent;
-                    [vc setMessageBody:emailcontent isHTML:NO];
-                };
-                [vc setSubject:self.emailObject.emailSubject];
-                NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
-                for(int i=0;i<[self.receiverArray count];i++){
-                    [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
-                }
-                [vc setToRecipients:aArray];
-                vc.mailComposeDelegate = self;
-                [self presentModalViewController:vc animated:YES];
-                EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
-                [se clearEmailObject];
-                SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
-                [ss clearSMSObject];
-                BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
-                [bs clearBaseInfo];
+              if([MFMailComposeViewController canSendMail]==YES){//wxz
+                    MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
+                  if (self.emailObject._isApplyTips) {
+                      NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                      [vc setMessageBody:emailcontent isHTML:NO];
+                  }else{
+                      NSString *emailcontent = self.emailObject.emailContent;
+                      [vc setMessageBody:emailcontent isHTML:NO];
+                  };
+                  [vc setSubject:self.emailObject.emailSubject];
+                  NSMutableArray *aArray = [NSMutableArray arrayWithCapacity:[self.receiverArray count]];
+                  for(int i=0;i<[self.receiverArray count];i++){
+                      [aArray addObject:[[self.receiverArray objectAtIndex:i] cVal]];
+                  }
+                  [vc setToRecipients:aArray];
+                  vc.mailComposeDelegate = self;
+    
+                  [self.navigationController presentModalViewController:vc animated:YES];
+                  EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
+                  [se clearEmailObject];
+                  SMSObjectService *ss = [SMSObjectService sharedSMSObjectService];
+                  [ss clearSMSObject];
+                  BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
+                  [bs clearBaseInfo];
+                  
+              }else{
+                    [self createPartySuc];
+                    return;
+              }
+                         
             }else{
                 [self createPartySuc];
             }
@@ -358,8 +389,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -392,8 +427,13 @@
 	// Notifies users about errors associated with the interface
 	switch (result) {
 		case MFMailComposeResultCancelled:{
-            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请邮件" delegate:self cancelButtonTitle:@"继续编辑邮件" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
-            [sh showInView:self.tabBarController.view];
+//            UIActionSheet *sh = [[UIActionSheet alloc] initWithTitle:@"警告:您还未向受邀者发送邀请邮件" delegate:self cancelButtonTitle:@"继续编辑邮件" destructiveButtonTitle:@"返回趴列表" otherButtonTitles:nil];
+//            [sh showInView:self.tabBarController.view];
+            break;
+        }
+        case MFMailComposeResultSaved:{
+            [self.navigationController dismissModalViewControllerAnimated:YES];
+            [self.navigationController popToRootViewControllerAnimated:NO];
             break;
         }
 		case MFMailComposeResultSent:
@@ -417,6 +457,7 @@
         [self createPartySuc];
     }else{
         [actionSheet dismissWithClickedButtonIndex:1 animated:YES];
+        return;
     }
     
 }

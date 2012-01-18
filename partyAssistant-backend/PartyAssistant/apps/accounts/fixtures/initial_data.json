@@ -1,0 +1,29 @@
+[
+  {
+    "model": "accounts.ProductionInfo",
+    "pk": 1,
+    "fields": {
+      "production_apple_id": "com.aragoncg.AiReNaoTest.TestProduct1",
+      "pay_money": "6",
+      "pay_money_type":"人民币",
+      "items_count":"50"
+    }
+  },
+  {
+    "model": "accounts.ProductionInfo",
+    "pk": 2,
+    "fields": {
+      "production_apple_id": "com.aragoncg.AiReNaoTest.TestProduct2",
+      "pay_money": "12",
+      "pay_money_type":"人民币",
+      "items_count":"100"
+    }
+  },
+  {
+    "model": "accounts.Premium",
+    "pk": 1,
+    "fields": {
+      "description": "无"
+    }
+  }
+]

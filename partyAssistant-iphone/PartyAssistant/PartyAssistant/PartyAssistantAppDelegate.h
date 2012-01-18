@@ -10,9 +10,31 @@
 #import "PartyLoginViewController.h"
 #import "PartyListTableViewController.h"
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "DeviceTokenService.h"
+#import "NotificationSettings.h"
+#import "HTTPRequestErrorMSG.h"
+#import "URLSettings.h"
+#import "JSON.h"
+#import "ASIFormDataRequest.h"
+#import "UserObject.h"
+#import "UserObjectService.h"
+#import <AddressBook/AddressBook.h>
+#import "MBProgressHUD.h"
+#import "ASIHTTPRequest.h"
+#import "ECPurchase.h"
 
-@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate>
+ABAddressBookRef addressBook;
+@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate,ECPurchaseProductDelegate,ECPurchaseTransactionDelegate, MBProgressHUDDelegate> {
+    MBProgressHUD *_HUD;
+    ASIHTTPRequest *remainCountRequest;
+}
 
-@property (strong, nonatomic) UIWindow *window;
+@property (retain, nonatomic) UIWindow *window;
+@property (retain, nonatomic) UINavigationController *nav;
+@property (retain, nonatomic) ASIHTTPRequest *remainCountRequest;
+
+void addressBookChanged (ABAddressBookRef addressBook,
+                         CFDictionaryRef info,
+                         void *context);
 
 @end

@@ -5,7 +5,7 @@
 //  Created by 超 李 on 11-11-17.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
+#import "UIViewControllerExtra.h"
 #import "ResendEmailTableViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
@@ -71,6 +71,7 @@
         [addBTN addTarget:self action:@selector(addReceiver) forControlEvents:UIControlEventTouchUpInside];
         [receiverCell addSubview:addBTN];
     }
+    self.title=@"再次邀请";
 }
 
 - (void)viewDidUnload
@@ -111,13 +112,13 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 5;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    if (section == 3) {
+    if (section == 2) {
         return 2;
     }
     return 1;
@@ -139,23 +140,24 @@
         // Configure the cell...
         if (indexPath.section == 0) {
             
+//        }else if(indexPath.section == 1){
+//            if(!subjectTextField){
+//                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
+//            }
+//            subjectTextField.text = self.emailObject.emailSubject;
+//            subjectTextField.backgroundColor = [UIColor clearColor];
+//            [cell addSubview:subjectTextField];
+//            cell.textLabel.text = @"邮件主题";
         }else if(indexPath.section == 1){
-            if(!subjectTextField){
-                self.subjectTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 160, 44)];
-            }
-            subjectTextField.text = self.emailObject.emailSubject;
-            subjectTextField.backgroundColor = [UIColor clearColor];
-            [cell addSubview:subjectTextField];
-            cell.textLabel.text = @"邮件主题";
-        }else if(indexPath.section == 2){
             if (!contentTextView) {
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.emailObject.emailContent;
             contentTextView.backgroundColor = [UIColor clearColor];
+            contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
-            cell.textLabel.text  = @"短信内容";
-        }else if(indexPath.section == 3){
+            cell.textLabel.text  = @"邮件内容";
+        }else if(indexPath.section == 2){
             if (indexPath.row == 0) {
                 UISwitch *applyTipsSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(220, 10, 0, 0)];
                 [applyTipsSwitch setOn:self.emailObject._isApplyTips];
@@ -199,7 +201,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 2) {
+    if (indexPath.section == 1) {
         return 180;
     }else if(indexPath.section == 0){
         return 44.0*3;
@@ -311,7 +313,7 @@
     //        [request addFile:imageFile withFileName:nil andContentType:@"image/jpeg" forKey:@"images"];
     //    }
     //    [request setDelegate:self];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -323,10 +325,12 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
                 /* */
@@ -354,8 +358,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

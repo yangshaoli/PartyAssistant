@@ -12,18 +12,18 @@
 @implementation UIViewController(UIViewControllerExtra)
 
 - (void)showAlertRequestSuccess{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:@"操作已成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:@"操作已成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 
 - (void)showAlertRequestSuccessWithMessage: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:nil message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag=1;
 	[av show];
 }
 
 - (void)showAlertRequestFailed: (NSString *) theMessage{
-	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"OK",nil];
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     [av show];
 }
 
@@ -32,6 +32,33 @@
     [av show];
 }
 
+- (void)getVersionFromRequestDic:(NSDictionary *)result{
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+    NSString *newVersionString = [result objectForKey:@"iphone_version"];
+    if(preVersionString==nil||[preVersionString isEqualToString:@""]){
+        [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+        //NSLog(@"前版本为空");
+        return;
+    }else{
+        if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
+            return;
+        }else{
+            //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
+            if([newVersionString floatValue]>[preVersionString floatValue]){
+                [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
+            }else{
+                [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
+            }
+        }
+    
+    }
+    
+    
+   
+}
 #pragma mark --
 #pragma mark waitingView Method
 

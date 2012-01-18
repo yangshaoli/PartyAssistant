@@ -1,18 +1,63 @@
 {% extends 'login_base.html' %}
 {% block title %} 操作成功 {% endblock %}
 {% block content %}
-
 {% if message %}
-<div id="content">
-  <div class="grid_a">
-   <h2 class="title">操作成功</h2>
-    <h2>{{message}}</h2>
-<br />
-<button onclick="javascript:history.back(-1)">返回上个页面</button>
-  </div>
- </div>
 
+    {% ifequal message 'partynotexist' %}
+        	<div id="content">
+      		<div class="grid_a">
+      		 <h2 class="title">操作失败</h2>
+        	<h2>
+                    该活动已删除！
+        	</h2>
+    		<br />
+    		<button onclick="self.location='/'">返回首页</button>
+      		</div>
+    	   </div>
+    {% endifequal %}  
 
+    {% ifnotequal message 'partynotexist' %}
+    	<div id="content">
+  		<div class="grid_a">
+  		 <h2 class="title">操作成功</h2>
+    	<h2>
+
+    	    {% ifequal message 'publicenroll' %}
+		        报名成功！
+		    {% endifequal %}
+    	    {% ifequal message 'nopublicenroll' %}
+		        暂未开放报名方式！
+		    {% endifequal %}		    
+		    {% ifequal message 'late' %}
+		        来晚了，下次早点吧!
+		    {% endifequal %}        
+		    {% ifequal message 'apply' %}
+		        报名成功，请记得按时参加活动。
+		    {% endifequal %}      
+		    {% ifequal message 'reject' %}
+		        您已经选择不参加这个活动.
+		    {% endifequal %}  
+		    {% ifequal message 'noexistkey' %}
+		        当前绑定链接已经失效.
+		    {% endifequal %}  
+		    {% ifequal message 'noexistusername' %}
+		        用户名不存在.
+		    {% endifequal %}  
+		    {% ifequal message 'nobinding' %}
+		        您没有绑定手机或是邮箱，请联系客服取回密码.
+		    {% endifequal %}  
+		    {% ifequal message 'sendtophone' %}
+		        临时密码已经发送到您绑定的手机，请使用临时密码登录后重新设置密码.
+		    {% endifequal %}  
+		    {% ifequal message 'sendtoemail' %}
+		        临时密码已经发送到您绑定的邮箱，请使用临时密码登录后重新设置密码.
+		    {% endifequal %}  
+    	</h2>
+		<br />
+		<button onclick="self.location='{{request.META.path_info}}'">返回上个页面</button>
+  		</div>
+	   </div>
+    {% endifnotequal %}               
 {% else %}
 
 邮件已经成功发送。您现在可以查看<a href="{%url list_party %}">活动列表</a>了。

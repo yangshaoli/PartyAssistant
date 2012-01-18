@@ -7,8 +7,18 @@
 //
 
 #import "SettingsListTableViewController.h"
-
-#define NAVIGATION_CONTROLLER_TITLE @"个人设置"
+#import "NicknameManageTableViewController.h"
+#import "DataManager.h"
+#import "PurchaseListViewController.h"
+#import "ChangePasswordTableVC.h"
+#import "BindingListViewController.h"
+#import "URLSettings.h"
+#define NAVIGATION_CONTROLLER_TITLE @"设置"
+#define LogoutTag                   1
+#define NotPassTag                  2
+#define SuccessfulTag               3
+#define InvalidateNetwork           4
+#define versionRefreshTag           5
 
 @implementation SettingsListTableViewController
 
@@ -42,6 +52,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     self.navigationItem.title = NAVIGATION_CONTROLLER_TITLE;
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];
 }
 
 - (void)viewDidUnload
@@ -88,7 +99,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 5;
+    return 7;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -102,15 +113,38 @@
     
     // Configure the cell...
     if (indexPath.row == 0) {
-        cell.textLabel.text = @"更改昵称";
+        cell.textLabel.text = @"个人信息";
     }else if(indexPath.row == 1){
-        cell.textLabel.text = @"变更密码";
+        cell.textLabel.text = @"修改密码";
     }else if(indexPath.row == 2){
-        cell.textLabel.text = @"绑定微博";
+        cell.textLabel.text = @"微博管理";
     }else if(indexPath.row == 3){
         cell.textLabel.text = @"帮我们评分";
     }else if(indexPath.row == 4){
+        cell.textLabel.text = @"充值";
+    }else if(indexPath.row == 5){
         cell.textLabel.text = @"登出";
+    }else if(indexPath.row == 6){
+        
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        NSString *defaultVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        
+        NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+        BOOL isUpdateVersion=[isUpdateVersionDefault boolForKey:@"isUpdateVersion"];
+        
+        cell.textLabel.text = [[NSString alloc] initWithFormat:@"当前版本号：%@",defaultVersionString];
+      
+        UIView *oldLayout2 = nil;
+        oldLayout2 = [cell viewWithTag:2];
+        [oldLayout2 removeFromSuperview];
+        
+        if(isUpdateVersion){   
+    
+            UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(249, 10, 20, 20)];
+            cellImageView.image=[UIImage imageNamed:@"new1"];
+            cellImageView.tag=2;
+            [cell  addSubview:cellImageView];
+        }
     }
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return cell;
@@ -166,6 +200,126 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+//    WeiboService *s = [WeiboService sharedWeiboService];
+//    [s WeiboLogin];
+    if(indexPath.row == 0){
+        BindingListViewController *bindListVC = [[BindingListViewController alloc] initWithNibName:nil bundle:nil];
+        [self.navigationController pushViewController:bindListVC animated:YES];
+    }
+    if(indexPath.row==1){
+        ChangePasswordTableVC *changePasswordTableVC=[[ChangePasswordTableVC alloc] initWithNibName:@"ChangePasswordTableVC" bundle:nil];
+        [self.navigationController pushViewController:changePasswordTableVC animated:YES];
+    }  
+    if(indexPath.row == 2){
+        WeiboManagerTableViewController *vc = [[WeiboManagerTableViewController alloc] initWithNibName:@"WeiboManagerTableViewController" bundle:nil];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+    if(indexPath.row == 3){
+        NSString *addressString=[[NSString alloc]initWithFormat:SCORE_MARK];//评分
+        [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
+
+    }
+    if(indexPath.row == 4){
+        PurchaseListViewController *purchaseListVC = [[PurchaseListViewController alloc] initWithNibName:@"PurchaseListViewController" bundle:nil];
+        [self.navigationController pushViewController:purchaseListVC animated:YES];
+    }
+    if(indexPath.row == 5){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"登出" message:@"确认登出?" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确认", nil];
+        alertView.tag = LogoutTag;
+        [alertView show];
+    }
+    if(indexPath.row == 6){
+        NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+        NSString *versionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if(versionString==nil&&[versionString isEqualToString:@""]){
+            
+            return;
+        }else{
+            NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+            BOOL isUpdateVersion=[isUpdateVersionDefault boolForKey:@"isUpdateVersion"];
+            if(isUpdateVersion){
+                    NSString *addressString=[[NSString alloc]initWithFormat:VERSION_UPDATE];//版本更新
+                    [[UIApplication sharedApplication]openURL:[NSURL URLWithString:addressString]];
+            }else{
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"当前已是最新版本" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:nil, nil];
+                [alertView show];
+            
+            }
+        }
+    }
 }
 
+#pragma mark -
+#pragma mark MBProgress_HUDDelegate methods
+
+- (void)HUDWasHidden:(MBProgressHUD *)hUD {
+    // Remove _HUD from screen when the _HUD was hidded
+    [_HUD removeFromSuperview];
+	_HUD = nil;
+}
+
+#pragma mark - UIAlertDelegate Method 
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if ((alertView.tag == LogoutTag ) && ( buttonIndex == 1)) {
+        _HUD = [[MBProgressHUD alloc] initWithView:self.view];
+        [self.navigationController.view addSubview:_HUD];
+        
+        _HUD.labelText = @"载入中";
+        
+        _HUD.delegate = self;
+        
+        [_HUD showWhileExecuting:@selector(tryConnectToServer) onTarget:self withObject:nil animated:YES];
+    }
+    
+}
+
+- (void)showAlertWithMessage:(NSString *)message 
+                 buttonTitle:(NSString *)buttonTitle 
+                         tag:(int)tagNum{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
+    alert.tag = tagNum;
+    [alert show];
+}
+
+- (void)showInvalidateNetworkalert {
+    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+                   buttonTitle:@"好的" 
+                           tag:InvalidateNetwork];
+}
+
+- (void)showRegistSuccessfulAlert {
+    [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
+    [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+}
+
+- (void)showNotPassChekAlert {
+    [self showAlertWithMessage:@"无法完成登出！" buttonTitle:@"好的" tag:NotPassTag];
+}
+
+- (void)tryConnectToServer {
+    //NetworkConnectionStatus networkStatus= [[DataManager sharedDataManager]
+    //                                        logoutUser];
+    NSString *networkStatus = nil;
+    networkStatus = [[DataManager sharedDataManager] logoutUser];
+    [_HUD hide:YES];
+    //may need to creat some other connection status
+    if (networkStatus) {
+        [self showAlertWithMessage:networkStatus buttonTitle:@"确定" tag:NotPassTag];
+    } else {
+        [self showRegistSuccessfulAlert];
+    }
+//    switch (networkStatus) {
+//        case NetworkConnectionInvalidate:
+//            [self showNotPassChekAlert];
+//            break;
+//        case NetWorkConnectionCheckPass:
+//            [self showRegistSuccessfulAlert];
+//            break;
+//        default:
+//            [self showNotPassChekAlert];
+//            break;
+//    }
+}
 @end

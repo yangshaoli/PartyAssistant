@@ -1,3 +1,64 @@
-<script>
-	location.href = '{% url login %}'
+{% extends "not_login_base.html" %} 
+
+{% block title %}首页{% endblock %}
+
+{% block content %}
+
+<!--START: content -->
+ <div id="content" style="margin-top:50px;">
+ 	<div class="home">
+  	<div class="home-section1">
+   	<div class="phone"></div>
+    <div class="help-you">
+    	<h2></h2>
+     <ul class="help-list">
+      <li>群发短信邮件，邀请好友（方便）</li>
+      <li>网页报名，省掉来回的电话（省心）</li>
+      <li>有人报名，专门的应用提醒（高效）</li>
+     </ul>
+     <p class="free-down">免费下载</p>
+     <ul class="versions">
+     	<li><a href="#">dfdf</a></li>
+      <li class="iphone"><a href="#">dfdf</a></li>
+     </ul>
+    </div>
+   </div>
+   <div class="home-section2 clearfix">
+   	<div class="col1">
+    	<div class="hd">
+      <h3>最近有哪些新活动？</h3>
+     </div>
+     <ul class="activity-list">
+     	<li class="l1"><a href="#"><span>周三踢球</span>2011-11-30 周三</a></li>
+      <li class="l2"><a href="#"><span>周三踢球</span>2011-11-30 周三</a></li>
+      <li class="l3"><a href="#"><span>周三踢球</span>2011-11-30 周三</a></li>
+      <li class="l4"><a href="#"><span>周三踢球</span>2011-11-30 周三</a></li>
+     </ul>
+    </div>
+    <div class="col2">
+    	<div class="hd clearfix">
+      <h3 class="fl">关注 @我们爱热闹</h3>
+      <ul class="twitter">
+       <li><a href="http://weibo.com/airenao" target="_blank">sian</a></li>
+       <li class="t2"><a href="#">text</a></li>
+      </ul>
+     </div>
+     <p class="tro"><span class="extrude">爱热闹：</span>【#聚会#】爱热闹最新活动爱热闹最新活动爱热闹最新活动爱。 <a href="#" class="extrude">http://t.cn/f3czd5</a></p>
+    </div>
+    <div class="col3">
+    	<div class="hd"><h3>了解爱热闹的更多功能</h3></div>
+     <ul class="know-more-lists">
+     	<li><a href="#">公共报名页面</a></li>
+      <li><a href="#">导入联络表，自动补全</a></li>
+      <li class="last"><a href="#">把活动分享到微博</a></li>
+     </ul>
+    </div>
+   </div>
+  </div>
+ </div>
+ <!--END: content --> 
+ <script>
+document.getElementsByClassName('menu')[0].children[1].className = '';
+document.getElementsByClassName('menu')[0].children[0].className = 'active';
 </script>
+{% endblock %}
