@@ -140,8 +140,8 @@
     //NSLog(@"每行cell.textLabel.text:......%@",cell.textLabel.text);
     ClientObject *client = [self.dataSource objectAtIndex:indexPath.row];
     cell.textLabel.text = client.cName;
-    cell.detailTextLabel.text = client.phoneLabel;
-
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@: %@", client.phoneLabel, client.cVal];
+    
     ABRecordID recordID = [client cID];
     NSInteger phoneIdentifier = [client phoneIdentifier];
     
