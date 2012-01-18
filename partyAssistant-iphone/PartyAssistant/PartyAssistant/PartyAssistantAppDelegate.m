@@ -135,10 +135,20 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 }
 
 -(void)didReceivedProducts:(NSArray *)products {
+    if ([products count] == 0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"产品提交失败" message:@"无法检测到提交产品的信息，提交取消！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        
+        if (_HUD) {
+            [_HUD hide:YES];
+        }
+        
+        return;
+    }
+    
     if (_HUD) {
         _HUD.labelText = @"获取产品信息中...";
     }
-    
     
     [[ECPurchase shared] addPayment:[products lastObject]];
 }

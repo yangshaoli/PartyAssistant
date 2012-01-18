@@ -13,6 +13,7 @@
 #import "UserObject.h"
 #import "DeviceDetection.h"
 #import "RegexKitLite.h"
+#import "Reachability.h"
 /******************************
  SKProduct extend
  *****************************/
@@ -77,32 +78,33 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 #pragma mark SKProductsRequestDelegate methods
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
     NSArray *products = response.products;
-#ifdef ECPURCHASE_TEST_MODE	
-	NSMutableString *result = [[NSMutableString alloc] init];
-	for (int i = 0; i < [products count]; ++i) {
-		SKProduct *proUpgradeProduct = [products objectAtIndex:i];
-		[result appendFormat:@"%@,%@,%@,%@\n",
-		 proUpgradeProduct.localizedTitle,proUpgradeProduct.localizedDescription,proUpgradeProduct.price,proUpgradeProduct.productIdentifier];
-	}
-    
-    for (NSString *invalidProductId in response.invalidProductIdentifiers)
-    {
-		[result appendFormat:@"Invalid product id: %@",invalidProductId];
-    }
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"iap" message:result
-										delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
-	[alert release];
-	[_productDelegate didReceivedProducts:products];
-#else
+//#ifdef ECPURCHASE_TEST_MODE	
+//	NSMutableString *result = [[NSMutableString alloc] init];
+//	for (int i = 0; i < [products count]; ++i) {
+//		SKProduct *proUpgradeProduct = [products objectAtIndex:i];
+//		[result appendFormat:@"%@,%@,%@,%@\n",
+//		 proUpgradeProduct.localizedTitle,proUpgradeProduct.localizedDescription,proUpgradeProduct.price,proUpgradeProduct.productIdentifier];
+//	}
+//    
+//    for (NSString *invalidProductId in response.invalidProductIdentifiers)
+//    {
+//		[result appendFormat:@"Invalid product id: %@",invalidProductId];
+//    }
+//	
+//	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"iap" message:result
+//										delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//	[alert show];
+//	[alert release];
+//	[_productDelegate didReceivedProducts:products];
+//#else
 	[_productDelegate didReceivedProducts:products];
 
-#endif   
+//#endif   
 	[_productsRequest release];
 }
 
 -(void)request:(SKRequest *)request didFailWithError:(NSError *)error{
+    NSLog(@"%@",[error localizedDescription]);
     [_productDelegate requestDidFail];
 }
 
@@ -147,6 +149,9 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 
 -(void)failedTransaction:(NSNotification *)note{
 	SKPaymentTransaction *trans = [[note userInfo] objectForKey:@"transaction"];
+    NSLog(@"%d",trans.error.code);
+    NSLog(@"%@",trans.error.localizedFailureReason);
+    NSLog(@"%@",trans.error);
 	[_transactionDelegate didFailedTransaction:trans.payment.productIdentifier];
 }
 
@@ -411,6 +416,10 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 }
 
 -(void)verifyReceiptsStoredOnLocal{
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        return;
+    }
+    
     NSDictionary *receiptDic = [self getLocalStoredReceipt];
     if (!receiptDic) {
         return;

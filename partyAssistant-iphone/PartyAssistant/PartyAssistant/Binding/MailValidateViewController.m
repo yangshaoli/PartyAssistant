@@ -124,7 +124,7 @@
 - (void)resendMailVerifyCode {
     NSString *mailText;
     if (self.pageStatus == StatusVerifyBinding) {
-        mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingTel];
+        mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingMail];
     } else {
         mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail];
     }

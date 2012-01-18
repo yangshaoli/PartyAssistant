@@ -14,11 +14,18 @@
 
 #define PhoneNumberLength 11
 
+@interface ClientObject ()
+
+@property (nonatomic, retain) NSString *phoneValue;
+
+@end
+
 @implementation ClientObject
 
 @synthesize cID,cName,cVal,backendID;
 @synthesize phoneIdentifier;
 @synthesize phoneLabel;
+@synthesize phoneValue;
 - (id)init
 {
     self = [super init];
@@ -26,7 +33,7 @@
     if (self) {
 		self.cID = -1;
         self.cName = @"";
-        self.cVal = @"";
+        self.phoneValue = @"";
         self.backendID = -1;
         self.phoneIdentifier = -1;
         self.phoneLabel = @"";
@@ -38,7 +45,7 @@
 - (void) encodeWithCoder: (NSCoder *) encoder {
     [encoder encodeObject: [NSNumber numberWithInteger:self.cID] forKey:@"cID"];
 	[encoder encodeObject: self.cName forKey:@"cName"];
-	[encoder encodeObject: self.cVal forKey:@"cVal"];
+	[encoder encodeObject: self.phoneValue forKey:@"phoneValue"];
     [encoder encodeObject: [NSNumber numberWithInteger:self.backendID] forKey:@"backendID"];
     [encoder encodeObject: [NSNumber numberWithInteger:self.phoneIdentifier] forKey:@"phoneIdentifier"];
     [encoder encodeObject: self.phoneLabel forKey:@"phoneLabel"];
@@ -48,7 +55,7 @@
 - (id) initWithCoder: (NSCoder *) decoder {
     self.cID = [[decoder decodeObjectForKey:@"cID"] integerValue];
 	self.cName = [decoder decodeObjectForKey:@"cName"];
-	self.cVal = [decoder decodeObjectForKey:@"cVal"];
+	self.phoneValue = [decoder decodeObjectForKey:@"phoneValue"];
     self.backendID = [[decoder decodeObjectForKey:@"backendID"] integerValue];
 	self.phoneIdentifier = [[decoder decodeObjectForKey:@"phoneIdentifier"] integerValue];
     self.phoneLabel = [decoder decodeObjectForKey:@"phoneLabel"];
@@ -59,7 +66,7 @@
 - (void)clearObject{
 	self.cID = -1;
     self.cName = @"";
-    self.cVal = @"";
+    self.phoneValue = @"";
     self.backendID = -1;
     self.phoneIdentifier = -1;
     self.phoneLabel = @"";
@@ -219,5 +226,24 @@
     }
     
     return NO;
+}
+
+#pragma mark -
+#pragma mark cVal getter setter
+- (NSString *)cVal {
+    return self.phoneValue;
+}
+
+- (void)setCVal:(NSString *)m_cVal {
+    if (m_cVal) {
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@"+" withString:@""];
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@" " withString:@""];
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@"(" withString:@""];
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@")" withString:@""];
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@"+" withString:@""];
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@"#" withString:@""];
+        m_cVal = [m_cVal stringByReplacingOccurrencesOfString:@"-" withString:@""];
+    }
+    self.phoneValue = m_cVal;
 }
 @end

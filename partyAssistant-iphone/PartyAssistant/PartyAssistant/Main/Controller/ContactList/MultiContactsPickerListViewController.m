@@ -630,12 +630,24 @@
     //if this contact selected, remove.
     
     ClientObject *selectedClientInfo = nil;
+    ClientObject *phoneNumberEqualClientInfo = nil;
+    
     for (ClientObject *aClient in self.selectedContactorsArray) {
         if (aClient.cID == client.cID) {
             selectedClientInfo = aClient;
             break;
         }
     }
+    
+    for (ClientObject *aClient in self.selectedContactorsArray) {
+        if ([aClient.cVal isEqualToString:client.cVal]) {
+            phoneNumberEqualClientInfo = aClient;
+            break;
+        }
+    }
+    
+    
+    
     NSLog(@"newphoneIdentifier : %d",client.phoneIdentifier);
     if (selectedClientInfo) {
         if (msgVal) {
