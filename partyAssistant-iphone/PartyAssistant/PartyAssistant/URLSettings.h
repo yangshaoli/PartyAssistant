@@ -25,6 +25,7 @@
 #define ACCOUNT_LOGIN [NSString stringWithFormat:@"%@/a/accounts/login/",DOMAIN_NAME]
 #define ACCOUNT_LOGOUT [NSString stringWithFormat:@"%@/a/accounts/logout/",DOMAIN_NAME]
 #define ACCOUNT_REGIST [NSString stringWithFormat:@"%@/a/accounts/regist/",DOMAIN_NAME]
+#define REGISTER_DEVICE_TOKEN [NSString stringWithFormat:@"%@/a/accounts/bind_device/",DOMAIN_NAME]
 //wxz
 #define ACCOUNT_SET_NICKNAME [NSString stringWithFormat:@"%@/a/accounts/nickname/",DOMAIN_NAME]
 #define ACCOUNT_SET_PHONENUM [NSString stringWithFormat:@"%@/a/accounts/phoneNum/",DOMAIN_NAME]

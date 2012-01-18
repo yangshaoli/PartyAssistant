@@ -9,6 +9,8 @@
 #import "PartyAssistantAppDelegate.h"
 #import "AddressBookDataManager.h"
 #import "UIViewControllerExtra.h"
+#import "DataManager.h"
+
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -43,6 +45,8 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    
     [[ECPurchase shared] verifyReceiptsStoredOnLocal];
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -67,7 +71,6 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
     NSLog(@"Luanch Option");
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];    
     if(addressBook == nil) {
         addressBook = ABAddressBookCreate();
         ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
@@ -95,7 +98,11 @@
     NSString *data = [[[deviceToken description] 
                        stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] 
                       stringByReplacingOccurrencesOfString:@" " withString:@""];
-    [DeviceTokenService saveDeviceToken:data];
+    NSString *savedDeviceToken = [DeviceTokenService getDeviceToken];
+    if ([savedDeviceToken isEqualToString:@""]) {
+        [DeviceTokenService saveDeviceToken:data];
+        [[DataManager sharedDataManager] performSelectorInBackground:@selector(bindDeviceToken) withObject:nil];
+    }
 }  
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {  
