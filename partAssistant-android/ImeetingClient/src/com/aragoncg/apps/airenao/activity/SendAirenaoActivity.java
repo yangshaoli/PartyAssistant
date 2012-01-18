@@ -94,6 +94,7 @@ public class SendAirenaoActivity extends Activity {
 	boolean fromPeopleInfo;
 
 	private String theContent;
+	private String string;
 
 	private MyMultiAutoCompleteTextView peopleNumbers;
 	private ArrayList<MyPerson> personList;
@@ -140,10 +141,21 @@ public class SendAirenaoActivity extends Activity {
 		getItentData();
 		// 绑定自动提示框信息
 		final ContentApdater adapter = new ContentApdater(this, cursor);
+		
 		peopleNumbers.setAdapter(adapter);
 		peopleNumbers
 				.setTokenizer(new MyMultiAutoCompleteTextView.CommaTokenizer());
-		 
+		peopleNumbers.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if(event.getAction() == MotionEvent.ACTION_UP){
+					string = peopleNumbers.getText().toString();
+					peopleNumbers.setSelection(string.length());
+				}
+				return false;
+			}
+		});
 		peopleNumbers.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -901,6 +913,8 @@ public class SendAirenaoActivity extends Activity {
 					
 				}
 				peopleNumbers.setText(names);
+				string = peopleNumbers.getText().toString();
+				peopleNumbers.setSelection(string.length());
 			}
 		}
 

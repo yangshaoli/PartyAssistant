@@ -410,6 +410,8 @@ public class ContactsListActivity extends ListActivity implements
 	private EditText edtSearch;
 	private Button btnOk;
 	private Button btnCancle;
+	private Button btnAll;
+	private Button btnFrequent;
 	private Handler myHandler;
 	private List<MyPerson> choosedData;
 	private MyPerson tempPerson;
@@ -481,6 +483,29 @@ public class ContactsListActivity extends ListActivity implements
 
 		btnOk = (Button) findViewById(R.id.btnAdd);
 		btnCancle = (Button) findViewById(R.id.btnCancle);
+		btnAll = (Button) findViewById(R.id.btnAll);
+		btnFrequent = (Button) findViewById(R.id.btnFrequent);
+		
+		btnAll.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				btnAll.setEnabled(false);
+				btnFrequent.setEnabled(true);
+				mMode = MODE_DEFAULT;
+				startQuery();
+			}
+		});
+		btnFrequent.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				btnAll.setEnabled(true);
+				btnFrequent.setEnabled(false);
+				mMode = MODE_FREQUENT;
+				startQuery();
+			}
+		});
 		btnOk.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -548,7 +573,8 @@ public class ContactsListActivity extends ListActivity implements
 		});
 
 		btnSwitch = (ImageButton) findViewById(R.id.button_dismiss_kb);
-		btnSwitch.setOnClickListener(new View.OnClickListener() {
+		btnSwitch.setEnabled(false);
+		/*btnSwitch.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
@@ -579,7 +605,7 @@ public class ContactsListActivity extends ListActivity implements
 								}).create();
 				dialog.show();
 			}
-		});
+		});*/
 		setEditSearchListenner();
 	}
 
@@ -1098,6 +1124,8 @@ public class ContactsListActivity extends ListActivity implements
 		}
 
 		Log.i("pos", "weizhi:" + position);
+		//变化按钮中的统计数字
+		btnOk.setText(getString(R.string.btn_ok)+"("+positions.size()+")");
 		mAdapter.notifyDataSetChanged();
 
 	}
@@ -3202,6 +3230,7 @@ public class ContactsListActivity extends ListActivity implements
 				} else {
 					positions.put(position, new MyPerson(name, phone));
 				}
+				btnOk.setText(getString(R.string.btn_ok)+"("+positions.size()+")");
 				mAdapter.notifyDataSetChanged();
 			} else {
 				dialog.dismiss();
