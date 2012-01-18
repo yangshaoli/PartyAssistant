@@ -214,7 +214,6 @@ def forgetPassword(request):
             temp_pwd_data.save()
 
 @csrf_exempt
-@commit_on_success
 @apis_json_response_decorator
 def bindContact(request, type):
     if request.method == 'POST':
@@ -258,19 +257,24 @@ def bindContact(request, type):
             raise myException(ERROR_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         if type == 'phone':
             value = regPhoneNum(value)
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
-        if not created:
-            binding_temp.binding_address = value
-            binding_temp.key = userkey
-            binding_temp.save()
-        profile = user.get_profile()
-        if type == 'phone':
-            profile.phone = value
-            profile.phone_binding_status = 'waitingbind'
-        else:
-            profile.email = value
-            profile.email_binding_status = 'waitingbind'
-        profile.save()
+        with transaction.commit_on_success():
+            profile = user.get_profile()
+            if type == 'phone':
+                profile.phone = value
+                profile.phone_binding_status = 'waitingbind'
+            else:
+                profile.email = value
+                profile.email_binding_status = 'waitingbind'
+            profile.save()
+        with transaction.commit_on_success():
+            binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+            if not created:
+                binding_temp.binding_address = value
+                binding_temp.key = userkey
+                binding_temp.save()
+        print profile.email
+        print value
+        print user.userprofile.email
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
