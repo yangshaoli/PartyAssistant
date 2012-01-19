@@ -204,7 +204,9 @@
     
     [_HUD show:YES];
    
-    [self tryConnectToServer];
+    //[self tryConnectToServer];
+    
+    [self performSelector:@selector(tryConnectToServer) withObject:nil afterDelay:1.0f];
     
     //[self gotoContentVC];//调试新加的无用语句
     
