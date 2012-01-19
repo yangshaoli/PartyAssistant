@@ -443,4 +443,10 @@ def bindDevice(request):
 @commit_on_success
 @apis_json_response_decorator              
 def checkPurchase(request):
-    return 1
+    if request.method == 'POST':
+        version = reqeust.POST['version']
+        if version == '1.0':
+            return 1
+        else:
+            return 0
+    return 0
