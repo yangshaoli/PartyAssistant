@@ -149,7 +149,7 @@ def sendBindingMessage(sender = None, instance = None, **kwargs):
         
     if instance.binding_type == 'email' :
         userprofile = instance.user.get_profile()
-        if userprofile.email_binding_status == 'unbind':
+        if userprofile.email_binding_status == 'waitingbind':
             thread.start_new_thread(send_binding_email, (instance,))
         elif userprofile.email_binding_status == 'bind':
             thread.start_new_thread(send_unbinding_email, (instance,))
