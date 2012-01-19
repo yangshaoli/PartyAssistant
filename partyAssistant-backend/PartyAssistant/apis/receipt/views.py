@@ -23,8 +23,8 @@ def verify_receipt(request):
     if request.method == 'POST':
         user = User.objects.get(pk = request.POST['user-ID'])
         
-        url = 'https://sandbox.itunes.apple.com/verifyReceipt'
-#        url = 'https://buy.itunes.apple.com/verifyReceipt'
+#        url = 'https://sandbox.itunes.apple.com/verifyReceipt'
+        url = 'https://buy.itunes.apple.com/verifyReceipt'
         data = {
             'receipt-data': request.POST['receipt-data']
         }
@@ -37,7 +37,6 @@ def verify_receipt(request):
         if str(status) == "0":
             receipt = data["receipt"]
             receipt_str = json.dumps(receipt)
-            print data
             product_id = receipt["product_id"]
             purchase_date = receipt["original_purchase_date"][:19]
             original_transaction_id = receipt['original_transaction_id']
