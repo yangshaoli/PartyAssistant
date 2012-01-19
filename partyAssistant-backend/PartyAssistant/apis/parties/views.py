@@ -34,6 +34,7 @@ PARTY_COUNT_PER_PAGE = 10
 
 re_a = re.compile(r'\d+\-\d+\-\d+ \d+\:\d+\:\d+')
 
+@csrf_exempt
 @apis_json_response_decorator
 def createParty(request):
     if request.method == 'POST' :
@@ -174,6 +175,157 @@ def createParty(request):
 
 @csrf_exempt
 @apis_json_response_decorator
+def fullCreateParty(request):
+    if request.method == 'POST' :
+        receivers = eval(request.POST['receivers'])
+        content = request.POST['content']
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
+        _issendbyself = request.POST['_issendbyself'] == '1'
+#        msgType = request.POST['msgType']
+#        starttime = request.POST['starttime']
+#        location = request.POST['location']
+#        description = request.POST['description']
+#        peopleMaximum = request.POST['peopleMaximum']
+        uID = request.POST['uID']
+#        addressType = request.POST['addressType']
+        user = User.objects.get(pk = uID)
+        startdate = None
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
+        starttime = ''
+        location = ""
+        description = content
+        peopleMaximum = 0
+        clients_array = []
+        
+        try:
+            startdate = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').date()
+        except Exception:
+            startdate = None
+        try:
+            starttime = datetime.datetime.strptime(re_a.search(starttime).group(), '%Y-%m-%d %H:%M:%S').time()
+        except Exception:
+            starttime = None
+#        if len(location) > 256:
+#            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
+        # 检测剩余短信余额是否足够
+        number_of_message = (len(content) + SHORT_LINK_LENGTH + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
+        client_phone_list_len = len(receivers)
+        userprofile = user.get_profile() 
+        sms_count = userprofile.available_sms_count
+        will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
+        if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
+            raise myException(ERROR_SEND_MSG_NO_REMAINING, status = ERROR_STATUS_SEND_MSG_NO_REMAINING, data = {'remaining':sms_count})
+        with transaction.commit_on_success():
+            #创建活动
+            party = Party.objects.create(start_date = startdate,
+                                         start_time = starttime,
+                                         address = location,
+                                         description = description,
+                                         creator = user,
+                                         limit_count = peopleMaximum,
+                                         invite_type = (msgType == "SMS" and 'phone' or 'email')
+                                         )
+            addressArray = []
+            for i in range(len(receivers)):
+                receiver = receivers[i]
+                
+                if msgType == 'SMS':
+#                    client = Client.objects.get_or_create(phone = receiver['cValue'],
+#                                                                      name = receiver['cName'],
+#                                                                      creator = user,
+#                                                                      )[0]
+                    client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                        name = receiver['cName'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                    else:
+                        empty_name_client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                                       name = '',
+                                                                       creator = user
+                                                                       )
+                        if empty_name_client_list:
+                            client = empty_name_client_list[0]
+                            client.name = receiver['cName']
+                            client.save()
+                        else:
+                            client = Client.objects.create(phone = receiver['cValue'],
+                                                           name = receiver['cName'],
+                                                           creator = user,
+                                                           invite_type = 'phone'
+                                                           )
+                    
+                else:
+                    client_list = Client.objects.filter(email = receiver['cValue'],
+                                                        name = receiver['cName'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                    else:
+                        empty_name_client_list = Client.objects.filter(email = receiver['cValue'],
+                                                                       name = '',
+                                                                       creator = user
+                                                                       )
+                        if empty_name_client_list:
+                            client = empty_name_client_list[0]
+                            client.name = receiver['cName']
+                            client.save()
+                        else:
+                            client = Client.objects.create(email = receiver['cValue'],
+                                                           name = receiver['cName'],
+                                                           creator = user,
+                                                           invite_type = 'phone'
+                                                           )
+                partyclient = PartiesClients.objects.create(
+                                                            party = party,
+                                                            client = client,
+                                                            ) 
+                
+                #记录下每个client的信息和key
+                client_data = {
+                               'name':partyclient.client.name,
+                               'number':partyclient.client.phone,
+                               'id':partyclient.id,
+                               "key":partyclient.invite_key
+                               }
+                clients_array.append(client_data)
+                addressArray.append(receiver['cValue'])
+            addressString = simplejson.dumps(addressArray)
+            if msgType == 'SMS':
+                msg = SMSMessage.objects.get_or_create(party = party)[0]
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+            else:
+                msg = EmailMessage.objects.get_or_create(party = party)[0]
+                msg.subject = subject
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+        
+        if not msg.is_send_by_self:
+            with transaction.commit_on_success():
+                if addressArray:
+                    addressString = ','.join(addressArray)
+                    Outbox.objects.create(address = addressString, base_message = msg)
+        return {
+                'partyId':party.id,
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
+                'sms_count_remaining':user.userprofile.available_sms_count,
+                'clients':clients_array
+                }
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
 def editParty(request):
     if request.method == 'POST':
         partyID = request.POST['partyID']
@@ -295,7 +447,9 @@ def fullPartyList(request, uid, start_id = 0):
         partyObject['partyId'] = party.id
         partyObject['shortURL'] = transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id]))
         partyObject['type'] = party.invite_type
-        
+        partyObject['appliedClients'] = []
+        partyObject['donothingClients'] = []
+        partyObject['refusedClients'] = []
         #各个活动的人数情况
         party_clients = PartiesClients.objects.select_related('client').filter(party = party)
         client_counts = {
@@ -304,36 +458,34 @@ def fullPartyList(request, uid, start_id = 0):
             'donothingClientcount':0,
             'refusedClientcount':0,
             'newRefusedClientcount':0,
-            'clientArray':[]
         }
         for party_client in party_clients:
-            clientObjectDict = {}
             if party.invite_type == 'email':
                 cValue = party_client.client.email
             else:
                 cValue = party_client.client.phone
             is_checked = party_client.is_check
             dict = {
-                   'cName':party_client.client.name,
-                   'cValue':cValue,
+                   'name':party_client.client.name,
+                   'number':cValue,
                    'isCheck':is_checked,
-                   'backendID':party_client.id,
-                   'status':party_client.apply_status,
-                   "msg":party_client.leave_message
+                   'id':party_client.id,
+                   "comment":party_client.leave_message
                    }
-            client_counts['clientArray'].append(dict)
             if party_client.apply_status == 'apply':
                 client_counts['appliedClientcount'] += 1
+                partyObject['appliedClients'].append(dict)
             if party_client.apply_status == 'apply' and party_client.is_check == False:
                 client_counts['newAppliedClientcount'] += 1 
             if party_client.apply_status == 'noanswer':
                 client_counts['donothingClientcount'] += 1
+                partyObject['donothingClients'].append(dict)
             if party_client.apply_status == 'reject':
                 client_counts['refusedClientcount'] += 1 
+                partyObject['refusedClients'].append(dict)
             if party_client.apply_status == 'reject' and party_client.is_check == False:
                 client_counts['newRefusedClientcount'] += 1
         partyObject['clientsData'] = client_counts
-        
         PartyObjectArray.append(partyObject)
     party_list = Party.objects.filter(creator = user)
     unreadCount = PartiesClients.objects.filter(party__in = party_list, is_check = False).count()
@@ -500,6 +652,7 @@ def resendMsg(request):
         uID = request.POST['uID']
 #        addressType = request.POST['addressType']
         user = User.objects.get(pk = uID)
+        clients_array = []
         
         subject = ''
         _isapplytips = True
@@ -561,6 +714,15 @@ def resendMsg(request):
                                                               "apply_status":'noanswer'
                                                               }
                                                   ) 
+                #记录下每个client的信息和key
+                client_data = {
+                               'name':partyclient.client.name,
+                               'number':partyclient.client.phone,
+                               'id':partyclient.id,
+                               "key":partyclient.invite_key
+                               }
+                clients_array.append(client_data)
+                
                 addressArray.append(receiver['cValue'])
     
             if msgType == 'SMS':
@@ -587,4 +749,5 @@ def resendMsg(request):
                 'partyId':party.id,
                 'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
                 'sms_count_remaining':user.userprofile.available_sms_count,
+                'clients':clients_array
                 }

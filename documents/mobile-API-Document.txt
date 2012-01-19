@@ -531,7 +531,7 @@
                 "datasource":{}
                 }
 22. getFullPartyListInfoForAndroid:
-    url:"/a/parties/fullpartylist/(userid)/(start_id)/"
+    url:"/a/parties/an_partylist/(userid)/(start_id)/"
     method:GET
     input:{
         }
@@ -550,7 +550,10 @@
             "clientsData":Dict
             "description":String,
             "partyId":int,
-            "type":"phone"/"email"
+            "type":"phone"/"email",
+            "appliedClients":[Client],
+            "donothingClients":[Client],
+            "refusedClients":[Client],
             }
 
 #1  start_id is the ID of the start query id, it will return the parties whose id is smaller than the start_id
@@ -563,14 +566,75 @@
             donothingClientcount:Integer,
             refusedClientcount:Integer,
             newRefusedClientcount:Integer,
-            clientArray:Client_Array,
         }
 #3 Client Content:
     {
-    'cName':clientparty.client.name,
-    'cValue':cValue,
-    'backendID':clientparty.id,
-    'status':clientparty.apply_status,
-    'msg':String,
+    'name':clientparty.client.name,
+    'number':phone,
+    'id':clientparty.id,
+    'comment':String,
     'isCheck':BOOL,
     }
+    
+23. createPartyForAndroid
+    url:"/a/parties/an_createparty/"
+    method:POST
+    input:{
+        "receivers":Array of Client Dict,
+        "content":String of SMS Content,
+        "_issendbyself":"0" or "1",
+        "uID":Int,
+        "addressType":"iphone" or "android"
+        }
+    output:Success- {
+            "status":'ok',
+            "description":"ok",
+            "data":{
+                        'partyId':Integer,
+                        'applyURL':String,
+                        'sms_count_remaining':Integer,
+                        'clients':[ClientDict]
+                        },
+            'iphone_version':IPHONE_APP_VERSION(String),
+            'android_version':ANDROID_APP_VERSION(String),
+            }
+        Error - {
+            "status":'error',
+            "description":Error Msg,
+            "data":{},
+            'iphone_version':IPHONE_APP_VERSION(String),
+            'android_version':ANDROID_APP_VERSION(String),
+            }
+    ClientDict:{
+            "name":String,
+            "number":Email/Phone Num,
+            "key":key(String),
+            "id":Integer,
+            }
+11 resendMsg
+    url:"/a/parties/resendmsg/"
+    method:"POST",
+    input:{
+        "receivers":Array of Client Dict,
+        "content":String of SMS Content,
+        "_issendbyself":"0" or "1",
+        "uID":Int,
+        "addressType":"iphone" or "android",
+        "partyID":Integer
+        },
+    output:{
+        "status":"ok",
+        "description":"ok",
+        "datasource":{
+                        'partyId':Integer,
+                        'applyURL':String,
+                        'sms_count_remaining':Integer,
+                        'clients':[ClientDict]
+                        }
+        }
+    ClientDict:{
+            "name":String,
+            "number":Email/Phone Num,
+            "key":key(String),
+            "id":Integer,
+            }
