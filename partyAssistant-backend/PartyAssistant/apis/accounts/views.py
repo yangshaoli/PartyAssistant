@@ -439,3 +439,8 @@ def bindDevice(request):
             if usertoken.user != user:
                 usertoken.user = user
                 usertoken.save()
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator              
+def checkPurchase(request):
+    return 1
