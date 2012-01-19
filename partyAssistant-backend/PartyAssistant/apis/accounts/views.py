@@ -224,7 +224,7 @@ def bindContact(request, type):
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         if type == 'email':
-            userkey = hashlib.md5(value).hexdigest()
+            userkey = hashlib.md5("%s:%s" % (uid, value)).hexdigest()
         else:
             userkey = generate_phone_code()
         data = {"latest_status":{
@@ -272,9 +272,6 @@ def bindContact(request, type):
                 binding_temp.binding_address = value
                 binding_temp.key = userkey
                 binding_temp.save()
-        print profile.email
-        print value
-        print user.userprofile.email
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
@@ -444,7 +441,7 @@ def bindDevice(request):
 @apis_json_response_decorator              
 def checkPurchase(request):
     if request.method == 'POST':
-        version = reqeust.POST['version']
+        version = request.POST['version']
         if version == '1.0':
             return 1
         else:
