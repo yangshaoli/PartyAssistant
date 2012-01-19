@@ -62,6 +62,10 @@
         self.navigationItem.title = @"手机绑定";
     } else if (telStatus != StatusUnknown && telStatus != StatusBinded) {
         self.navigationItem.title = @"重新输入号码";
+        
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleDone target:self action:@selector(jumpToVerify)];
+        
+        self.navigationItem.leftBarButtonItem = closeButton;
     }
     [self.inputTelTextField becomeFirstResponder];
     // Do any additional setup after loading the view from its nib.
@@ -123,6 +127,8 @@
     if (self.inSpecialProcess) {
         verifyPage.inSpecialProcess = YES;
     }
+    
+    self.inputTelTextField.text = @"";
     
     [self.navigationController pushViewController:verifyPage animated:NO];
 }
@@ -191,7 +197,7 @@
         } else {
             [self saveProfileDataFromResult:result];
             
-            [self showBindOperationFailed:description];	
+            [self showNormalErrorInfo:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -218,6 +224,10 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 11001) {
         [self jumpToVerify];
+        
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleDone target:self action:@selector(jumpToVerify)];
+        
+        self.navigationItem.leftBarButtonItem = closeButton;
     }
     if (alertView.tag == 11112) {
         [self.navigationController popViewControllerAnimated:YES];

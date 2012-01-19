@@ -38,4 +38,6 @@ typedef enum {
                                       withNewEmailInfo:(NSString *)emailInfo;
 - (BOOL)checkIfUserNameSaved;
 
+- (BOOL)bindDeviceToken;
+
 @end

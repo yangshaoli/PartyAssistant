@@ -513,6 +513,7 @@
         [alertV show];
     }else{
         ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+        resendPartyViaSMSViewController.isResendPage = YES;
         [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
         [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
         [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];

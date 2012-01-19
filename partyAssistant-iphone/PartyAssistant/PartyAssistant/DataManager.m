@@ -121,8 +121,6 @@ static DataManager *sharedDataManager = nil;
                 self.isRandomLoginSelf=NO; 
             }
             if ([status isEqualToString:@"ok"]) {
-                dic = [NSMutableDictionary dictionaryWithDictionary:dic];
-                [dic setValue:name forKey:@"username"];
                 [self saveUsrData:dic];
                 [pool release];
                 return nil;
@@ -349,7 +347,7 @@ static DataManager *sharedDataManager = nil;
         
     }
     
-    NSString *userName = [jsonValue objectForKey:@"username"];
+    NSString *userName = [datasource objectForKey:@"username"];
     if (userName) {
         userData.userName = userName;
     }
@@ -539,5 +537,68 @@ static DataManager *sharedDataManager = nil;
     }
 }
 
+- (BOOL)bindDeviceToken {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    if (userData.uID < 0) {
+        return FALSE;
+    }
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
+        //return NetworkConnectionInvalidate;
+        return FALSE;
+    }
+    //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                   [NSURL URLWithString:REGISTER_DEVICE_TOKEN]];
+    [request setPostValue:[NSString stringWithFormat:@"%d", userData.uID] forKey:@"uid"];
+    [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
+    [request startSynchronous];
+    NSError *error = [request error];
+    //3.get result
+    if (!error) {
+        // add method to save user data, like uid and sth else.
+        //[self saveUsrData:(NSDic *)jsonValue]
+        if ([request responseStatusCode] == 200) {
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
+            [self getVersionFromRequestDic:dic];
+            NSString *status = [dic objectForKey:@"status"];   
+            NSLog(@"%@",description);
+            if ([status isEqualToString:@"ok"]) {
+                [pool release];
+                //return NetWorkConnectionCheckPass;
+                return YES;
+            } else {
+                if (description) {
+                    return FALSE;
+                } else {
+                    return FALSE;
+                }
+            }
+        }else if([request responseStatusCode] == 404){
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return FALSE;
+        }else if([request responseStatusCode] == 500){
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return FALSE;
+        }else if([request responseStatusCode] == 502){
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return FALSE;
+        } else {
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return FALSE;
+        }  
+        [pool release];
+        return FALSE;
+    } else {
+        [pool release];
+        return FALSE;
+    }
+}
 
 @end

@@ -41,7 +41,8 @@
 @property (nonatomic, strong) MBProgressHUD *HUD;
 
 @property (nonatomic, strong) EditableTableViewCell *editingTableViewCell;
-
+ 
+@property (nonatomic) BOOL isResendPage;
 
 - (IBAction)callContactList;
 - (void)saveSMSInfo;
