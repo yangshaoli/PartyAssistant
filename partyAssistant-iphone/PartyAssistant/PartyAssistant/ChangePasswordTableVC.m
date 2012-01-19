@@ -117,6 +117,7 @@
             cell.textLabel.text = @"输入原密码：";
             if (!originPasswordTextField) {
                 self.originPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(110, 10, 200, 44)];
+                [self. originPasswordTextField becomeFirstResponder];
             }
             originPasswordTextField.textAlignment = UITextAlignmentLeft;
             originPasswordTextField.backgroundColor = [UIColor clearColor];

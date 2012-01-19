@@ -12,7 +12,8 @@
 #import "UserObjectService.h"
 #import "Reachability.h"
 
-#define kMyFeatureIdentifier @"com.airenao.productLevelOne"
+#define kMyFeatureIdentifierLevelOne @"com.airenao.productLevelOne"
+#define kMyFeatureIdentifierLevelTwo @"com.airenao.productLevelTwo"
 
 @implementation PurchaseListViewController
 @synthesize tableView;
@@ -153,10 +154,21 @@
         return;
     }
     
+    
     UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
     NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
 
-    NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
+    NSDictionary *purchaseInfo = nil;
+    
+    if (indexPath.row == 0) {
+        purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifierLevelOne, @"identifier", nil];
+    } else if (indexPath.row == 1) {
+        purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifierLevelTwo, @"identifier", nil];
+    } else {
+        return;
+    }
+    
+    
     
     [aTableView deselectRowAtIndexPath:indexPath animated:YES];
     
@@ -164,14 +176,20 @@
     if (isExist) {
         //action 
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"上一次购买的物品还没有提交到服务器！点击确认以进行此物品的提交！" delegate:self cancelButtonTitle:@"确认" otherButtonTitles: nil];
-        alert.tag = 11117;
+        alert.tag = 11180 + indexPath.row;
         [alert show];
         
         return;
     }
     
     if ([SKPaymentQueue canMakePayments]) {
-        [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifier, nil]];
+        if (indexPath.row == 0) {
+            [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifierLevelOne, nil]];
+        } else if (indexPath.row == 1) {
+            [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifierLevelTwo, nil]];
+        } else {
+            return;
+        }
     } else {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"出错啦！" message:@"程序没有被设置为允许购买！" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil];
         alert.tag = 110;
@@ -183,12 +201,28 @@
 #pragma mark -
 #pragma alert delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == 11117) {
+    if (alertView.tag == 11180) {
         if (buttonIndex == 0) {
             UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+            
             NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
             
-            NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
+            NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifierLevelOne, @"identifier", nil];
+            
+            if (purchaseInfo) {
+                [[ECPurchase shared] verifyProductReceiptUserPurchasedBefore:purchaseInfo];
+            } else {
+                
+            }
+        }
+    }
+    if (alertView.tag == 11181) {
+        if (buttonIndex == 0) {
+            UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+            
+            NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
+            
+            NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifierLevelTwo, @"identifier", nil];
             
             if (purchaseInfo) {
                 [[ECPurchase shared] verifyProductReceiptUserPurchasedBefore:purchaseInfo];

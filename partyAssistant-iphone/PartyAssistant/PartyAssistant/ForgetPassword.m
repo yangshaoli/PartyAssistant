@@ -119,6 +119,8 @@
     
     if (!inputTextField) {
         self.inputTextField = [[UITextField alloc] initWithFrame:CGRectMake(20, 10, 280, 44)];
+        self.inputTextField.keyboardType = UIKeyboardTypeEmailAddress;
+        [self.inputTextField becomeFirstResponder];
     }
     inputTextField.textAlignment = UITextAlignmentLeft;
     inputTextField.backgroundColor = [UIColor clearColor];

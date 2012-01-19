@@ -7,6 +7,7 @@
 //
 
 #import "GuideViewController.h"
+#import "PartyAssistantAppDelegate.h"
 
 @implementation GuideViewController
 @synthesize scrollView, pageControl;
@@ -33,6 +34,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    CGRect viewFrame = self.view.frame;
+    viewFrame.origin.y = 0.f;
+    self.view.frame = viewFrame;
+    
     // Do any additional setup after loading the view from its nib.
     if (!self.pageControl) {
         self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(110, 400, 100, 30)];
@@ -135,6 +141,8 @@
 
 - (void)goToApp {
     [self.view removeFromSuperview];
+    
+    [(PartyAssistantAppDelegate *)[[UIApplication sharedApplication] delegate] gotoLoginView];
 }
 
 @end

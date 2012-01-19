@@ -224,6 +224,10 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 11001) {
         [self jumpToVerify];
+        
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleDone target:self action:@selector(jumpToVerify)];
+        
+        self.navigationItem.leftBarButtonItem = closeButton;
     }
     if (alertView.tag == 11112) {
         [self.navigationController popViewControllerAnimated:YES];
