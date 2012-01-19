@@ -79,10 +79,7 @@
     }
     
     GuideViewController *gViewController = [[GuideViewController alloc] initWithNibName:nil bundle:nil];
-    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
-    _nav = [[UINavigationController alloc] initWithRootViewController:login];
-    [self.window addSubview:_nav.view];
-    
+        
     //Show the user guide, if the new version app is comming
     NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
@@ -90,9 +87,9 @@
     if (![versionString isEqualToString:savedVersion]) {
         [self.window addSubview:gViewController.view];
         [[NSUserDefaults standardUserDefaults] setValue:versionString forKey:@"AppBundleVersion"];
+    } else {
+        [self gotoLoginView];
     }
-    
-    [login release];
     
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     
@@ -121,6 +118,16 @@
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {  
 }  
+
+- (void)gotoLoginView {
+    if (!_nav) {
+        PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
+        _nav = [[UINavigationController alloc] initWithRootViewController:login];
+        [self.window addSubview:_nav.view];
+
+        [login release];
+    }
+}
 
 -(void)sendRequestToSaveUserToken{
     

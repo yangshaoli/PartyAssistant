@@ -108,6 +108,8 @@
     
     self.navigationItem.title = @"注册";
     // Do any additional setup after loading the view from its nib.
+    
+    [self.userNameTextField becomeFirstResponder];
 }
 
 - (void)viewDidUnload

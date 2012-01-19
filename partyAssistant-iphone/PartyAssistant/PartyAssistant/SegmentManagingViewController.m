@@ -67,8 +67,10 @@
 - (NSArray *)segmentedViewControllerContent {
 
     MultiFavoritesContactsList * controller1 = [[MultiFavoritesContactsList alloc] initWithParentViewController:self];
+    [controller1 wantsFullScreenLayout];
     controller1.contactListDelegate = self;
     MultiContactsPickerListViewController * controller2 = [[MultiContactsPickerListViewController alloc] initWithParentViewController:self];
+    [controller2 wantsFullScreenLayout];
     controller2.contactListDelegate = self;
     
     

@@ -149,9 +149,6 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 
 -(void)failedTransaction:(NSNotification *)note{
 	SKPaymentTransaction *trans = [[note userInfo] objectForKey:@"transaction"];
-    NSLog(@"%d",trans.error.code);
-    NSLog(@"%@",trans.error.localizedFailureReason);
-    NSLog(@"%@",trans.error);
 	[_transactionDelegate didFailedTransaction:trans.payment.productIdentifier];
 }
 
