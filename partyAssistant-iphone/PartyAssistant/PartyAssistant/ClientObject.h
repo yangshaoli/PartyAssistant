@@ -17,6 +17,7 @@
     NSString *cVal;
     NSInteger phoneIdentifier;
     NSString *phoneLabel;
+    NSString *phoneVelue;
 }
 
 @property(nonatomic, assign)NSInteger cID;

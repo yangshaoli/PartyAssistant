@@ -10,8 +10,9 @@
 #import "ECPurchase.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "Reachability.h"
 
-#define kMyFeatureIdentifier @"com.aragoncg.AiReNaoTest.TestProduct1"
+#define kMyFeatureIdentifier @"com.airenao.productLevelOne"
 
 @implementation PurchaseListViewController
 @synthesize tableView;
@@ -146,6 +147,12 @@
      // Pass the selected object to the new view controller.
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"无法连接网络，请检查网络状态！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    
     UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
     NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
 
@@ -157,6 +164,7 @@
     if (isExist) {
         //action 
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"上一次购买的物品还没有提交到服务器！点击确认以进行此物品的提交！" delegate:self cancelButtonTitle:@"确认" otherButtonTitles: nil];
+        alert.tag = 11117;
         [alert show];
         
         return;
@@ -165,7 +173,7 @@
     if ([SKPaymentQueue canMakePayments]) {
         [[ECPurchase shared] requestProductData:[NSArray arrayWithObjects:kMyFeatureIdentifier, nil]];
     } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"出错啦！" message:@"程序没有被设置允许购买" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"出错啦！" message:@"程序没有被设置为允许购买！" delegate:nil cancelButtonTitle:@"好的" otherButtonTitles:nil];
         alert.tag = 110;
         [alert show];
     }
@@ -175,12 +183,19 @@
 #pragma mark -
 #pragma alert delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == 0) {
-        UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
-        NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
-        
-        NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
-        [[ECPurchase shared] verifyProductReceiptUserPurchasedBefore:purchaseInfo];
+    if (alertView.tag == 11117) {
+        if (buttonIndex == 0) {
+            UserObject *user = [[UserObjectService sharedUserObjectService] getUserObject];
+            NSString *userID = [[NSNumber numberWithInt:[user uID]] stringValue];
+            
+            NSDictionary *purchaseInfo = [NSDictionary dictionaryWithObjectsAndKeys: userID, @"userID", kMyFeatureIdentifier, @"identifier", nil];
+            
+            if (purchaseInfo) {
+                [[ECPurchase shared] verifyProductReceiptUserPurchasedBefore:purchaseInfo];
+            } else {
+                
+            }
+        }
     }
 }
 @end

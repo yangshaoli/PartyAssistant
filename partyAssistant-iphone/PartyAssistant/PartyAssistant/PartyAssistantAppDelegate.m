@@ -11,6 +11,7 @@
 #import "UIViewControllerExtra.h"
 #import "DataManager.h"
 #import "GuideViewController.h"
+#import "Reachability.h"
 
 @implementation PartyAssistantAppDelegate
 
@@ -155,10 +156,20 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 }
 
 -(void)didReceivedProducts:(NSArray *)products {
+    if ([products count] == 0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"产品提交失败" message:@"无法检测到提交产品的信息，提交取消！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        
+        if (_HUD) {
+            [_HUD hide:YES];
+        }
+        
+        return;
+    }
+    
     if (_HUD) {
         _HUD.labelText = @"获取产品信息中...";
     }
-    
     
     [[ECPurchase shared] addPayment:[products lastObject]];
 }
@@ -279,6 +290,10 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 #pragma mark -
 #pragma mark update remain count
 - (void)updateRemainCount {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+        return;
+    }    
     if (self.remainCountRequest) {
         if (![self.remainCountRequest isFinished]) {
             return;

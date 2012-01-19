@@ -151,10 +151,24 @@
 {
     UIView *headV = [[UIView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, 320.0f, 85.0f)];
     
-    NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
+    UIImage *img = nil;
     
-    UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 65, 65)];
-    [imgV setImage:[UIImage imageWithData:imgData]];
+    if (ABPersonHasImageData(self.card)) {
+        NSData *imgData = (__bridge_transfer NSData*)ABPersonCopyImageData(self.card);
+        
+        UIGraphicsBeginImageContext(CGSizeMake(62.0f, 62.0f));
+        [[UIImage imageWithData:imgData] drawInRect:CGRectMake(0.f, 0.f, 62.f, 62.f)];
+        img = UIGraphicsGetImageFromCurrentImageContext();
+    }
+        
+    UIImageView *imgV = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 62, 62)];
+    if (img) {
+        [imgV setImage:img];
+    } else {
+        img = [UIImage imageNamed:@"contact_with_no-pic.png"];
+        [imgV setImage:img];
+    }
+    
     imgV.backgroundColor = [UIColor whiteColor];
     [headV addSubview:imgV];
     

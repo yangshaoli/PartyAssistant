@@ -1,10 +1,4 @@
-//
-//  NSArray+PerformSelector.m
-//  SegmentedControlExample
-//
-//  Created by Marcus Crafter on 24/05/10.
-//  Copyright 2010 Red Artisan. All rights reserved.
-//
+
 
 #import "NSArray+PerformSelector.h"
 

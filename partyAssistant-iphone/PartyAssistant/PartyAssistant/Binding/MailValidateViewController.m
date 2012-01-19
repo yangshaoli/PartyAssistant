@@ -124,7 +124,7 @@
 - (void)resendMailVerifyCode {
     NSString *mailText;
     if (self.pageStatus == StatusVerifyBinding) {
-        mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingTel];
+        mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindingMail];
     } else {
         mailText = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail];
     }
@@ -228,9 +228,9 @@
 }
 
 - (void)closePage {
-    if (self.inSpecialProcess) {
-        [self resendPage];
-    } else {
+//    if (self.inSpecialProcess) {
+//        [self resendPage];
+//    } else {
         NSArray *controllers = self.navigationController.viewControllers;
         BindingListViewController *bindingList = nil;
         for (UIViewController *controller in controllers) {
@@ -247,8 +247,8 @@
             [self.navigationController.view.layer addAnimation:transition forKey:nil];
             [self.navigationController popToViewController:bindingList animated:NO];
         }
-
-    }
+//
+//    }
 }
 
 - (void)resendPage {
