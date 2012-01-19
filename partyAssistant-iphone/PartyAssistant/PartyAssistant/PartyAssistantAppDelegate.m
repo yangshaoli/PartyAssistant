@@ -216,8 +216,9 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 
 -(void)didCompleteTransactionAndVerifyFailed:(NSString *)proIdentifier withError:(NSString *)error {
     if (_HUD) {
-        _HUD.labelText = @"交易失败";
-        [_HUD hide:YES afterDelay:1.0f];
+        _HUD.labelText = @"交易成功";
+        _HUD.detailsLabelText = @"服务器验证未完成，请稍候再试。";
+        [_HUD hide:YES afterDelay:2.0f];
     }
 }
 

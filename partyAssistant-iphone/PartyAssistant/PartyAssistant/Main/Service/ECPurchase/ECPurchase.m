@@ -214,25 +214,45 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     NSDictionary* datasource = [jsonData objectForKey:@"datasource"];
 	[parser release];
     NSString *ourServerStatus = [jsonData objectForKey: @"status"];
-    if ([ourServerStatus intValue] == 200) {
-        NSString *status = [datasource objectForKey: @"status"];
-        if ([status intValue] == 0) {
-            NSDictionary *receipt = [datasource objectForKey: @"receipt"];
-            NSString *productIdentifier = [receipt objectForKey: @"product_id"];
-            [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
-            [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+    if ([request responseStatusCode] == 200) {
+        if ([ourServerStatus isEqualToString:@"ok"]) {
+            NSString *status = [datasource objectForKey: @"status"];
+            if ([status intValue] == 0) {
+                NSDictionary *receipt = [datasource objectForKey: @"receipt"];
+                NSString *productIdentifier = [receipt objectForKey: @"product_id"];
+                [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
+                [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+            }
+            else {
+                NSString *exception = [datasource objectForKey: @"exception"];
+                [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
+                                                                  withError:exception];
+            }
         }
-        else {
-            NSString *exception = [datasource objectForKey: @"exception"];
-            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
-                                                              withError:exception];
-        }
-
     } else {
         NSString *exception = [datasource objectForKey: @"exception"];
         [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier
                                                           withError:exception];
     }
+//    if ([ourServerStatus intValue] == 200) {
+//        NSString *status = [datasource objectForKey: @"status"];
+//        if ([status intValue] == 0) {
+//            NSDictionary *receipt = [datasource objectForKey: @"receipt"];
+//            NSString *productIdentifier = [receipt objectForKey: @"product_id"];
+//            [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
+//            [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+//        }
+//        else {
+//            NSString *exception = [datasource objectForKey: @"exception"];
+//            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
+//                                                              withError:exception];
+//        }
+//
+//    } else {
+//        NSString *exception = [datasource objectForKey: @"exception"];
+//        [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier
+//                                                          withError:exception];
+//    }
 }
 -(void)didFailedVerify:(ECPurchaseFormDataRequest *)request {
     NSString *response = [request responseString];
