@@ -19,6 +19,7 @@
 #import "UIViewControllerExtra.h"
 #import "AddressBookDBService.h"
 #import "CustomTextView.h"
+#import "Reachability.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -134,6 +135,12 @@
         [alert show];
         return;
     }else{
+        //1.check network status
+        if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            return;
+        }
+        
         [self saveSMSInfo];
         if ([self.tempSMSObject.receiversArray count] == 0) {
             UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加有效的收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
@@ -274,7 +281,7 @@
                 if([MFMessageComposeViewController canSendText]==YES){
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.tempSMSObject._isApplyTips) {
-                        vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                        vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"( 报名链接: %@ )",applyURL]];
                     }else{
                         vc.body = self.tempSMSObject.smsContent;
                     };
@@ -473,4 +480,9 @@
         [self showWaiting];
     }
 } 
+
+
+- (void)applicationWillTerminate:(NSNotification *)notify {
+
+}
 @end

@@ -33,6 +33,8 @@ ABAddressBookRef addressBook;
 @property (retain, nonatomic) UINavigationController *nav;
 @property (retain, nonatomic) ASIHTTPRequest *remainCountRequest;
 
+- (void)gotoLoginView;
+
 void addressBookChanged (ABAddressBookRef addressBook,
                          CFDictionaryRef info,
                          void *context);

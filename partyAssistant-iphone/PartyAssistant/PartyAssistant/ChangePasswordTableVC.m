@@ -15,6 +15,8 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "DataManager.h"
+#import "Reachability.h"
+
 @implementation ChangePasswordTableVC
 @synthesize originPasswordTextField;
 @synthesize nPasswordTextField;
@@ -115,6 +117,7 @@
             cell.textLabel.text = @"输入原密码：";
             if (!originPasswordTextField) {
                 self.originPasswordTextField = [[UITextField alloc] initWithFrame:CGRectMake(110, 10, 200, 44)];
+                [self. originPasswordTextField becomeFirstResponder];
             }
             originPasswordTextField.textAlignment = UITextAlignmentLeft;
             originPasswordTextField.backgroundColor = [UIColor clearColor];
@@ -141,7 +144,7 @@
             resurePasswordTextField.textAlignment = UITextAlignmentLeft;
             resurePasswordTextField.backgroundColor = [UIColor clearColor];
             resurePasswordTextField.placeholder=@"与新密码一致";
-            [resurePasswordTextField setSecureTextEntry:YES];
+            resurePasswordTextField.secureTextEntry = YES;
             [cell addSubview:resurePasswordTextField];        
         }        
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -209,6 +212,12 @@
         [alertView show];
         
     }else{
+        //1.check network status
+        if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            return;
+        }
+        
         [self showWaiting];
         NSURL *url = [NSURL URLWithString:CHANGE_PASSWORD];
         

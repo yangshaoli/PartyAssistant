@@ -21,13 +21,16 @@
 
 #define ECPURCHASE_TEST_SERVER
 
-#ifdef ECPURCHASE_TEST_SERVER
 //#define VAILDATING_RECEIPTS_URL @"https://sandbox.itunes.apple.com/verifyReceipt"
-//#define VAILDATING_RECEIPTS_URL @"http://192.168.1.15:43401/a/receipt/verifyReceipt/"
-#define VAILDATING_RECEIPTS_URL @"http://192.168.3.151:8000/a/receipt/verifyReceipt/"
-#else
-#define VAILDATING_RECEIPTS_URL @"https://buy.itunes.apple.com/verifyReceipt"
-#endif
+
+//#ifdef ECPURCHASE_TEST_SERVER
+////#define VAILDATING_RECEIPTS_URL @"https://sandbox.itunes.apple.com/verifyReceipt"
+////#define VAILDATING_RECEIPTS_URL @"http://192.168.1.15:43401/a/receipt/verifyReceipt/"
+#define VAILDATING_RECEIPTS_URL @"http://www.airenao.com/a/receipt/verifyReceipt/"
+//#define VAILDATING_RECEIPTS_URL @"http://192.168.3.151:8000/a/receipt/verifyReceipt/"
+//#else
+//#define VAILDATING_RECEIPTS_URL @"https://buy.itunes.apple.com/verifyReceipt"
+//#endif
 
 #ifndef SINGLETON_INTERFACE(CLASSNAME)
 #define SINGLETON_INTERFACE(CLASSNAME)  \

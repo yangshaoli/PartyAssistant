@@ -4,7 +4,7 @@ Created on 2011-11-7
 
 @author: liuxue
 '''
-
+from django.db import transaction
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
@@ -214,7 +214,6 @@ def forgetPassword(request):
             temp_pwd_data.save()
 
 @csrf_exempt
-@commit_on_success
 @apis_json_response_decorator
 def bindContact(request, type):
     if request.method == 'POST':
@@ -225,7 +224,7 @@ def bindContact(request, type):
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         if type == 'email':
-            userkey = hashlib.md5(value).hexdigest()
+            userkey = hashlib.md5("%s:%s" % (uid, value)).hexdigest()
         else:
             userkey = generate_phone_code()
         data = {"latest_status":{
@@ -258,19 +257,21 @@ def bindContact(request, type):
             raise myException(ERROR_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         if type == 'phone':
             value = regPhoneNum(value)
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
-        if not created:
-            binding_temp.binding_address = value
-            binding_temp.key = userkey
-            binding_temp.save()
-        profile = user.get_profile()
-        if type == 'phone':
-            profile.phone = value
-            profile.phone_binding_status = 'waitingbind'
-        else:
-            profile.email = value
-            profile.email_binding_status = 'waitingbind'
-        profile.save()
+        with transaction.commit_on_success():
+            profile = user.userprofile
+            if type == 'phone':
+                profile.phone = value
+                profile.phone_binding_status = 'waitingbind'
+            else:
+                profile.email = value
+                profile.email_binding_status = 'waitingbind'
+            profile.save()
+        with transaction.commit_on_success():
+            binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+            if not created:
+                binding_temp.binding_address = value
+                binding_temp.key = userkey
+                binding_temp.save()
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
@@ -361,7 +362,7 @@ def verifyContact(request, type):
         #开始解绑
         binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
         if not binding_temp:
-            raise myException(ERROR_VERIFYING_WRONG_VERIFIER)
+            raise myException(ERROR_VERIFYING_WRONG_VERIFIER, status = ERROR_STATUS_WRONG_VERIFIER, data = data)
         if type == 'email':
             if user.userprofile.email_binding_status == 'waitingbind':
                 user.userprofile.email_binding_status = 'bind'
@@ -435,3 +436,14 @@ def bindDevice(request):
             if usertoken.user != user:
                 usertoken.user = user
                 usertoken.save()
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator              
+def checkPurchase(request):
+    if request.method == 'POST':
+        version = request.POST['version']
+        if version == '1.0':
+            return 1
+        else:
+            return 0
+    return 0

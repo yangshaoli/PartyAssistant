@@ -301,6 +301,9 @@
 	NSDictionary *result = [parser objectWithString:response];
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
+    
+    NSLog(@"%@",result);
+    
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
             [self saveProfileDataFromResult:result];
@@ -319,7 +322,7 @@
         } else {
             [self saveProfileDataFromResult:result];
             
-            [self showBindOperationFailed:description];	
+            [self showNormalErrorInfo:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -391,5 +394,11 @@
         [self.inputCodeTextField becomeFirstResponder];
 
     }
+}
+
+#pragma mark -
+#pragma mark scroll delegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.inputCodeTextField resignFirstResponder];
 }
 @end
