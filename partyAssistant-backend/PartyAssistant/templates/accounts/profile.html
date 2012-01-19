@@ -315,7 +315,7 @@ function validate_phone_bingding(isbind){
                     <label for="email">邮箱：</label>
                     <input style="border:0px;background:none;" name='email' id='id_email' value='{{ userprofile.email|default:'[未绑定]' }}' >
                     </input><a style="display:none;" onclick="bindingEmail()">[绑定]</a>
-                    {% if userprofile.email %}<a href="#" onclick="unBindingEmail()">[取消绑定]</a>{% endif %}
+                    {% if userprofile.email_binding_status == 'bind' %}<a href="#" onclick="unBindingEmail()">[取消绑定]</a>{% endif %}
                     <font color='red'>{{ form.email.errors.0 }}
                     </red>
                 </div>
