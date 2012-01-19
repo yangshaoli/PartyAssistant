@@ -58,6 +58,8 @@ def verify_receipt(request):
                                                 apple_production = production_info,
                                                 premium = Premium.objects.latest('pk'),
                                                 )
+                user.userprofile.available_sms_count += items_count
+                user.userprofile.save()
         return json.loads(resp)
     else:
         raise myException('Bad Request')

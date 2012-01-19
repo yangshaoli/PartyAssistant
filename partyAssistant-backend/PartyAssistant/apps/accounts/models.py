@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from utils.tools.sms_tool import sendsmsBindingmessage, send_forget_pwd_sms
-from utils.tools.email_tool import send_binding_email,send_unbinding_email, send_forget_pwd_email
+from utils.tools.email_tool import send_binding_email, send_unbinding_email, send_forget_pwd_email
 import thread
 
 ACCOUNT_TYPE_CHOICES = (
@@ -94,7 +94,7 @@ class UserReceiptBase(models.Model):
     final_sms_count = models.IntegerField(null = True, blank = True)
     
     def __unicode__(self):
-        return self.user
+        return self.user.username
 
 class UserAppleReceipt(UserReceiptBase):
     apple_production = models.ForeignKey(ProductionInfo)
