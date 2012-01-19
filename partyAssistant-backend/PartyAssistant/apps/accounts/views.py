@@ -171,14 +171,14 @@ def bought_success(request):
         total_fee = request.POST.get('total_fee', 0)
         out_trade_no = request.POST.get('out_trade_no', '')
         #处理因用户多次点击购买按钮在数据库中产生相同订单号的记录
-        latest_receipt = UserAliReceipt.objects.filter(receipt=out_trade_no).latest('create_time') #相同订单号中的最新一条记录
+        latest_receipt = UserAliReceipt.objects.filter(receipt = out_trade_no).latest('create_time') #相同订单号中的最新一条记录
         userprofile = latest_receipt.user.get_profile()
-        userprofile.available_sms_count = int(int(userprofile.available_sms_count) + float(total_fee) * 10 )
+        userprofile.available_sms_count = int(int(userprofile.available_sms_count) + float(total_fee) * 10)
         userprofile.save()
         latest_receipt.payment = 'success'
         latest_receipt.save()
         #其他记录设置为支付失败
-        other_receipt = UserAliReceipt.objects.filter(receipt=out_trade_no).exclude(id=latest_receipt.id).update(payment='failed')
+        other_receipt = UserAliReceipt.objects.filter(receipt = out_trade_no).exclude(id = latest_receipt.id).update(payment = 'failed')
         return HttpResponse("success", mimetype = "text/html")
     else:
         return HttpResponse("", mimetype = "text/html")
@@ -374,7 +374,7 @@ def validate_phone_unbingding_ajax(request):#手机解绑定验证
 def email_binding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
-        if UserProfile.objects.filter(email=email).count() != 0:
+        if UserProfile.objects.filter(email = email, email_binding_status = 'bind').count() != 0:
             return HttpResponse("email_already_exist")
         if email:
             key = hashlib.md5(email).hexdigest()
@@ -443,7 +443,7 @@ def unbinding(request):
 @commit_on_success
 def forget_password(request):
     if request.method == 'POST':
-        username = request.POST.get('username','')
+        username = request.POST.get('username', '')
         try:
             User.objects.get(username = username)
         except:

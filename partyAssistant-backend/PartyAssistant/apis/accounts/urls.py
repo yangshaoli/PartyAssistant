@@ -23,4 +23,5 @@ urlpatterns = patterns('apis.accounts.views',
     url(r'^change_password/$', 'changePassword', name = 'changePassword'),
     url(r'^change_password_by_find_pwd/$', 'changePasswordByFinePWD', name = 'changePasswordByFinePWD'),
     url(r'^bind_device/$', 'bindDevice', name = 'bindDevice'),
+    url(r'^check_purchase/$', 'checkPurchase', name = 'checkPurchase'),
 )

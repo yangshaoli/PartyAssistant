@@ -22,8 +22,6 @@
         }
     }
     
-    NSLog(@"bindInfos: %@",bindInfos);
-    
     BindingStatusObject *userObject = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
     userObject.updated = YES;
     

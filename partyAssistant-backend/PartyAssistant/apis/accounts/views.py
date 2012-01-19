@@ -224,7 +224,7 @@ def bindContact(request, type):
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         if type == 'email':
-            userkey = hashlib.md5(value).hexdigest()
+            userkey = hashlib.md5("%s:%s" % (uid, value)).hexdigest()
         else:
             userkey = generate_phone_code()
         data = {"latest_status":{
@@ -272,9 +272,6 @@ def bindContact(request, type):
                 binding_temp.binding_address = value
                 binding_temp.key = userkey
                 binding_temp.save()
-        print profile.email
-        print value
-        print user.userprofile.email
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
@@ -365,7 +362,7 @@ def verifyContact(request, type):
         #开始解绑
         binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
         if not binding_temp:
-            raise myException(ERROR_VERIFYING_WRONG_VERIFIER)
+            raise myException(ERROR_VERIFYING_WRONG_VERIFIER, status = ERROR_STATUS_WRONG_VERIFIER, data = data)
         if type == 'email':
             if user.userprofile.email_binding_status == 'waitingbind':
                 user.userprofile.email_binding_status = 'bind'
@@ -439,3 +436,14 @@ def bindDevice(request):
             if usertoken.user != user:
                 usertoken.user = user
                 usertoken.save()
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator              
+def checkPurchase(request):
+    if request.method == 'POST':
+        version = request.POST['version']
+        if version == '1.0':
+            return 1
+        else:
+            return 0
+    return 0

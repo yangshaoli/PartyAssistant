@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from utils.tools.sms_tool import sendsmsBindingmessage, send_forget_pwd_sms
-from utils.tools.email_tool import send_binding_email,send_unbinding_email, send_forget_pwd_email
+from utils.tools.email_tool import send_binding_email, send_unbinding_email, send_forget_pwd_email
 import thread
 
 ACCOUNT_TYPE_CHOICES = (
@@ -94,10 +94,11 @@ class UserReceiptBase(models.Model):
     final_sms_count = models.IntegerField(null = True, blank = True)
     
     def __unicode__(self):
-        return self.user
+        return self.user.username
 
 class UserAppleReceipt(UserReceiptBase):
     apple_production = models.ForeignKey(ProductionInfo)
+    original_transaction_id = models.CharField(max_length = 32)
     device = models.CharField(max_length = 16, default = 'iPhone')
     receipt = models.TextField()
     premium = models.ForeignKey(Premium)
@@ -148,7 +149,7 @@ def sendBindingMessage(sender = None, instance = None, **kwargs):
         
     if instance.binding_type == 'email' :
         userprofile = instance.user.get_profile()
-        if userprofile.email_binding_status == 'unbind':
+        if userprofile.email_binding_status == 'waitingbind':
             thread.start_new_thread(send_binding_email, (instance,))
         elif userprofile.email_binding_status == 'bind':
             thread.start_new_thread(send_unbinding_email, (instance,))
