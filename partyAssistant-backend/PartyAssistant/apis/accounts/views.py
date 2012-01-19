@@ -365,7 +365,7 @@ def verifyContact(request, type):
         #开始解绑
         binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
         if not binding_temp:
-            raise myException(ERROR_VERIFYING_WRONG_VERIFIER)
+            raise myException(ERROR_VERIFYING_WRONG_VERIFIER, status = ERROR_STATUS_WRONG_VERIFIER, data = data)
         if type == 'email':
             if user.userprofile.email_binding_status == 'waitingbind':
                 user.userprofile.email_binding_status = 'bind'
