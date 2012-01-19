@@ -53,6 +53,9 @@
 #define EMAIL_VERIFY [NSString stringWithFormat:@"%@/a/accounts/verify/phone/",DOMAIN_NAME]
 
 //评分
-#define  SCORE_MARK @"http://www.baidu.com"//暂时拿百度测试
+#define  SCORE_MARK @"itms://itunes.apple.com/us/app//id496178049?ls=1&mt=8"
 //版本号更新
-#define  VERSION_UPDATE @"itms://itunes.apple.com/cn/app/bubble-spelling/id476527756?mt=8"
+#define  VERSION_UPDATE @"itms://itunes.apple.com/us/app//id496178049?ls=1&mt=8"
+
+//检测是否本版本允许IAP
+#define CHECK_IF_IAP_VALID_FOR_THIS_VERSION  [NSString stringWithFormat:@"%@/a/accounts/check_purchase/",DOMAIN_NAME]
