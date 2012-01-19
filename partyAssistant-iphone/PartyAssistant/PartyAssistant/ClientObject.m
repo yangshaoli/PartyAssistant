@@ -74,8 +74,15 @@
 
 - (void)searchClientIDByName {
     if (self.cID == -1) {
-        NSArray *contacts = [ABContactsHelper contactsEqualsName:self.cName];
-        NSLog(@"%@",self.cName);
+        NSArray *contacts;
+        @try {
+            contacts = [ABContactsHelper contactsEqualsName:self.cName];
+        }
+        @catch (NSException * e) {
+            NSLog(@"Exception: %@", e); 
+            return;
+        }
+        
         if ([contacts count] == 0) {
             return;
         } else {

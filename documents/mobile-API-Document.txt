@@ -119,6 +119,8 @@
 		"datasource":{
 				"uid":Integer,
 				"name":String,
+				"username":String,
+				"user_remaining":Integer,
 				}
 		}
 
@@ -416,42 +418,7 @@
                                 }
                 }
                 
-20. verifyEmail:
-        url:"/a/accounts/verify/bind/email/",
-        method:"POST",
-        input:{
-        "uid":Integer,
-        "verifier":String,
-                }
-        output:{
-                "status":"ok",
-                "description":"ok",
-                "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
-                                }
-                }
-                {
-                "status":"error",
-                "description":String to Show,
-                "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
-                                }
-                }
-                {
-                "status":"error_has_binded_by_other",
-                "description":"该邮箱已被其他用户绑定，请重新输入邮箱",
-                "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
-                                }
-                }
-                {
-                "status":"error_invalid_verifier",
-                "description":"该验证码已经失效，请重新获取验证码",
-                "datasource":{
-                                "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
-                                }
-                }
-21. verifyPhone:
+20. verifyPhone:
         url:"/a/accounts/verify/bind/phone/",
         method:"POST",
         input:{
@@ -486,3 +453,60 @@
                                 "latest_status":{"value":String,"status":"binded"/"blank"/"waiting"},
                                 }
                 }
+
+21. bindDevice:
+        url:"/a/accounts/bind_device/",
+        method:"POST",
+        input:{
+        "uid":Integer,
+        "device_token":String,
+                }
+        output:{
+                "status":"ok",
+                "description":"ok",
+                "datasource":{}
+                }
+22. getFullPartyListInfoForAndroid:
+    url:"/a/parties/fullpartylist/(userid)/(start_id)/"
+    method:GET
+    input:{
+        }
+    output:{
+        "status":"ok",
+        "description":"ok",
+        "dataSource":{
+                "lastID":Integer,
+                "partyList":PartyDictArray,
+                },
+        'iphone_version':IPHONE_APP_VERSION(String),
+        'android_version':ANDROID_APP_VERSION(String),
+        }
+
+    PartyDict:{
+            "clientsData":Dict
+            "description":String,
+            "partyId":int,
+            "type":"phone"/"email"
+            }
+
+#1  start_id is the ID of the start query id, it will return the parties whose id is smaller than the start_id
+    and it will also return the smallest id of the parties
+
+#2  every party dict has a attr：
+        clientsData{
+            appliedClientcount:Integer,
+            newAppliedClientcount:Integer,
+            donothingClientcount:Integer,
+            refusedClientcount:Integer,
+            newRefusedClientcount:Integer,
+            clientArray:Client_Array,
+        }
+#3 Client Content:
+    {
+    'cName':clientparty.client.name,
+    'cValue':cValue,
+    'backendID':clientparty.id,
+    'status':clientparty.apply_status,
+    'msg':String,
+    'isCheck':BOOL,
+    }

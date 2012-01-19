@@ -51,7 +51,7 @@ class PartiesClients(models.Model):
     
         
     def get_contact_info(self):
-        if party.invite_type == 'email':
+        if self.party.invite_type == 'email':
             return client.email
         else:
             return client.phone

@@ -143,7 +143,7 @@
             resurePasswordTextField.textAlignment = UITextAlignmentLeft;
             resurePasswordTextField.backgroundColor = [UIColor clearColor];
             resurePasswordTextField.placeholder=@"与新密码一致";
-            [resurePasswordTextField setSecureTextEntry:YES];
+            resurePasswordTextField.secureTextEntry = YES;
             [cell addSubview:resurePasswordTextField];        
         }        
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
