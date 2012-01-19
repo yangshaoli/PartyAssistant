@@ -98,6 +98,7 @@ class UserReceiptBase(models.Model):
 
 class UserAppleReceipt(UserReceiptBase):
     apple_production = models.ForeignKey(ProductionInfo)
+    original_transaction_id = models.CharField(max_length = 32)
     device = models.CharField(max_length = 16, default = 'iPhone')
     receipt = models.TextField()
     premium = models.ForeignKey(Premium)
