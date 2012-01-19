@@ -640,7 +640,7 @@ def ChangeClientStatus(request):
 
 @csrf_exempt
 @apis_json_response_decorator
-def resendMsg(request):
+def fullResendMsg(request):
     if request.method == "POST":
         receivers = eval(request.POST['receivers'])
         content = request.POST['content']
@@ -750,4 +750,107 @@ def resendMsg(request):
                 'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
                 'sms_count_remaining':user.userprofile.available_sms_count,
                 'clients':clients_array
+                }
+@csrf_exempt
+@apis_json_response_decorator
+def resendMsg(request):
+    if request.method == "POST":
+        receivers = eval(request.POST['receivers'])
+        content = request.POST['content']
+#        subject = request.POST['subject']
+#        _isapplytips = request.POST['_isapplytips'] == '1'
+        _issendbyself = request.POST['_issendbyself'] == '1'
+#        msgType = request.POST['msgType']
+        partyID = request.POST['partyID']
+        uID = request.POST['uID']
+#        addressType = request.POST['addressType']
+        user = User.objects.get(pk = uID)
+        
+        subject = ''
+        _isapplytips = True
+        msgType = "SMS"
+        
+        try:
+            party = Party.objects.get(pk = partyID, creator = user)
+        except Exception:
+            raise myException(u'该会议会议已被删除')
+        
+        # 检测剩余短信余额是否足够
+        number_of_message = (len(content) + SHORT_LINK_LENGTH + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
+        client_phone_list_len = len(receivers)
+        userprofile = user.get_profile() 
+        sms_count = userprofile.available_sms_count
+        will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
+        if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
+            raise myException(ERROR_SEND_MSG_NO_REMAINING, status = ERROR_STATUS_SEND_MSG_NO_REMAINING, data = {'remaining':sms_count})
+        
+        with transaction.commit_on_success():
+            addressArray = []
+            for i in range(len(receivers)):
+                receiver = receivers[i]
+                
+                if msgType == 'SMS':
+                    client_list = Client.objects.filter(phone = receiver['cValue'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                        if client.name == '':
+                            client.name = receiver['cName']
+                            client.save()
+                    else:
+                        client = Client.objects.create(phone = receiver['cValue'],
+                                                       name = receiver['cName'],
+                                                       creator = user,
+                                                       invite_type = 'phone'
+                                                       )
+                else:
+                    client_list = Client.objects.filter(email = receiver['cValue'],
+                                                        creator = user
+                                                        )
+                    if client_list:
+                        client = client_list[0]
+                        if client.name == '':
+                            client.name = receiver['cName']
+                            client.save()
+                    else:
+                        client = Client.objects.create(email = receiver['cValue'],
+                                                       name = receiver['cName'],
+                                                       creator = user,
+                                                       invite_type = 'phone'
+                                                       )
+                PartiesClients.objects.get_or_create(
+                                                  party = party,
+                                                  client = client,
+                                                  defaults = {
+                                                              "apply_status":'noanswer'
+                                                              }
+                                                  ) 
+                
+                addressArray.append(receiver['cValue'])
+    
+            if msgType == 'SMS':
+                msg = SMSMessage.objects.get_or_create(party = party)[0]
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+            else:
+                msg = EmailMessage.objects.get_or_create(party = party)[0]
+                msg.subject = subject
+                msg.content = content
+                msg.is_apply_tips = _isapplytips
+                msg.is_send_by_self = _issendbyself
+                msg.save()
+        
+        if not msg.is_send_by_self:
+            with transaction.commit_on_success():
+                if addressArray:
+                    addressString = ','.join(addressArray)
+                    Outbox.objects.create(address = addressString, base_message = msg)
+        
+        return {
+                'partyId':party.id,
+                'applyURL':transfer_to_shortlink(DOMAIN_NAME + reverse('enroll', args = [party.id])),
+                'sms_count_remaining':user.userprofile.available_sms_count,
                 }
