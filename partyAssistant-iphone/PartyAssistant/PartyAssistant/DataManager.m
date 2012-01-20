@@ -62,7 +62,8 @@ static DataManager *sharedDataManager = nil;
     NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
     NSString *newVersionString = [result objectForKey:@"iphone_version"];
     if(preVersionString==nil||[preVersionString isEqualToString:@""]){
-        [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+        NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+        [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
         //NSLog(@"前版本为空");
         return;
     }else{
@@ -71,7 +72,7 @@ static DataManager *sharedDataManager = nil;
         }else{
             //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
             if([newVersionString floatValue]>[preVersionString floatValue]){
-                [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
                 [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
             }else{
                 [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];

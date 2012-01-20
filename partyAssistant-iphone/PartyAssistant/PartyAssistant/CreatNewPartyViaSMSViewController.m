@@ -40,6 +40,7 @@
 - (NSString *)getCleanLetter:(NSString *)originalString;
 - (void)showLessRemainingCountAlert;
 - (void)gotoPurchasPage;
+- (void)checkPurchaseValidStatus;
 
 @end
 
@@ -129,7 +130,6 @@
         if([DataManager sharedDataManager].isRandomLoginSelf){
             ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
             [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];  
-            NSLog(@"creat-----");
         }
     }
     
@@ -643,15 +643,15 @@
             }
                  
         } else if ([status isEqualToString:@"error_no_remaining"]){
-            NSDictionary *infos = [result objectForKey:@"datasource"];
-            NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"remaining"];
-            if (leftCount) {
-                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
-                [self showLessRemainingCountAlert];
-                return;
-            }
-            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+                NSDictionary *infos = [result objectForKey:@"datasource"];
+                NSNumber *leftCount = nil;
+                leftCount = [infos objectForKey:@"remaining"];
+                if (leftCount) {
+                    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
+                    [self showLessRemainingCountAlert];
+                    return;
+                }
+                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
         } else {
             [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
             [self showAlertRequestFailed:description];	
@@ -1004,7 +1004,7 @@
         if (buttonIndex == 0) {
             return;
         } else {
-            [self gotoPurchasPage];
+            [self checkPurchaseValidStatus];
         }
     }
 }
@@ -1016,6 +1016,81 @@
     [self.navigationController pushViewController:purchase animated:YES];
 }
 
+- (void)checkPurchaseValidStatus {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"无法连接网络，请检查网络状态！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alertView show];
+        return;
+    }
+    
+    NSURL *url =  [NSURL URLWithString:CHECK_IF_IAP_VALID_FOR_THIS_VERSION];
+    
+    NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:versionString forKey:@"version"];
+    
+    [request setDidFinishSelector:@selector(checkPurchaseValidStatusFinished:)];
+    [request setDidFailSelector:@selector(checkPurchaseValidStatusFailed:)];
+    
+    request.timeOutSeconds = 15;
+    [request setDelegate:self];
+    
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];  
+    
+    [self showWaiting];
+}
+
+
+- (void)checkPurchaseValidStatusFinished:(ASIHTTPRequest *)request {
+    [self dismissWaiting];
+	NSString *response = [request responseString];
+    
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    NSString *status = [result objectForKey:@"status"];
+    
+    NSLog(@"%@",result);
+    
+    if ([request responseStatusCode] == 200) {
+        if ([status isEqualToString:@"ok"]) {
+            NSNumber *statusCode = [result objectForKey:@"datasource"];
+            if (statusCode) {
+                if ([statusCode intValue] == 0) {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"当前的版本并不支持此功能，请下载新版本后再使用此功能!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                    [alertView show];
+                } else if ([statusCode intValue] == 1) {
+                    [self gotoPurchasPage];
+                } else {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"与服务器连接异常，请稍后再试!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                    [alertView show];
+                }
+            } else {
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"与服务器连接异常，请稍后再试!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                [alertView show];
+            }
+        } else {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"与服务器连接异常，请稍后再试!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alertView show];
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+}
+
+- (void)checkPurchaseValidStatusFailed:(ASIHTTPRequest *)request {
+    [self dismissWaiting];
+	//NSError *error = [request error];
+	[self showAlertRequestFailed: @"目前无法连接服务器，请稍候重试！"];
+}
 #pragma mark - 
 #pragma mark notification method
 - (void)leftCountRefreshing:(NSNotification *)notify {
