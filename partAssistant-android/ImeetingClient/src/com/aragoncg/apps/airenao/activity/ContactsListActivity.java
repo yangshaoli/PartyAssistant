@@ -143,6 +143,7 @@ public class ContactsListActivity extends ListActivity implements
 	private boolean isShow = false;
 	private Runnable dataLoading;
 	private ListView list;
+	private MyPerson bindPerson;
 
 	/**
 	 * The action for the join contact activity.
@@ -534,6 +535,7 @@ public class ContactsListActivity extends ListActivity implements
 			@Override
 			public void onClick(View v) {
 				btnAll.setEnabled(false);
+				transPersons.clear();
 				btnFrequent.setEnabled(true);
 				tempPositions.clear();
 				tempPositions.addAll(positions);
@@ -546,6 +548,7 @@ public class ContactsListActivity extends ListActivity implements
 			@Override
 			public void onClick(View v) {
 				btnAll.setEnabled(true);
+				transPersons.clear();
 				btnFrequent.setEnabled(false);
 				tempPositions.clear();
 				tempPositions.addAll(positions);
@@ -581,6 +584,8 @@ public class ContactsListActivity extends ListActivity implements
 						personIntent.putParcelableArrayListExtra(
 								Constants.FROMCONTACTSLISTTOSEND,
 								(ArrayList<? extends Parcelable>) choosedData);
+						positions.clear();
+						tempPositions.clear();
 						setResult(21, personIntent);// 21只是一个返回的结果代码
 						finish();
 
@@ -1100,8 +1105,8 @@ public class ContactsListActivity extends ListActivity implements
 		Log.i("pos", "weizhi:" + position);
 		// 变化按钮中的统计数字
 		btnOk.setText(getString(R.string.btn_ok) + "(" + positions.size() + ")");
-		tempPositions.clear();
-		tempPositions.addAll(positions);
+		/*tempPositions.clear();
+		tempPositions.addAll(positions);*/
 		mAdapter.notifyDataSetChanged();
 		list.requestFocusFromTouch();
 
@@ -2199,10 +2204,10 @@ public class ContactsListActivity extends ListActivity implements
 		public View getView(final int position, View convertView,
 				ViewGroup parent) {
 			// handle the total contacts item
-			if (position == 0
+			/*if (position == 0
 					&& (mMode & MODE_MASK_SHOW_NUMBER_OF_CONTACTS) != 0) {
 				return getTotalContactCountView(parent);
-			}
+			}*/
 			// inflater the layout of ContactItems
 			if (isShowAllContactsItemPosition(position)) {
 				LayoutInflater inflater = (LayoutInflater) getBaseContext()
@@ -2235,12 +2240,12 @@ public class ContactsListActivity extends ListActivity implements
 				cursor = getCursor();
 			}
 			// get the realPosition of everyitem
-			int realPosition = getRealPosition(position);
+			/*int realPosition = getRealPosition(position);
 			if (!cursor.moveToPosition(realPosition)) {
 				throw new IllegalStateException(
 						"couldn't move cursor to position " + position);
 			}
-
+*/
 			View v;
 			if (convertView == null) {
 				v = newView(getBaseContext(), cursor, parent);
@@ -2252,8 +2257,8 @@ public class ContactsListActivity extends ListActivity implements
 			bindView(v, getBaseContext(), cursor);
 			
 			// to bind the SectionHeader
-			bindSectionHeader(v, realPosition, mDisplaySectionHeaders
-					&& !showingSuggestion);
+			/*bindSectionHeader(v, realPosition, mDisplaySectionHeaders
+					&& !showingSuggestion);*/
 			return v;
 		}
 
@@ -2261,7 +2266,7 @@ public class ContactsListActivity extends ListActivity implements
 			final LayoutInflater inflater = getLayoutInflater();
 			TextView totalContacts = (TextView) inflater.inflate(
 					R.layout.total_contacts, parent, false);
-
+			totalContacts.setVisibility(View.GONE);
 			String text;
 			int count = getRealCount();
 
@@ -2271,7 +2276,7 @@ public class ContactsListActivity extends ListActivity implements
 						R.string.listFoundAllContactsZero,
 						R.plurals.listFoundAllContacts);
 			} else {
-				if (mDisplayOnlyPhones) {
+				/*if (mDisplayOnlyPhones) {
 					text = getQuantityText(count,
 							R.string.listTotalPhoneContactsZero,
 							R.plurals.listTotalPhoneContacts);
@@ -2279,9 +2284,9 @@ public class ContactsListActivity extends ListActivity implements
 					text = getQuantityText(count,
 							R.string.listTotalAllContactsZero,
 							R.plurals.listTotalAllContacts);
-				}
+				}*/
 			}
-			totalContacts.setText(text.toString());
+			totalContacts.setText("dd");
 			return totalContacts;
 		}
 
@@ -2338,17 +2343,12 @@ public class ContactsListActivity extends ListActivity implements
 
 			cache.labelView = (TextView) view.findViewById(R.id.label);
 			cache.idView = (TextView) view.findViewById(R.id.data);
-			cache.presenceView = (ImageView) view.findViewById(R.id.presence);
+			//cache.presenceView = (ImageView) view.findViewById(R.id.presence);
 
 			// checkBox
 			cache.checkBox = (CheckBox) view.findViewById(R.id.cb);
 
-			/*
-			 * cache.nonQuickContactPhotoView = (ImageView) view
-			 * .findViewById(R.id.noQuickContactPhoto);
-			 */
-			// cache.photoView = (QuickContactBadge)
-			// view.findViewById(R.id.photo);
+			
 
 			view.setTag(cache);
 
@@ -2474,13 +2474,15 @@ public class ContactsListActivity extends ListActivity implements
 						
 			//设置已发送的联系人的checkbox
 			if(transPersons.size()>0){
-				for(MyPerson myPerson:transPersons){
-					if(myPerson.getName().equals(cache.nameView.getText().toString())){
+				for(int i = 0;i<transPersons.size();i++){
+					bindPerson = transPersons.get(i);
+					if(bindPerson.getName().equals(cache.nameView.getText().toString())){
 						MyPerson Person = personMap.get(cursor.getPosition() + 1);
 						if(Person!=null){
 							Person.setChecked(true);
 							positions.add(new MyPerson(cache.idView.getText().toString(),
 									cache.nameView.getText().toString(),cache.labelView.getText().toString()));
+							transPersons.remove(i);
 							Message msg = new Message();
 							msg.what = 0;
 							Bundle bundle = new Bundle();

@@ -14,11 +14,7 @@
 			android:orientation="horizontal" android:layout_marginLeft="11dip"
 			android:layout_alignParentRight="true">
 
-			<ImageView android:id="@+id/presence" android:layout_width="wrap_content"
-				android:layout_height="wrap_content" android:layout_marginLeft="5dip"
-				android:layout_marginRight="5dip" android:padding="7dip"
-				android:layout_gravity="center_vertical" android:scaleType="centerInside" />
-
+			
 			<LinearLayout android:id="@+id/call_view"
 				android:layout_width="wrap_content" android:layout_height="fill_parent"
 				android:orientation="horizontal">
