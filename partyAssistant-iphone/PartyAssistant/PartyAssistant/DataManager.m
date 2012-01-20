@@ -62,7 +62,8 @@ static DataManager *sharedDataManager = nil;
     NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
     NSString *newVersionString = [result objectForKey:@"iphone_version"];
     if(preVersionString==nil||[preVersionString isEqualToString:@""]){
-        [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+        NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+        [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
         //NSLog(@"前版本为空");
         return;
     }else{
@@ -71,7 +72,7 @@ static DataManager *sharedDataManager = nil;
         }else{
             //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
             if([newVersionString floatValue]>[preVersionString floatValue]){
-                [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
                 [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
             }else{
                 [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
@@ -198,8 +199,8 @@ static DataManager *sharedDataManager = nil;
             NSLog(@"%@",description);
             if ([status isEqualToString:@"ok"]) {
                 NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:dic];
-                [info setValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
-                [self saveUsrData:info];
+                NSString *username = [usrInfo objectForKey:@"username"];
+                [self saveUsrData:info withUsername:username];
                 [pool release];
                 //return NetWorkConnectionCheckPass;
                 return nil;
@@ -351,6 +352,33 @@ static DataManager *sharedDataManager = nil;
     if (userName) {
         userData.userName = userName;
     }
+    
+    [userObjectService saveUserObject];
+}
+
+- (void)saveUsrData:(NSDictionary *)jsonValue withUsername:(NSString *)username {
+    NSLog(@"user :%@",jsonValue);
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    [userData clearObject];
+    
+    NSDictionary *datasource = [jsonValue objectForKey:@"datasource"];
+    
+    NSString *name = [datasource objectForKey:@"name"];
+    if (name) {
+        userData.nickName = name;
+    } else {
+        
+    }
+    
+    NSString *uid = [datasource objectForKey:@"uid"];
+    if (uid) {
+        userData.uID = [uid intValue];
+    } else {
+        
+    }
+    
+    userData.userName = username;
     
     [userObjectService saveUserObject];
 }
