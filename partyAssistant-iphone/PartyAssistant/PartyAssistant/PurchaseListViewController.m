@@ -80,7 +80,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 1;
+    return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -89,11 +89,18 @@
     
     UITableViewCell *cell = [aTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+    } 
+    
+    if (indexPath.row == 0) {
+        cell.textLabel.text = @"购买50条短信";
+        cell.detailTextLabel.text = @"¥ 6.00 / $ 0.99";
+    } else if (indexPath.row == 1) {
+        cell.textLabel.text = @"购买100条短信";
+        cell.detailTextLabel.text = @"¥ 12.00 / $ 1.99";
     }
     
     // Configure the cell...
-    cell.textLabel.text = @"Purchase Test Item1";
     
     return cell;
 }

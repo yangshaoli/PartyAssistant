@@ -374,15 +374,18 @@ def validate_phone_unbingding_ajax(request):#手机解绑定验证
 def email_binding(request):
     if request.method == 'POST':
         email = request.POST.get('email', '')
-        if UserProfile.objects.filter(email = email, email_binding_status = 'bind').count() != 0:
+        if UserProfile.objects.filter(email=email, email_binding_status='bind').count() != 0:
             return HttpResponse("email_already_exist")
         if email:
-            key = hashlib.md5(email).hexdigest()
-            if UserBindingTemp.objects.filter(key = key).count() == 0:
-                UserBindingTemp.objects.create(user = request.user, binding_type = 'email', key = key, binding_address = email)
-                return HttpResponse("success")
-            else:
-                return HttpResponse("record_already_exist")
+            key = hashlib.md5(str(request.user.id)+':'+email).hexdigest()
+            UserBindingTemp.objects.create(user = request.user, binding_type = 'email', key = key, binding_address = email)
+            userprofile = UserProfile.objects.get(user=request.user)
+            userprofile.email = email
+            userprofile.email_binding_status = 'waitingbind'
+            userprofile.save()
+            return HttpResponse("success")
+#            else:
+#                return HttpResponse("record_already_exist")
 
 @commit_on_success
 def email_handle_url(request, type):

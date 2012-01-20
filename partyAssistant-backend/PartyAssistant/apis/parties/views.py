@@ -71,14 +71,15 @@ def createParty(request):
             starttime = None
 #        if len(location) > 256:
 #            raise myException(ERROR_CREATEPARTY_LONG_LOCATION)
-        # 检测剩余短信余额是否足够
-        number_of_message = (len(content) + SHORT_LINK_LENGTH + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
-        client_phone_list_len = len(receivers)
-        userprofile = user.get_profile() 
-        sms_count = userprofile.available_sms_count
-        will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
-        if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
-            raise myException(ERROR_SEND_MSG_NO_REMAINING, status = ERROR_STATUS_SEND_MSG_NO_REMAINING, data = {'remaining':sms_count})
+        # 检测剩余短信余额是否足够————当条件_issendbyself==True时
+        if _issendbyself:    
+            number_of_message = (len(content) + SHORT_LINK_LENGTH + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH
+            client_phone_list_len = len(receivers)
+            userprofile = user.get_profile() 
+            sms_count = userprofile.available_sms_count
+            will_send_message_num = client_phone_list_len * number_of_message #可能发送的从短信条数
+            if will_send_message_num > sms_count:#短信人数*短信数目大于可发送的短信数目
+                raise myException(ERROR_SEND_MSG_NO_REMAINING, status = ERROR_STATUS_SEND_MSG_NO_REMAINING, data = {'remaining':sms_count})
         with transaction.commit_on_success():
             #创建活动
             party = Party.objects.create(start_date = startdate,

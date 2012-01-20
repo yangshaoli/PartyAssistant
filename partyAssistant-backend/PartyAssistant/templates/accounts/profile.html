@@ -278,6 +278,9 @@ function validate_phone_bingding(isbind){
               $(this).attr('style','').next().show();
            } 
         });
+        {%  if userprofile.email_binding_status == 'waitingbind' %} 
+        $("#id_email").attr('placeholder', '邮箱待验证，请登录您绑定的邮箱进行确认').val(null);
+        {%  endif %}
     })
 </script>
 {% endblock %}
@@ -310,9 +313,9 @@ function validate_phone_bingding(isbind){
                 </div>
                 <div class="field">
                     <label for="email">邮箱：</label>
-                    <input style="border:0px;background:none;" name='email' id='id_email' value='{{ userprofile.email|default:'[未绑定]' }}' {%  if userprofile.email %}  disabled="true" {%  endif %}>
+                    <input style="border:0px;background:none;" name='email' id='id_email' value='{{ userprofile.email|default:'[未绑定]' }}' >
                     </input><a style="display:none;" onclick="bindingEmail()">[绑定]</a>
-                    {% if userprofile.email %}<a href="#" onclick="unBindingEmail()">[取消绑定]</a>{% endif %}
+                    {% if userprofile.email_binding_status == 'bind' %}<a href="#" onclick="unBindingEmail()">[取消绑定]</a>{% endif %}
                     <font color='red'>{{ form.email.errors.0 }}
                     </red>
                 </div>
