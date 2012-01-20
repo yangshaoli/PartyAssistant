@@ -72,7 +72,7 @@ static DataManager *sharedDataManager = nil;
         }else{
             //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
             if([newVersionString floatValue]>[preVersionString floatValue]){
-                [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
                 [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
             }else{
                 [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];

@@ -253,8 +253,12 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
         return;
     }else{
         NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if (preVersionString == nil || [preVersionString isEqualToString:@""]) {
+            NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+            [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+        }
         if([newVersionString floatValue]>[preVersionString floatValue]){
-            [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+            //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
             [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
         }else{
             [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
