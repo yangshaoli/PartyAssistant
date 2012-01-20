@@ -12,20 +12,38 @@ public class MyPerson implements Parcelable {
 	private String phoneNumber;
 	private String email;
 	private boolean checked;
+	private String id;
 	private ArrayList<String> numbers;
 
 	public MyPerson() {
 
 	}
-
-	public MyPerson(String name, String email, String phoneNumber) {
+	public MyPerson(String name, String phoneNumber) {
+		
 		this.name = name;
+		this.email = phoneNumber;
+	}
+	public MyPerson(String id, String email, String name, String phoneNumber) {
+		this.id = id;
 		this.email = email;
+		this.name = name;
+		this.phoneNumber = phoneNumber;
 	}
 
-	public MyPerson(String name, String number) {
+	public MyPerson(String id,String name, String number) {
+		this.id = id;
 		this.name = name;
 		this.phoneNumber = number;
+	}
+	
+	
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public ArrayList<String> getNumbers() {

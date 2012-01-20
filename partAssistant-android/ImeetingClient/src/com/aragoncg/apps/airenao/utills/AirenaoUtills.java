@@ -9,7 +9,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.aragoncg.apps.airenao.DB.DbHelper;
-import com.aragoncg.apps.airenao.activity.PhoneDisambigDialog;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.MyPerson;
 
@@ -504,23 +503,7 @@ public class AirenaoUtills {
 				+ DbHelper.PARTY_ID + " = " + id;
 	}
 
-	public static Map<Integer, MyPerson> showDialog(Context mContext,
-			ArrayList<String> phones, Boolean isShow, Boolean sms,
-			int position, Map<Integer, MyPerson> positions,
-			Map<Integer, MyPerson> personMap, String name, Handler mHandler) {
-		SharedPreferences msp = AirenaoUtills.getMySharedPreferences(mContext);
-		if (!isShow) {
-			// Display dialog to choose a number to call.
-			PhoneDisambigDialog phoneDialog = new PhoneDisambigDialog(mContext,
-					null, sms, phones, position, positions, personMap, name,
-					mHandler);
-			isShow = false;
-			return phoneDialog.show();
-		}
-		return null;
-
-	}
-
+	
 	// 检查sdcard是否存在
 	public static boolean checkSDCard() {
 		if (android.os.Environment.getExternalStorageState().equals(

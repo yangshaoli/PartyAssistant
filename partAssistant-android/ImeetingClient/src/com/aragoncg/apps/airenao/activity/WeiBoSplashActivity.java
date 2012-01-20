@@ -5,7 +5,6 @@ package com.aragoncg.apps.airenao.activity;
 import java.io.File;
 import java.util.SortedSet;
 
-import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -68,8 +67,8 @@ public class WeiBoSplashActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				dialog.dismiss();
-				httpOauthConsumer = new CommonsHttpOAuthConsumer(getString(R.string.app_sina_consumer_key), 
-		    			getString(R.string.app_sina_consumer_secret));
+				httpOauthConsumer = new CommonsHttpOAuthConsumer(Weibo.APP_KEY, 
+						Weibo.APP_SECRET);
 		    	
 				httpOauthprovider = new CommonsHttpOAuthProvider(
 						Weibo.URL_OAUTH_TOKEN,

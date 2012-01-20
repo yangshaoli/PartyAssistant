@@ -151,16 +151,20 @@ public class EditActivity extends Activity {
 			try {
 				SmsManager mySmsManager = SmsManager.getDefault();
 				// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
-				if ((edtActivityDes.getText().toString() + link).length() > 70) {
+				String msgsContent = 
+						"【爱热闹】"+ edtActivityDes.getText()
+						.toString() + "\n"
+						+"快来报名："+link;
+				if (msgsContent.length() > 70) {
 					ArrayList<String> msgs = mySmsManager
-							.divideMessage((edtActivityDes.getText().toString() + link));
+							.divideMessage(msgsContent);
 					for (String msg : msgs) {
 						mySmsManager.sendTextMessage(tempContactNumbers.get(i),
 								null, msg, null, null);
 					}
 				} else {
 					mySmsManager.sendTextMessage(tempContactNumbers.get(i),
-							null, (edtActivityDes.getText().toString() + link),
+							null, msgsContent,
 							null, null);
 				}
 
@@ -403,6 +407,7 @@ public class EditActivity extends Activity {
 		if (activityFromDetail != null && fromDetail == true) {
 			this.edtActivityDes
 					.setText(activityFromDetail.getActivityContent());
+			this.edtActivityDes.setSelection(activityFromDetail.getActivityContent().length());
 		}
 
 	}

@@ -51,6 +51,7 @@ import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
+import com.aragoncg.apps.airenao.weibo.ShareActivity;
 
 public class MeetingListActivity extends ListActivity implements
 		OnScrollListener {
@@ -385,9 +386,32 @@ public class MeetingListActivity extends ListActivity implements
 					ImeetingClientActivity.class));
 			break;
 		case 2:// share the data of "listItemId"
-			/*
-	        		 * 
-	        		 */
+			HashMap<String, Object> map = (HashMap<String, Object>) mData
+			.get(listItemId);
+	       String partyId = (String) map
+					.get(Constants.PARTY_ID);
+			SharedPreferences spf = AirenaoUtills.getMySharedPreferences(this);
+			String accessToken = spf.getString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, null);
+			String accessSecret = spf.getString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, null);
+			Intent intent2 = new Intent();
+			Bundle bundle = new Bundle();
+			if(accessToken!=null && accessSecret!=null){
+				String applyUrl = spf.getString(partyId, null);
+				if(applyUrl==null){
+					throw new RuntimeException("获得报名链接错误");
+				}
+				applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："+applyUrl;
+	    		bundle.putString(WeiBoSplashActivity.EXTRA_WEIBO_CONTENT, applyUrl);
+	    		bundle.putString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, accessToken);
+	    		bundle.putString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, accessSecret);
+	    		intent2.putExtras(bundle);
+	    		intent2.setClass(this, ShareActivity.class);
+	    		startActivity(intent2);
+			}else{
+				intent2.putExtra(Constants.PARTY_ID, partyId);
+				intent2.setClass(this, WeiBoSplashActivity.class);
+				startActivity(intent2);
+			}
 			break;
 		}
 		return super.onContextItemSelected(item);

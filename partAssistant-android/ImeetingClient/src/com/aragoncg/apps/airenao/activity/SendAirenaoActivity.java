@@ -91,7 +91,7 @@ public class SendAirenaoActivity extends Activity {
 	private static final int MENU_SEND_WAY = 1;
 	private boolean sendSMS = true;
 	private boolean isShow = false;
-	boolean fromPeopleInfo;
+	public static boolean fromPeopleInfo;
 
 	private String theContent;
 	private String string;
@@ -122,6 +122,7 @@ public class SendAirenaoActivity extends Activity {
 	private int count = 0;
 	private ArrayList<String> phoneNumbers = new ArrayList<String>();
 	private ProgressDialog progerssDialog;
+	public static boolean createNew = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -141,15 +142,15 @@ public class SendAirenaoActivity extends Activity {
 		getItentData();
 		// 绑定自动提示框信息
 		final ContentApdater adapter = new ContentApdater(this, cursor);
-		
+
 		peopleNumbers.setAdapter(adapter);
 		peopleNumbers
 				.setTokenizer(new MyMultiAutoCompleteTextView.CommaTokenizer());
 		peopleNumbers.setOnTouchListener(new OnTouchListener() {
-			
+
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if(event.getAction() == MotionEvent.ACTION_UP){
+				if (event.getAction() == MotionEvent.ACTION_UP) {
 					string = peopleNumbers.getText().toString();
 					peopleNumbers.setSelection(string.length());
 				}
@@ -181,7 +182,8 @@ public class SendAirenaoActivity extends Activity {
 						} else {
 							phone = phoneNumbers.get(0);
 						}
-						peopleNumbers.replaceTextAgain(name+"<"+phone+">");
+						peopleNumbers
+								.replaceTextAgain(name + "<" + phone + ">");
 						clientDicts.put(phone, name);
 					} else {
 						SharedPreferences msp = AirenaoUtills
@@ -196,7 +198,8 @@ public class SendAirenaoActivity extends Activity {
 							} else {
 								isShow = true;
 								clientDicts.put(phone, name);
-								peopleNumbers.replaceTextAgain(name+"<"+phone+">");
+								peopleNumbers.replaceTextAgain(name + "<"
+										+ phone + ">");
 								return;
 							}
 						}
@@ -238,7 +241,7 @@ public class SendAirenaoActivity extends Activity {
 				String phoneNumber = phones
 						.getString(phones
 								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-				if(phoneNumber.contains("-")){
+				if (phoneNumber.contains("-")) {
 					phoneNumber = phoneNumber.replace("-", "");
 				}
 				if (phoneNumber != null) {
@@ -310,22 +313,15 @@ public class SendAirenaoActivity extends Activity {
 			public void onReceive(Context context, Intent intent) {
 				// 判断短信是否发送成功
 
-				switch (getResultCode()) {
-				case Activity.RESULT_OK:
-					if (count == 0) {
-						showOkOrNotDialog("短信发送成功", true);
-					}
-					count++;
-
-					return;
-				default:
-
-					if (count == 0) {
-						showOkOrNotDialog("短信发送失败,是否重新发送？", false);
-					}
-					count++;
-					break;
-				}
+				/*
+				 * switch (getResultCode()) { case Activity.RESULT_OK: if (count
+				 * == 0) { showOkOrNotDialog("短信发送成功", true); } count++;
+				 * 
+				 * return; default:
+				 * 
+				 * if (count == 0) { showOkOrNotDialog("短信发送失败,是否重新发送？", false);
+				 * } count++; break; }
+				 */
 			}
 		};
 
@@ -379,25 +375,29 @@ public class SendAirenaoActivity extends Activity {
 
 					break;
 				case SUCCESS:
-					SharedPreferences spf = AirenaoUtills.getMySharedPreferences(SendAirenaoActivity.this);
+					SharedPreferences spf = AirenaoUtills
+							.getMySharedPreferences(SendAirenaoActivity.this);
 					Editor edit = spf.edit();
 					edit.putString(partyId, applyURL);
 					edit.commit();
 					if (msg.getData().getString("noContacts") == null) {// 等于null说明联系人不为空
 						if (sendSMS) {
-							
+
 							// 如果用自己手机发送
 							if (ckSendLableUseOwn) {
-									sendSMSorEmail(sendSMS, ckSendLableUseOwn);
-									if(progerssDialog!=null){
-										progerssDialog.dismiss();
-									}
+								sendSMSorEmail(sendSMS, ckSendLableUseOwn);
+								if (progerssDialog != null) {
+									progerssDialog.dismiss();
+								}
+
+								showOkOrNotDialog("短信发送成功", true);
 							} else {
 								Toast.makeText(SendAirenaoActivity.this,
 										"消息已发送", 1000).show();
 								if (progerssDialog != null) {
 									progerssDialog.dismiss();
 								}
+								showOkOrNotDialog("短信发送成功", true);
 							}
 						}
 					}
@@ -439,13 +439,13 @@ public class SendAirenaoActivity extends Activity {
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
 			dict = (String) entry.getKey();
-			if(dict.startsWith("+86")){
+			if (dict.startsWith("+86")) {
 				dict = dict.substring(3);
 			}
-			if(dict.startsWith("12593")){
+			if (dict.startsWith("12593")) {
 				dict = dict.substring(5);
 			}
-			if(dict.startsWith("86")){
+			if (dict.startsWith("86")) {
 				dict = dict.substring(2);
 			}
 			name = (String) entry.getValue();
@@ -475,12 +475,12 @@ public class SendAirenaoActivity extends Activity {
 		params.put("uID", userId);
 		params.put(Constants.ADDRESS_TYPE, "android");
 		String url = "";
-		if(fromPeopleInfo){
+		if (fromPeopleInfo) {
 			url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_RESEND_URL;
 			params.put("partyID", partyId);
-		}else{
+		} else {
 			url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_CREATE_URL;
-			
+
 		}
 		HttpHelper httpHelper = new HttpHelper();
 		// 保存到后台，没有提示信息
@@ -501,8 +501,8 @@ public class SendAirenaoActivity extends Activity {
 				}
 
 				smsContent = "";
-				smsContent ="【爱热闹】"+ txtSendLableContent.getText().toString() + "\n"
-						+"快来报名："+stringLink;
+				smsContent = "【爱热闹】" + txtSendLableContent.getText().toString()
+						+ "\n" + "快来报名：" + stringLink;
 				Message message = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(SUCCESS + "", description);
@@ -581,11 +581,15 @@ public class SendAirenaoActivity extends Activity {
 						.get(i);
 				String tempNames = String.valueOf(map
 						.get(Constants.PEOPLE_NAME));
-				clientDicts.put(String.valueOf(map.get(Constants.PEOPLE_CONTACTS)),tempNames
-						);
+				clientDicts.put(
+						String.valueOf(map.get(Constants.PEOPLE_CONTACTS)),
+						tempNames);
 				if (!"".equals(tempNames)) {
-					names = names + tempNames + "<" + String.valueOf(map
-							.get(Constants.PEOPLE_CONTACTS)) + ">" + ",";
+					names = names
+							+ tempNames
+							+ "<"
+							+ String.valueOf(map.get(Constants.PEOPLE_CONTACTS))
+							+ ">" + ",";
 				}
 				if (peopleNumbers == null) {
 					peopleNumbers = (MyMultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
@@ -597,13 +601,13 @@ public class SendAirenaoActivity extends Activity {
 	}
 
 	public void init() {
-
+		createNew = true;
 		SharedPreferences mySharedPreferences = AirenaoUtills
 				.getMySharedPreferences(SendAirenaoActivity.this);
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 				null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
-		userTitle = (TextView)findViewById(R.id.userTitle);
+		userTitle = (TextView) findViewById(R.id.userTitle);
 		userTitle.setText(userName);
 		userLayout = (LinearLayout) findViewById(R.id.userChange);
 
@@ -622,10 +626,11 @@ public class SendAirenaoActivity extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					// Toast.makeText(SendAirenaoActivity.this, "asd",
-					// Toast.LENGTH_LONG).show();
+					
 					Intent intent = new Intent();
 					intent.putExtra("mode", -2);// -2 是查询电话
+					String allNumbers = peopleNumbers.getText().toString();
+					intent.putExtra("AlreadyExistNumbers", allNumbers);
 					intent.setClass(SendAirenaoActivity.this,
 							ContactsListActivity.class);
 					startActivityForResult(intent, 24);// 24 只是一个requestCode
@@ -639,7 +644,8 @@ public class SendAirenaoActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				AlertDialog dialog = new AlertDialog.Builder(SendAirenaoActivity.this)
+				AlertDialog dialog = new AlertDialog.Builder(
+						SendAirenaoActivity.this)
 						.setTitle(R.string.user_off)
 						.setMessage(R.string.user_off_message)
 						.setPositiveButton(R.string.btn_ok,
@@ -650,7 +656,8 @@ public class SendAirenaoActivity extends Activity {
 											int which) {
 										finish();
 										Intent intent = new Intent();
-										intent.setClass(SendAirenaoActivity.this,
+										intent.setClass(
+												SendAirenaoActivity.this,
 												LoginActivity.class);
 										startActivity(intent);
 									}
@@ -671,8 +678,7 @@ public class SendAirenaoActivity extends Activity {
 							.show();
 					return;
 				}
-				
-				
+
 				count = 0;
 				getPhoneNumbersOrgetEmail(sendSMS);
 
@@ -705,7 +711,7 @@ public class SendAirenaoActivity extends Activity {
 												int which) {
 											initThreadSaveMessage("no");// no指的是收件人为空
 											myHandler.post(threadSaveMessage);
-											
+
 											finish();
 											return;
 										}
@@ -716,7 +722,7 @@ public class SendAirenaoActivity extends Activity {
 					progerssDialog = ProgressDialog.show(
 							SendAirenaoActivity.this, "", "发送中...", true, true);
 					initThreadSaveMessage(null);
-					myHandler.postDelayed(threadSaveMessage,1000);
+					myHandler.postDelayed(threadSaveMessage, 2000);
 
 				}
 
@@ -732,7 +738,7 @@ public class SendAirenaoActivity extends Activity {
 	 */
 	public void getPhoneNumbersOrgetEmail(boolean sendSms) {
 		if (sendSms) {
-			
+
 			// 用户自己输入的电话
 
 			String inputedPhoneNumbers = peopleNumbers.getText().toString();
@@ -743,34 +749,34 @@ public class SendAirenaoActivity extends Activity {
 			for (int i = 0; i < allContacts.length; i++) {
 				onePhoneNumber = allContacts[i];
 				index = allContacts[i].indexOf("<");
-				if(index>-1){
-					onePhoneNumber = allContacts[i].substring(index+1, allContacts[i].length()-1);
-				}else{
+				if (index > -1) {
+					onePhoneNumber = allContacts[i].substring(index + 1,
+							allContacts[i].length() - 1);
+				} else {
 					onePhoneNumber = allContacts[i];
 				}
 				if (AirenaoUtills.checkPhoneNumber(onePhoneNumber)) {
 					if (allContacts[i].equals("")) {
 						continue;
 					}
-					if(!clientDicts.containsKey(onePhoneNumber)){
+					if (!clientDicts.containsKey(onePhoneNumber)) {
 						clientDicts.put(onePhoneNumber, "佚名");
 					}
-					
+
 				}
-				
-				if(clientDicts.containsKey(onePhoneNumber)){
-					tempClientDicts.put(onePhoneNumber, clientDicts.get(onePhoneNumber));
+
+				if (clientDicts.containsKey(onePhoneNumber)) {
+					tempClientDicts.put(onePhoneNumber,
+							clientDicts.get(onePhoneNumber));
 				}
 			}
-			
-		} 
+
+		}
 
 	}
 
 	public void showOkOrNotDialog(String message, final boolean ok) {
-		/*
-		 * initThreadSaveMessage(); myHandler.post(threadSaveMessage);
-		 */
+
 		AlertDialog aDig = new AlertDialog.Builder(SendAirenaoActivity.this)
 				.setMessage(message)
 				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
@@ -778,14 +784,6 @@ public class SendAirenaoActivity extends Activity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						if (ok) {
-							// 跳转到meeting list 页面
-							/*
-							 * Intent intent = new Intent(
-							 * SendAirenaoActivity.this,
-							 * MeetingListActivity.class);
-							 * intent.putExtra(Constants.NEED_REFRESH, true);
-							 * startActivity(intent);
-							 */
 							finish();
 						} else {
 							// 还在本页
@@ -827,9 +825,10 @@ public class SendAirenaoActivity extends Activity {
 			if (sendWithOwn) {
 				// 用自己手机发送
 
-				for(Iterator<String> iter = tempClientDicts.keySet().iterator();iter.hasNext();){
+				for (Iterator<String> iter = tempClientDicts.keySet()
+						.iterator(); iter.hasNext();) {
 					String phoneNumber = iter.next();
-					
+
 					try {
 						SmsManager mySmsManager = SmsManager.getDefault();
 						// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
@@ -837,13 +836,11 @@ public class SendAirenaoActivity extends Activity {
 							ArrayList<String> msgs = mySmsManager
 									.divideMessage(smsContent);
 							for (String msg : msgs) {
-								mySmsManager.sendTextMessage(
-										phoneNumber, null, msg,
-										sentPI, null);
+								mySmsManager.sendTextMessage(phoneNumber, null,
+										msg, sentPI, null);
 							}
 						} else {
-							mySmsManager.sendTextMessage(
-									phoneNumber, null,
+							mySmsManager.sendTextMessage(phoneNumber, null,
 									smsContent, sentPI, null);
 						}
 
@@ -894,23 +891,27 @@ public class SendAirenaoActivity extends Activity {
 		if (21 == resultCode) {
 			names = "";
 			String beforeNames = peopleNumbers.getText().toString();
-			if (!"".equals(beforeNames)) {
-				names = beforeNames;
-			} else {
-				names = beforeNames;
-			}
+
+			names = beforeNames;
+
 			personList = data
 					.getParcelableArrayListExtra(Constants.FROMCONTACTSLISTTOSEND);
-			String onePhoneNumber="";
+			String onePhoneNumber = "";
 			if (personList != null && personList.size() > 0) {
 				for (int i = 0; i < personList.size(); i++) {
 					onePhoneNumber = personList.get(i).getPhoneNumber();
-					if(onePhoneNumber.contains("-")){
+					if (onePhoneNumber.contains("-")) {
 						onePhoneNumber = onePhoneNumber.replace("-", "");
 					}
-					clientDicts.put(onePhoneNumber, personList.get(i).getName());
-					names += personList.get(i).getName() + "<" + onePhoneNumber + ">" + ",";
-					
+					clientDicts
+							.put(onePhoneNumber, personList.get(i).getName());
+					if (names.contains(onePhoneNumber)) {
+						continue;
+					} else {
+						names += personList.get(i).getName() + "<"
+								+ onePhoneNumber + ">" + ",";
+					}
+
 				}
 				peopleNumbers.setText(names);
 				string = peopleNumbers.getText().toString();
@@ -1011,13 +1012,15 @@ public class SendAirenaoActivity extends Activity {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									switch (which) {
-									case 0://绑定手机号
+									case 0:// 绑定手机号
 										break;
 
-									case 1://绑定微博
-										
+									case 1:// 绑定微博
+
 										Intent intent = new Intent();
-										intent.setClass(SendAirenaoActivity.this, WeiBoSplashActivity.class);
+										intent.setClass(
+												SendAirenaoActivity.this,
+												WeiBoSplashActivity.class);
 										startActivity(intent);
 										break;
 									}
@@ -1075,7 +1078,8 @@ public class SendAirenaoActivity extends Activity {
 		 * this(context, phonesCursor, false make call , null); }
 		 */
 		public PhoneDisambigDialog(Context context, Cursor phonesCursor,
-				boolean sendSms, ArrayList<String> phones, int position, String name) {
+				boolean sendSms, ArrayList<String> phones, int position,
+				String name) {
 			mContext = context;
 			mSendSms = sendSms;
 			mPhonesCursor = phonesCursor;
@@ -1143,7 +1147,7 @@ public class SendAirenaoActivity extends Activity {
 				}
 
 				clientDicts.put(phone, name);
-				peopleNumbers.replaceTextAgain(name+"<"+phone+">");
+				peopleNumbers.replaceTextAgain(name + "<" + phone + ">");
 			} else {
 				dialog.dismiss();
 			}
@@ -1255,10 +1259,12 @@ public class SendAirenaoActivity extends Activity {
 										public void onClick(
 												DialogInterface dialog,
 												int which) {
-											/*Intent myIntent = new Intent(
-													SendAirenaoActivity.this,
-													MeetingListActivity.class);
-											startActivity(myIntent);*/
+											/*
+											 * Intent myIntent = new Intent(
+											 * SendAirenaoActivity.this,
+											 * MeetingListActivity.class);
+											 * startActivity(myIntent);
+											 */
 											finish();
 
 										}
@@ -1268,9 +1274,10 @@ public class SendAirenaoActivity extends Activity {
 					event.startTracking();
 					return false;
 				} else {
-					/*Intent myIntent = new Intent(SendAirenaoActivity.this,
-							MeetingListActivity.class);
-					startActivity(myIntent);*/
+					/*
+					 * Intent myIntent = new Intent(SendAirenaoActivity.this,
+					 * MeetingListActivity.class); startActivity(myIntent);
+					 */
 					finish();
 				}
 			}

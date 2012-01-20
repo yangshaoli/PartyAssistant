@@ -310,7 +310,7 @@ public class Utility {
 		    	int statusCode = status.getStatusCode();
 		    	
 		    	if (statusCode != 200) {
-		    		result = read(response);
+		    		result = "error"+read(response);
 					throw new WeiboException(String.format(status.toString()), statusCode);
 				}
 				// parse content stream from response

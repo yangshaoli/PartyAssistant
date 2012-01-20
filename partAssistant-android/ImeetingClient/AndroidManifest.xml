@@ -88,6 +88,10 @@
 		
 		<activity 
 		android:name=".weibo.ShareActivity"
+		android:theme="@style/ContentOverlay"
+        	android:launchMode="singleTask"
+			android:configChanges="keyboardHidden|orientation"                           
+			android:windowSoftInputMode="adjustPan|stateAlwaysVisible" 
 				 android:label="@string/app_name">
 		</activity>
     </application>

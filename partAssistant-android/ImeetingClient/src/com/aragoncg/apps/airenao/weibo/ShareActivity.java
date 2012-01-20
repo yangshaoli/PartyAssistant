@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.activity.LoginActivity;
 import com.aragoncg.apps.airenao.weibo.AsyncWeiboRunner.RequestListener;
 
 
@@ -165,8 +166,21 @@ public class ShareActivity extends Activity implements OnClickListener, RequestL
 					}else{
 //						Just update a text weibo!
 						//weibo.share2weibo(this, mAccessToken, mTokenSecret, mContent, "");
-						String result = update(weibo, Weibo.APP_KEY, mContent, "", "");	
-						
+						String result = update(weibo, Weibo.APP_KEY, mEdit.getText().toString(), "", "");	
+						if(!result.startsWith("error")){
+							AlertDialog aDig = new AlertDialog.Builder(
+									this).setMessage("分享成功")
+									.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+										
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											finish();
+											
+										}
+									})
+									.create();
+							aDig.show();
+						}
 					}
 				}else{
 					Toast.makeText(this, this.getString(R.string.please_login), Toast.LENGTH_LONG);
