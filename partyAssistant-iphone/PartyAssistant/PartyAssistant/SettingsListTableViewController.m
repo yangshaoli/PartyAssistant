@@ -302,8 +302,12 @@
                            tag:InvalidateNetwork];
 }
 
-- (void)showRegistSuccessfulAlert {
+- (void)popToRootViewController {
     [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (void)showRegistSuccessfulAlert {
+    [self performSelectorOnMainThread:@selector(popToRootViewController) withObject:nil waitUntilDone:NO];
     [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
