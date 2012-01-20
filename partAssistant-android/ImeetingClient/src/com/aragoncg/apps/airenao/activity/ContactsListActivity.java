@@ -2204,10 +2204,10 @@ public class ContactsListActivity extends ListActivity implements
 		public View getView(final int position, View convertView,
 				ViewGroup parent) {
 			// handle the total contacts item
-			/*if (position == 0
+			if (position == 0
 					&& (mMode & MODE_MASK_SHOW_NUMBER_OF_CONTACTS) != 0) {
 				return getTotalContactCountView(parent);
-			}*/
+			}
 			// inflater the layout of ContactItems
 			if (isShowAllContactsItemPosition(position)) {
 				LayoutInflater inflater = (LayoutInflater) getBaseContext()
@@ -2240,12 +2240,12 @@ public class ContactsListActivity extends ListActivity implements
 				cursor = getCursor();
 			}
 			// get the realPosition of everyitem
-			/*int realPosition = getRealPosition(position);
+			int realPosition = getRealPosition(position);
 			if (!cursor.moveToPosition(realPosition)) {
 				throw new IllegalStateException(
 						"couldn't move cursor to position " + position);
 			}
-*/
+
 			View v;
 			if (convertView == null) {
 				v = newView(getBaseContext(), cursor, parent);
@@ -2257,8 +2257,8 @@ public class ContactsListActivity extends ListActivity implements
 			bindView(v, getBaseContext(), cursor);
 			
 			// to bind the SectionHeader
-			/*bindSectionHeader(v, realPosition, mDisplaySectionHeaders
-					&& !showingSuggestion);*/
+			bindSectionHeader(v, realPosition, mDisplaySectionHeaders
+					&& !showingSuggestion);
 			return v;
 		}
 
