@@ -99,9 +99,8 @@ def createParty(request):
 #                                                                      creator = user,
 #                                                                      )[0]
                     client_list = Client.objects.filter(phone = receiver['cValue'],
-                                                        name = receiver['cName'],
                                                         creator = user
-                                                        )
+                                                        ).exclude(name = '')
                     if client_list:
                         client = client_list[0]
                     else:
@@ -122,9 +121,8 @@ def createParty(request):
                     
                 else:
                     client_list = Client.objects.filter(email = receiver['cValue'],
-                                                        name = receiver['cName'],
                                                         creator = user
-                                                        )
+                                                        ).exclude(name = '')
                     if client_list:
                         client = client_list[0]
                     else:
@@ -239,9 +237,8 @@ def fullCreateParty(request):
 #                                                                      creator = user,
 #                                                                      )[0]
                     client_list = Client.objects.filter(phone = receiver['cValue'],
-                                                        name = receiver['cName'],
                                                         creator = user
-                                                        )
+                                                        ).exclude(name = '')
                     if client_list:
                         client = client_list[0]
                     else:
@@ -262,9 +259,8 @@ def fullCreateParty(request):
                     
                 else:
                     client_list = Client.objects.filter(email = receiver['cValue'],
-                                                        name = receiver['cName'],
                                                         creator = user
-                                                        )
+                                                        ).exclude(name = '')
                     if client_list:
                         client = client_list[0]
                     else:
