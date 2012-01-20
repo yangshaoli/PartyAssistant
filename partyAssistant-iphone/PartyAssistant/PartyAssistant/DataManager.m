@@ -198,8 +198,8 @@ static DataManager *sharedDataManager = nil;
             NSLog(@"%@",description);
             if ([status isEqualToString:@"ok"]) {
                 NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:dic];
-                [info setValue:[usrInfo objectForKey:@"username"] forKey:@"username"];
-                [self saveUsrData:info];
+                NSString *username = [usrInfo objectForKey:@"username"];
+                [self saveUsrData:info withUsername:username];
                 [pool release];
                 //return NetWorkConnectionCheckPass;
                 return nil;
@@ -351,6 +351,33 @@ static DataManager *sharedDataManager = nil;
     if (userName) {
         userData.userName = userName;
     }
+    
+    [userObjectService saveUserObject];
+}
+
+- (void)saveUsrData:(NSDictionary *)jsonValue withUsername:(NSString *)username {
+    NSLog(@"user :%@",jsonValue);
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    [userData clearObject];
+    
+    NSDictionary *datasource = [jsonValue objectForKey:@"datasource"];
+    
+    NSString *name = [datasource objectForKey:@"name"];
+    if (name) {
+        userData.nickName = name;
+    } else {
+        
+    }
+    
+    NSString *uid = [datasource objectForKey:@"uid"];
+    if (uid) {
+        userData.uID = [uid intValue];
+    } else {
+        
+    }
+    
+    userData.userName = username;
     
     [userObjectService saveUserObject];
 }
