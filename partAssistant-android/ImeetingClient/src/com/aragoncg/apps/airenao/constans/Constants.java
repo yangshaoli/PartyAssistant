@@ -114,6 +114,7 @@ public class Constants {
 	public static final String IS_SUPER_PRIMARY = "isSuperPrimary";
 	public static final String PEOPLE_TAG = "peopleTag";
 	public static final String BACK_END_ID = "backendID";
+	public static final String LEAVE_MESSAGE = "leaveMessage";
 	public static final String ALL_CLIENT_COUNT = "allClientcount";
 	public static final String APPLIED_CLIENT_COUNT = "appliedClientcount";
 	public static final String NEW_APPLIED_CLIENT_COUNT = "newAppliedClientcount";

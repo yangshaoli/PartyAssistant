@@ -523,6 +523,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		transIntent.putExtra(Constants.PEOPLE_CONTACTS, cValue);
 		transIntent.putExtra(Constants.PARTY_ID, partyId);
 		transIntent.putExtra(Constants.BACK_END_ID, clientId);
+		transIntent.putExtra(Constants.LEAVE_MESSAGE, (String) mData.get(position).get(Constants.MSG));
 		startActivity(transIntent);
 		
 	}

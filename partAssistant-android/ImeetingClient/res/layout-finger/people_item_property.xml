@@ -28,17 +28,7 @@
         android:layout_marginRight="2dip"
         android:src="@drawable/flag_new_red"
         android:visibility="gone"/>         
-    	<TextView android:id="@+id/people_contacts"  
-              android:layout_width="100dip"  
-              android:layout_height="wrap_content"  
-              android:textSize="15sp"
-              android:textColor="@color/black" 
-              android:singleLine="true"    
-              android:paddingTop="2dip"  
-              android:paddingRight="2dip" 
-              android:layout_gravity="center_horizontal"
-              android:text="电话/Email" 
-             />  
+    	
          <LinearLayout 
        		android:layout_width="wrap_content"
          	android:layout_height="wrap_content" 
@@ -58,5 +48,18 @@
          	android:id="@+id/btnPeopleUnRegister"/>   
          </LinearLayout>
          	  
-    </LinearLayout>            
+    </LinearLayout>
+    <TextView android:id="@+id/people_contacts"  
+              android:layout_width="fill_parent"  
+              android:layout_height="wrap_content"  
+              android:textSize="15sp"
+              android:layout_marginLeft="8dip"
+              android:layout_marginRight="8dip"
+              android:textColor="@color/black" 
+              android:singleLine="true"    
+              android:paddingTop="2dip"  
+              android:paddingRight="2dip" 
+              android:layout_gravity="center_horizontal"
+              android:text="电话/Email" 
+             />              
 </LinearLayout>  

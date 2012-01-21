@@ -1,6 +1,5 @@
 package com.aragoncg.apps.airenao.activity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
@@ -50,6 +49,7 @@ public class DetailPeopleInfo extends Activity {
 	private TextView name;
 	private TextView txtMessage;
 	private TextView phoneNumber;
+	private TextView levMsg;
 	private ImageButton sms;
 	private ImageButton call;
 	private Button join;
@@ -94,6 +94,7 @@ public class DetailPeopleInfo extends Activity {
 		cValue = (String) transIntent.getStringExtra(Constants.PEOPLE_CONTACTS);
 		partyIdValue = (String) transIntent.getStringExtra(Constants.PARTY_ID);
 		backendID = (String) transIntent.getStringExtra(Constants.BACK_END_ID);
+		message = (String) transIntent.getStringExtra(Constants.LEAVE_MESSAGE);
 		myHandler = new Handler() {
 
 			@Override
@@ -155,6 +156,7 @@ public class DetailPeopleInfo extends Activity {
 		call = (ImageButton) findViewById(R.id.btnCallDetail);
 		join = (Button) findViewById(R.id.btnJony);
 		unJoin = (Button) findViewById(R.id.btnUnJony);
+		levMsg = (TextView) findViewById(R.id.leveMsg);
 	}
 
 	public void setWedgit() {
@@ -163,7 +165,8 @@ public class DetailPeopleInfo extends Activity {
 		txtMessage.setText(message);
 
 		if (peopleTag == INVATED_PEOPLE) {
-
+			levMsg.setVisibility(View.GONE);
+			txtMessage.setVisibility(View.GONE);
 		}
 		if (peopleTag == SIGNED_PEOPLE) {
 			join.setVisibility(View.GONE);
@@ -172,6 +175,8 @@ public class DetailPeopleInfo extends Activity {
 			unJoin.setVisibility(View.GONE);
 		}
 		if (peopleTag == UNRESPONSED_PEOPLE) {
+			levMsg.setVisibility(View.GONE);
+			txtMessage.setVisibility(View.GONE);
 		}
 
 		sms.setOnTouchListener(new OnTouchListener() {
@@ -181,17 +186,7 @@ public class DetailPeopleInfo extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					// 发送短信
 					try {
-						/*
-						 * SmsManager mySmsManager = SmsManager.getDefault(); //
-						 * 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去 if
-						 * (contenMessage.length() > 70) { ArrayList<String>
-						 * msgs = mySmsManager .divideMessage(contenMessage);
-						 * for (String msg : msgs) {
-						 * mySmsManager.sendTextMessage(cValue, null, msg,
-						 * sentPI, null); } } else {
-						 * mySmsManager.sendTextMessage(cValue, null,
-						 * contenMessage, sentPI, null); }
-						 */
+						
 						Intent intent = new Intent(Intent.ACTION_SENDTO, Uri
 								.fromParts("sms", cValue, null));
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

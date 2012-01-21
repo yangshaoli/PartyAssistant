@@ -71,6 +71,7 @@
 	android:layout_height="wrap_content"
 	android:layout_marginLeft="40dip"
 	android:textColor="@color/black"
+	android:id="@+id/leveMsg"
 	android:textSize="18sp"
 	android:text="留言"/>
 	<TextView 

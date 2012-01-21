@@ -2206,7 +2206,7 @@ public class ContactsListActivity extends ListActivity implements
 			// handle the total contacts item
 			if (position == 0
 					&& (mMode & MODE_MASK_SHOW_NUMBER_OF_CONTACTS) != 0) {
-				return getTotalContactCountView(parent);
+				return new ImageView(ContactsListActivity.this);
 			}
 			// inflater the layout of ContactItems
 			if (isShowAllContactsItemPosition(position)) {
