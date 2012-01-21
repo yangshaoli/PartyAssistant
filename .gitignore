@@ -9,5 +9,6 @@ partyAssistant-iphone/PartyAssistant/PartyAssistant.xcodeproj/xcuserdata/
 .pydevproject
 *.settings*
 dev.db
+.metadata
 *.pyc
 *.class
