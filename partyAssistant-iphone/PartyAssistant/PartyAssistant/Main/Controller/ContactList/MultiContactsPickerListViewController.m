@@ -359,53 +359,56 @@
     }else{
         self.filteredArray = (NSMutableArray *)[ABContactsHelper contactsMatchingName:self.searchBar.text];
     }
-    // Search table
-    //	for(NSString *string in contactNameArray)
-    //	{
-    //        
-    //		NSString *name = @"";
-    //		for (int i = 0; i < [string length]; i++)
-    //		{
-    //			if([name length] < 1)
-    //				name = [NSString stringWithFormat:@"%c",pinyinFirstLetter([string characterAtIndex:i])];
-    //			else
-    //				name = [NSString stringWithFormat:@"%@%c",name,pinyinFirstLetter([string characterAtIndex:i])];
-    //		}
-    //		if ([self searchResult:name searchText:self.searchBar.text]){
-    //            [filteredArray addObject:string];
-    //            NSLog(@"添加成功1");
-    //        }else 
-    //		{
-    //			if ([self searchResult:string searchText:self.searchBar.text])
-    //				[filteredArray addObject:string];
-    //            NSLog(@"添加成功2");
-    ////			else {
-    ////				ABContact *contact = [ContactData byNameToGetContact:string];
-    ////				NSArray *phoneArray = [ContactData getPhoneNumberAndPhoneLabelArray:contact];
-    ////				NSString *phone = @"";
-    ////				
-    ////				if([phoneArray count] == 1)
-    ////				{
-    ////					NSDictionary *PhoneDic = [phoneArray objectAtIndex:0];
-    ////					phone = [ContactData getPhoneNumberFromDic:PhoneDic];
-    ////					if([ContactData searchResult:phone searchText:self.searchBar.text])
-    ////						[filteredArray addObject:string];
-    ////				}else  if([phoneArray count] > 1)
-    ////				{
-    ////					for(NSDictionary *dic in phoneArray)
-    ////					{
-    ////						phone = [ContactData getPhoneNumberFromDic:dic];
-    ////						if([ContactData searchResult:phone searchText:self.searchBar.text])
-    ////						{
-    ////							[filteredArray addObject:string];	
-    ////							break;
-    ////						}
-    ////					}
-    ////				}
-    ////				
-    //			}
-    //		
-    //	}
+//     //Search table
+//    	for(NSString *string in contactNameArray)
+//    	{
+//            
+//    		NSString *name = @"";
+//    		for (int i = 0; i < [string length]; i++)
+//    		{
+//    			if([name length] < 1){
+//                 
+//                }
+//                else{
+//                   name = [NSString stringWithFormat:@"%@%c",name,pinyinFirstLetter([string characterAtIndex:i])];
+//                }
+//    				
+//    		}
+//    		if ([self searchResult:name searchText:self.searchBar.text]){
+//                [filteredArray addObject:string];
+//                NSLog(@"添加成功1");
+//            }else 
+//    		{
+//    			if ([self searchResult:string searchText:self.searchBar.text])
+//    				[filteredArray addObject:string];
+//                      NSLog(@"添加成功2");
+//    ////			else {
+//    ////				ABContact *contact = [ContactData byNameToGetContact:string];
+//    ////				NSArray *phoneArray = [ContactData getPhoneNumberAndPhoneLabelArray:contact];
+//    ////				NSString *phone = @"";
+//    ////				
+//    ////				if([phoneArray count] == 1)
+//    ////				{
+//    ////					NSDictionary *PhoneDic = [phoneArray objectAtIndex:0];
+//    ////					phone = [ContactData getPhoneNumberFromDic:PhoneDic];
+//    ////					if([ContactData searchResult:phone searchText:self.searchBar.text])
+//    ////						[filteredArray addObject:string];
+//    ////				}else  if([phoneArray count] > 1)
+//    ////				{
+//    ////					for(NSDictionary *dic in phoneArray)
+//    ////					{
+//    ////						phone = [ContactData getPhoneNumberFromDic:dic];
+//    ////						if([ContactData searchResult:phone searchText:self.searchBar.text])
+//    ////						{
+//    ////							[filteredArray addObject:string];	
+//    ////							break;
+//    ////						}
+//    ////					}
+//    ////				}
+//    ////				
+//    			}
+//    		
+//    	}
 	return self.filteredArray.count;
 }
 

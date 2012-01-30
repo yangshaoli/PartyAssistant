@@ -237,7 +237,8 @@
 {
 	NSError *error = [request error];
 	[self dismissWaiting];
-	[self showAlertRequestFailed: error.localizedDescription];
+	//[self showAlertRequestFailed: error.localizedDescription];
+    [self showAlertRequestFailed: @"您的网络好像有问题"];
 }
 
 

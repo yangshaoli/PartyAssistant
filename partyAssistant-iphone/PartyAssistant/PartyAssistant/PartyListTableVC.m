@@ -355,7 +355,8 @@
     self.navigationItem.rightBarButtonItem.customView = nil;
 	NSError *error = [request error];
 	[self dismissWaiting];
-	[self showAlertRequestFailed: error.localizedDescription];
+	//[self showAlertRequestFailed: error.localizedDescription];
+    [self showAlertRequestFailed:@"您的网络好像有问题"];//本地化更改
 }
 
 

@@ -732,7 +732,7 @@
 -(void)showWaiting {
     self.HUD = [[MBProgressHUD alloc] initWithView:self.view];
 	[self.view addSubview:_HUD];
-    _HUD.labelText = @"waiting...";
+    _HUD.labelText = @"请稍等...";
     
     _HUD.delegate = self;
     
