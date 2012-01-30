@@ -173,10 +173,11 @@ public class DetailPeopleInfo extends Activity {
 		}
 		if (peopleTag == UNSIGNED_PEOPLE) {
 			unJoin.setVisibility(View.GONE);
-		}
-		if (peopleTag == UNRESPONSED_PEOPLE) {
 			levMsg.setVisibility(View.GONE);
 			txtMessage.setVisibility(View.GONE);
+		}
+		if (peopleTag == UNRESPONSED_PEOPLE) {
+			
 		}
 
 		sms.setOnTouchListener(new OnTouchListener() {

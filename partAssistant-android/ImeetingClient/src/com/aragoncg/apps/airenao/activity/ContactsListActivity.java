@@ -144,6 +144,7 @@ public class ContactsListActivity extends ListActivity implements
 	private Runnable dataLoading;
 	private ListView list;
 	private MyPerson bindPerson;
+	private int tempCount = 0;
 
 	/**
 	 * The action for the join contact activity.
@@ -435,6 +436,7 @@ public class ContactsListActivity extends ListActivity implements
 	private String bindPersonId;
 	private String bindPersonName;
 	private String bindPersonPhoneNumber;
+	private int count=0;
 	private static List <MyPerson> transPersons = new ArrayList<MyPerson>();
 	// 用来统计被选中的电话
 	private static List<MyPerson> positions;
@@ -469,6 +471,8 @@ public class ContactsListActivity extends ListActivity implements
 		}
 		
 		Intent it = this.getIntent();
+		String transPersonName;
+		String transPersonPhoneNumber;
 		mMode = it.getIntExtra("mode", MODE_DEFAULT);
 		alreadyExistNumbers = it.getStringExtra("AlreadyExistNumbers");
 		mDisplayOnlyPhones = false;
@@ -503,12 +507,52 @@ public class ContactsListActivity extends ListActivity implements
 		
 		choosedData = new ArrayList<MyPerson>();
 		// 添加按钮事件
+		
+		// 获得之前存在的电话
+		if (alreadyExistNumbers != null) {
+			String[] allContacts = alreadyExistNumbers.split("\\,", 0);
 
+			int index = -1;
+			if(allContacts.length>0){
+				transPersons.clear();
+				count = 0;
+				for (int i = 0; i < allContacts.length; i++) {
+					
+					if (allContacts[i].equals("")) {
+						continue;
+					} else {
+						transPersonPhoneNumber = allContacts[i];
+						index = allContacts[i].indexOf("<");
+						if (index > -1) {
+							transPersonName = allContacts[i].substring(0, index);
+							transPersonPhoneNumber = allContacts[i].substring(
+									index + 1, allContacts[i].length() - 1);
+						} else {
+							transPersonName="";
+							transPersonPhoneNumber = allContacts[i];
+						}
+						if (AirenaoUtills.checkPhoneNumber(transPersonPhoneNumber)) {
+							if(!transPersonName.equals("佚名")){
+								count++;
+							}
+							transPersons.add(new MyPerson(transPersonName,transPersonPhoneNumber));
+						}
+					}
+
+				}
+				
+				
+			}
+			alreadyExistNumbers = null;
+		}
+		
 		btnOk = (Button) findViewById(R.id.btnAdd);
+		
 		if (positions != null) {
-			btnOk.setText("确定" + "(" + positions.size() + ")");
+			int allCount = positions.size() + count;
+			btnOk.setText("确定" + "(" + allCount + ")");
 		} else {
-			btnOk.setText("确定" + "(" + 0 + ")");
+			btnOk.setText("确定" + "(" + count + ")");
 		}
 
 		btnCancle = (Button) findViewById(R.id.btnCancle);
@@ -521,7 +565,7 @@ public class ContactsListActivity extends ListActivity implements
 				switch(msg.what){
 				case 0:
 					
-					btnOk.setText("确定"+"("+msg.getData().getString("count")+")");
+					//btnOk.setText("确定"+"("+msg.getData().getString("count")+")");
 					break;
 				}
 				super.handleMessage(msg);
@@ -535,7 +579,7 @@ public class ContactsListActivity extends ListActivity implements
 			@Override
 			public void onClick(View v) {
 				btnAll.setEnabled(false);
-				transPersons.clear();
+				//transPersons.clear();
 				btnFrequent.setEnabled(true);
 				tempPositions.clear();
 				tempPositions.addAll(positions);
@@ -548,7 +592,7 @@ public class ContactsListActivity extends ListActivity implements
 			@Override
 			public void onClick(View v) {
 				btnAll.setEnabled(true);
-				transPersons.clear();
+				//transPersons.clear();
 				btnFrequent.setEnabled(false);
 				tempPositions.clear();
 				tempPositions.addAll(positions);
@@ -586,6 +630,7 @@ public class ContactsListActivity extends ListActivity implements
 								(ArrayList<? extends Parcelable>) choosedData);
 						positions.clear();
 						tempPositions.clear();
+						tempCount = 0;
 						setResult(21, personIntent);// 21只是一个返回的结果代码
 						finish();
 
@@ -699,6 +744,8 @@ public class ContactsListActivity extends ListActivity implements
 		}
 	}
 
+	
+	
 	private void setEmptyText() {
 		if (mMode == MODE_JOIN_CONTACT) {
 			return;
@@ -1012,8 +1059,13 @@ public class ContactsListActivity extends ListActivity implements
 			}
 			break;
 		}
-
-		}
+		case KeyEvent.KEYCODE_BACK:
+			positions.clear();
+			tempPositions.clear();
+			tempCount = 0;
+			finish();
+			break;
+		}	
 
 		return super.onKeyDown(keyCode, event);
 	}
@@ -1029,7 +1081,8 @@ public class ContactsListActivity extends ListActivity implements
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		// Hide soft keyboard, if visible
-		transPersons.clear();
+		//transPersons.clear();
+		
 		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(getListView()
 				.getWindowToken(), 0);
@@ -1064,6 +1117,7 @@ public class ContactsListActivity extends ListActivity implements
 
 						positions.add(new MyPerson(clickPersonId,
 								clickPersonName, clickPersonPhoneNumber));
+						tempCount++;
 					}
 				}
 				if (!isShow) {
@@ -1076,7 +1130,8 @@ public class ContactsListActivity extends ListActivity implements
 					phoneDialog.show();
 				}
 			} else {
-
+				
+				tempCount++;
 				personMap.get(position).setChecked(!isCheckedNow);
 
 				positions.add(new MyPerson(clickPersonId, clickPersonName,
@@ -1093,18 +1148,21 @@ public class ContactsListActivity extends ListActivity implements
 						continue;
 					} else {
 						positions.remove(i);
+						tempCount--;
 					}
 				}
 
 			} else {
 				positions.add(new MyPerson(clickPersonId, clickPersonName,
 						clickPersonPhoneNumber));
+				tempCount++;
 			}
 		}
 
 		Log.i("pos", "weizhi:" + position);
 		// 变化按钮中的统计数字
-		btnOk.setText(getString(R.string.btn_ok) + "(" + positions.size() + ")");
+		int showCount = tempCount + count;
+		btnOk.setText(getString(R.string.btn_ok) + "(" + showCount + ")");
 		/*tempPositions.clear();
 		tempPositions.addAll(positions);*/
 		mAdapter.notifyDataSetChanged();
@@ -1820,8 +1878,7 @@ public class ContactsListActivity extends ListActivity implements
 		// ** onQueryComplete is one of QueryHander's method
 		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
 			
-			String transPersonName;
-			String transPersonPhoneNumber;
+			
 			final ContactsListActivity activity = mActivity.get();
 			if (activity != null && !activity.isFinishing()) {
 
@@ -1833,40 +1890,7 @@ public class ContactsListActivity extends ListActivity implements
 				int count = cursor.getCount();
 				personMap = new HashMap<Integer, MyPerson>();
 				positions = new ArrayList<MyPerson>();
-				// 获得之前存在的电话
-				if (alreadyExistNumbers != null) {
-					String[] allContacts = alreadyExistNumbers.split("\\,", 0);
-
-					int index = -1;
-					if(allContacts.length>0){
-						transPersons.clear();
-						for (int i = 0; i < allContacts.length; i++) {
-							
-							if (allContacts[i].equals("")) {
-								continue;
-							} else {
-								transPersonPhoneNumber = allContacts[i];
-								index = allContacts[i].indexOf("<");
-								if (index > -1) {
-									transPersonName = allContacts[i].substring(0, index);
-									transPersonPhoneNumber = allContacts[i].substring(
-											index + 1, allContacts[i].length() - 1);
-								} else {
-									transPersonName="";
-									transPersonPhoneNumber = allContacts[i];
-								}
-								if (AirenaoUtills.checkPhoneNumber(transPersonPhoneNumber)) {
-									
-									transPersons.add(new MyPerson(transPersonName,transPersonPhoneNumber));
-								}
-							}
-
-						}
-						
-						
-					}
-					alreadyExistNumbers = null;
-				}
+				
 
 				for (int i = 1; i <= count; i++) {
 					personMap.put(i, new MyPerson());
@@ -3303,9 +3327,10 @@ public class ContactsListActivity extends ListActivity implements
 				personMap.get(position).setChecked(!isChecked);
 
 				positions.add(new MyPerson(clickPersonId, this.name, phone));
-
+				tempCount++;
+				int myCount = tempCount + count;
 				btnOk.setText(getString(R.string.btn_ok) + "("
-						+ positions.size() + ")");
+						+ myCount + ")");
 				mAdapter.notifyDataSetChanged();
 				list.requestFocusFromTouch();
 			} else {
