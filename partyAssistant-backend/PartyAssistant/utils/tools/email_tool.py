@@ -49,7 +49,7 @@ def send_binding_email(instance):
     email = instance.binding_address
     key = instance.key
     subject = u'【爱热闹】帐号绑定确认邮件'
-    link = '%s/accounts/email_binding/?key=%s' % (DOMAIN_NAME, key)
+    link = '%s/accounts/email_handle_url/binding/?key=%s' % (DOMAIN_NAME, key)
     content = u'尊敬的爱热闹用户，当您看到这封邮件时，说明您正在进行绑定邮箱的操作。 如果不是您自己进行的操作，请删除本邮件。<br/> 请点击以下链接绑定您的邮箱： <a href="%s" > %s </a>' % (link, link)
     try:
         send_emails(subject, content, SYS_EMAIL_ADDRESS, [email])
@@ -60,7 +60,7 @@ def send_unbinding_email(instance):
     email = instance.binding_address
     key = instance.key
     subject = u'【爱热闹】帐号解除绑定确认邮件'
-    link = '%s/accounts/unbinding/?key=%s' % (DOMAIN_NAME, key)
+    link = '%s/accounts/email_handle_url/unbinding/?key=%s' % (DOMAIN_NAME, key)
     content = u'尊敬的爱热闹用户，当您看到这封邮件时，说明您正在进行解除绑定邮箱的操作。 如果不是您自己进行的操作，请删除本邮件。<br/> 请点击以下链接绑定您的邮箱： <a href="%s" > %s </a>' % (link, link)
     try:
         send_emails(subject, content, SYS_EMAIL_ADDRESS, [email])

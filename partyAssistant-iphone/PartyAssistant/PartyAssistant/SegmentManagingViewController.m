@@ -1,16 +1,9 @@
-    //
-//  SegmentManagingViewController.m
-//  SegmentedControlExample
-//
-//  Created by Marcus Crafter on 24/05/10.
-//  Copyright 2010 Red Artisan. All rights reserved.
-//
 
 #import "SegmentManagingViewController.h"
 #import "NSArray+PerformSelector.h"
 #import "MultiContactsPickerListViewController.h"
 #import "MultiFavoritesContactsList.h"
-//#import "AustraliaViewController.h"
+#import "AddressBookDBService.h"
 
 @interface SegmentManagingViewController ()
 
@@ -41,10 +34,16 @@
     self.segmentedViewControllers = [self segmentedViewControllerContent];
 
     NSArray * segmentTitles = [self.segmentedViewControllers arrayByPerformingSelector:@selector(title)];
-    //NSArray *segmentTitles = [NSArray arrayWithObjects:@"test", @"test", nil];
     
     self.segmentedControl = [[UISegmentedControl alloc] initWithItems:segmentTitles];
-    self.segmentedControl.selectedSegmentIndex = 0;
+    
+    NSArray *dataSource = [[AddressBookDBService sharedAddressBookDBService] myFavorites];
+    if ([dataSource count] == 0) {
+        self.segmentedControl.selectedSegmentIndex = 1;
+    } else {
+        self.segmentedControl.selectedSegmentIndex = 0;
+    }
+    
     self.segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
 
     [self.segmentedControl addTarget:self
@@ -68,8 +67,10 @@
 - (NSArray *)segmentedViewControllerContent {
 
     MultiFavoritesContactsList * controller1 = [[MultiFavoritesContactsList alloc] initWithParentViewController:self];
+    [controller1 wantsFullScreenLayout];
     controller1.contactListDelegate = self;
     MultiContactsPickerListViewController * controller2 = [[MultiContactsPickerListViewController alloc] initWithParentViewController:self];
+    [controller2 wantsFullScreenLayout];
     controller2.contactListDelegate = self;
     
     
@@ -83,16 +84,17 @@
 
 - (void)didChangeSegmentControl:(UISegmentedControl *)control {
     if (self.activeViewController) {
-        [self.activeViewController viewWillDisappear:NO];
+        [self.activeViewController viewWillDisappear:YES];
         [self.activeViewController.view removeFromSuperview];
-        [self.activeViewController viewDidDisappear:NO];
+        [self.activeViewController viewDidDisappear:YES];
     }
 
     self.activeViewController = [self.segmentedViewControllers objectAtIndex:control.selectedSegmentIndex];
 
-    [self.activeViewController viewWillAppear:NO];
+    [self.activeViewController viewWillAppear:YES];
+//    self.activeViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleBottomMargin;
     [self.view addSubview:self.activeViewController.view];
-    [self.activeViewController viewDidAppear:NO];
+    [self.activeViewController viewDidAppear:YES];
 
     NSString * segmentTitle = [control titleForSegmentAtIndex:control.selectedSegmentIndex];
     self.navigationItem.backBarButtonItem  = [[UIBarButtonItem alloc] initWithTitle:segmentTitle style:UIBarButtonItemStylePlain target:nil action:nil];

@@ -17,6 +17,7 @@
 #import "UIViewControllerExtra.h"
 #import "DataManager.h"
 #import "ChangePasswordRandomLoginTableVC.h"
+#import "Reachability.h"
 @interface PartyListTableVC()
 
 -(void) hideTabBar:(UITabBarController*) tabbarcontroller;
@@ -221,6 +222,13 @@
     }
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        return;
+    }
+    
     if (self.quest) {
         [self.quest clearDelegatesAndCancel];
     }
@@ -351,7 +359,7 @@
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
-    self._isRefreshing = NO;
+    //self._isRefreshing = NO;
     self.navigationItem.rightBarButtonItem.customView = nil;
 	NSError *error = [request error];
 	[self dismissWaiting];
@@ -374,9 +382,9 @@
     //    self._isRefreshing = YES;
     [self requestDataWithLastID:0];
     
-    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [acv startAnimating];
-    self.navigationItem.rightBarButtonItem.customView = acv;
+//    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+//    [acv startAnimating];
+//    self.navigationItem.rightBarButtonItem.customView = acv;
     
     ////////////////////自己新增文件 
     NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];

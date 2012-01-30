@@ -19,6 +19,7 @@
 #import "UIViewControllerExtra.h"
 #import "AddressBookDBService.h"
 #import "CustomTextView.h"
+#import "Reachability.h"
 
 @interface ResendPartyViaSMSViewController ()
 
@@ -78,29 +79,29 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.tempSMSObject._isSendBySelf) {
-        self.sendModeNameLabel.text = @"用自己手机发送";
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 26;
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+//        self.sendModeNameLabel.text = @"用自己手机发送";
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 26;
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
         
         self.leftCountLabel.hidden = YES;
     } else {
-        self.sendModeNameLabel.text = @"通过服务器发送";
-        
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 11;
-        
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
-        
+//        self.sendModeNameLabel.text = @"通过服务器发送";
+//        
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 11;
+//        
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+//        
         self.leftCountLabel.hidden = NO;
         
-        self.leftCountLabel.text = @"更新中";
+        self.leftCountLabel.text = @"帐户余额更新中";
         
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
@@ -134,6 +135,12 @@
         [alert show];
         return;
     }else{
+        //1.check network status
+        if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            return;
+        }
+        
         [self saveSMSInfo];
         if ([self.tempSMSObject.receiversArray count] == 0) {
             UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加有效的收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
@@ -274,7 +281,7 @@
                 if([MFMessageComposeViewController canSendText]==YES){
                     MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                     if (self.tempSMSObject._isApplyTips) {
-                        vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
+                        vc.body = [self.tempSMSObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"( 报名链接: %@ )",applyURL]];
                     }else{
                         vc.body = self.tempSMSObject.smsContent;
                     };
@@ -476,4 +483,9 @@
         [self showWaiting];
     }
 } 
+
+
+- (void)applicationWillTerminate:(NSNotification *)notify {
+
+}
 @end

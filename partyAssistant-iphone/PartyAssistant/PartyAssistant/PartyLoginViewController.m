@@ -158,6 +158,9 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [self.userNameTextField becomeFirstResponder];
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     if(user){
@@ -204,7 +207,9 @@
     
     [_HUD show:YES];
    
-    [self tryConnectToServer];
+    //[self tryConnectToServer];
+    
+    [self performSelector:@selector(tryConnectToServer) withObject:nil afterDelay:1.0f];
     
     //[self gotoContentVC];//调试新加的无用语句
     

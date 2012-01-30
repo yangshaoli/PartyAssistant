@@ -30,6 +30,8 @@
 
 @property (nonatomic, strong) IBOutlet ButtonPeoplePicker *picker;
 
+@property (nonatomic, strong) IBOutlet UIView *sectionOneHeader;
+
 @property (nonatomic, strong) UIBarButtonItem *rightItem;
 
 @property (nonatomic, strong) NSMutableArray *receipts;
@@ -39,6 +41,8 @@
 @property (nonatomic, strong) MBProgressHUD *HUD;
 
 @property (nonatomic, strong) EditableTableViewCell *editingTableViewCell;
+ 
+@property (nonatomic) BOOL isResendPage;
 
 - (IBAction)callContactList;
 - (void)saveSMSInfo;

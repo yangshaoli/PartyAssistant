@@ -56,7 +56,16 @@
 {
     [super viewDidLoad];
     [self.inputMailTextField becomeFirstResponder];
-    self.title=@"邮箱绑定";
+    BindingStatus mailStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] mailBindingStatus];
+    if (mailStatus == StatusNotBind) {
+        self.navigationItem.title = @"邮箱绑定";
+    } else if (mailStatus != StatusUnknown && mailStatus != StatusBinded) {
+        self.navigationItem.title = @"重新输入邮箱";
+        
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleDone target:self action:@selector(jumpToVerify)];
+        
+        self.navigationItem.leftBarButtonItem = closeButton;
+    }
     // Do any additional setup after loading the view from its nib.
 }
 
@@ -118,6 +127,8 @@
         verifyPage.inSpecialProcess = YES;
     }
     
+    self.inputMailTextField.text = @"";
+    
     [self.navigationController pushViewController:verifyPage animated:NO];
 }
 
@@ -168,12 +179,22 @@
             BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
             userStatus.bindingMail = self.inputMailTextField.text;
             
+            self.inputMailTextField.text = @"";
+            
             [self saveProfileDataFromResult:result];
             
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证链接已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11001;
             [av show];
 
+        } else if ([status isEqualToString:@"error_has_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];
+        } else if ([status isEqualToString:@"error_different_binded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
         } else {
             [self saveProfileDataFromResult:result];
             
@@ -203,9 +224,18 @@
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 11001) {
         [self jumpToVerify];
+        
+        UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStyleDone target:self action:@selector(jumpToVerify)];
+        
+        self.navigationItem.leftBarButtonItem = closeButton;
     }
     if (alertView.tag == 11112) {
         [self.navigationController popViewControllerAnimated:YES];
+    }
+    if (alertView.tag == 11116) {
+        self.inputMailTextField.text = @"";
+        
+        [self.inputMailTextField becomeFirstResponder];
     }
 }
 @end

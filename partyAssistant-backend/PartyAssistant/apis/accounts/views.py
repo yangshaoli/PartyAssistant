@@ -4,7 +4,7 @@ Created on 2011-11-7
 
 @author: liuxue
 '''
-
+from django.db import transaction
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
@@ -62,6 +62,8 @@ def accountLogin(request):
                     'uid':user.id,
                     'name':user.userprofile.true_name,
                      "_israndomlogin":_israndomlogin,
+                     "user_remaining":user.userprofile.available_sms_count,
+                     "username":user.username
                     }
         else:
             print 'error'
@@ -212,7 +214,6 @@ def forgetPassword(request):
             temp_pwd_data.save()
 
 @csrf_exempt
-@commit_on_success
 @apis_json_response_decorator
 def bindContact(request, type):
     if request.method == 'POST':
@@ -223,7 +224,7 @@ def bindContact(request, type):
         except Exception:
             raise myException(ERROR_BINDING_NO_USER)
         if type == 'email':
-            userkey = hashlib.md5(value).hexdigest()
+            userkey = hashlib.md5("%s:%s" % (uid, value)).hexdigest()
         else:
             userkey = generate_phone_code()
         data = {"latest_status":{
@@ -238,7 +239,7 @@ def bindContact(request, type):
             raise myException(ERROR_BINDING_INVAILID_EMAIL_FORMMAT)
         if type == 'phone' and not re_phone.match(regPhoneNum(value)):
             raise myException(ERROR_BINDING_INVAILID_PHONE_FORMMAT)
-            
+        #用户已经绑定了
         if type == 'email' and user.userprofile.email_binding_status == 'bind':
             if user.userprofile.email == value:
                 raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
@@ -249,25 +250,28 @@ def bindContact(request, type):
                 raise myException('', status = ERROR_STATUS_HAS_BINDED, data = data)
             else:
                 raise myException(ERROR_BINDING_BY_PHONE_DIFFERENT_BINDED, status = ERROR_STATUS_DIFFERENT_BINDED, data = data)
+        #被别人绑定
         if type == 'email' and UserProfile.objects.filter(email = value, email_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_BINDING_BY_EMAIL_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_BINDING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER , data = data)
         if type == 'phone':
             value = regPhoneNum(value)
-        binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
-        if not created:
-            binding_temp.binding_addres = value
-            binding_temp.key = userkey
-            binding_temp.save()
-        profile = user.get_profile()
-        if type == 'phone':
-            profile.phone = value
-            profile.phone_binding_status = 'waitingbind'
-        else:
-            profile.email = value
-            profile.email_binding_status = 'waitingbind'
-        profile.save()
+        with transaction.commit_on_success():
+            profile = user.userprofile
+            if type == 'phone':
+                profile.phone = value
+                profile.phone_binding_status = 'waitingbind'
+            else:
+                profile.email = value
+                profile.email_binding_status = 'waitingbind'
+            profile.save()
+        with transaction.commit_on_success():
+            binding_temp, created = UserBindingTemp.objects.get_or_create(user = user, binding_type = type, defaults = {"binding_address":value, "key":userkey})
+            if not created:
+                binding_temp.binding_address = value
+                binding_temp.key = userkey
+                binding_temp.save()
         data = {"latest_status":{
                                  'email':user.userprofile.email,
                                  'email_binding_status':user.userprofile.email_binding_status,
@@ -358,7 +362,7 @@ def verifyContact(request, type):
         #开始解绑
         binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
         if not binding_temp:
-            raise myException(ERROR_VERIFYING_WRONG_VERIFIER)
+            raise myException(ERROR_VERIFYING_WRONG_VERIFIER, status = ERROR_STATUS_WRONG_VERIFIER, data = data)
         if type == 'email':
             if user.userprofile.email_binding_status == 'waitingbind':
                 user.userprofile.email_binding_status = 'bind'
@@ -419,3 +423,27 @@ def changePasswordByFinePWD(request):
             raise myException(ERROR_ACCOUNTREGIST_PWD_LENTH_WRONG)
         user.set_password(newpassword)
         user.save()
+
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator
+def bindDevice(request):
+    if request.method == 'POST':
+        user = User.objects.get(pk = request.POST['uid'])
+        device_token = request.POST['device_token']
+        if device_token:
+            usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+            if usertoken.user != user:
+                usertoken.user = user
+                usertoken.save()
+@csrf_exempt
+@commit_on_success
+@apis_json_response_decorator              
+def checkPurchase(request):
+    if request.method == 'POST':
+        version = request.POST['version']
+        if version == '1.0':
+            return 1
+        else:
+            return 0
+    return 0

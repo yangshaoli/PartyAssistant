@@ -24,6 +24,7 @@
 #import "DataManager.h"
 #import "ChangePasswordRandomLoginTableVC.h"
 #import "CustomTextView.h"
+#import "Reachability.h"
 
 @interface CreatNewPartyViaSMSViewController ()
 
@@ -39,6 +40,7 @@
 - (NSString *)getCleanLetter:(NSString *)originalString;
 - (void)showLessRemainingCountAlert;
 - (void)gotoPurchasPage;
+- (void)checkPurchaseValidStatus;
 
 @end
 
@@ -55,6 +57,8 @@
 @synthesize HUD = _HUD;
 @synthesize editingTableViewCell = _editingTableViewCell;
 @synthesize leftCountLabel = _leftCountLabel;
+@synthesize sectionOneHeader = _sectionOneHeader;
+@synthesize isResendPage = _isResendPage;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -87,16 +91,32 @@
     self.rightItem = right;
     self.receipts = [NSMutableArray arrayWithCapacity:10];
     
-    if (!smsObject) {
-        SMSObjectService *smsObjectService = [SMSObjectService sharedSMSObjectService];
-        self.smsObject = [smsObjectService getSMSObject];
-    }
-    
     self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
     [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
+    
+    if (!self.isResendPage) {
+        if (!smsObject) {
+            SMSObjectService *smsObjectService = [SMSObjectService sharedSMSObjectService];
+            self.smsObject = [smsObjectService getSMSObject];
+        }
+        
+        if (smsObject.receiversArray) {
+            [self.receipts addObjectsFromArray:smsObject.receiversArray];
+        }
+        
+        if (smsObject.smsContent) {
+            self.editingTableViewCell.text = [NSMutableString stringWithString:smsObject.smsContent];
+        }
+        
+        NSLog(@"%@",smsObject.receiversArray);
+        NSLog(@"%@",smsObject.smsContent);
+        
+        [self rearrangeContactNameTFContent];
+    }
+    
     
     //wxz
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -110,7 +130,6 @@
         if([DataManager sharedDataManager].isRandomLoginSelf){
             ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
             [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES];  
-            NSLog(@"creat-----");
         }
     }
     
@@ -124,34 +143,37 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshed:) name:UpdateRemainCountFinished object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.smsObject._isSendBySelf) {
-        self.sendModeNameLabel.text = @"用自己手机发送";
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 26;
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
+//        self.sendModeNameLabel.text = @"用自己手机发送";
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 26;
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:18];
         
         self.leftCountLabel.hidden = YES;
     } else {
-        self.sendModeNameLabel.text = @"通过服务器发送";
-        
-        CGRect from = self.sendModeNameLabel.frame;
-        CGRect to = from;
-        to.size.height = 11;
-
-        self.sendModeNameLabel.frame = to;
-        
-        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
-        
+//        self.sendModeNameLabel.text = @"通过服务器发送";
+//         
+//        CGRect from = self.sendModeNameLabel.frame;
+//        CGRect to = from;
+//        to.size.height = 11;
+//
+//        self.sendModeNameLabel.frame = to;
+//        
+//        self.sendModeNameLabel.font = [UIFont systemFontOfSize:12];
+//        
         self.leftCountLabel.hidden = NO;
         
-        self.leftCountLabel.text = @"更新中";
+        self.leftCountLabel.text = @"帐户余额更新中";
         
         [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateReMainCount object:nil]];
     }
@@ -177,7 +199,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) {
-        return 2;
+        return 1;
     } 
     return 1;
 }
@@ -186,9 +208,10 @@
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
             return self.addContactCell;
-        } else if (indexPath.row == 1) {
-            return self.sendModelSelectCell;
         }
+//        else if (indexPath.row == 1) {
+//            return self.sendModelSelectCell;
+//        }
     } else {
         return self.editingTableViewCell;
     }
@@ -253,9 +276,16 @@
     return 44.0f;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (section == 1) {
-        return @"短信内容";
+        return 40.0f;
+    }
+    return 20;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (section == 1) {
+        return self.sectionOneHeader;
     }
     return nil;
 }
@@ -264,11 +294,11 @@
 
 - (void)editableTableViewCellDidBeginEditing:(EditableTableViewCell *)editableTableViewCell {
     self.editingTableViewCell = editableTableViewCell;
-    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+    [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:YES];
     NSRange range = NSMakeRange(self.editingTableViewCell.textView.text.length - 1, 1);
     [self.editingTableViewCell.textView scrollRangeToVisible:range];
     
-    CGFloat offset = -100.0f;
+    CGFloat offset = -80.0f;
     self.tableView.contentInset = UIEdgeInsetsMake(offset, 0.0f, 0.0f, 0.0f);
     
     self.navigationItem.rightBarButtonItem = nil;
@@ -323,13 +353,14 @@
 //            }
             newFrame.size.height = 200.0f;
         } else {
-            newFrame.size.height = 100.0f;
+            newFrame.size.height = 80.0f;
         }
     } else {
         if (![editableTableViewCell.textView isFirstResponder]) {
             newFrame.size.height = 200.0f;
         } else {
-            newFrame.size.height = newHeight;
+            //newFrame.size.height = newHeight;
+            newFrame.size.height = 80.0f;
         }
     }
     
@@ -428,6 +459,12 @@
         [alert show];
         return;
     }else{
+        //1.check network status
+        if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            return;
+        }
+        
         [self saveSMSInfo];
         if ([self.smsObject.receiversArray count] == 0) {
             UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"警告" message:@"请添加有效的收件人" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定", nil];
@@ -606,15 +643,15 @@
             }
                  
         } else if ([status isEqualToString:@"error_no_remaining"]){
-            NSDictionary *infos = [result objectForKey:@"datasource"];
-            NSNumber *leftCount = nil;
-            leftCount = [infos objectForKey:@"remaining"];
-            if (leftCount) {
-                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
-                [self showLessRemainingCountAlert];
-                return;
-            }
-            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+                NSDictionary *infos = [result objectForKey:@"datasource"];
+                NSNumber *leftCount = nil;
+                leftCount = [infos objectForKey:@"remaining"];
+                if (leftCount) {
+                    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFinished object:leftCount]];
+                    [self showLessRemainingCountAlert];
+                    return;
+                }
+                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
         } else {
             [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
             [self showAlertRequestFailed:description];	
@@ -967,7 +1004,7 @@
         if (buttonIndex == 0) {
             return;
         } else {
-            [self gotoPurchasPage];
+            [self checkPurchaseValidStatus];
         }
     }
 }
@@ -979,6 +1016,81 @@
     [self.navigationController pushViewController:purchase animated:YES];
 }
 
+- (void)checkPurchaseValidStatus {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"无法连接网络，请检查网络状态！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alertView show];
+        return;
+    }
+    
+    NSURL *url =  [NSURL URLWithString:CHECK_IF_IAP_VALID_FOR_THIS_VERSION];
+    
+    NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+    
+    [request setPostValue:versionString forKey:@"version"];
+    
+    [request setDidFinishSelector:@selector(checkPurchaseValidStatusFinished:)];
+    [request setDidFailSelector:@selector(checkPurchaseValidStatusFailed:)];
+    
+    request.timeOutSeconds = 15;
+    [request setDelegate:self];
+    
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];  
+    
+    [self showWaiting];
+}
+
+
+- (void)checkPurchaseValidStatusFinished:(ASIHTTPRequest *)request {
+    [self dismissWaiting];
+	NSString *response = [request responseString];
+    
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    NSString *status = [result objectForKey:@"status"];
+    
+    NSLog(@"%@",result);
+    
+    if ([request responseStatusCode] == 200) {
+        if ([status isEqualToString:@"ok"]) {
+            NSNumber *statusCode = [result objectForKey:@"datasource"];
+            if (statusCode) {
+                if ([statusCode intValue] == 0) {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"当前的版本并不支持此功能，请下载新版本后再使用此功能!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                    [alertView show];
+                } else if ([statusCode intValue] == 1) {
+                    [self gotoPurchasPage];
+                } else {
+                    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"与服务器连接异常，请稍后再试!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                    [alertView show];
+                }
+            } else {
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"与服务器连接异常，请稍后再试!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+                [alertView show];
+            }
+        } else {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"与服务器连接异常，请稍后再试!" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+            [alertView show];
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+}
+
+- (void)checkPurchaseValidStatusFailed:(ASIHTTPRequest *)request {
+    [self dismissWaiting];
+	//NSError *error = [request error];
+	[self showAlertRequestFailed: @"目前无法连接服务器，请稍候重试！"];
+}
 #pragma mark - 
 #pragma mark notification method
 - (void)leftCountRefreshing:(NSNotification *)notify {
@@ -992,7 +1104,20 @@
 }
 
 - (void)leftCountRefreshFailed:(NSNotification *)notify {
-    self.leftCountLabel.text = @"更新失败";
+    self.leftCountLabel.text = @"帐户余额更新失败";
+}
+
+- (void)applicationWillTerminate:(NSNotification *)notify {
+    NSMutableArray *array = [NSMutableArray arrayWithCapacity:10];
+    for (ClientObject *receipt in self.receipts) {
+        [array addObject:receipt];
+    }
+    
+    self.smsObject.receiversArray = array;
+    
+    self.smsObject.smsContent = [self.editingTableViewCell.textView text];
+
+    [[SMSObjectService sharedSMSObjectService] saveSMSObject];
 }
 
 - (void)dealloc {

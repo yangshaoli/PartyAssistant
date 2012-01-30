@@ -9,6 +9,10 @@
 #import "PartyAssistantAppDelegate.h"
 #import "AddressBookDataManager.h"
 #import "UIViewControllerExtra.h"
+#import "DataManager.h"
+#import "GuideViewController.h"
+#import "Reachability.h"
+
 @implementation PartyAssistantAppDelegate
 
 @synthesize window = _window;
@@ -43,6 +47,8 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+    
     [[ECPurchase shared] verifyReceiptsStoredOnLocal];
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
@@ -67,15 +73,23 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {          
     NSLog(@"Luanch Option");
     _window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];    
     if(addressBook == nil) {
         addressBook = ABAddressBookCreate();
         ABAddressBookRegisterExternalChangeCallback(addressBook, addressBookChanged, self);
     }
-    PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
-    _nav = [[UINavigationController alloc] initWithRootViewController:login];
-    [self.window addSubview:_nav.view];
-    [login release];
+    
+    GuideViewController *gViewController = [[GuideViewController alloc] initWithNibName:nil bundle:nil];
+        
+    //Show the user guide, if the new version app is comming
+    NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    
+    NSString *savedVersion = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppBundleVersion"];
+    if (![versionString isEqualToString:savedVersion]) {
+        [self.window addSubview:gViewController.view];
+        [[NSUserDefaults standardUserDefaults] setValue:versionString forKey:@"AppBundleVersion"];
+    } else {
+        [self gotoLoginView];
+    }
     
     application.applicationIconBadgeNumber = 0; //程序开启，设置UIRemoteNotificationTypeBadge标识为0
     
@@ -95,11 +109,25 @@
     NSString *data = [[[deviceToken description] 
                        stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]] 
                       stringByReplacingOccurrencesOfString:@" " withString:@""];
-    [DeviceTokenService saveDeviceToken:data];
+    NSString *savedDeviceToken = [DeviceTokenService getDeviceToken];
+    if ([savedDeviceToken isEqualToString:@""]) {
+        [DeviceTokenService saveDeviceToken:data];
+        [[DataManager sharedDataManager] performSelectorInBackground:@selector(bindDeviceToken) withObject:nil];
+    }
 }  
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {  
 }  
+
+- (void)gotoLoginView {
+    if (!_nav) {
+        PartyLoginViewController *login = [[PartyLoginViewController alloc] initWithNibName:nil bundle:nil];
+        _nav = [[UINavigationController alloc] initWithRootViewController:login];
+        [self.window addSubview:_nav.view];
+
+        [login release];
+    }
+}
 
 -(void)sendRequestToSaveUserToken{
     
@@ -135,10 +163,20 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 }
 
 -(void)didReceivedProducts:(NSArray *)products {
+    if ([products count] == 0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"产品提交失败" message:@"无法检测到提交产品的信息，提交取消！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        [alert show];
+        
+        if (_HUD) {
+            [_HUD hide:YES];
+        }
+        
+        return;
+    }
+    
     if (_HUD) {
         _HUD.labelText = @"获取产品信息中...";
     }
-    
     
     [[ECPurchase shared] addPayment:[products lastObject]];
 }
@@ -178,8 +216,9 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 
 -(void)didCompleteTransactionAndVerifyFailed:(NSString *)proIdentifier withError:(NSString *)error {
     if (_HUD) {
-        _HUD.labelText = @"交易失败";
-        [_HUD hide:YES afterDelay:1.0f];
+        _HUD.labelText = @"交易成功";
+        _HUD.detailsLabelText = @"服务器验证未完成，请稍候再试。";
+        [_HUD hide:YES afterDelay:2.0f];
     }
 }
 
@@ -209,13 +248,17 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 - (void)getVersionFromRequestDic:(NSDictionary *)result{
     NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
     NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
-    NSString *newVersionString = [result objectForKey:@"version"];
+    NSString *newVersionString = [result objectForKey:@"iphone_version"];
     if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
         return;
     }else{
         NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if (preVersionString == nil || [preVersionString isEqualToString:@""]) {
+            NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+            [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+        }
         if([newVersionString floatValue]>[preVersionString floatValue]){
-            [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+            //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
             [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
         }else{
             [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
@@ -259,6 +302,10 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 #pragma mark -
 #pragma mark update remain count
 - (void)updateRemainCount {
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
+        return;
+    }    
     if (self.remainCountRequest) {
         if (![self.remainCountRequest isFinished]) {
             return;
@@ -285,6 +332,8 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
     SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
     NSLog(@"response : %d",[request responseStatusCode]);
+    
+    [self getVersionFromRequestDic:result];
     
     if ([request responseStatusCode] == 200) {
         NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
@@ -314,7 +363,7 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+    //NSError *error = [request error];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
      [request clearDelegatesAndCancel];
 }

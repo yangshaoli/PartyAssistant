@@ -22,8 +22,6 @@
         }
     }
     
-    NSLog(@"bindInfos: %@",bindInfos);
-    
     BindingStatusObject *userObject = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
     userObject.updated = YES;
     
@@ -103,6 +101,18 @@
 - (void)showBindOperationFailed: (NSString *) theMessage{
 	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦！" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
     av.tag = 11112;
+    [av show];
+}
+
+- (void)showBindInform: (NSString *) theMessage {
+    UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
+    av.tag = 11114;
+    [av show];
+}
+
+- (void)showNormalErrorInfo: (NSString *) theMessage {
+    UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
+    av.tag = 11116;
     [av show];
 }
 @end

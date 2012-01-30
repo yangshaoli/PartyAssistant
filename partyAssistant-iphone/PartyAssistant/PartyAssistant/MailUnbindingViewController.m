@@ -81,7 +81,7 @@
 #pragma mark _
 #pragma mark tableView delegate
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -89,17 +89,17 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        return self.inputMailCell;
-    } else if (indexPath.section == 1) {
+//    if (indexPath.section == 0) {
+//        return self.inputMailCell;
+//    } else if (indexPath.section == 1) {
         return self.mailUnBindingCell;
-    }
-    return nil;
+//    }
+//    return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 1) {
+    if (indexPath.section == 0) {
         // go to verify view
         [self beginMailUpdate];
     }
@@ -171,6 +171,10 @@
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证链接已经发送到您的邮箱中，请注意查收。" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11001;
             [av show];
+        } else if ([status isEqualToString:@"error_different_unbinded"]) {
+            [self showBindOperationFailed:description];
+            
+            [self saveProfileDataFromResult:result];
         } else {
             [self saveProfileDataFromResult:result];
             

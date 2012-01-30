@@ -205,9 +205,31 @@
             
             [self saveProfileDataFromResult:result];
         } else {
-            [self saveProfileDataFromResult:result];
-            
-            [self showBindOperationFailed:description];	
+            if (self.pageStatus == StatusVerifyBinding) {
+                if ([status isEqualToString:@"error_has_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else if ([status isEqualToString:@"error_different_binded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }  else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }
+            } else if (self.pageStatus == StatusVerifyUnbinding) {
+                if ([status isEqualToString:@"error_different_unbinded"]) {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                } else {
+                    [self saveProfileDataFromResult:result];
+                    
+                    [self showBindOperationFailed:description];
+                }
+            }
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -279,6 +301,9 @@
 	NSDictionary *result = [parser objectWithString:response];
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
+    
+    NSLog(@"%@",result);
+    
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
             [self saveProfileDataFromResult:result];
@@ -286,10 +311,18 @@
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证成功！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11113;
             [av show];
+        } else if ([status isEqualToString:@"error_has_binded_by_other"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
+        } else if ([status isEqualToString:@"error_invalid_verifier"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
         } else {
             [self saveProfileDataFromResult:result];
             
-            [self showBindOperationFailed:description];	
+            [self showNormalErrorInfo:description];	
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -311,25 +344,21 @@
 }
 
 - (void)closePage {
-    if (self.inSpecialProcess) {
-        [self resendPage];
-    } else {
-        NSArray *controllers = self.navigationController.viewControllers;
-        BindingListViewController *bindingList = nil;
-        for (UIViewController *controller in controllers) {
-            if ([controller isMemberOfClass:[BindingListViewController class]]) {
-                bindingList = (BindingListViewController *)controller;
-            }
+    NSArray *controllers = self.navigationController.viewControllers;
+    BindingListViewController *bindingList = nil;
+    for (UIViewController *controller in controllers) {
+        if ([controller isMemberOfClass:[BindingListViewController class]]) {
+            bindingList = (BindingListViewController *)controller;
         }
-        if (bindingList) {
-            CATransition *transition = [CATransition animation];
-            transition.duration = 0.5;
-            transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-            transition.type = kCATransitionReveal;
-            transition.subtype = kCATransitionFromBottom;
-            [self.navigationController.view.layer addAnimation:transition forKey:nil];
-            [self.navigationController popToViewController:bindingList animated:NO];
-        }
+    }
+    if (bindingList) {
+        CATransition *transition = [CATransition animation];
+        transition.duration = 0.5;
+        transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+        transition.type = kCATransitionReveal;
+        transition.subtype = kCATransitionFromBottom;
+        [self.navigationController.view.layer addAnimation:transition forKey:nil];
+        [self.navigationController popToViewController:bindingList animated:NO];
     }
 }
 
@@ -356,5 +385,16 @@
         self.inputCodeTextField.text = nil;
         [self.inputCodeTextField becomeFirstResponder];
     }
+    if (alertView.tag == 11116) {
+        self.inputCodeTextField.text = nil;
+        [self.inputCodeTextField becomeFirstResponder];
+
+    }
+}
+
+#pragma mark -
+#pragma mark scroll delegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.inputCodeTextField resignFirstResponder];
 }
 @end

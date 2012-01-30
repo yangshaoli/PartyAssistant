@@ -13,6 +13,7 @@
 #import "UserObject.h"
 #import "DeviceDetection.h"
 #import "RegexKitLite.h"
+#import "Reachability.h"
 /******************************
  SKProduct extend
  *****************************/
@@ -77,32 +78,33 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 #pragma mark SKProductsRequestDelegate methods
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
     NSArray *products = response.products;
-#ifdef ECPURCHASE_TEST_MODE	
-	NSMutableString *result = [[NSMutableString alloc] init];
-	for (int i = 0; i < [products count]; ++i) {
-		SKProduct *proUpgradeProduct = [products objectAtIndex:i];
-		[result appendFormat:@"%@,%@,%@,%@\n",
-		 proUpgradeProduct.localizedTitle,proUpgradeProduct.localizedDescription,proUpgradeProduct.price,proUpgradeProduct.productIdentifier];
-	}
-    
-    for (NSString *invalidProductId in response.invalidProductIdentifiers)
-    {
-		[result appendFormat:@"Invalid product id: %@",invalidProductId];
-    }
-	
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"iap" message:result
-										delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	[alert show];
-	[alert release];
-	[_productDelegate didReceivedProducts:products];
-#else
+//#ifdef ECPURCHASE_TEST_MODE	
+//	NSMutableString *result = [[NSMutableString alloc] init];
+//	for (int i = 0; i < [products count]; ++i) {
+//		SKProduct *proUpgradeProduct = [products objectAtIndex:i];
+//		[result appendFormat:@"%@,%@,%@,%@\n",
+//		 proUpgradeProduct.localizedTitle,proUpgradeProduct.localizedDescription,proUpgradeProduct.price,proUpgradeProduct.productIdentifier];
+//	}
+//    
+//    for (NSString *invalidProductId in response.invalidProductIdentifiers)
+//    {
+//		[result appendFormat:@"Invalid product id: %@",invalidProductId];
+//    }
+//	
+//	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"iap" message:result
+//										delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//	[alert show];
+//	[alert release];
+//	[_productDelegate didReceivedProducts:products];
+//#else
 	[_productDelegate didReceivedProducts:products];
 
-#endif   
+//#endif   
 	[_productsRequest release];
 }
 
 -(void)request:(SKRequest *)request didFailWithError:(NSError *)error{
+    NSLog(@"%@",[error localizedDescription]);
     [_productDelegate requestDidFail];
 }
 
@@ -212,25 +214,45 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
     NSDictionary* datasource = [jsonData objectForKey:@"datasource"];
 	[parser release];
     NSString *ourServerStatus = [jsonData objectForKey: @"status"];
-    if ([ourServerStatus intValue] == 200) {
-        NSString *status = [datasource objectForKey: @"status"];
-        if ([status intValue] == 0) {
-            NSDictionary *receipt = [datasource objectForKey: @"receipt"];
-            NSString *productIdentifier = [receipt objectForKey: @"product_id"];
-            [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
-            [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+    if ([request responseStatusCode] == 200) {
+        if ([ourServerStatus isEqualToString:@"ok"]) {
+            NSString *status = [datasource objectForKey: @"status"];
+            if ([status intValue] == 0) {
+                NSDictionary *receipt = [datasource objectForKey: @"receipt"];
+                NSString *productIdentifier = [receipt objectForKey: @"product_id"];
+                [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
+                [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+            }
+            else {
+                NSString *exception = [datasource objectForKey: @"exception"];
+                [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
+                                                                  withError:exception];
+            }
         }
-        else {
-            NSString *exception = [datasource objectForKey: @"exception"];
-            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
-                                                              withError:exception];
-        }
-
     } else {
         NSString *exception = [datasource objectForKey: @"exception"];
         [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier
                                                           withError:exception];
     }
+//    if ([ourServerStatus intValue] == 200) {
+//        NSString *status = [datasource objectForKey: @"status"];
+//        if ([status intValue] == 0) {
+//            NSDictionary *receipt = [datasource objectForKey: @"receipt"];
+//            NSString *productIdentifier = [receipt objectForKey: @"product_id"];
+//            [_transactionDelegate didCompleteTransactionAndVerifySucceed:productIdentifier];
+//            [self removeReceiptWithUserID:request.userID andIdentifier:request.productIdentifier];
+//        }
+//        else {
+//            NSString *exception = [datasource objectForKey: @"exception"];
+//            [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier 
+//                                                              withError:exception];
+//        }
+//
+//    } else {
+//        NSString *exception = [datasource objectForKey: @"exception"];
+//        [_transactionDelegate didCompleteTransactionAndVerifyFailed:request.productIdentifier
+//                                                          withError:exception];
+//    }
 }
 -(void)didFailedVerify:(ECPurchaseFormDataRequest *)request {
     NSString *response = [request responseString];
@@ -411,6 +433,10 @@ SINGLETON_IMPLEMENTATION(ECPurchase);
 }
 
 -(void)verifyReceiptsStoredOnLocal{
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        return;
+    }
+    
     NSDictionary *receiptDic = [self getLocalStoredReceipt];
     if (!receiptDic) {
         return;
