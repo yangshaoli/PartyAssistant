@@ -3411,5 +3411,5 @@ public class ContactsListActivity extends ListActivity implements
 
 	}
 	
-	
+	//标记
 }
