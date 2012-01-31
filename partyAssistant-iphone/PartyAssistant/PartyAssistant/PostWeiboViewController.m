@@ -12,7 +12,7 @@
 #define SEND_SUCCESS_ALERT_TAG 11
 
 @implementation PostWeiboViewController
-@synthesize sendV,baseinfo;
+@synthesize sendV,partyObj;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -41,8 +41,8 @@
     self.navigationItem.rightBarButtonItem = _sendWeiboButton;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"关闭" style:UIBarButtonItemStylePlain target:self action:@selector(cancelBtnTouched:)];
     NSString *default_text = WEIBO_DEFAULT_CONTENT;
-    NSLog(@"baseinfo:%@",baseinfo);
-    default_text = [default_text stringByReplacingOccurrencesOfString:@"party_id" withString:[baseinfo.partyId stringValue]];
+    NSLog(@"%@",partyObj.shortURL);
+    default_text = [default_text stringByAppendingString:partyObj.shortURL];
     self.sendV = [[WBSendView alloc] initWithWeiboText:default_text withImage:nil andDelegate:self];
     sendV.delegate = self;
     [self.view addSubview:sendV];
@@ -74,8 +74,6 @@
 #pragma mark WBRequest CALLBACK_API
 - (void)request:(WBRequest *)request didFailWithError:(NSError *)error
 {
-    NSLog(@"error:%@",error);
-    NSLog(@"request:%@",[request responseText]);
     //	if ([_delegate respondsToSelector:@selector(request:didFailWithError:)]) 
     //	{
     //		[_delegate request:request didFailWithError:error];
@@ -87,8 +85,6 @@
 
 - (void)request:(WBRequest *)request didLoad:(id)result
 {
-    NSLog(@"request:%@",[request responseText]);
-    NSLog(@"load:%@",result);
     //	if ([_delegate respondsToSelector:@selector(request:didLoad:)]) 
     //	{
     //		[_delegate request:request didLoad:result];

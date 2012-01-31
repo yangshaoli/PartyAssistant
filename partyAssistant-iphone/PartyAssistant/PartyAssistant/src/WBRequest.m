@@ -63,7 +63,6 @@ headerFieldsInfo = _headerFieldsInfo;
 	{
 		if( ([[dicInfo valueForKey:key] isKindOfClass:[NSString class]]) == FALSE)
 		{
-			NSLog(@"Please Use NSString for this kind of params");
 			continue;
 		}
 		

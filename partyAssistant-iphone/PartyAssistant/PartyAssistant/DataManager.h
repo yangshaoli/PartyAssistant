@@ -12,16 +12,21 @@
 typedef enum {
     NetworkConnectionInvalidate,
     NetWorkConnectionCheckPass,
-    NetWorkConnectionCheckDeny
+    NetWorkConnectionCheckDeny,
+    NetworkConnection
 }NetworkConnectionStatus;
 
 
 @interface DataManager : NSObject
-
+{
+    BOOL isRandomLoginSelf;
+}
+@property(nonatomic,assign)BOOL isRandomLoginSelf;
 + (DataManager *)sharedDataManager;
-- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
-- (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
-- (NetworkConnectionStatus)logoutUser;
+- (NSString *)validateCheckWithUsrName:(NSString *)name pwd:(NSString *)pwd;
+- (NSString *)registerUserWithUsrInfo:(NSDictionary *)usrInfo;
+- (void)saveUsrData:(NSDictionary *)jsonValue withUsername:(NSString *)username;
+- (NSString *)logoutUser;
 - (NetworkConnectionStatus)setNickName:(NSString *)nickName;
 - (NetworkConnectionStatus)setEmailInfo:(NSString *)emailInfo;
 - (NetworkConnectionStatus)setPhoneNum:(NSString *)phoneNum;
@@ -33,5 +38,7 @@ typedef enum {
 - (NetworkConnectionStatus)setEmailInfoForUserWithUID:(NSInteger)uid 
                                       withNewEmailInfo:(NSString *)emailInfo;
 - (BOOL)checkIfUserNameSaved;
+
+- (BOOL)bindDeviceToken;
 
 @end

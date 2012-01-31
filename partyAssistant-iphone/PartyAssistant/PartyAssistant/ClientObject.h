@@ -15,15 +15,23 @@
     NSInteger backendID;
     NSString *cName;
     NSString *cVal;
+    NSInteger phoneIdentifier;
+    NSString *phoneLabel;
+    NSString *phoneVelue;
 }
 
 @property(nonatomic, assign)NSInteger cID;
 @property(nonatomic, assign)NSInteger backendID;
 @property(nonatomic, retain)NSString *cName;
 @property(nonatomic, retain)NSString *cVal;
+@property(nonatomic, assign)NSInteger phoneIdentifier;
+@property(nonatomic, retain)NSString *phoneLabel;
 
 - (void)searchClientIDByPhone;
 - (void)searchClientIDByEmail;
 - (void)clearObject;
+- (BOOL)isClientValid;
+- (void)searchClientIDByName;
+- (BOOL)isClientPhoneNumberValid; 
 
 @end

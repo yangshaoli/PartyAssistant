@@ -13,14 +13,23 @@
     NSMutableArray  *clientsArray;//收件人
     NSString   *contentString;//活动内容
     BOOL isSendByServer;//是否服务器发送
-    NSInteger partyId;
+    NSNumber *partyId;
     NSDictionary *peopleCountDict;
-    
+    BOOL isnewApplied;
+    BOOL isnewRefused;
+    NSString *shortURL;
+    NSString *type;
+   
 }
 @property(nonatomic, retain)NSDictionary *peopleCountDict;
 @property (nonatomic,retain)UserObject *userObject;
 @property (nonatomic,retain)NSMutableArray  *clientsArray;
 @property (nonatomic,retain)NSString *contentString;
 @property (nonatomic,assign)BOOL isSendByServer;
-@property (nonatomic,assign)NSInteger partyId;
+@property (nonatomic,assign)BOOL isnewApplied;
+@property (nonatomic,assign)BOOL isnewRefused;
+@property(nonatomic, retain)NSNumber *partyId;
+@property (nonatomic,retain)NSString *shortURL;
+@property (nonatomic,retain)NSString *type;
+
 @end

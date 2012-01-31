@@ -20,14 +20,20 @@
 #import "UserObjectService.h"
 #import <AddressBook/AddressBook.h>
 #import "MBProgressHUD.h"
+#import "ASIHTTPRequest.h"
+#import "ECPurchase.h"
 
 ABAddressBookRef addressBook;
-@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate> {
+@interface PartyAssistantAppDelegate : UIResponder <UIApplicationDelegate,ECPurchaseProductDelegate,ECPurchaseTransactionDelegate, MBProgressHUDDelegate> {
     MBProgressHUD *_HUD;
+    ASIHTTPRequest *remainCountRequest;
 }
 
-@property (strong, nonatomic) UIWindow *window;
+@property (retain, nonatomic) UIWindow *window;
+@property (retain, nonatomic) UINavigationController *nav;
+@property (retain, nonatomic) ASIHTTPRequest *remainCountRequest;
 
+- (void)gotoLoginView;
 
 void addressBookChanged (ABAddressBookRef addressBook,
                          CFDictionaryRef info,

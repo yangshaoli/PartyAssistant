@@ -1,0 +1,6 @@
+ERROR_STATUS_HAS_BINDED_BY_OTHER = 'error_has_binded_by_other'
+ERROR_STATUS_HAS_BINDED = 'error_has_binded'
+ERROR_STATUS_DIFFERENT_BINDED = 'error_different_binded'
+ERROR_STATUS_DIFFERENT_UNBINDED = 'error_different_unbinded'
+ERROR_STATUS_INVALID_VERIFIER = 'error_invalid_verifier'
+ERROR_STATUS_WRONG_VERIFIER = 'error_wrong_verifier'

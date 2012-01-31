@@ -7,7 +7,7 @@
 //
 
 #import "EditPartyTableViewController.h"
-
+#import "UIViewControllerExtra.h"
 @implementation EditPartyTableViewController
 @synthesize baseInfoObject,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
@@ -347,7 +347,7 @@
     [request setPostValue:self.baseInfoObject.partyId forKey:@"partyID"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -358,10 +358,12 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             [self.navigationController popViewControllerAnimated:YES];
             NSDictionary *userinfo = [[NSDictionary alloc] initWithObjectsAndKeys:self.baseInfoObject,@"baseinfo", nil];
             NSNotification *notification = [NSNotification notificationWithName:EDIT_PARTY_SUCCESS object:nil userInfo:userinfo];
@@ -371,8 +373,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

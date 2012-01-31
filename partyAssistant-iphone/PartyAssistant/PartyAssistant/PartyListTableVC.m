@@ -4,13 +4,31 @@
 //
 //  Created by user on 11-12-19.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
+#define BOOLStringOutput(target) target ? @"YES" : @"NO"
+
 #import "ContactData.h"
 #import "PartyListTableVC.h"
 #import "PartyDetailTableVC.h"
 #import "PartyListService.h"
+#import "URLSettings.h"
+#import "ClientObject.h"
+#import "NotificationSettings.h"
+#import "HTTPRequestErrorMSG.h"
+#import "UIViewControllerExtra.h"
+#import "DataManager.h"
+#import "ChangePasswordRandomLoginTableVC.h"
+#import "Reachability.h"
+@interface PartyListTableVC()
+
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller;
+-(void) showTabBar:(UITabBarController*) tabbarcontroller;
+
+@end
 
 @implementation PartyListTableVC
-@synthesize partyList, topRefreshView, bottomRefreshView;;
+@synthesize partyList, topRefreshView, bottomRefreshView;
+@synthesize peopleCountArray,partyDictArraySelf;
+@synthesize lastID,_isRefreshing,_isNeedRefresh,quest,isRefreshImage,rowLastPush;
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -19,7 +37,13 @@
     }
     return self;
 }
-
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(AddBadgeToTabbar:) name:ADD_BADGE_TO_TABBAR object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearData) name:USER_LOGOUT_NOTIFICATION object:nil];
+    _isRefreshing = NO;
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    return self;
+}
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -33,29 +57,36 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSFileManager* fm = [NSFileManager defaultManager];
+    if(![fm fileExistsAtPath:partyListPath]) {
+        self.partyDictArraySelf = [[NSMutableArray alloc] initWithCapacity:0];
+    } else {
+        self.partyDictArraySelf = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+    }
+    [self.partyList removeAllObjects];
+    for(int i=0;i<[self.partyDictArraySelf count];i++){
+        NSDictionary *partyDict = [self.partyDictArraySelf objectAtIndex:i];
+        PartyModel *partyModel=[[PartyModel alloc] init];
+        partyModel.contentString = [partyDict objectForKey:@"description"];
+        partyModel.partyId =[partyDict  objectForKey:@"partyId"];
+        partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
+        partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
+        partyModel.type=[partyDict objectForKey:@"type"];
+        [self.partyList addObject:partyModel];
+    }
+
+    self.title=@"活动列表";
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
-   
-    PartyModel *partyObj2=[[PartyModel alloc] init];
-    //partyObj2.receiversArray=[[ContactData   contactsArray] mutableCopy];
-    partyObj2.contentString=@"唱歌嗨一把";
-    partyObj2.isSendByServer=NO;
-    partyObj2.partyId=2;
-   
-    NSLog(@"self.partyList打印出来：：%@",self.partyList);
-    self.title=@"活动列表";
-    
-    PartyModel *partyObj1=[[PartyModel alloc] init];
-    //partyObj1.receiversArray=[[ContactData   contactsArray] mutableCopy];
-    partyObj1.contentString=@"跳舞爽";
-    partyObj1.isSendByServer=NO;
-    partyObj1.partyId=1;
-    //self.partyList=[[PartyListService sharedPartyListService] addPartyList:partyObj2];
-    [PartyListService sharedPartyListService].partyList=[[NSMutableArray alloc] initWithObjects:partyObj2, nil];
-//    NSString *lastString2=[[NSString alloc] initWithString:@"最后吃饭"];
-   [[PartyListService sharedPartyListService].partyList  addObject:partyObj1];
+    self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸
     [[PartyListService sharedPartyListService] savePartyList];
     self.partyList=[[PartyListService sharedPartyListService] getPartyList];
+    
+    if ([UIApplication sharedApplication].applicationIconBadgeNumber > 0 && !_isRefreshing) {
+        [self refreshBtnAction];
+    }
     
     minBottomRefreshViewY = 366.0;
 	//setup refresh tool
@@ -86,28 +117,29 @@
 	//  update the last update date
 	[bottomRefreshView refreshLastUpdatedDate];
     [topRefreshView refreshLastUpdatedDate];
-    //self.partyList=[[NSArray alloc] initWithObjects:@"踢球1",@"唱歌2",@"聚餐3", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    //wxz
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+    NSInteger  getDefaultCountNumber=[defaults integerForKey:keyString];
+    if(getDefaultCountNumber){  //如果该用户活动条数非空
+        if([DataManager sharedDataManager].isRandomLoginSelf){
+            ChangePasswordRandomLoginTableVC *changePasswordRandomLoginTableVC=[[ChangePasswordRandomLoginTableVC alloc] initWithNibName:@"ChangePasswordRandomLoginTableVC" bundle:nil];
+            [self.navigationController pushViewController:changePasswordRandomLoginTableVC animated:YES]; 
+        }
+    }
+    [self refreshBtnAction];
+    [self.tableView reloadData];
+     
+    
 }
-- (void)refreshBtnAction{
-//    UserObjectService *us = [UserObjectService sharedUserObjectService];
-//    UserObject *user = [us getUserObject];
-//    int page = 1;
-//    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,page]];
-//    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-//    request.timeOutSeconds = 30;
-//    [request setDelegate:self];
-//    [request setShouldAttemptPersistentConnection:NO];
-//    [request startAsynchronous];
-//    self._isRefreshing = YES;
-    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-    [acv startAnimating];
-    self.navigationItem.rightBarButtonItem.customView = acv;
-}
+
 
 - (void)viewDidUnload
 {
@@ -120,6 +152,43 @@
 {
     [super viewWillAppear:animated];
     [self setBottomRefreshViewYandDeltaHeight];
+    [self showTabBar:self.tabBarController];
+   
+    if(self.isRefreshImage){
+        [self refreshBtnAction];
+        self.isRefreshImage=NO;
+        [self.tableView reloadData];
+    }
+    NSUserDefaults *isCreatSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isCreatSucBool=[[isCreatSucDefault objectForKey:@"isCreatSucDefault"] boolValue];
+    if(isCreatSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isCreatSucDefault setBool:NO forKey:@"isCreatSucDefault"];
+    }
+    
+    
+    
+    NSUserDefaults *isDeleteSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isDeleteSucBool=[[isDeleteSucDefault objectForKey:@"isDeleteSucDefault"] boolValue];
+    if(isDeleteSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isDeleteSucDefault setBool:NO forKey:@"isDeleteSucDefault"];
+    }
+
+    
+    NSUserDefaults *isEditSucDefault=[NSUserDefaults standardUserDefaults];
+    BOOL isEditSucBool=[[isEditSucDefault objectForKey:@"isEditSucDefault"] boolValue];
+    if(isEditSucBool){
+        [self refreshBtnAction];
+        [self.tableView reloadData];
+        [isEditSucDefault setBool:NO forKey:@"isEditSucDefault"];
+    }
+    
+    
+    
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -130,6 +199,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -141,6 +211,223 @@
 {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+
+- (void)requestDataWithLastID:(NSInteger)aLastID {
+    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    UserObject *user = [us getUserObject];
+    if (user.uID < 0) {
+        return;
+    }
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
+    
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        return;
+    }
+    
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 20;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    
+    if (aLastID > 0) {
+        _isAppend = YES;
+    } else {
+        _isAppend = NO;
+    }
+    [request startAsynchronous];
+    
+    self.quest=request;
+    //self._isRefreshing = YES;
+    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    [acv startAnimating];
+    self.navigationItem.rightBarButtonItem.customView = acv;
+}
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    //self._isRefreshing = NO;
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
+	NSString *description = [result objectForKey:@"description"];
+	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
+	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
+    //	[self dismissWaiting];
+    if([request responseStatusCode] == 200){
+        if ([status isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
+            if (lastID < 0) {
+                lastID = 0;
+            }
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dataSource objectForKey:@"unreadCount"] intValue];
+            if ([[dataSource objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dataSource objectForKey:@"unreadCount"]];
+            }
+            NSArray *partyDictArray = [dataSource objectForKey:@"partyList"];
+            
+            NSUserDefaults *partyListArrayDefault=[NSUserDefaults standardUserDefaults];
+            [partyListArrayDefault setObject:partyDictArray forKey:@"partyListArrayDefaultForDetailContentRefresh"];
+            
+            if (!_isAppend) {
+                [self.partyList removeAllObjects];
+            }
+            ///
+            self.partyDictArraySelf=[partyDictArray copy];//新增
+            
+            NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+            NSFileManager* fm = [NSFileManager defaultManager];
+            NSMutableArray *patyListArrayWrite=[[NSMutableArray alloc] init];
+            NSMutableArray *getArrayFromFile;
+            if(![fm fileExistsAtPath:partyListPath]) {
+                getArrayFromFile = [[NSMutableArray alloc] initWithCapacity:0];
+            } else {
+                getArrayFromFile = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+            }
+            
+            if(getArrayFromFile.count==0){
+                if(self.partyDictArraySelf.count>20){
+                    for(int i=0;i<20;i++){
+                        [patyListArrayWrite addObject:[self.partyDictArraySelf  objectAtIndex:i]];
+                    }
+                    if(patyListArrayWrite) {
+                        [patyListArrayWrite  writeToFile:partyListPath  atomically:YES];
+                    } else {
+                        NSLog(@"partylistArray writeToFile error");
+                    }
+                }else{
+                    [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
+                }
+            }
+            
+            for(int i=0;i<[partyDictArray count];i++){
+                NSDictionary *partyDict = [partyDictArray objectAtIndex:i];
+                PartyModel *partyModel=[[PartyModel alloc] init];
+                partyModel.contentString = [partyDict objectForKey:@"description"];
+                partyModel.partyId =[partyDict  objectForKey:@"partyId"];
+                partyModel.peopleCountDict = [partyDict objectForKey:@"clientsData"];
+                partyModel.shortURL = [partyDict objectForKey:@"shortURL"];
+                partyModel.type=[partyDict objectForKey:@"type"];
+                [self.partyList addObject:partyModel];
+                
+            }
+            
+            self.navigationItem.rightBarButtonItem.customView = nil;
+            [self.tableView reloadData];
+           
+            
+            
+            //用于判断是否登录后跳转到活动列表页面
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];  
+            NSString *keyString=[[NSString alloc] initWithFormat:@"%dcountNumber",user.uID];
+            [defaults setInteger: self.partyList.count  forKey:keyString];    
+            [self setBottomRefreshViewYandDeltaHeight];
+            //        [self setBottomRefreshViewYandDeltaHeight];
+        }else{
+            self.navigationItem.rightBarButtonItem.customView = nil;
+            [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }        
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    //self._isRefreshing = NO;
+    self.navigationItem.rightBarButtonItem.customView = nil;
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+
+
+- (void)refreshBtnAction{
+    //    UserObjectService *us = [UserObjectService sharedUserObjectService];
+    //    UserObject *user = [us getUserObject];
+    //    int page = 1;
+    //    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,page]];
+    //    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    //    request.timeOutSeconds = 20;
+    //    [request setDelegate:self];
+    //    [request setShouldAttemptPersistentConnection:NO];
+    //    [request startAsynchronous];
+    //    self._isRefreshing = YES;
+    [self requestDataWithLastID:0];
+    
+//    UIActivityIndicatorView *acv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+//    [acv startAnimating];
+//    self.navigationItem.rightBarButtonItem.customView = acv;
+    
+    ////////////////////自己新增文件 
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSMutableArray *patyListArrayWrite=[[NSMutableArray alloc] init];
+    if(self.partyDictArraySelf.count>20){
+        for(int i=0;i<20;i++){
+            [patyListArrayWrite addObject:[self.partyDictArraySelf  objectAtIndex:i]];
+        }
+        if(patyListArrayWrite) {
+            [patyListArrayWrite  writeToFile:partyListPath  atomically:YES];
+        } else {
+            NSLog(@"partylistArray writeToFile error");
+        }
+    }else{
+        [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
+    }
+//    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+//    BOOL isrefreshDetailContent=[refreshDetailContentDefault  boolForKey:@"refreshDetailContentDefault"];
+//    if(isrefreshDetailContent){
+//        PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
+//        partyDetailTableVC.delegate=self;
+//        partyDetailTableVC.hidesBottomBarWhenPushed = YES;
+//        [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+//          partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:rowLastPush];
+//    }
+
+}
+
+- (void)AddBadgeToTabbar:(NSNotification *)notification{
+    NSDictionary *userinfo = [notification userInfo];
+    NSString *badge = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
+    if ([badge intValue] <= 0) {
+        return;
+    }
+    UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+    tbi.badgeValue = badge;
+}
+
+- (void)clearData {
+    [partyList removeAllObjects];
+    [self.tableView reloadData];
+    [self.navigationController popToRootViewControllerAnimated:NO];
+    
+    self.lastID = 0;
 }
 
 #pragma mark - Table view data source
@@ -166,8 +453,77 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     NSInteger row=[indexPath row];
-    cell.textLabel.font=[UIFont systemFontOfSize:15];
-    cell.textLabel.text=[[self.partyList  objectAtIndex:row] contentString];
+    
+        
+    NSString *newAppliedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newAppliedClientcount"]];
+    
+    NSString *newRefusedString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"newRefusedClientcount"]];
+    
+    PartyModel *partyObjCell=[self.partyList  objectAtIndex:[indexPath row]];
+    if([newAppliedString intValue]>0){
+       partyObjCell.isnewApplied=YES;
+    }else{
+       partyObjCell.isnewApplied=NO;
+    }
+    
+    if([newRefusedString intValue]>0){
+        partyObjCell.isnewRefused=YES;
+    }else{
+        partyObjCell.isnewRefused=NO;
+    }
+    
+    //NSLog(@"row :%d,isnewApplied>>>%@.....isnewRefused>>>%@",row,BOOLStringOutput(partyObjCell.isnewApplied) ,BOOLStringOutput(partyObjCell.isnewRefused));
+    
+    UIView *oldLayout2 = nil;
+    oldLayout2 = [cell viewWithTag:2];
+    [oldLayout2 removeFromSuperview];
+
+    if(partyObjCell.isnewApplied||partyObjCell.isnewRefused){  
+        self.isRefreshImage=YES;
+        UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
+        cellImageView.image=[UIImage imageNamed:@"new1"];
+        cellImageView.tag=2;
+        [cell  addSubview:cellImageView];
+    
+    }
+    
+    
+    UIView *oldLayout3 = nil;
+    oldLayout3 = [cell viewWithTag:3];
+    [oldLayout3 removeFromSuperview];
+    UILabel *contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 175, 40)];
+    contentLabel.tag=3;
+    contentLabel.text=[[self.partyList  objectAtIndex:row] contentString];
+    contentLabel.font=[UIFont systemFontOfSize:15];
+    [cell  addSubview:contentLabel];
+     
+    NSString *applyString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"appliedClientcount"]];
+    NSString *donothingString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"donothingClientcount"]];
+    NSString *refuseString=[[NSString alloc] initWithFormat:@"%@",[[[self.partyList  objectAtIndex:row] peopleCountDict] objectForKey:@"refusedClientcount"]];
+    NSInteger allNumbers=[applyString intValue]+[donothingString intValue]+[refuseString intValue];
+    //已报名人数label
+    UIView *oldLayout6 = nil;
+    oldLayout6 = [cell viewWithTag:6];
+    [oldLayout6 removeFromSuperview];
+    UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(200, 0, 50, 40)];    
+    lb_1.tag = 6;
+    lb_1.text = [NSString stringWithFormat:@"%@/",applyString];
+    lb_1.textColor=[UIColor greenColor];
+    lb_1.textAlignment = UITextAlignmentRight;
+    lb_1.backgroundColor = [UIColor clearColor];
+    [cell addSubview:lb_1];
+    
+    //所有邀请人label
+    UIView *oldLayout7 = nil;
+    oldLayout7 = [cell viewWithTag:7];
+    [oldLayout7 removeFromSuperview];
+    UILabel *lb_7 = [[UILabel alloc] initWithFrame:CGRectMake(250, 0, 45, 40)];    
+    lb_7.tag = 7;
+    lb_7.text = [NSString stringWithFormat:@"%d",allNumbers];
+    lb_7.textAlignment = UITextAlignmentLeft;
+    lb_7.backgroundColor = [UIColor clearColor];
+    [cell addSubview:lb_7];
+    
     //cell.textLabel.text=[self.partyList  objectAtIndex:row];
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
@@ -228,9 +584,13 @@
      */
     
     PartyDetailTableVC *partyDetailTableVC = [[PartyDetailTableVC alloc] initWithNibName:@"PartyDetailTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
-    partyDetailTableVC.title=[[self.partyList  objectAtIndex:[indexPath row]] contentString];    //partyDetailTableVC.title=[self.partyList  objectAtIndex:[indexPath row]];
+    partyDetailTableVC.partyObj=[self.partyList  objectAtIndex:[indexPath row]];
+    self.rowLastPush=[indexPath row];//记忆
+    partyDetailTableVC.delegate=self;
     partyDetailTableVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:partyDetailTableVC animated:YES];
+    partyDetailTableVC.rowLastPush=self.rowLastPush;
+    //
 }
 
 #pragma mark -
@@ -241,8 +601,25 @@
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
     _reloading = YES;
-//TODO:Not Implement     [self requestDataWithLastID:0];
+    [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
+    ////////////////////自己新增文件 
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSMutableArray *patyListArrayWrite=[[NSMutableArray alloc] init];
+    if(self.partyDictArraySelf.count>20){
+        for(int i=0;i<20;i++){
+            [patyListArrayWrite addObject:[self.partyDictArraySelf  objectAtIndex:i]];
+        }
+        if(patyListArrayWrite) {
+            [patyListArrayWrite  writeToFile:partyListPath  atomically:YES];
+        } else {
+            NSLog(@"partylistArray writeToFile error");
+        }
+    }else{
+        [self.partyDictArraySelf  writeToFile:partyListPath  atomically:YES];
+    }
+
+    
 }
 
 - (void)loadNextPageTableViewDataSource{
@@ -250,7 +627,7 @@
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
     _reloading = YES;
-//TODO:Not Implement    [self requestDataWithLastID:lastID];
+   [self requestDataWithLastID:self.lastID];
 	[self doneLoadingBottomRefreshTableViewData];
 }
 
@@ -323,5 +700,51 @@
 - (CGFloat)getTableHeadViewHeight {
 	return 0.0f;
 }
+
+-(void) hideTabBar:(UITabBarController*) tabbarcontroller {
+    
+    
+    //    [UIView beginAnimations:nil context:NULL];
+    //    [UIView setAnimationDuration:0.5];
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
+        }
+        else
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,431)];
+        }
+        
+    }
+    
+    //[UIView commitAnimations];
+}
+
+-(void) showTabBar:(UITabBarController*) tabbarcontroller {
+    
+    
+    for(UIView*view in tabbarcontroller.view.subviews)
+    {
+        
+        if([view isKindOfClass:[UITabBar class]])
+        {
+            [view setFrame:CGRectMake(view.frame.origin.x,431, view.frame.size.width, view.frame.size.height)];
+        }else{
+            [view setFrame:CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.size.width,480)];
+        }
+    }
+    
+}
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    self.quest = nil;
+}
+
+
+
 
 @end

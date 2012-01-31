@@ -6,14 +6,15 @@
   <h1><a href="#">logo</a></h1>
   <!--START: Menu -->
   <ul class="menu">
-   <li><a href="/">首页</a></li>
-   <li class="active"><a href="{% url list_party %}">我的活动</a></li>
+   <li><a href="#"><span>INDEX</span><strong>首页</strong></a></li>
+   <li class="active"><a href="#"><span>MY PARTY</span><strong>我的活动</strong></a></li>
+   <li><a href="#"><span>DOWNLOAD</span><strong>下载应用</strong></a></li>
   </ul>
   <!--END: Menu -->
-  <ul class="user_login">
-   <li><a href="{%url profile %}">{{user.username}}</a></li>
-   <li><a href="{%url logout %}">登出</a></li>
+  <ul class="menu user_login">
+   <li><a href="#"><span>LOGIN</span><strong>登陆</strong></a></li>
+   <li><a href="#"><span>REGISTER</span><strong>注册</strong></a></li>
   </ul>
  </div>
- <!--END: Header -->
+ <!--END: Header --> 
 {% endblock%}

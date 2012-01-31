@@ -7,7 +7,7 @@
 //
 
 #import "CopyPartyTableViewController.h"
-
+#import "UIViewControllerExtra.h"
 @implementation CopyPartyTableViewController
 @synthesize baseinfo,datePicker,peoplemaxiumPicker,locationTextField,descriptionTextView;
 
@@ -294,7 +294,7 @@
     [self showWaiting];
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/",GET_MSG_IN_COPY_PARTY,self.baseinfo.partyId]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -305,12 +305,14 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
     //	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             NSString *msgType = [dataSource objectForKey:@"msgType"];
             NSArray *receiverArray = [dataSource objectForKey:@"receiverArray"];
@@ -327,7 +329,6 @@
                 vc.receiverArray = receiverObjectsArray;
                 SMSObject *sobj = [[SMSObject alloc] init];
                 sobj.receiversArray = receiverObjectsArray;
-                NSLog(@"content:%@",[dataSource objectForKey:@"content"]);
                 sobj.smsContent = [dataSource objectForKey:@"content"];
                 sobj._isApplyTips = [[dataSource objectForKey:@"_isApplyTips"] boolValue];
                 sobj._isSendBySelf = [[dataSource objectForKey:@"_isSendBySelf"] boolValue];
@@ -344,8 +345,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 }
 

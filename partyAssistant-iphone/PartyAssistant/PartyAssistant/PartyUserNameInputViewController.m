@@ -123,7 +123,6 @@
     BOOL isPhoneEmpty = (!_phoneNumTextField.text 
                          || [_phoneNumTextField.text isEqualToString:@""]);
 
-      NSLog(@"昵称:%@ 邮箱：%@  手机号：%@",_userNameTextField.text,_emailInfoTextField.text,_phoneNumTextField.text);
     if (isEmailEmpty || isEmpty || isPhoneEmpty) {
         [self showNotLegalInput];
         return;
@@ -156,16 +155,16 @@
 - (void)showAlertWithMessage:(NSString *)message  
                  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"好的" otherButtonTitles:nil];
     alert.tag = tagNum;
     [alert show];
 }
 
 - (void)showNotLegalInput {
-    [self showAlertWithMessage:@"内容不能为空！" buttonTitle:@"OK" tag:NotLegalTag];
+    [self showAlertWithMessage:@"内容不能为空！" buttonTitle:@"好的" tag:NotLegalTag];
 }
 
 - (void)showNotPassChekAlert {
-    [self showAlertWithMessage:@"操作失败" buttonTitle:@"OK" tag:NotPassTag];
+    [self showAlertWithMessage:@"操作失败" buttonTitle:@"好的" tag:NotPassTag];
 }
 @end

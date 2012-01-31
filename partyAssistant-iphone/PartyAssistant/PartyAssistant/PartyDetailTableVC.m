@@ -16,12 +16,14 @@
 #import "EditPartyTableViewController.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "ResendPartyViaSMSViewController.h"
+#import "UIViewControllerExtra.h"
 
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 
 @implementation PartyDetailTableVC
-@synthesize myToolbarItems;
-
+@synthesize myToolbarItems,peopleCountArray,clientsArray;
+@synthesize partyObj,quest,seperatedListQuest,deleteQuest,delegate,rowLastPush;
 - (void)didReceiveMemoryWarning
 {
     // Releases the view if it doesn't have a superview.
@@ -35,10 +37,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-   
+        
+    [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
+    self.title=@"活动详情";
+    
     self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
     [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];
     [self.navigationController.toolbar sizeToFit];
+    
     
     if (!self.myToolbarItems) {
         UIBarButtonItem *flexButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
@@ -52,7 +58,7 @@
                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"refresh_word"]
                                                                 style:UIBarButtonItemStylePlain 
                                                                target:self
-                                                               action:@selector(refreshItem:)],
+                                                               action:@selector(refreshItem)],
                                flexButton, 
                                [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"del_word"]
                                                                 style:UIBarButtonItemStylePlain
@@ -64,6 +70,11 @@
                                                                target:self
                                                                action:@selector(editBtnAction)],
                                flexButton, 
+                               [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"reinvite_word"]
+                                                                style:UIBarButtonItemStylePlain
+                                                               target:self
+                                                               action:@selector(resentMsg)],
+                               flexButton,
                                nil];
         
         [self setToolbarItems:myToolbarItems animated:YES];
@@ -73,8 +84,13 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
+    
+    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+    [refreshDetailContentDefault setBool:NO forKey:@"refreshDetailContentDefault"];
 
+    
+    [self.tableView reloadData];
+}
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -86,6 +102,9 @@
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
+    [self loadClientCount];
+    [self getPartyClientSeperatedList];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -110,7 +129,157 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+
+
+- (void)loadClientCount
+{
+    NSNumber *partIdNumber=self.partyObj.partyId;
+    NSString *partIdString=[partIdNumber stringValue];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/" ,GET_PARTY_CLIENT_MAIN_COUNT,[partIdString intValue]]];
+    if (self.quest) {
+        [self.quest clearDelegatesAndCancel];
+    }
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 20;
+    [request setDelegate:self];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+    
+    self.quest = request;
+//    NSLog(@"loadClientCount预期调用1111");
+//    NSNumber *partyIdNumber=self.partyObj.partyId;
+//    NSLog(@"loadClientCount输出后kkkkk。。。。。。%d",[partyIdNumber intValue]);
+//    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
+//    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+//    request.timeOutSeconds = 20;
+//    [request setDelegate:self];
+//    [request setDidFinishSelector:@selector(requestFinished:)];
+//    [request setDidFailSelector:@selector(requestFailed:)];
+//    [request setShouldAttemptPersistentConnection:NO];
+//    [request startAsynchronous];
+
+    
+}
+
+
+
+- (void)requestFinished:(ASIHTTPRequest *)request{
+    
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
+	NSString *description = [result objectForKey:@"description"];
+    if ([request responseStatusCode] == 200) {
+        if ([status isEqualToString:@"ok"]) {
+            NSDictionary *dataSource = [result objectForKey:@"datasource"];
+            NSNumber *allClientcount = [dataSource objectForKey:@"allClientcount"];
+            
+            NSNumber *appliedClientcount = [dataSource objectForKey:@"appliedClientcount"];
+            NSNumber *newAppliedClientcount = [dataSource objectForKey:@"newAppliedClientcount"];
+            
+            NSNumber *refusedClientcount = [dataSource objectForKey:@"refusedClientcount"];
+            NSNumber *newRefusedClientcount = [dataSource objectForKey:@"newRefusedClientcount"];
+            NSNumber *donothingClientcount = [dataSource objectForKey:@"donothingClientcount"];
+            
+            NSArray *countArray = [NSArray arrayWithObjects:[allClientcount stringValue],[appliedClientcount stringValue],[newAppliedClientcount stringValue],[refusedClientcount stringValue],[newRefusedClientcount stringValue],[donothingClientcount stringValue], nil];
+            self.peopleCountArray = countArray;
+            self.partyObj.contentString=[dataSource objectForKey:@"party_content"];
+            [self.tableView reloadData];
+        }else{
+             [self showAlertRequestFailed:description];		
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+    
+    
+}
+
+- (void)requestFailed:(ASIHTTPRequest *)request
+{
+    //	NSError *error = [request error];
+	//[self dismissWaiting];
+	//[self showAlertRequestFailed: error.localizedDescription];
+}
+
+
+#pragma mark - resend  request
+- (void)getPartyClientSeperatedList{
+    NSNumber *partyIdNumber=self.partyObj.partyId;
+    if (self.seperatedListQuest) {
+        [self.seperatedListQuest clearDelegatesAndCancel];
+    }
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%@/",GET_PARTY_CLIENT_SEPERATED_LIST,[partyIdNumber intValue],@"all"]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
+    request.timeOutSeconds = 20;
+    [request setDelegate:self];
+    [request setDidFinishSelector:@selector(getPartyClientSeperatedListRequestFinished:)];
+    [request setDidFailSelector:@selector(getPartyClientSeperatedListRequestFailed:)];
+    [request setShouldAttemptPersistentConnection:NO];
+    [request startAsynchronous];
+    self.seperatedListQuest = request;
+}
+
+- (void)getPartyClientSeperatedListRequestFinished:(ASIHTTPRequest *)request{
+	NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            NSDictionary *dict = [result objectForKey:@"datasource"];
+            self.clientsArray = [dict objectForKey:@"clientList"];
+            UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
+            [UIApplication sharedApplication].applicationIconBadgeNumber = [[dict objectForKey:@"unreadCount"] intValue];
+            if ([[dict objectForKey:@"unreadCount"] intValue]==0) {
+                tbi.badgeValue = nil;
+            }else{
+                tbi.badgeValue = [NSString stringWithFormat:@"%@",[dict objectForKey:@"unreadCount"]];
+            }
+            [self.tableView reloadData];
+        }else{
+            [self showAlertRequestFailed:description];	
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+	
+}
+
+
+- (void)getPartyClientSeperatedListRequestFailed:(ASIHTTPRequest *)request
+{
+    NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
 #pragma mark - Table view data source
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath;
+{
+    if(indexPath.section==0){
+        return 100;
+    }
+    return 44;
+}
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -146,20 +315,74 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    UIView *oldLayout = nil;
+    oldLayout = [cell viewWithTag:2];
+    [oldLayout removeFromSuperview];
     if(indexPath.section==0){
-//        UITextField *contentTextField=[[UITextField alloc]initWithFrame:CGRectMake(0, 0, 200, 40)];
-//        [cell addSubview:contentTextField];
+        cell.textLabel.font=[UIFont systemFontOfSize:13];
+        cell.textLabel.numberOfLines = 0;
+        if([self.partyObj.contentString length]>140){
+            cell.textLabel.text=[self.partyObj.contentString  substringToIndex:140];
+        }else{
+            cell.textLabel.text=self.partyObj.contentString;
+        }
         cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
-        cell.textLabel.text=@"将要编辑的内容";
     }else{
         if(indexPath.row==0){
             cell.textLabel.text=@"已邀请";
+            
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:0]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
+            
         }else if(indexPath.row==1){
             cell.textLabel.text=@"已报名";
+            UIView *oldLayout2 = nil;
+            oldLayout2=[cell viewWithTag:5];
+            [oldLayout2 removeFromSuperview];
+           // NSLog(@"新报名 %d",[[self.peopleCountArray objectAtIndex:2] intValue]);
+            if([[self.peopleCountArray objectAtIndex:2] intValue]>0){
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
+                cellImageView.image=[UIImage imageNamed:@"new2"];
+                cellImageView.tag=5;
+                [cell  addSubview:cellImageView];
+            }
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:1]];
+            
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
         }else if(indexPath.row==2){
             cell.textLabel.text=@"未响应";  
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:5]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
         }else {
             cell.textLabel.text=@"不参加";
+            UIView *oldLayout2 = nil;
+            oldLayout2=[cell viewWithTag:15];
+            [oldLayout2 removeFromSuperview];
+           // NSLog(@"新拒绝 %d",[[self.peopleCountArray objectAtIndex:4] intValue]);
+            if([[self.peopleCountArray objectAtIndex:4] intValue]>0){
+                UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(200, 15, 20, 20)];
+                cellImageView.image=[UIImage imageNamed:@"new2"];
+                cellImageView.tag=15;
+                [cell  addSubview:cellImageView];
+            }
+            UILabel *lb_1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 280, 44)];
+            lb_1.tag = 2;
+            lb_1.text = [NSString stringWithFormat:@"%@",[self.peopleCountArray objectAtIndex:3]];
+            lb_1.textAlignment = UITextAlignmentRight;
+            lb_1.backgroundColor = [UIColor clearColor];
+            [cell addSubview:lb_1];
         }
         cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     
@@ -208,6 +431,10 @@
 }
 */
 
+
+
+
+
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -222,22 +449,174 @@
     if(indexPath.section==0){
         ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
         contentTableVC.title=@"编辑活动内容";
+        contentTableVC.partyObj=self.partyObj;
         [self.navigationController pushViewController:contentTableVC animated:YES];
     }
     if(indexPath.section==1){
         StatusTableVC  *statusTableVC=[[StatusTableVC  alloc] initWithNibName:@"StatusTableVC" bundle:nil];//如果nibname为空  则不会呈现组显示
-        
+        statusTableVC.partyObj=self.partyObj;
         if(indexPath.row==0){
             statusTableVC.title=@"已邀请";
+            statusTableVC.clientStatusFlag=@"all";
+            self.partyObj.isnewApplied=NO;
+            self.partyObj.isnewRefused=NO;
         }else if(indexPath.row==1){
             statusTableVC.title=@"已报名";
+            statusTableVC.clientStatusFlag=@"applied";
+            self.partyObj.isnewApplied=NO;
         }else if(indexPath.row==2){
             statusTableVC.title=@"未响应";
+            statusTableVC.clientStatusFlag=@"donothing";
         }else {
             statusTableVC.title=@"不参加";
+            statusTableVC.clientStatusFlag=@"refused";
+            self.partyObj.isnewRefused=NO;
         }
         [self.navigationController pushViewController:statusTableVC animated:YES];
+        
     }
 }
 
+- (void)shareAction
+{
+    
+    WeiboLoginViewController *rootVC = [[WeiboLoginViewController alloc] initWithNibName:@"WeiboLoginViewController" bundle:nil];
+    //rootVC.baseinfo = baseinfo;
+    rootVC.partyObj=self.partyObj;
+    WeiboNavigationController *vc = [[WeiboNavigationController alloc] initWithRootViewController:rootVC];
+    [self presentModalViewController:vc animated:YES];
+}
+
+
+- (void)resentMsg{
+//    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+//    [alertV show];
+//
+//    ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+//    NSMutableArray *clientDicArray=[self.clientsArray mutableCopy];
+//    NSLog(@"打印type：：：%@",self.partyObj.type);
+//    for(NSDictionary  *clientDic in self.clientsArray){
+//        if([self.partyObj.type isEqualToString:@"email"]){
+//            [clientDicArray removeObject:clientDic];
+//        }
+//    }
+//    
+//    NSLog(@"detail页面输出再次发送数组》》》%@",clientDicArray);
+//    [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+//    [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+//    [resendPartyViaSMSViewController  setNewReceipts:clientDicArray];
+
+    
+    [self getPartyClientSeperatedList];
+    if([self.partyObj.type isEqualToString:@"email"]){
+        UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:@"手机版暂不支持邮件发送" message:nil delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的，知道了", nil];
+        [alertV show];
+    }else{
+        ResendPartyViaSMSViewController *resendPartyViaSMSViewController=[[ResendPartyViaSMSViewController alloc] initWithNibName:@"CreatNewPartyViaSMSViewController" bundle:nil];
+        resendPartyViaSMSViewController.isResendPage = YES;
+        [self.navigationController pushViewController:resendPartyViaSMSViewController animated:YES];
+        [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
+        [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
+    }
+}
+- (void)editBtnAction{
+    ContentTableVC *contentTableVC=[[ContentTableVC alloc] initWithNibName:@"ContentTableVC" bundle:nil];
+    contentTableVC.title=@"编辑活动内容";
+    contentTableVC.partyObj=self.partyObj;
+    [self.navigationController pushViewController:contentTableVC animated:YES];
+    
+}
+- (void)refreshItem{
+    [self loadClientCount];
+    [self getPartyClientSeperatedList];
+//    NSUserDefaults *refreshDetailContentDefault=[NSUserDefaults standardUserDefaults];
+//    [refreshDetailContentDefault setBool:YES forKey:@"refreshDetailContentDefault"];
+//    [delegate refreshBtnAction];
+//    
+//    NSUserDefaults *partyListArrayDefault=[NSUserDefaults standardUserDefaults];
+//    NSArray *partyListArray=[partyListArrayDefault objectForKey:@"partyListArrayDefaultForDetailContentRefresh"];
+//    self.partyObj=[partyListArray objectAtIndex:self.rowLastPush];
+//    NSLog(@"在refreshItem中打印：self.partyObj：%@",self.partyObj);
+    [self.tableView reloadData];
+}
+- (void)deleteParty
+{
+    UIAlertView *alertV = [[UIAlertView alloc] initWithTitle:nil message:@"删除后不能再恢复，是否继续？" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"继续", nil];
+    alertV.tag = DELETE_PARTY_ALERT_VIEW_TAG;
+    [alertV show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    if(alertView.tag == DELETE_PARTY_ALERT_VIEW_TAG){
+        if (buttonIndex == 1) {
+            [self showWaiting];
+            UserObjectService *us = [UserObjectService sharedUserObjectService];
+            UserObject *user = [us getUserObject];
+            NSURL *url = [NSURL URLWithString:DELETE_PARTY];
+            if (self.deleteQuest) {
+                [self.deleteQuest clearDelegatesAndCancel];
+            }
+            
+            ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:url];
+            [request setPostValue:self.partyObj.partyId forKey:@"pID"];
+            [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
+            
+            //request.timeOutSeconds = 20;
+            [request setDelegate:self];
+            [request setDidFinishSelector:@selector(deleteRequestFinished:)];
+            [request setDidFailSelector:@selector(deleteRequestFailed:)];
+            [request setShouldAttemptPersistentConnection:NO];
+            [request startAsynchronous];
+            self.deleteQuest=request;
+        }
+    }
+}
+
+- (void)deleteRequestFinished:(ASIHTTPRequest *)request{
+	//[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestTimeOutHandler) object:nil];
+    NSString *response = [request responseString];
+	SBJsonParser *parser = [[SBJsonParser alloc] init];
+	NSDictionary *result = [parser objectWithString:response];
+	NSString *description = [result objectForKey:@"description"];
+	[self dismissWaiting];
+    NSUserDefaults *isDeleteSucDefault=[NSUserDefaults standardUserDefaults];
+    if ([request responseStatusCode] == 200) {
+        if ([description isEqualToString:@"ok"]) {
+            [isDeleteSucDefault setBool:YES forKey:@"isDeleteSucDefault"];
+           [self.navigationController popViewControllerAnimated:YES];
+            NSNotification *notification = [NSNotification notificationWithName:CREATE_PARTY_SUCCESS object:nil userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotification:notification];
+            
+            
+        }else{
+            [self showAlertRequestFailed:description];	
+            [isDeleteSucDefault setBool:NO forKey:@"isDeleteSucDefault"];
+        }
+    }else if([request responseStatusCode] == 404){
+        [self showAlertRequestFailed:REQUEST_ERROR_404];
+    }else if([request responseStatusCode] == 500){
+        [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else {
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
+    }
+	
+}
+
+- (void)deleteRequestFailed:(ASIHTTPRequest *)request
+{
+	NSError *error = [request error];
+	[self dismissWaiting];
+	[self showAlertRequestFailed: error.localizedDescription];
+}
+
+#pragma mark -
+#pragma mark dealloc method
+- (void)dealloc {
+    [self.quest clearDelegatesAndCancel];
+    [self.seperatedListQuest  clearDelegatesAndCancel];
+    self.quest = nil;
+    self.seperatedListQuest=nil;
+}
 @end

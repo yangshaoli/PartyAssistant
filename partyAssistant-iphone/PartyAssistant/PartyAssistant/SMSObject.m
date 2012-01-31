@@ -17,7 +17,11 @@
     if (self) {
 		self.smsID = -1;
         self.smsContent = @"";
-        self._isSendBySelf = YES;
+        if ([MFMessageComposeViewController canSendText]) {
+            self._isSendBySelf = YES;
+        } else {
+            self._isSendBySelf = NO;
+        }
         self._isApplyTips = YES;
         self.receiversArray = nil;
         self.receiversArrayJson = nil;
@@ -32,7 +36,11 @@
     if (self) {
 		self.smsID = -1;
         self.smsContent = @"";
-        self._isSendBySelf = YES;
+        if ([MFMessageComposeViewController canSendText]) {
+            self._isSendBySelf = YES;
+        } else {
+            self._isSendBySelf = NO;
+        }
         self._isApplyTips = YES;
         self.receiversArray = nil;
     }
@@ -50,10 +58,19 @@
 - (void) encodeWithCoder: (NSCoder *) encoder {
     self.receiversArrayJson = [self setupReceiversArrayData];
     [encoder encodeObject: [NSNumber numberWithInteger: self.smsID] forKey:@"smsID"];
-	[encoder encodeObject: self.smsContent forKey:@"smsContent"];
+	if (smsContent) {
+        [encoder encodeObject: self.smsContent forKey:@"smsContent"];
+    } else {
+        [encoder encodeObject:@"" forKey:@"smsContent"];
+    }
+    
 	[encoder encodeObject: [NSNumber numberWithBool:self._isSendBySelf] forKey:@"_isSendBySelf"];
 	[encoder encodeObject: [NSNumber numberWithBool:self._isApplyTips] forKey:@"_isApplyTips"];
-    [encoder encodeObject: self.receiversArray forKey:@"receiversArray"];
+    if (receiversArray) {
+        [encoder encodeObject: self.receiversArray forKey:@"receiversArray"];
+    } else {
+        [encoder encodeObject:[NSArray array] forKey:@"receiversArray"];
+    }
     [encoder encodeObject: self.receiversArrayJson  forKey:@"receiversArrayJson"];
 }
 
@@ -71,7 +88,11 @@
 - (void)clearObject{
 	self.smsID = -1;
     self.smsContent = @"";
-    self._isSendBySelf = YES;
+    if ([MFMessageComposeViewController canSendText]) {
+        self._isSendBySelf = YES;
+    } else {
+        self._isSendBySelf = NO;
+    }
     self._isApplyTips = YES;
     self.receiversArray = nil;
     self.receiversArrayJson = nil;
@@ -82,7 +103,7 @@
     NSMutableArray *nArray = [[NSMutableArray alloc] initWithCapacity:[self.receiversArray count]];
     for (int i=0; i<[receiversArray count]; i++) {
         ClientObject *client = [self.receiversArray objectAtIndex:i];
-        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInteger:client.cID],@"cID",client.cName,@"cName",client.cVal,@"cValue", nil];
+        NSDictionary *dic = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:client.cID],@"cId",client.cName,@"cName",client.cVal,@"cValue", nil];
         [nArray addObject:dic];
     }
     return [nArray JSONRepresentation];

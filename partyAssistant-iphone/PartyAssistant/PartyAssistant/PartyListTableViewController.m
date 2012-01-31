@@ -7,7 +7,7 @@
 //
 
 #import "PartyListTableViewController.h"
-
+#import "UIViewControllerExtra.h"
 #define DELETE_PARTY_ALERT_VIEW_TAG 11
 #define NAVIGATION_CONTROLLER_TITLE @"趴列表"
 
@@ -191,7 +191,6 @@
     PeopleCountInPartyListCellSubView *v = [[PeopleCountInPartyListCellSubView alloc] initWithPeopleCount:baseinfo.peopleCountDict];
     [cell addSubview:v];
     cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-    NSLog(@"list cell init");
     return cell;
 }
 
@@ -257,7 +256,7 @@
     
     NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@%d/%d/" ,GET_PARTY_LIST,user.uID,aLastID]];
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     
@@ -276,6 +275,7 @@
 - (void)refreshBtnAction{
     int aLastID = 0;
     [self requestDataWithLastID:aLastID];
+    
 }
 
 - (void)requestFinished:(ASIHTTPRequest *)request{
@@ -283,12 +283,14 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	//		NSString *debugger = [[result objectForKey:@"status"] objectForKey:@"debugger"];
 	//[NSThread detachNewThreadSelector:@selector(dismissWaiting) toTarget:self withObject:nil];
 //	[self dismissWaiting];
     if([request responseStatusCode] == 200){
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSDictionary *dataSource = [result objectForKey:@"datasource"];
             self.lastID = [[dataSource objectForKey:@"lastID"] intValue];
             if (lastID < 0) {
@@ -315,6 +317,7 @@
                 [biObj formatStringToDate];
                 [self.partyList addObject:biObj];
                 
+                
             }
             self.navigationItem.rightBarButtonItem.customView = nil;
             [self.tableView reloadData];
@@ -327,9 +330,15 @@
     }else if([request responseStatusCode] == 404){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         self.navigationItem.rightBarButtonItem.customView = nil;
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        self.navigationItem.rightBarButtonItem.customView = nil;
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
     //wxz
     UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -408,7 +417,7 @@
             [request setPostValue:[NSNumber numberWithInteger:_currentDeletePartyID] forKey:@"pID"];
             [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
 
-            request.timeOutSeconds = 30;
+            request.timeOutSeconds = 20;
             [request setDelegate:self];
             [request setDidFinishSelector:@selector(deleteRequestFinished:)];
             [request setDidFailSelector:@selector(deleteRequestFailed:)];
@@ -430,15 +439,19 @@
             NSIndexPath *index = [NSIndexPath indexPathForRow:self._currentDeletePartyCellIndex inSection:0];
             NSArray *indexPathArray = [NSArray arrayWithObject:index];
             [partyList removeObjectAtIndex:_currentDeletePartyCellIndex];
-            [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationTop];
+            [self.tableView deleteRowsAtIndexPaths:indexPathArray withRowAnimation:UITableViewRowAnimationNone];
             [self setBottomRefreshViewYandDeltaHeight];
         }else{
             [self showAlertRequestFailed:description];		
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -458,7 +471,6 @@
 
 - (void)AddBadgeToTabbar:(NSNotification *)notification{
     NSDictionary *userinfo = [notification userInfo];
-    NSLog(@"badge:%@",[userinfo objectForKey:@"badge"]);
     UITabBarItem *tbi = (UITabBarItem *)[self.tabBarController.tabBar.items objectAtIndex:1];
     tbi.badgeValue = [NSString stringWithFormat:@"%@",[userinfo objectForKey:@"badge"]];
 }

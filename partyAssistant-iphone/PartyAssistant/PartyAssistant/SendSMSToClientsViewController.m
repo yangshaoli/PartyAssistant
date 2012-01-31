@@ -8,6 +8,7 @@
 
 #import "SendSMSToClientsViewController.h"
 #import "AddNewPartyBaseInfoTableViewController.h"
+#import "UIViewControllerExtra.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
 #define DONE_ALERT_TAG 13
@@ -147,7 +148,6 @@
                 self.contentTextView = [[UITextView alloc] initWithFrame:CGRectMake(100, 10, 160,160)];
             }
             contentTextView.text = self.smsObject.smsContent;
-            NSLog(@"调用cell");
             contentTextView.backgroundColor = [UIColor clearColor];
             contentTextView.font=[UIFont systemFontOfSize:15];
             [cell addSubview:contentTextView];
@@ -168,7 +168,6 @@
                     cell.textLabel.text = @"通过自己的手机发送：";
                     [cell addSubview:sendBySelfSwitch];
                 }
-                NSLog(@"手机发送开关");
             }
         }else if (indexPath.section == 3){
             UIButton *setDefaultBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -334,6 +333,7 @@
     [self showWaiting];
     BaseInfoService *bs = [BaseInfoService sharedBaseInfoService];
     BaseInfoObject *baseinfo = [bs getBaseInfo];
+    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
     NSURL *url = [NSURL URLWithString:CREATE_PARTY];
@@ -351,7 +351,7 @@
     [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
 
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -361,14 +361,15 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.smsObject._isSendBySelf) {
               if([MFMessageComposeViewController canSendText]==YES){
-                  NSLog(@"可以发送短信");
                   MFMessageComposeViewController *vc = [[MFMessageComposeViewController alloc] init];
                   if (self.smsObject._isApplyTips) {
                       vc.body = [self.smsObject.smsContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -389,7 +390,6 @@
                   EmailObjectService *se = [EmailObjectService sharedEmailObjectService];
                   [se clearEmailObject];                  
               }else{
-                    NSLog(@"不能发送短信");
                     [self createPartySuc];
                     #if TARGET_IPHONE_SIMULATOR // iPhone Simulator
                          return;
@@ -404,8 +404,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }

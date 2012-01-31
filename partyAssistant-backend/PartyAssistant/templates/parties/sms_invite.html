@@ -17,7 +17,7 @@
      */ * html .ui-autocomplete {
         height: 100px;
     }
-    a {
+    .field a {
     color: #2319FD;
     text-decoration :underline;  
      }
@@ -94,7 +94,8 @@ function getRecentPartiesAddressee(v){
                 for (i in clients){
                     client_list[i] = clients[i].address;
                 }
-                $("#id_client_phone_list").val(client_list.join(','))
+                $("#id_client_phone_list").val(client_list.join(','));
+                calculate_send_phone_count();
             },
             500: function(){ alert('没有获取到用户列表')}
             }
@@ -220,8 +221,8 @@ function getRecentPartiesAddressee(v){
             收件人<font color='red'>*</font>
         <p id="id_send_phone_count">共 0 人</p>
         </label>
-	 <textarea id="id_client_phone_list" rows="4" cols="70" name="client_phone_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ">{{ form.client_phone_list.value }}</textarea>
-     &nbsp;<font color='red'>{{ form.client_phone_list.errors.0 }}</font>
+	 <textarea id="id_client_phone_list" rows="4" cols="70" name="client_phone_list" style="margin-left: 0px; margin-right: 0px; width: 404px; ime-mode:disabled;">{{ form.client_phone_list.value }}</textarea>
+     &nbsp;<font color='red'>{{ form.client_phone_list.errors.0 }}{{ form.client_phone_list.errors }}</font>
      {% if quickadd_client.noanswer_client or quickadd_client.apply_client or quickadd_client.reject_client %}
         <script>
           var reject = '{{ quickadd_client.reject_client }}';
@@ -266,6 +267,7 @@ function getRecentPartiesAddressee(v){
              	}else{
              	    $('#id_client_phone_list').val(temp)
              	}
+             	calculate_send_phone_count();
             } 	
           }
         

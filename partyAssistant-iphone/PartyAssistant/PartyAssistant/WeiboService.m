@@ -55,6 +55,24 @@ SYNTHESIZE_SINGLETON_FOR_CLASS(WeiboService)
     [self saveWeiboPersonalProfile];
 }
 
+- (void)saveWeiboPersonalProfile
+{
+    if (!self.weiboPersonalProfile) {
+        return;
+    }
+    NSMutableData *theData = [NSMutableData data];
+    NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
+    
+    [encoder encodeObject:self.weiboPersonalProfile forKey:WEIBOPERSONALPROFILEKEY];
+    [encoder finishEncoding];
+    
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString* documentsDirectory = [paths objectAtIndex:0];
+    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:WEIBOPERSONALPROFILEFILE];
+    [theData writeToFile:fullPathToFile atomically:YES];
+}
+
 - (void)clearWeiboPersonalProfile
 {
     [self.weiboPersonalProfile clearObject];

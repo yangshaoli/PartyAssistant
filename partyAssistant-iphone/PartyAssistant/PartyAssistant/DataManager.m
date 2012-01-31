@@ -13,6 +13,13 @@
 #import "URLSettings.h"
 #import "UserObject.h"
 #import "UserObjectService.h"
+#import "HTTPRequestErrorMSG.h"
+#import "NotificationSettings.h"
+#import "UserInfoBindingStatusService.h"
+
+#define INVALID_NETWORK @"无法连接网络，请检查网络状态！"
+#define SERVER_CONNECTION_ERROR @"与服务器连接异常！请稍后重试！"
+#define SERVER_OPERATION_ERROR @"操作失败！"
 
 @interface DataManager ()
 
@@ -24,7 +31,7 @@
 @end
 
 @implementation DataManager
-
+@synthesize isRandomLoginSelf;
 static DataManager *sharedDataManager = nil;
 
 + (DataManager *)sharedDataManager {
@@ -45,14 +52,47 @@ static DataManager *sharedDataManager = nil;
     
     return self;
 }
+- (void)showAlertRequestFailed: (NSString *) theMessage{
+	UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"出错啦!" message:theMessage delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的",nil];
+    [av show];
+}
+- (void)getVersionFromRequestDic:(NSDictionary *)result{
+    NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
+    NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
+    NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+    NSString *newVersionString = [result objectForKey:@"iphone_version"];
+    if(preVersionString==nil||[preVersionString isEqualToString:@""]){
+        NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+        [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+        //NSLog(@"前版本为空");
+        return;
+    }else{
+        if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
+            return;
+        }else{
+            //NSLog(@"DAYIN  ,preVersionString:%@....newVersionString:%@",preVersionString,newVersionString);
+            if([newVersionString floatValue]>[preVersionString floatValue]){
+                //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+                [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
+            }else{
+                [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
+            }
+        }
+        
+    }
+    
+    
+    
+}
 
-- (NetworkConnectionStatus)validateCheckWithUsrName:(NSString *)name
+- (NSString *)validateCheckWithUsrName:(NSString *)name
                                                 pwd:(NSString *)pwd {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return NetworkConnectionInvalidate;
+        return INVALID_NETWORK;
+        //return NetworkConnectionInvalidate;
     }
     //2.post name and pwd
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:ACCOUNT_LOGIN]];
@@ -67,27 +107,56 @@ static DataManager *sharedDataManager = nil;
     if (!error) {
         // add method to save user data, like uid and sth else.
         //[self saveUsrData:(NSDic *)jsonValue]
+        NSLog(@"%@",[[request responseString] JSONValue]);
         if ([request responseStatusCode] == 200) {
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
+            [self getVersionFromRequestDic:dic];
             NSString *description = [dic objectForKey:@"description"];
-            if ([description isEqualToString:@"ok"]) {
-                dic = [NSMutableDictionary dictionaryWithDictionary:dic];
-                [dic setValue:name forKey:@"username"];
+            NSString *status = [dic objectForKey:@"status"];
+            NSDictionary *datasourceDic=[dic objectForKey:@"datasource"];
+            BOOL isRandomLogin=[[datasourceDic objectForKey:@"_israndomlogin"] boolValue];
+            if(isRandomLogin){
+                self.isRandomLoginSelf=YES;
+            }else{
+                self.isRandomLoginSelf=NO; 
+            }
+            if ([status isEqualToString:@"ok"]) {
                 [self saveUsrData:dic];
                 [pool release];
-                return NetWorkConnectionCheckPass;
+                return nil;
             } else {
-
+                 //[self showAlertRequestFailed:description];
+                if (description) {
+                    return description;
+                } else {
+                    return SERVER_CONNECTION_ERROR;
+                }
             }
+        }else if([request responseStatusCode] == 404){
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return REQUEST_ERROR_404;
+        }else if([request responseStatusCode] == 500){
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return REQUEST_ERROR_500;
+        }else if([request responseStatusCode] == 502){
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return REQUEST_ERROR_502;
+        } else {
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return REQUEST_ERROR_504;
         } 
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     } else {
         //show error info
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     }
+    
+    return SERVER_CONNECTION_ERROR;
 }
 
 - (BOOL)networkValidate {
@@ -101,12 +170,13 @@ static DataManager *sharedDataManager = nil;
     //@"userId"
 }
 
-- (NetworkConnectionStatus)registerUserWithUsrInfo:(NSDictionary *)usrInfo {
+- (NSString *)registerUserWithUsrInfo:(NSDictionary *)usrInfo {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return NetworkConnectionInvalidate;
+        //return NetworkConnectionInvalidate;
+        return INVALID_NETWORK;
     }
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
@@ -124,35 +194,74 @@ static DataManager *sharedDataManager = nil;
             NSString *receivedString = [request responseString];
             NSDictionary *dic = [receivedString JSONValue];
             NSString *description = [dic objectForKey:@"description"];
-            if ([description isEqualToString:@"ok"]) {
-                [self saveUsrData:dic];
+            [self getVersionFromRequestDic:dic];
+            NSString *status = [dic objectForKey:@"status"];   
+            NSLog(@"%@",description);
+            if ([status isEqualToString:@"ok"]) {
+                NSMutableDictionary *info = [NSMutableDictionary dictionaryWithDictionary:dic];
+                NSString *username = [usrInfo objectForKey:@"username"];
+                [self saveUsrData:info withUsername:username];
                 [pool release];
-                return NetWorkConnectionCheckPass;
+                //return NetWorkConnectionCheckPass;
+                return nil;
             } else {
-                
+                if (description) {
+                    return description;
+                } else {
+                    return SERVER_CONNECTION_ERROR;
+                }
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return REQUEST_ERROR_404;
+        }else if([request responseStatusCode] == 500){
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return REQUEST_ERROR_500;
+        }else if([request responseStatusCode] == 502){
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return REQUEST_ERROR_502;
+        } else {
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return REQUEST_ERROR_504;
+        }  
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     } else {
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     }
 }
 
-- (NetworkConnectionStatus)logoutUser {
+- (void)clearPartyListData {
+    NSString *partyListPath = [NSString stringWithFormat:@"%@/Documents/partylistofpre20.plist", NSHomeDirectory()];
+    NSFileManager* fm = [NSFileManager defaultManager];
+    NSMutableArray *getArrayFromFile;
+    if(![fm fileExistsAtPath:partyListPath]) {
+        getArrayFromFile = [[NSMutableArray alloc] initWithCapacity:0];
+    } else {
+        getArrayFromFile = [[NSMutableArray alloc] initWithContentsOfFile:partyListPath];
+    }
+    
+    [getArrayFromFile removeAllObjects];
+    
+    [getArrayFromFile  writeToFile:partyListPath  atomically:YES];
+}
+
+- (NSString *)logoutUser {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return NetworkConnectionInvalidate;
+        //return NetworkConnectionInvalidate;
+        return INVALID_NETWORK;
     }
     //2.post usr info
     ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
                                    [NSURL URLWithString:ACCOUNT_LOGOUT]];
-    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
+    //暂时不需要UID
+//    UserObject *userObject = [[UserObjectService sharedUserObjectService] getUserObject];
     
-    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
+//    [request setPostValue:[NSString stringWithFormat:@"%d", userObject.uID] forKey:@"userID"];
     [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
     [request startSynchronous];
     NSError *error = [request error];
@@ -169,24 +278,48 @@ static DataManager *sharedDataManager = nil;
                 UserObject *userData = [userObjectService getUserObject];
                 [userData clearObject];
                 [userObjectService saveUserObject];
-                [pool release];
-                return NetWorkConnectionCheckPass;
-            } else {
+                [self clearPartyListData];
                 
+                UserInfoBindingStatusService *userInfoBindingService = [UserInfoBindingStatusService sharedUserInfoBindingStatusService];
+                [userInfoBindingService clearBindingStatusObject];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:USER_LOGOUT_NOTIFICATION object:nil];
+                [pool release];
+                //return NetWorkConnectionCheckPass;
+                return nil;
+            } else {
+                if (description) {
+                   return description; 
+                } else {
+                    return SERVER_OPERATION_ERROR;
+                }
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return REQUEST_ERROR_404;
+        }else if([request responseStatusCode] == 500){
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return REQUEST_ERROR_500;
+        }else if([request responseStatusCode] == 502){
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return REQUEST_ERROR_502;
+        } else {
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return REQUEST_ERROR_504;
+        }  
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     } else {
         [pool release];
-        return NetWorkConnectionCheckDeny;
+        //return NetWorkConnectionCheckDeny;
+        return SERVER_CONNECTION_ERROR;
     }
 }
 
 - (BOOL)checkIfUserNameSaved {
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
-    NSLog(@"--->nickname:%@",userData.nickName);
     if ([userData.nickName isEqualToString:@""] || !userData.nickName) {
         return NO;
     }
@@ -194,6 +327,7 @@ static DataManager *sharedDataManager = nil;
 }
 
 - (void)saveUsrData:(NSDictionary *)jsonValue {
+    NSLog(@"user :%@",jsonValue);
     UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
     UserObject *userData = [userObjectService getUserObject];
     [userData clearObject];
@@ -214,7 +348,37 @@ static DataManager *sharedDataManager = nil;
         
     }
     
-    userData.userName = [jsonValue objectForKey:@"username"];
+    NSString *userName = [datasource objectForKey:@"username"];
+    if (userName) {
+        userData.userName = userName;
+    }
+    
+    [userObjectService saveUserObject];
+}
+
+- (void)saveUsrData:(NSDictionary *)jsonValue withUsername:(NSString *)username {
+    NSLog(@"user :%@",jsonValue);
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    [userData clearObject];
+    
+    NSDictionary *datasource = [jsonValue objectForKey:@"datasource"];
+    
+    NSString *name = [datasource objectForKey:@"name"];
+    if (name) {
+        userData.nickName = name;
+    } else {
+        
+    }
+    
+    NSString *uid = [datasource objectForKey:@"uid"];
+    if (uid) {
+        userData.uID = [uid intValue];
+    } else {
+        
+    }
+    
+    userData.userName = username;
     
     [userObjectService saveUserObject];
 }
@@ -283,7 +447,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -325,7 +497,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -368,7 +548,15 @@ static DataManager *sharedDataManager = nil;
             } else {
                 
             }
-        } 
+        }else if([request responseStatusCode] == 404){
+            [self showAlertRequestFailed:REQUEST_ERROR_404];
+        }else if([request responseStatusCode] == 500){
+            [self showAlertRequestFailed:REQUEST_ERROR_500];
+        }else if([request responseStatusCode] == 502){
+            [self showAlertRequestFailed:REQUEST_ERROR_502];
+        } else {
+            [self showAlertRequestFailed:REQUEST_ERROR_504];
+        }  
         [pool release];
         return NetWorkConnectionCheckDeny;
     } else {
@@ -377,5 +565,68 @@ static DataManager *sharedDataManager = nil;
     }
 }
 
+- (BOOL)bindDeviceToken {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    UserObject *userData = [userObjectService getUserObject];
+    if (userData.uID < 0) {
+        return FALSE;
+    }
+    //1.check network status
+    if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
+        [pool release];
+        //return NetworkConnectionInvalidate;
+        return FALSE;
+    }
+    //2.post usr info
+    ASIFormDataRequest *request = [ASIFormDataRequest requestWithURL:
+                                   [NSURL URLWithString:REGISTER_DEVICE_TOKEN]];
+    [request setPostValue:[NSString stringWithFormat:@"%d", userData.uID] forKey:@"uid"];
+    [request setPostValue:[DeviceTokenService getDeviceToken] forKey:@"device_token"];
+    [request startSynchronous];
+    NSError *error = [request error];
+    //3.get result
+    if (!error) {
+        // add method to save user data, like uid and sth else.
+        //[self saveUsrData:(NSDic *)jsonValue]
+        if ([request responseStatusCode] == 200) {
+            NSString *receivedString = [request responseString];
+            NSDictionary *dic = [receivedString JSONValue];
+            NSString *description = [dic objectForKey:@"description"];
+            [self getVersionFromRequestDic:dic];
+            NSString *status = [dic objectForKey:@"status"];   
+            NSLog(@"%@",description);
+            if ([status isEqualToString:@"ok"]) {
+                [pool release];
+                //return NetWorkConnectionCheckPass;
+                return YES;
+            } else {
+                if (description) {
+                    return FALSE;
+                } else {
+                    return FALSE;
+                }
+            }
+        }else if([request responseStatusCode] == 404){
+            //[self showAlertRequestFailed:REQUEST_ERROR_404];
+            return FALSE;
+        }else if([request responseStatusCode] == 500){
+            //[self showAlertRequestFailed:REQUEST_ERROR_500];
+            return FALSE;
+        }else if([request responseStatusCode] == 502){
+            //[self showAlertRequestFailed:REQUEST_ERROR_502];
+            return FALSE;
+        } else {
+            //[self showAlertRequestFailed:REQUEST_ERROR_504];
+            return FALSE;
+        }  
+        [pool release];
+        return FALSE;
+    } else {
+        [pool release];
+        return FALSE;
+    }
+}
 
 @end

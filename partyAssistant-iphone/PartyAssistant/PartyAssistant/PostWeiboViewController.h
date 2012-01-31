@@ -9,14 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "WBSendView.h"
 #import "BaseInfoObject.h"
-
+#import "PartyModel.h"
 @interface PostWeiboViewController : UIViewController<WBSendViewDelegate,UIAlertViewDelegate>
 {
     WBSendView *sendV;
-    BaseInfoObject *baseinfo;
+//    BaseInfoObject *baseinfo;
+    PartyModel *partyObj;
+    
 }
 
 @property(nonatomic, retain)WBSendView *sendV;
-@property(nonatomic, retain)BaseInfoObject *baseinfo;
+//@property(nonatomic, retain)BaseInfoObject *baseinfo;
+@property(nonatomic, retain)PartyModel *partyObj;
 
 @end

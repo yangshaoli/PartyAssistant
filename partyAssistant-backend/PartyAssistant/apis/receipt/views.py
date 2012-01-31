@@ -34,20 +34,19 @@ def verify_receipt(request):
         
         data = json.loads(resp)
         status = data['status']
-        print status
-        print type(status)
         if str(status) == "0":
             receipt = data["receipt"]
             receipt_str = json.dumps(receipt)
             print data
             product_id = receipt["product_id"]
             purchase_date = receipt["original_purchase_date"][:19]
+            original_transaction_id = receipt['original_transaction_id']
             purchase_date = datetime.datetime.strptime(purchase_date, "%Y-%m-%d %H:%M:%S") + datetime.timedelta(hours = 8)
             production_info = ProductionInfo.objects.get(production_apple_id = product_id)
             pay_money = production_info.pay_money
             pay_money_type = production_info.pay_money_type
             items_count = production_info.items_count
-            apple_receipt_list = UserAppleReceipt.objects.filter(receipt = receipt_str)
+            apple_receipt_list = UserAppleReceipt.objects.filter(original_transaction_id = original_transaction_id)
             if apple_receipt_list:
                 raise myException(u'重复的收据')
             else:
@@ -57,9 +56,12 @@ def verify_receipt(request):
                                                 buy_time = purchase_date,
                                                 pre_sms_count = user.userprofile.available_sms_count,
                                                 final_sms_count = user.userprofile.available_sms_count + items_count,
+                                                original_transaction_id = original_transaction_id,
                                                 apple_production = production_info,
                                                 premium = Premium.objects.latest('pk'),
                                                 )
+                user.userprofile.available_sms_count += items_count
+                user.userprofile.save()
         return json.loads(resp)
     else:
         raise myException('Bad Request')

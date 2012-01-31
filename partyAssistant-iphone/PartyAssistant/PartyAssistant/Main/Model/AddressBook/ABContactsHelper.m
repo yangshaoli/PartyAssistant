@@ -53,9 +53,9 @@
 {
 	NSPredicate *pred;
 	NSArray *contacts = [ContactData contactsArray];
-	pred = [NSPredicate predicateWithFormat:@"firstname contains[cd] %@ OR lastname contains[cd] %@ OR nickname contains[cd] %@ OR middlename contains[cd] %@", fname, fname, fname, fname];
+	pred = [NSPredicate predicateWithFormat:@"firstname contains[cd] %@ OR lastname contains[cd] %@ OR nickname contains[cd] '%@' OR middlename contains[cd] '%@'", fname, fname, fname, fname];
 	contacts = [contacts filteredArrayUsingPredicate:pred];
-	pred = [NSPredicate predicateWithFormat:@"firstname contains[cd] %@ OR lastname contains[cd] %@ OR nickname contains[cd] %@ OR middlename contains[cd] %@", lname, lname, lname, lname];
+	pred = [NSPredicate predicateWithFormat:@"firstname contains[cd] %@ OR lastname contains[cd] %@ OR nickname contains[cd] '%@' OR middlename contains[cd] '%@'", lname, lname, lname, lname];
 	contacts = [contacts filteredArrayUsingPredicate:pred];
 	return contacts;
 }
@@ -65,6 +65,13 @@
 	NSPredicate *pred;
 	NSArray *contacts = [ContactData contactsArray];
 	pred = [NSPredicate predicateWithFormat:@"phonenumbers contains[cd] %@", number];
+	return [contacts filteredArrayUsingPredicate:pred];
+}
+
++ (NSArray *) contactsEqualsName: (NSString *) name {
+    NSPredicate *pred;
+	NSArray *contacts = [ContactData contactsArray];
+	pred = [NSPredicate predicateWithFormat:@"compositeName MATCHES[cd] %@", name];
 	return [contacts filteredArrayUsingPredicate:pred];
 }
 @end

@@ -5,7 +5,7 @@
 //  Created by 超 李 on 11-10-28.
 //  Copyright 2011年 __MyCompanyName__. All rights reserved.
 //
-
+#import "UIViewControllerExtra.h"
 #import "SendEmailToClientsViewController.h"
 #define APPLY_TIPS_ALERT_TAG 12
 #define SET_DEFAULT_ALERT_TAG 11
@@ -333,7 +333,7 @@
     [request setPostValue:baseinfo.peopleMaximum forKey:@"peopleMaximum"];
     [request setPostValue:[NSNumber numberWithInteger:user.uID] forKey:@"uID"];
     
-    request.timeOutSeconds = 30;
+    request.timeOutSeconds = 20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];    
@@ -343,14 +343,15 @@
 	NSString *response = [request responseString];
 	SBJsonParser *parser = [[SBJsonParser alloc] init];
 	NSDictionary *result = [parser objectWithString:response];
+    [self getVersionFromRequestDic:result];
+    NSString *status = [result objectForKey:@"status"];   
 	NSString *description = [result objectForKey:@"description"];
 	[self dismissWaiting];
     if ([request responseStatusCode] == 200) {
-        if ([description isEqualToString:@"ok"]) {
+        if ([status isEqualToString:@"ok"]) {
             NSString *applyURL = [[result objectForKey:@"datasource"] objectForKey:@"applyURL"];
             if (self.emailObject._isSendBySelf) {
               if([MFMailComposeViewController canSendMail]==YES){//wxz
-                    NSLog(@"可以发送邮件");
                     MFMailComposeViewController *vc = [[MFMailComposeViewController alloc] init];
                   if (self.emailObject._isApplyTips) {
                       NSString *emailcontent = [self.emailObject.emailContent stringByAppendingString:[NSString stringWithFormat:@"(报名链接: %@)",applyURL]];
@@ -376,7 +377,6 @@
                   [bs clearBaseInfo];
                   
               }else{
-                    NSLog(@"不能发送邮件");
                     [self createPartySuc];
                     return;
               }
@@ -389,8 +389,12 @@
         }
     }else if([request responseStatusCode] == 404){
         [self showAlertRequestFailed:REQUEST_ERROR_404];
-    }else{
+    }else if([request responseStatusCode] == 500){
         [self showAlertRequestFailed:REQUEST_ERROR_500];
+    }else if([request responseStatusCode] == 502){
+        [self showAlertRequestFailed:REQUEST_ERROR_502];
+    }else{
+        [self showAlertRequestFailed:REQUEST_ERROR_504];
     }
 	
 }
@@ -428,7 +432,6 @@
             break;
         }
         case MFMailComposeResultSaved:{
-            NSLog(@"保存。。。。。。。");
             [self.navigationController dismissModalViewControllerAnimated:YES];
             [self.navigationController popToRootViewControllerAnimated:NO];
             break;
