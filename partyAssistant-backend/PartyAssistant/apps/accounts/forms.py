@@ -69,7 +69,7 @@ class GetPasswordForm(forms.Form):
     email = forms.EmailField(max_length = 75, widget = forms.TextInput())
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(error_messages = {'required': u'原始密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length = 6, max_length = 16)
+    old_password = forms.CharField(error_messages = {'required': u'原始密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'})
     new_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, min_length = 6, max_length = 16)
     confirm_password = forms.CharField(error_messages = {'required': u'新密码不能为空', 'min_length':u'至少是6个字符', 'max_length':u'最多是16个字符'}, required = False, max_length = 16)
     
