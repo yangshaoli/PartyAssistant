@@ -49,6 +49,7 @@ import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 import com.aragoncg.apps.airenao.weibo.ShareActivity;
@@ -71,12 +72,17 @@ public class MeetingListActivity extends ListActivity implements
 	private Button btnRefresh;
 	private String userName = "";
 	private String userId = "";
+	private String partyId;
 	private int startId = 0;
 	private int PAGE_COUNT = 20;
 	private String status;
 	private String description;
 	private JSONObject dataSource;
 	private JSONArray myJsonArray;
+	private JSONObject clientData;
+	private JSONArray appliedClients;
+	private JSONArray doNothingClients;
+	private JSONArray refusedClients;
 	private Handler postHandler;
 	private boolean needRefresh;
 	private int tempCount;
@@ -124,7 +130,7 @@ public class MeetingListActivity extends ListActivity implements
 		AirenaoUtills.activityList.add(this);
 		mContext = getBaseContext();
 		init();
-		needRefresh = getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
+		needRefresh = false;//getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
 		myListView = getListView();
 		getData();
 		
@@ -147,8 +153,6 @@ public class MeetingListActivity extends ListActivity implements
 						menu.setHeaderTitle(getString(R.string.operate));
 						menu.add(0, Constants.MENU_FIRST, Constants.MENU_FIRST,
 								getString(R.string.delete));
-						// menu.add(0, Constants.MENU_SECOND,
-						// Constants.MENU_SECOND, getString(R.string.copy));
 						menu.add(0, Constants.MENU_THIRD, Constants.MENU_THIRD,
 								getString(R.string.share));
 
@@ -173,7 +177,7 @@ public class MeetingListActivity extends ListActivity implements
 	@Override
 	protected void onRestart() {
 		startId = 0;
-		needRefresh = true;
+		needRefresh = false;
 		if (needRefresh) {
 			
 			getData();
@@ -312,9 +316,8 @@ public class MeetingListActivity extends ListActivity implements
 										int which) {
 									HashMap<String, Object> map = (HashMap<String, Object>) mData
 											.get(listItemId);
-									final Integer partyID = Integer
-											.valueOf((String) map
-													.get(Constants.PARTY_ID));
+									final String partyID = (String) map
+													.get(Constants.PARTY_ID);
 									final String delteUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_DELETE_URL;
 									// userId
 									switch (which) {
@@ -424,7 +427,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * @param url
 	 * @param partyId
 	 */
-	public void deleleOnePraty(final String url, Integer partyId) {
+	public void deleleOnePraty(final String url, String partyId) {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("pID", partyId + "");
 		params.put("uID", userId);
@@ -894,16 +897,49 @@ public class MeetingListActivity extends ListActivity implements
 				if (tempCount > 0) {
 					if (!separatePage) {
 						DbHelper.delete(db, DbHelper.deleteActivitySql);
+						DbHelper.delete(db, DbHelper.deleteTableAppliedSql);
+						DbHelper.delete(db, DbHelper.deleteTableDoNothingSql);
+						DbHelper.delete(db, DbHelper.deleteTableRefusedSql);
 					}
 				}
 				for (int i = 0; i < myJsonArray.length(); i++) {
 					JSONObject tempActivity = myJsonArray.getJSONObject(i);
 					list.add(organizeMap(tempActivity));
-					/*myDaAdapter.notifyDataSetChanged();
-					myListView.requestFocusFromTouch();*/
-					try {
 
-						DbHelper.insert(db, organizeOneActivity(tempActivity),
+					appliedClients = tempActivity
+							.getJSONArray("appliedClients");
+					doNothingClients = tempActivity
+							.getJSONArray("donothingClients");
+					refusedClients = tempActivity
+							.getJSONArray("refusedClients");
+					try {
+						if (appliedClients.length() > 0) {
+							for (int a = 0; a < appliedClients.length(); a++) {
+								clientData = (JSONObject)appliedClients.getJSONObject(a);
+								DbHelper.insertOneClientData(db,
+										organizeOneClientData(clientData),
+										"appliedClients");
+							}
+						}
+						if (doNothingClients.length() > 0) {
+							for (int d = 0; d < doNothingClients.length(); d++) {
+								clientData = (JSONObject)doNothingClients.getJSONObject(d);
+								DbHelper.insertOneClientData(db,
+										organizeOneClientData(clientData),
+										"doNothingClients");
+							}
+						}
+						if (refusedClients.length() > 0) {
+							for (int r = 0; r < refusedClients.length(); r++) {
+								clientData = (JSONObject)refusedClients.getJSONObject(r);
+								DbHelper.insertOneClientData(db,
+										organizeOneClientData(clientData),
+										"refusedClients");
+							}
+						}
+
+						DbHelper.insertOneParty(db,
+								organizeOneActivity(tempActivity),
 								DbHelper.ACTIVITY_TABLE_NAME);
 
 					} catch (Exception e) {
@@ -927,12 +963,12 @@ public class MeetingListActivity extends ListActivity implements
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			if (db != null) {
 				db.close();
 			}
 		}
-		
+
 	}
 
 	/**
@@ -964,7 +1000,8 @@ public class MeetingListActivity extends ListActivity implements
 
 		try {
 			description = data.getString(PARTY_DESCRIPTION);
-			map.put(Constants.PARTY_ID, data.get(PARTY_ID) + "");
+			partyId =  data.get(PARTY_ID)+"";
+			map.put(Constants.PARTY_ID, partyId );
 			if (description.length() < 22) {
 				map.put(Constants.ACTIVITY_NAME, description);
 			} else {
@@ -992,10 +1029,12 @@ public class MeetingListActivity extends ListActivity implements
 	 * @param data
 	 * @return
 	 */
+	
 	public AirenaoActivity organizeOneActivity(JSONObject data) {
 		AirenaoActivity myActivity = new AirenaoActivity();
 		try {
-			myActivity.setId(data.getString(PARTY_ID));
+			
+			myActivity.setId(partyId);
 			String content = data.getString(PARTY_DESCRIPTION);
 			if (content.length() > 22) {
 				myActivity.setActivityName(content.substring(0, 22) + "...");
@@ -1019,27 +1058,28 @@ public class MeetingListActivity extends ListActivity implements
 		return myActivity;
 	}
 
-	/*
-	 * @Override public boolean onCreateOptionsMenu(Menu menu) { menu.add(0,
-	 * SHARE_SET, 0, getString(R.string.share)); menu.add(0, DELETE_SET, 0,
-	 * getString(R.string.delete)); menu.add(0, MENU_SET, 0,
-	 * getString(R.string.btn_setting));
-	 * 
-	 * return super.onCreateOptionsMenu(menu); }
-	 * 
-	 * @Override public boolean onMenuItemSelected(int featureId, MenuItem item)
-	 * { switch(item.getItemId()){ case SHARE_SET: break; case DELETE_SET:
-	 * 
-	 * break; case MENU_SET: AlertDialog settingDialog = new
-	 * AlertDialog.Builder(MeetingListActivity.this)
-	 * .setTitle(R.string.btn_setting) .setIcon(R.drawable.settings)
-	 * .setItems(R.array.setMenu, new DialogInterface.OnClickListener() {
-	 * 
-	 * @Override public void onClick(DialogInterface dialog, int which) {
-	 * switch(which){ case 0: break;
-	 * 
-	 * case 1: break; } } }) .create(); settingDialog.show(); break; } return
-	 * super.onMenuItemSelected(featureId, item); }
+	/**
+	 * 封装一个ClientData
+	 * 	 * 
+	 * @param data
+	 * @return
 	 */
+	public ClientsData organizeOneClientData(JSONObject data) {
+		ClientsData clientsData = new ClientsData();
+		try {
+			clientsData.setPartyId(partyId);
+			clientsData.setId(data.getString("id"));
+			clientsData.setPeopleName(data.getString("name"));
+			clientsData.setPhoneNumber(data.getString("number"));
+			clientsData.setComment(data.getString("comment"));
+			clientsData.setIsCheck(data.getString("isCheck"));
+
+		} catch (JSONException e) {
+
+			e.printStackTrace();
+		}
+
+		return clientsData;
+	}
 
 }

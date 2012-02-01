@@ -204,7 +204,7 @@ public class SplashActivity extends Activity {
 		SharedPreferences mySharedPreferences = AirenaoUtills.getMySharedPreferences(SplashActivity.this);
 		boolean dbCreate = mySharedPreferences.getBoolean("dbCreate", false);
 		if(!dbCreate){
-			DbHelper.getInstance(SplashActivity.this);
+			DbHelper.getInstance(this.getApplicationContext());
 			Editor myEditor = mySharedPreferences.edit();
 			myEditor.putBoolean("dbCreate", true);
 			myEditor.commit();

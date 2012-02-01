@@ -167,20 +167,7 @@ public class ShareActivity extends Activity implements OnClickListener, RequestL
 //						Just update a text weibo!
 						//weibo.share2weibo(this, mAccessToken, mTokenSecret, mContent, "");
 						String result = update(weibo, Weibo.APP_KEY, mEdit.getText().toString(), "", "");	
-						if(!result.startsWith("error")){
-							AlertDialog aDig = new AlertDialog.Builder(
-									this).setMessage("分享成功")
-									.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-										
-										@Override
-										public void onClick(DialogInterface dialog, int which) {
-											finish();
-											
-										}
-									})
-									.create();
-							aDig.show();
-						}
+						
 					}
 				}else{
 					Toast.makeText(this, this.getString(R.string.please_login), Toast.LENGTH_LONG);
@@ -274,7 +261,21 @@ public class ShareActivity extends Activity implements OnClickListener, RequestL
 	@Override
 	public void onComplete(String response) {
 		// TODO Auto-generated method stub
-		Toast.makeText(this, R.string.send_sucess, Toast.LENGTH_LONG);	
+		//Toast.makeText(this, R.string.send_sucess, Toast.LENGTH_LONG);	
+		if(!response.startsWith("error")){
+			AlertDialog aDig = new AlertDialog.Builder(
+					this).setMessage("分享成功")
+					.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+							
+						}
+					})
+					.create();
+			aDig.show();
+		}
 	}
 
 	@Override
@@ -285,9 +286,18 @@ public class ShareActivity extends Activity implements OnClickListener, RequestL
 
 	@Override
 	public void onError(WeiboException e) {
-		// TODO Auto-generated method stub
-		Toast.makeText(this, String.format(this.getString(R.string.send_failed) + ":%s", e.getMessage()), 
-				Toast.LENGTH_LONG);	
+		AlertDialog aDig = new AlertDialog.Builder(
+				this).setMessage("不能重复分享")
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+						
+					}
+				})
+				.create();
+		aDig.show();
 	}
 
 	}

@@ -28,6 +28,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,10 +64,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.SDKimp.MyMultiAutoCompleteTextView;
 import com.aragoncg.apps.airenao.activity.Collapser.Collapsible;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.model.MyPerson;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
@@ -95,7 +98,7 @@ public class SendAirenaoActivity extends Activity {
 
 	private String theContent;
 	private String string;
-
+	
 	private MyMultiAutoCompleteTextView peopleNumbers;
 	private ArrayList<MyPerson> personList;
 	private String names = "";
@@ -432,7 +435,12 @@ public class SendAirenaoActivity extends Activity {
 		smsContent = txtSendLableContent.getText().toString();
 		String name = "";
 		String dict = "";
-
+		
+		Constants.countId++;
+		AirenaoActivity tempActivity = new AirenaoActivity();
+		ClientsData clientsData = new ClientsData();
+		ArrayList<ClientsData> clientDataList = new ArrayList<ClientsData>();
+		
 		JSONArray myDicts = new JSONArray();
 		Iterator<Entry<String, String>> iter = tempClientDicts.entrySet()
 				.iterator();
@@ -454,6 +462,11 @@ public class SendAirenaoActivity extends Activity {
 				Json.put("cName", name);
 				Json.put("cValue", dict);
 				myDicts.put(Json);
+				
+				clientsData.setPartyId("id"+Constants.countId);
+				clientsData.setPeopleName(name);
+				clientsData.setPhoneNumber(dict);
+				clientDataList.add(clientsData);
 			} catch (JSONException e) {
 
 				e.printStackTrace();
@@ -461,7 +474,29 @@ public class SendAirenaoActivity extends Activity {
 			}
 
 		}
-
+		
+		//将数据保存到本地数据库
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+		tempActivity.setActivityContent(smsContent);
+		tempActivity.setActivityName(smsContent);
+		tempActivity.setInvitedPeople(tempClientDicts.size()+"");
+		tempActivity.setSignUp("0");
+		tempActivity.setUnSignUp("0");
+		tempActivity.setUnJoin(tempClientDicts.size()+"");
+		
+		tempActivity.setId("id"+Constants.countId);
+		
+		DbHelper.insertOneParty(db,
+				tempActivity,
+				DbHelper.ACTIVITY_TABLE_NAME);
+		for(int j=0;j<clientDataList.size();j++){
+			DbHelper.insertOneClientData(db, clientDataList.get(j), "doNothingClients");
+		}
+		if(db != null){
+			db.close();
+		}
+		
+		//将数据保存到后台
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put(Constants.ACTIVITY_RECEIVERS, myDicts.toString());
 		params.put(Constants.CONTENT, smsContent);
@@ -480,7 +515,7 @@ public class SendAirenaoActivity extends Activity {
 			params.put("partyID", partyId);
 		} else {
 			url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_CREATE_URL;
-
+			
 		}
 		HttpHelper httpHelper = new HttpHelper();
 		// 保存到后台，没有提示信息
@@ -503,6 +538,12 @@ public class SendAirenaoActivity extends Activity {
 				smsContent = "";
 				smsContent = "【爱热闹】" + txtSendLableContent.getText().toString()
 						+ "\n" + "快来报名：" + stringLink;
+				//保存这个报名链接
+				SharedPreferences spf = AirenaoUtills.getMySharedPreferences(this);
+				Editor myEditor = spf.edit();
+				myEditor.putString("id"+Constants.countId, stringLink);
+				myEditor.commit();
+				
 				Message message = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(SUCCESS + "", description);
@@ -785,6 +826,9 @@ public class SendAirenaoActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						if (ok) {
 							finish();
+							Intent intent = new Intent();
+							intent.setClass(SendAirenaoActivity.this, MeetingListActivity.class);
+							startActivity(intent);
 						} else {
 							// 还在本页
 						}
