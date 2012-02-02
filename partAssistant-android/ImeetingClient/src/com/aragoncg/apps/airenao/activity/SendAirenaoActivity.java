@@ -345,7 +345,7 @@ public class SendAirenaoActivity extends Activity {
 			unregisterReceiver(sendMessageB);
 		}
 
-		super.onDestroy();
+		super.onPause();
 	}
 
 	/**
