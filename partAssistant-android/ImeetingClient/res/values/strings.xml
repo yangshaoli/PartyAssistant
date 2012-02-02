@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">爱热闹</string>
-	
+	  
+	<string name="join_me">我要参加</string> 
+	<string name="admin_psw">请填入号码</string>
+	<string name="sure">确定</string>
+	<string name="cancle">取消</string>
+	<string name="psw_empty">号码不得为空,请再输入</string>
+	<string name="btn_priview">preview</string>
+	<string name="nickname">请填入您的昵称</string>
+	<string name="phone">请填入您的号码</string>
+	<string name="mail">请填入您的邮箱</string>
+	    
 	<string name="send">发送</string>
     <string name="close">关闭</string>
     <string name="share_dialog_title">新浪微博</string>

@@ -56,7 +56,7 @@ import com.aragoncg.apps.airenao.weibo.ShareActivity;
 public class MeetingListActivity extends ListActivity implements
 		OnScrollListener {
 
-	private List<Map<String, Object>> mData = new ArrayList<Map<String,Object>>();
+	private List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
 	private MyAdapter myDaAdapter;
 
 	private ImageButton btnAddOneActivity;
@@ -93,7 +93,7 @@ public class MeetingListActivity extends ListActivity implements
 	public static final String LAST_ID = "lastID";
 	private int lastID;
 	private static final int MENU_PERSON_INFO = 0;
-	private static final int MENU_EXIT = 1; 
+	private static final int MENU_EXIT = 1;
 	public static final String PARTY_LIST = "partyList";
 	public static final String PARTY_ID = "partyId";
 	public static final String POEPLE_MAXMUM = "peopleMaximum";
@@ -105,7 +105,7 @@ public class MeetingListActivity extends ListActivity implements
 	public static final int MENU_SET = 0;
 	public static final int SHARE_SET = 3;
 	public static final int DELETE_SET = 4;
-	public static final int DELETE= 5;
+	public static final int DELETE = 5;
 
 	private String appliedClientcount;
 	private String newAppliedClientcount;
@@ -127,7 +127,7 @@ public class MeetingListActivity extends ListActivity implements
 		needRefresh = getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
 		myListView = getListView();
 		getData();
-		
+
 		footerView = LayoutInflater.from(this).inflate(R.layout.load_layout,
 				null);
 		myListView.addFooterView(footerView);
@@ -175,10 +175,12 @@ public class MeetingListActivity extends ListActivity implements
 		startId = 0;
 		needRefresh = true;
 		if (needRefresh) {
-			
+
 			getData();
-			/*myDaAdapter.notifyDataSetChanged();
-			myListView.requestFocusFromTouch();*/
+			/*
+			 * myDaAdapter.notifyDataSetChanged();
+			 * myListView.requestFocusFromTouch();
+			 */
 		}
 		super.onRestart();
 	}
@@ -194,14 +196,14 @@ public class MeetingListActivity extends ListActivity implements
 
 				list.clear();
 				startId = 0;
-				postHandler.postDelayed(firstLoadDataThread,1000);
+				postHandler.postDelayed(firstLoadDataThread, 1000);
 			}
 		});
 	}
 
 	// 对footerView的处理
 	private void init() {
-		
+
 		firstLoadDataThread = initLoadThread();
 		handler = new Handler() {
 			@Override
@@ -259,15 +261,15 @@ public class MeetingListActivity extends ListActivity implements
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 				null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
-		userTitle = (TextView)findViewById(R.id.userTitle);
+		userTitle = (TextView) findViewById(R.id.userTitle);
 		userTitle.setText(userName);
 		userLayout = (LinearLayout) findViewById(R.id.userChange);
 		userLayout.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				AlertDialog dialog = new AlertDialog.Builder(MeetingListActivity.this)
-						.setTitle(R.string.user_off)
+				AlertDialog dialog = new AlertDialog.Builder(
+						MeetingListActivity.this).setTitle(R.string.user_off)
 						.setMessage(R.string.user_off_message)
 						.setPositiveButton(R.string.btn_ok,
 								new DialogInterface.OnClickListener() {
@@ -277,7 +279,8 @@ public class MeetingListActivity extends ListActivity implements
 											int which) {
 										finish();
 										Intent intent = new Intent();
-										intent.setClass(MeetingListActivity.this,
+										intent.setClass(
+												MeetingListActivity.this,
 												LoginActivity.class);
 										startActivity(intent);
 									}
@@ -302,9 +305,9 @@ public class MeetingListActivity extends ListActivity implements
 		case 0:// delete the data of "listItemId"
 
 			deleteDilog = new AlertDialog.Builder(MeetingListActivity.this)
-					.setTitle(getString(R.string.deleteMenu))
-					.setIcon(android.R.drawable.ic_delete)
-					.setItems(R.array.deleteMenu,
+					.setTitle(getString(R.string.deleteMenu)).setIcon(
+							android.R.drawable.ic_delete).setItems(
+							R.array.deleteMenu,
 							new DialogInterface.OnClickListener() {
 
 								@Override
@@ -315,7 +318,8 @@ public class MeetingListActivity extends ListActivity implements
 									final Integer partyID = Integer
 											.valueOf((String) map
 													.get(Constants.PARTY_ID));
-									final String delteUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_DELETE_URL;
+									final String delteUrl = Constants.DOMAIN_NAME
+											+ Constants.SUB_DOMAIN_DELETE_URL;
 									// userId
 									switch (which) {
 									case 2:// 删除并提醒
@@ -326,7 +330,7 @@ public class MeetingListActivity extends ListActivity implements
 
 											@Override
 											public void run() {
-												SQLiteDatabase db=null;
+												SQLiteDatabase db = null;
 												try {
 													// 删除后台
 													deleleOnePraty(delteUrl,
@@ -337,14 +341,16 @@ public class MeetingListActivity extends ListActivity implements
 													db = DbHelper
 															.openOrCreateDatabase();
 													String sql = AirenaoUtills
-															.linkSQL(partyID + "");
+															.linkSQL(partyID
+																	+ "");
 													DbHelper.delete(db, sql);
-													
-													handler.sendEmptyMessage(DELETE);
+
+													handler
+															.sendEmptyMessage(DELETE);
 												} catch (Exception e) {
 													e.printStackTrace();
 												} finally {
-													if(db!=null){
+													if (db != null) {
 														db.close();
 													}
 												}
@@ -387,27 +393,31 @@ public class MeetingListActivity extends ListActivity implements
 			break;
 		case 2:// share the data of "listItemId"
 			HashMap<String, Object> map = (HashMap<String, Object>) mData
-			.get(listItemId);
-	       String partyId = (String) map
-					.get(Constants.PARTY_ID);
+					.get(listItemId);
+			String partyId = (String) map.get(Constants.PARTY_ID);
 			SharedPreferences spf = AirenaoUtills.getMySharedPreferences(this);
-			String accessToken = spf.getString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, null);
-			String accessSecret = spf.getString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, null);
+			String accessToken = spf.getString(
+					WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, null);
+			String accessSecret = spf.getString(
+					WeiBoSplashActivity.EXTRA_TOKEN_SECRET, null);
 			Intent intent2 = new Intent();
 			Bundle bundle = new Bundle();
-			if(accessToken!=null && accessSecret!=null){
+			if (accessToken != null && accessSecret != null) {
 				String applyUrl = spf.getString(partyId, null);
-				if(applyUrl==null){
+				if (applyUrl == null) {
 					throw new RuntimeException("获得报名链接错误");
 				}
-				applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："+applyUrl;
-	    		bundle.putString(WeiBoSplashActivity.EXTRA_WEIBO_CONTENT, applyUrl);
-	    		bundle.putString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, accessToken);
-	    		bundle.putString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, accessSecret);
-	    		intent2.putExtras(bundle);
-	    		intent2.setClass(this, ShareActivity.class);
-	    		startActivity(intent2);
-			}else{
+				applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
+				bundle.putString(WeiBoSplashActivity.EXTRA_WEIBO_CONTENT,
+						applyUrl);
+				bundle.putString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN,
+						accessToken);
+				bundle.putString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET,
+						accessSecret);
+				intent2.putExtras(bundle);
+				intent2.setClass(this, ShareActivity.class);
+				startActivity(intent2);
+			} else {
 				intent2.putExtra(Constants.PARTY_ID, partyId);
 				intent2.setClass(this, WeiBoSplashActivity.class);
 				startActivity(intent2);
@@ -496,7 +506,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * 
 	 */
 	private void getData() {
-		
+
 		// 在map装配的时候，一个活动的所有属性全部装配
 		// 先从本地获得数据，如果数据为空那么在从后台取数据
 		list.clear();
@@ -507,7 +517,8 @@ public class MeetingListActivity extends ListActivity implements
 
 		if (list.size() > 0) {
 			mData = list;
-			if(myDaAdapter!=null){
+		
+			if (myDaAdapter != null) {
 				myDaAdapter.notifyDataSetChanged();
 				myListView.requestFocusFromTouch();
 			}
@@ -516,9 +527,10 @@ public class MeetingListActivity extends ListActivity implements
 			if (firstLoadDataThread == null) {
 				firstLoadDataThread = initLoadThread();
 			}
-			progressDialog = ProgressDialog.show(MeetingListActivity.this, "", "loading...",true,true);
-			postHandler.postDelayed(firstLoadDataThread,1000);
-			//return list;
+			progressDialog = ProgressDialog.show(MeetingListActivity.this, "",
+					"loading...", true, true);
+			postHandler.postDelayed(firstLoadDataThread, 1000);
+			// return list;
 		}
 
 	}
@@ -530,7 +542,8 @@ public class MeetingListActivity extends ListActivity implements
 			public void run() {
 				// 配置url
 				// list.clear();
-				partyListUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_LIST_URL;
+				partyListUrl = Constants.DOMAIN_NAME
+						+ Constants.SUB_DOMAIN_PARTY_LIST_URL;
 				partyListUrl = partyListUrl + userId + "/" + startId + "/";
 				HttpHelper myHttpHelper = new HttpHelper();
 				String dataResult = myHttpHelper.performGet(partyListUrl,
@@ -550,59 +563,55 @@ public class MeetingListActivity extends ListActivity implements
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
 	}
-	
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.addSubMenu(0, MENU_PERSON_INFO, 0, getString(R.string.menuPersonInfo));
+		menu.addSubMenu(0, MENU_PERSON_INFO, 0,
+				getString(R.string.menuPersonInfo));
 		menu.addSubMenu(0, MENU_EXIT, 1, getString(R.string.menuExit));
 		return super.onCreateOptionsMenu(menu);
 	}
 
-
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()){
-			case MENU_PERSON_INFO:
-				break;
-			case MENU_EXIT:
-				AlertDialog noticeDialog = new AlertDialog.Builder(
-						MeetingListActivity.this)
-						.setCancelable(true)
-						.setTitle(R.string.sendLableTitle)
-						.setMessage(R.string.exitMessage)
-						.setNegativeButton(
-								R.string.btn_cancle,
-								new android.content.DialogInterface.OnClickListener() {
+		switch (item.getItemId()) {
+		case MENU_PERSON_INFO:
+			Intent intent = new Intent(this, PersoninfoSetActivity.class);
+			startActivity(intent);
+			break;
+		case MENU_EXIT:
+			AlertDialog noticeDialog = new AlertDialog.Builder(
+					MeetingListActivity.this)
+					.setCancelable(true)
+					.setTitle(R.string.sendLableTitle)
+					.setMessage(R.string.exitMessage)
+					.setNegativeButton(
+							R.string.btn_cancle,
+							new android.content.DialogInterface.OnClickListener() {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
 
-									}
-								})
-						.setPositiveButton(
-								R.string.btn_ok,
-								new android.content.DialogInterface.OnClickListener() {
+								}
+							})
+					.setPositiveButton(
+							R.string.btn_ok,
+							new android.content.DialogInterface.OnClickListener() {
 
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										AirenaoUtills.exitClient(mContext);
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									AirenaoUtills.exitClient(mContext);
 
-									}
+								}
 
-								}).create();
-				noticeDialog.show();
-				break;
+							}).create();
+			noticeDialog.show();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-
-
-
 
 	/**
 	 * 
@@ -618,14 +627,8 @@ public class MeetingListActivity extends ListActivity implements
 	public final class ViewHolder {
 
 		public TextView activityName;
-
-		public TextView activityJoinNum;
-
-		public TextView activityUnJoinNum;
-
-		public TextView activityUnTakeNum;
-		
 		public ImageView activityFlagNew;
+		public TextView activityScale;
 
 	}
 
@@ -687,20 +690,14 @@ public class MeetingListActivity extends ListActivity implements
 				convertView = mInflater.inflate(R.layout.activity_property,
 						null);
 
+				holder.activityScale = (TextView) convertView
+						.findViewById(R.id.activity_scale);
 				holder.activityName = (TextView) convertView
 						.findViewById(R.id.activity_name);
 
-				holder.activityJoinNum = (TextView) convertView
-						.findViewById(R.id.activity_join_num);
-
-				holder.activityUnJoinNum = (TextView) convertView
-						.findViewById(R.id.activity_unjoin_num);
-
-				holder.activityUnTakeNum = (TextView) convertView
-						.findViewById(R.id.activity_untake_num);
-				
 				holder.activityFlagNew = (ImageView) convertView
 						.findViewById(R.id.flag_new_red);
+
 				convertView.setTag(holder);
 
 			} else {
@@ -711,46 +708,35 @@ public class MeetingListActivity extends ListActivity implements
 
 			holder.activityName.setText((String) mData.get(position).get(
 					Constants.ACTIVITY_NAME));
-			donothingClientcount = (String) mData.get(position).get(
-					Constants.DONOTHING_CLIENT_COUNT);
 
-			if (donothingClientcount == null) {
-				donothingClientcount = "0";
+			allClientcount = (String) mData.get(position).get(
+					Constants.ALL_CLIENT_COUNT);
+			
+			if (allClientcount == null) {
+				allClientcount = "0";
 			}
-			holder.activityUnJoinNum.setText(donothingClientcount);
-			refusedClientcount = (String) mData.get(position).get(
-					Constants.REFUSED_CLIENT_COUNT);
-			if (refusedClientcount == null) {
-				refusedClientcount = "0";
-			}
-			newRefusedClientcount = (String) mData.get(position).get(
-					Constants.NEW_REFUSED_CLIENT_COUNT);
-			if (newRefusedClientcount == null) {
-				newRefusedClientcount = "0";
-			}
-			refusedCount = Integer.valueOf(refusedClientcount);
-			holder.activityUnTakeNum.setText(refusedCount + "");
+
 			appliedClientcount = (String) mData.get(position).get(
 					Constants.APPLIED_CLIENT_COUNT);
+			
 			if (appliedClientcount == null) {
 				appliedClientcount = "0";
 			}
-			newAppliedClientcount = (String) mData.get(position).get(
-					Constants.NEW_APPLIED_CLIENT_COUNT);
-			if (newAppliedClientcount == null) {
-				newAppliedClientcount = "0";
-			}
-			registeredCount = Integer.valueOf(appliedClientcount);
-			holder.activityJoinNum.setText(registeredCount + "");
-			// flag new
-			if(!"0".equals(newAppliedClientcount) || !"0".equals(newRefusedClientcount)){
+
+			// registeredCount = Integer.valueOf(appliedClientcount);
+			
+			holder.activityScale.setText(appliedClientcount + "/"
+					+ allClientcount);
+
+			if (!"0".equals(newAppliedClientcount)
+					|| !"0".equals(newRefusedClientcount)) {
 				showFlagNew = true;
-			}else{
+			} else {
 				showFlagNew = false;
 			}
-			if(showFlagNew){
+			if (showFlagNew) {
 				holder.activityFlagNew.setVisibility(View.VISIBLE);
-			}else{
+			} else {
 				holder.activityFlagNew.setVisibility(View.INVISIBLE);
 			}
 			return convertView;
@@ -767,9 +753,9 @@ public class MeetingListActivity extends ListActivity implements
 	 */
 	public void removeActivity(int itemId) {
 		mData.remove(itemId);
-		
-		//myDaAdapter.notifyDataSetChanged();
-		//myDaAdapter.notifyDataSetInvalidated();
+
+		// myDaAdapter.notifyDataSetChanged();
+		// myDaAdapter.notifyDataSetInvalidated();
 	}
 
 	@Override
@@ -808,7 +794,8 @@ public class MeetingListActivity extends ListActivity implements
 
 							// 这里放你网络数据请求的方法，我在这里用线程休眠5秒方法来处理
 							startId = lastID;
-							partyListUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_LIST_URL
+							partyListUrl = Constants.DOMAIN_NAME
+									+ Constants.SUB_DOMAIN_PARTY_LIST_URL
 									+ userId + "/" + startId + "/";
 							HttpHelper myHttpHelper = new HttpHelper();
 							String dataResult = myHttpHelper.performGet(
@@ -899,8 +886,10 @@ public class MeetingListActivity extends ListActivity implements
 				for (int i = 0; i < myJsonArray.length(); i++) {
 					JSONObject tempActivity = myJsonArray.getJSONObject(i);
 					list.add(organizeMap(tempActivity));
-					/*myDaAdapter.notifyDataSetChanged();
-					myListView.requestFocusFromTouch();*/
+					/*
+					 * myDaAdapter.notifyDataSetChanged();
+					 * myListView.requestFocusFromTouch();
+					 */
 					try {
 
 						DbHelper.insert(db, organizeOneActivity(tempActivity),
@@ -927,12 +916,12 @@ public class MeetingListActivity extends ListActivity implements
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
-		}finally{
+		} finally {
 			if (db != null) {
 				db.close();
 			}
 		}
-		
+
 	}
 
 	/**
@@ -954,7 +943,7 @@ public class MeetingListActivity extends ListActivity implements
 					.getString(Constants.REFUSED_CLIENT_COUNT);
 			newRefusedClientcount = clientsData
 					.getString(Constants.NEW_REFUSED_CLIENT_COUNT);
-			
+
 		} catch (JSONException e1) {
 
 			e1.printStackTrace();

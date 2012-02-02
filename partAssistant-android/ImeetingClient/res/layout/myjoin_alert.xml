@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="wrap_content"
+	android:layout_height="wrap_content">
+	<LinearLayout android:orientation="vertical"
+		 android:gravity="center" 
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+		<EditText android:layout_width="wrap_content"
+			android:layout_height="wrap_content" 
+			android:id="@+id/edt_psw" 
+			android:width="210dp" android:layout_marginTop="5dip"
+			android:layout_marginLeft="17dip"/>
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/txt_sug"
+			android:textColor="#FF0000" android:textSize="20sp"/>
+	</LinearLayout>
+	<LinearLayout android:orientation="horizontal" android:gravity="center" 
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:paddingTop="5dip"
+		>
+		<Button android:layout_width="100dip" android:layout_height="wrap_content"
+			android:id="@+id/btn_ok" 
+			android:layout_marginLeft="10dip"
+			android:text="OK" />
+		<Button android:layout_width="100dip" android:layout_height="wrap_content"
+			android:id="@+id/btn_cancle" android:text="cancle"
+			android:layout_marginLeft="40dip" />
+	</LinearLayout>
+</LinearLayout>

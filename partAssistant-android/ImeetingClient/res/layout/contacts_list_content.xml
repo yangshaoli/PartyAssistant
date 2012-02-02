@@ -55,7 +55,7 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
 			android:layout_marginRight="50dip"
-			android:text="@string/btn_cancle"
+			android:text="@string/btn_priview"
 			android:id="@+id/btnCancle"
 		/>
 	</RelativeLayout>
