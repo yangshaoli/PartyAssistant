@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.model.ClientsData;
 
 public class DbHelper {
 
@@ -21,7 +22,7 @@ public class DbHelper {
 	private final static int DATABASE_VERSION = 1;
 	public final static String LAST_TABLE_NAME = "activity_pwd";
 	public final static String ACTIVITY_TABLE_NAME = "myActivitys";
-	public final static String PARTY_ID = "parytid";
+	public final static String PARTY_ID = "partyid";
 	public final static String FIELD_ID = "_id";
 	public final static String FIELD_TITLE_NAME = "name";
 	public final static String FIELD_TITLE_TIME = "time";
@@ -47,6 +48,12 @@ public class DbHelper {
 	public static final String deleteLastSql = "delete from " + LAST_TABLE_NAME;
 	public static final String deleteActivitySql = "delete from "
 			+ ACTIVITY_TABLE_NAME;
+	public static final String deleteTableAppliedSql = " delete from  "
+			+ "appliedClients";
+	public static final String deleteTableDoNothingSql = " delete from "
+			+ "doNothingClients";
+	public static final String deleteTableRefusedSql = " delete from "
+			+ "refusedClients";
 
 	public static final String createSql = "Create table " + LAST_TABLE_NAME
 			+ "(" + FIELD_ID + " integer primary key autoincrement,"
@@ -61,19 +68,43 @@ public class DbHelper {
 			+ FIELD_TITLE_CONTENT + " text, " + FIELD_TITLE_INVTD + " text, "
 			+ FIELD_TITLE_SN_UP + " text, " + FIELD_TITLE_NEW_SN_UP + " text, "
 			+ FIELD_TITLE_UN_SN_UP + " text, " + FIELD_TITLE_NEW_UN_SN_UP
-			+ " text, " + " text, " + FIELD_TITLE_UN_JOIN + " text, "
+			+ " text, " + " type text, " + FIELD_TITLE_UN_JOIN + " text, "
 			+ FLAG_NEW + " integer);";
+	
+	public static final String createTableAppliedSql = "Create table "
+			+ "appliedClients" + "(" + FIELD_ID
+			+ " integer primary key autoincrement, "+" id text, " + PARTY_ID + " text, "
+			+ "name" + " text, " + "phoneNumber" + " text, "
+			+ "comment" + " text, " + "isCheck" + " text);";
+	public static final String createTableDoNothingSql = "Create table "
+			+ "doNothingClients" + "(" + FIELD_ID
+			+ " integer primary key autoincrement, "+" id text, " + PARTY_ID + " text, "
+			+ "name" + " text, " + "phoneNumber" + " text, "
+			+ "comment" + " text, " + "isCheck" + " text);";
+	public static final String createTableRefusedSql = "Create table "
+			+ "refusedClients" + "(" + FIELD_ID
+			+ " integer primary key autoincrement, " +" id text, "+ PARTY_ID + " text, "
+			+ "name" + " text, " + "phoneNumber" + " text, "
+			+ "comment" + " text, " + "isCheck" + " text);";
+	
 	public static final String dropSql = " DROP TABLE IF EXISTS "
 			+ LAST_TABLE_NAME;
 	public static final String dropSql1 = " DROP TABLE IF EXISTS "
 			+ ACTIVITY_TABLE_NAME;
-
+	public static final String dropTableAppliedSql = " DROP TABLE IF EXISTS "
+			+ "appliedClients";
+	public static final String dropTableDoNothingSql = " DROP TABLE IF EXISTS "
+			+ "doNothingClients";
+	public static final String dropTableRefusedSql = " DROP TABLE IF EXISTS "
+			+ "refusedClients";
 	private DbHelper(Context context) {
 		SQLiteDatabase db = openOrCreateDatabase();
 		try {
 			createTables(db, createSql);
 			createTables(db, createSql1);
-
+			createTables(db, createTableAppliedSql);
+			createTables(db, createTableDoNothingSql);
+			createTables(db, createTableRefusedSql);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -111,7 +142,7 @@ public class DbHelper {
 		return row;
 	}
 
-	public static long insert(SQLiteDatabase db, AirenaoActivity airenao,
+	public static long insertOneParty(SQLiteDatabase db, AirenaoActivity airenao,
 			String tableName) {
 		// SQLiteDatabase db=this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
@@ -138,25 +169,35 @@ public class DbHelper {
 
 		return row;
 	}
-
-	/*
-	 * public void update(List<AirenaoActivity> list) {
-	 * 
-	 * AirenaoActivity myAirenaoActivity = list.get(0); SQLiteDatabase db =
-	 * this.getWritableDatabase(); time = myAirenaoActivity.getActivityTime();
-	 * position = myAirenaoActivity.getActivityPosition(); number =
-	 * String.valueOf(myAirenaoActivity.getPeopleLimitNum()); content =
-	 * myAirenaoActivity.getActivityContent(); String[] paramters = { time,
-	 * position, number, content }; paramters[0] = time; String sql = "update "
-	 * + LAST_TABLE_NAME + " set " + FIELD_TITLE_TIME + " =?," +
-	 * FIELD_TITLE_POSITION + "=?," + FIELD_TITLE_NUMBER + "=?," +
-	 * FIELD_TITLE_CONTENT + "=? where personid=0"; try { db.execSQL(sql,
-	 * paramters); } catch (SQLException e) { e.printStackTrace();
-	 * 
-	 * } finally { db.close(); }
-	 * 
-	 * }
+	
+	/**
+	 * 插入数据ClientsData
+	 * @param db
+	 * @param clientsData
+	 * @param tableName
+	 * @return
 	 */
+	public static long insertOneClientData(SQLiteDatabase db, ClientsData clientsData,
+			String tableName) {
+		ContentValues cv = new ContentValues();
+		cv.put("id", clientsData.getId());
+		cv.put(PARTY_ID, clientsData.getPartyId());
+		cv.put("name", clientsData.getPeopleName());
+		cv.put("phoneNumber", clientsData.getPhoneNumber());
+		cv.put("comment", clientsData.getComment());
+		cv.put("isCheck", clientsData.getIsCheck());
+
+		long row = -1;
+		try {
+			row = db.insert(tableName, null, cv);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return row;
+	}
+
+	
 
 	public static List<Map<String, Object>> selectActivitys(SQLiteDatabase db) {
 
@@ -164,8 +205,8 @@ public class DbHelper {
 		listActivity = new ArrayList<Map<String, Object>>();
 		// SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = null;
-		String sql = "select * from " + ACTIVITY_TABLE_NAME;// +
-															// " order by datetime()";
+		String sql = "select * from " + ACTIVITY_TABLE_NAME +
+															 " order by "+PARTY_ID +" desc";
 		try {
 			cursor = db.rawQuery(sql, null);
 			for (int i = 0; i < cursor.getCount(); i++) {
@@ -230,7 +271,60 @@ public class DbHelper {
 
 		return listActivity;
 	}
-
+	
+	/**
+	 * 通过partyId返回一个ClientsData的集合
+	 * @param db
+	 * @param tableName
+	 * @param partyId
+	 * @return
+	 */
+	public static List<ClientsData> selectClientData(SQLiteDatabase db,String tableName,String partyId){
+		ArrayList<ClientsData> clientsList = new ArrayList<ClientsData>();
+		ClientsData clientsData = new ClientsData();
+		String sql = "select * from "+tableName+" where "+PARTY_ID+"='"+partyId+"'";
+		Cursor cursor = null;
+		cursor = db.rawQuery(sql, null);
+		if(cursor.getCount()<1){
+			return clientsList;
+		}else{
+			while(cursor.moveToNext()){
+				clientsData.setId(cursor.getString(cursor.getColumnIndex("id")));
+				clientsData.setPartyId(cursor.getString(cursor.getColumnIndex(PARTY_ID)));
+				clientsData.setPeopleName(cursor.getString(cursor.getColumnIndex("name")));
+				clientsData.setPhoneNumber(cursor.getString(cursor.getColumnIndex("phoneNumber")));
+				clientsData.setComment(cursor.getString(cursor.getColumnIndex("comment")));
+				clientsData.setIsCheck(cursor.getString(cursor.getColumnIndex("isCheck")));
+				clientsList.add(clientsData);
+			}
+			
+			
+			return clientsList;
+		}
+		
+	}
+	
+	public static AirenaoActivity selectOneParty(SQLiteDatabase db,String partyId){
+		AirenaoActivity oneParty = new AirenaoActivity();
+		String sql = "select * from " + ACTIVITY_TABLE_NAME +" where "+PARTY_ID+" ='"+partyId+"'";
+		Cursor cursor = null;
+		cursor = db.rawQuery(sql, null);
+		if(cursor.getCount()<1){
+			return null;
+		}else{
+			cursor.moveToFirst();
+			String appliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP));
+			String donothingClientcount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN));
+			String refusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP));
+			String allClientCount = String.valueOf(Integer.valueOf(appliedClientCount) + Integer.valueOf(donothingClientcount) +Integer.valueOf(refusedClientCount));
+			oneParty.setInvitedPeople(allClientCount);
+			oneParty.setSignUp(appliedClientCount);
+			oneParty.setUnSignUp(donothingClientcount);
+			oneParty.setUnJoin(refusedClientCount);
+		}
+		return oneParty;
+	}
+	
 	public static AirenaoActivity select(SQLiteDatabase db) {
 		AirenaoActivity airenao = new AirenaoActivity();
 		// SQLiteDatabase db = this.getReadableDatabase();

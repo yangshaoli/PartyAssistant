@@ -91,16 +91,7 @@ public class LoginActivity extends Activity {
 				}
 				isEmail = AirenaoUtills.matchString(AirenaoUtills.regEmail,
 						userName);
-				/*
-				 * if (!isEmail) { new AlertDialog.Builder(LoginActivity.this)
-				 * .setIcon(R.drawable.alert_dialog_icon)
-				 * .setTitle(R.string.error_email)
-				 * .setNegativeButton(R.string.btn_cancle, new
-				 * DialogInterface.OnClickListener() { public void onClick(
-				 * DialogInterface dialog, int whichButton) {
-				 * 
-				 * } }).create(); return; }
-				 */
+			
 
 				// 启动线程登录
 				loginThread = new Thread() {
@@ -165,7 +156,6 @@ public class LoginActivity extends Activity {
 
 								}
 
-								// myProgressDialog.cancel();
 							} else {
 								Message message = new Message();
 								message.what = 1;
@@ -174,7 +164,6 @@ public class LoginActivity extends Activity {
 										description);
 								message.setData(bundle);
 								myHandler.sendMessage(message);
-								// myProgressDialog.cancel();
 							}
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
@@ -185,7 +174,7 @@ public class LoginActivity extends Activity {
 
 				};
 				loginThread.start();
-				return;
+				
 			}
 		});
 
@@ -247,9 +236,8 @@ public class LoginActivity extends Activity {
 					myProgressDialog.cancel();
 					String message = (String) msg.getData().get(
 							Constants.HENDLER_MESSAGE);
-					AlertDialog aDig = new AlertDialog.Builder(
-							LoginActivity.this).setMessage(message).create();
-					aDig.show();
+					
+					Toast.makeText(LoginActivity.this, message, 2000).show();
 				case Constants.LOGIN_SUCCESS_CASE:
 					/*
 					 * 保存用户名和密码

@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,9 +36,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.exceptions.MyRuntimeException;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 
@@ -263,13 +266,72 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		@Override
 		protected String[] doInBackground(String... params) {
 
-			HttpHelper httpHelper = new HttpHelper();
+			/*HttpHelper httpHelper = new HttpHelper();
 			String result = httpHelper.performGet(params[0] + id + "/" + type
 					+ "/", null, null, null, context);
-			/*result = httpHelper.requestByHttpGet(params[0] + id + "/" + type
-					+ "/", context);*/
 			result = AirenaoUtills.linkResult(result);
-			analyzeJson(result, type);
+			analyzeJson(result, type);*/
+			SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+			if(TYPE_ALL.equals(type)){
+				ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
+				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "appliedClients", id));
+				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "doNothingClients", id));
+				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "refusedClients", id));
+				for(int i=0;i<myList.size();i++){
+					
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put(Constants.PEOPLE_NAME, myList.get(i).getPeopleName());
+					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
+					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+					map.put(Constants.MSG, myList.get(i).getComment());
+					mData.add(map);
+				}
+			}
+			if(TYPE_APPLIED.equals(type)){
+				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "appliedClients", id);
+				for(int i=0;i<myList.size();i++){
+					
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put(Constants.PEOPLE_NAME, myList.get(i).getPeopleName());
+					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
+					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+					map.put(Constants.MSG, myList.get(i).getComment());
+					mData.add(map);
+				}
+				if(db!=null){
+					db.close();
+				}
+			}
+			if(TYPE_DONOTHING.equals(type)){
+				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "doNothingClients", id);
+				for(int i=0;i<myList.size();i++){
+					
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put(Constants.PEOPLE_NAME, myList.get(i).getPeopleName());
+					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
+					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+					map.put(Constants.MSG, myList.get(i).getComment());
+					mData.add(map);
+				}
+				if(db!=null){
+					db.close();
+				}
+			}
+			if(TYPE_REFUSED.equals(type)){
+				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "refusedClients", id);
+				for(int i=0;i<myList.size();i++){
+					
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put(Constants.PEOPLE_NAME, myList.get(i).getPeopleName());
+					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
+					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+					map.put(Constants.MSG, myList.get(i).getComment());
+					mData.add(map);
+				}
+				if(db!=null){
+					db.close();
+				}
+			}
 			return new String[3];
 		}
 

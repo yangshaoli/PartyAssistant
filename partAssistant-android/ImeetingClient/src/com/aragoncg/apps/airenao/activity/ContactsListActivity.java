@@ -48,6 +48,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.provider.Contacts.ContactMethods;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
@@ -520,6 +521,9 @@ public class ContactsListActivity extends ListActivity implements
 			if (allContacts.length > 0) {
 				transPersons.clear();
 				count = 0;
+				SharedPreferences pre = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+				String nickname = pre.getString("warning_nickname", "");
 				for (int i = 0; i < allContacts.length; i++) {
 
 					if (allContacts[i].equals("")) {
@@ -538,7 +542,7 @@ public class ContactsListActivity extends ListActivity implements
 						}
 						if (AirenaoUtills
 								.checkPhoneNumber(transPersonPhoneNumber)) {
-							if (!transPersonName.equals("佚名")) {
+							if (!transPersonName.equals("佚名") && !nickname.equals(transPersonName)) {
 								count++;
 								intentCount++;
 							}

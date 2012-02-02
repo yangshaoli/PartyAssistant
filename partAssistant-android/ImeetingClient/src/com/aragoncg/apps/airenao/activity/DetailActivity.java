@@ -650,12 +650,32 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 		@Override
 		protected String[] doInBackground(String... params) {
-			HttpHelper httpHelper = new HttpHelper();
+			/*HttpHelper httpHelper = new HttpHelper();
 			String result = httpHelper.performGet(params[0] + id + "/", null,
 					null, null, context);
 			result = AirenaoUtills.linkResult(result);
 
-			return analyzeJson(result);
+			return analyzeJson(result);*/
+			String[] results = new String[4];
+			SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+			AirenaoActivity oneParyActivity ;
+			oneParyActivity = DbHelper.selectOneParty(db, partyId);
+			if(oneParyActivity==null){
+				results[0]="0";
+				results[1]="0";
+				results[2]="0";
+				results[3]="0";
+			}else{
+				results[0]=oneParyActivity.getInvitedPeople();
+				results[1]=oneParyActivity.getSignUp();
+				results[2]=oneParyActivity.getUnSignUp();
+				results[3]=oneParyActivity.getUnJoin();
+			}
+			if(db!=null){
+				db.close();
+			}
+			
+			return results;
 		}
 
 		@Override

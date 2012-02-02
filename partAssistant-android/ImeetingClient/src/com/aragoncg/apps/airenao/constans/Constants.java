@@ -27,6 +27,7 @@ public class Constants {
 	public static final String SEND_POSITION = "sendPosition";
 	public static final String SEND_NUMBER = "sendNumber";
 	public static final String SEND_CONTENT = "sendContent";
+	public static int countId = 1;
 
 	public static final String TO_SEND_ACTIVITY = "toSendActivity";
 	public static final String TO_DETAIL_ACTIVITY = "toDetailActivity";
@@ -126,10 +127,10 @@ public class Constants {
 	/*
 	 * 配置域名
 	 */
-	public static final String DOMAIN_NAME = "http://www.airenao.com";
+	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://www.airenao.com"
 	public static final String SUB_DOMAIN_REGISTER_URL = "/a/accounts/regist/";
 	public static final String SUB_DOMAIN_LOGIN_URL = "/a/accounts/login/";
-	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/partylist/";
+	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/an_partylist/";//"/a/parties/partylist/"
 	public static final String SUB_DOMAIN_PARTY_CREATE_URL = "/a/parties/createparty/";
 	public static final String SUB_DOMAIN_GET_CLIENTCOUNT_URL = "/a/parties/get_party_client_main_count/";
 	public static final String SUB_DOMAIN_GET_PEOPLE_INFO_URL = "/a/parties/get_party_client_seperated_list/";
