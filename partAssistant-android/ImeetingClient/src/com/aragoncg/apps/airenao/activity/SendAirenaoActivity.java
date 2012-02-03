@@ -532,7 +532,7 @@ public class SendAirenaoActivity extends Activity {
 		
 		Constants.countId++;
 		AirenaoActivity tempActivity = new AirenaoActivity();
-		ClientsData clientsData = new ClientsData();
+		
 		ArrayList<ClientsData> clientDataList = new ArrayList<ClientsData>();
 		
 		JSONArray myDicts = new JSONArray();
@@ -556,7 +556,7 @@ public class SendAirenaoActivity extends Activity {
 				Json.put("cName", name);
 				Json.put("cValue", dict);
 				myDicts.put(Json);
-				
+				ClientsData clientsData = new ClientsData();
 				clientsData.setPartyId("id"+Constants.countId);
 				clientsData.setPeopleName(name);
 				clientsData.setPhoneNumber(dict);

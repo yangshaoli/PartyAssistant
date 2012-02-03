@@ -281,14 +281,16 @@ public class DbHelper {
 	 */
 	public static List<ClientsData> selectClientData(SQLiteDatabase db,String tableName,String partyId){
 		ArrayList<ClientsData> clientsList = new ArrayList<ClientsData>();
-		ClientsData clientsData = new ClientsData();
+		
 		String sql = "select * from "+tableName+" where "+PARTY_ID+"='"+partyId+"'";
 		Cursor cursor = null;
 		cursor = db.rawQuery(sql, null);
 		if(cursor.getCount()<1){
 			return clientsList;
 		}else{
+			//cursor.moveToFirst();
 			while(cursor.moveToNext()){
+				ClientsData clientsData = new ClientsData();
 				clientsData.setId(cursor.getString(cursor.getColumnIndex("id")));
 				clientsData.setPartyId(cursor.getString(cursor.getColumnIndex(PARTY_ID)));
 				clientsData.setPeopleName(cursor.getString(cursor.getColumnIndex("name")));

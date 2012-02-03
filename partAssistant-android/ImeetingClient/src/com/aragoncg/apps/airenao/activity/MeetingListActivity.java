@@ -978,7 +978,7 @@ public class MeetingListActivity extends ListActivity implements
 					.getString(Constants.REFUSED_CLIENT_COUNT);
 			newRefusedClientcount = clientsData
 					.getString(Constants.NEW_REFUSED_CLIENT_COUNT);
-
+			allClientcount = String.valueOf(Integer.valueOf(appliedClientcount)+Integer.valueOf(donothingClientcount)+Integer.valueOf(refusedClientcount));
 		} catch (JSONException e1) {
 
 			e1.printStackTrace();
