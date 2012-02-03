@@ -5,11 +5,8 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -20,14 +17,12 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.AsyncQueryHandler;
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
@@ -48,6 +43,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.provider.Contacts.ContactMethods;
 import android.provider.Contacts.People;
 import android.provider.Contacts.Phones;
@@ -101,7 +97,6 @@ import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.activity.Collapser.Collapsible;
-
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.MyPerson;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
@@ -135,7 +130,7 @@ public class ContactsListActivity extends ListActivity implements
 	static final int MENU_ITEM_DELETE = 7;
 	static final int MENU_ITEM_TOGGLE_STAR = 8;
 	static final int MENU_ITEM_SHARE = 9;
-
+	public List<String> list1 = new ArrayList<String>();
 	private static final int SUBACTIVITY_NEW_CONTACT = 1;
 	private static final int SUBACTIVITY_VIEW_CONTACT = 2;
 	private static final int SUBACTIVITY_DISPLAY_GROUP = 3;
@@ -145,6 +140,8 @@ public class ContactsListActivity extends ListActivity implements
 	private ListView list;
 	private MyPerson bindPerson;
 	private int tempCount = 0;
+	public static int allcount = 0;
+	public int m = 0;
 
 	/**
 	 * The action for the join contact activity.
@@ -362,7 +359,7 @@ public class ContactsListActivity extends ListActivity implements
 
 	// private boolean mDisplayAll;
 	private boolean mDisplayOnlyPhones;
-
+	private int intentCount;
 	private Uri mGroupUri;
 
 	private long mQueryAggregateId;
@@ -399,7 +396,7 @@ public class ContactsListActivity extends ListActivity implements
 	 * In the {@link #MODE_JOIN} determines whether we display a list item with
 	 * the label "Show all contacts" or actually show all contacts
 	 */
-	@SuppressWarnings({ "JavadocReference" })
+	@SuppressWarnings( { "JavadocReference" })
 	private boolean mJoinModeShowAllContacts;
 
 	/**
@@ -416,6 +413,7 @@ public class ContactsListActivity extends ListActivity implements
 	private Button btnOk;
 	private Button btnCancle;
 	private Button btnAll;
+	private Button btnPrivew;
 	private Button btnFrequent;
 	private Handler myHandler;
 	private List<MyPerson> choosedData;
@@ -436,12 +434,14 @@ public class ContactsListActivity extends ListActivity implements
 	private String bindPersonId;
 	private String bindPersonName;
 	private String bindPersonPhoneNumber;
-	private int count=0;
-	private static List <MyPerson> transPersons = new ArrayList<MyPerson>();
+	private int count = 0;
+	public static boolean firstEnter = false;
+
+	private static List<MyPerson> transPersons = new ArrayList<MyPerson>();
 	// 用来统计被选中的电话
 	private static List<MyPerson> positions;
 	private static List<MyPerson> tempPositions = new ArrayList<MyPerson>();
-
+	public static List<MyPerson> exchangeList = new ArrayList<MyPerson>();
 	private HashMap<String, SearchInfo> searchInfo = new HashMap<String, SearchInfo>();
 
 	private class DeleteClickListener implements
@@ -469,7 +469,7 @@ public class ContactsListActivity extends ListActivity implements
 			tempPositions.clear();
 			SendAirenaoActivity.createNew = false;
 		}
-		
+
 		Intent it = this.getIntent();
 		String transPersonName;
 		String transPersonPhoneNumber;
@@ -504,73 +504,70 @@ public class ContactsListActivity extends ListActivity implements
 		mJustCreated = true;
 		getListView().setTextFilterEnabled(false);
 
-		
 		choosedData = new ArrayList<MyPerson>();
 		// 添加按钮事件
-		
+
 		// 获得之前存在的电话
 		if (alreadyExistNumbers != null) {
 			String[] allContacts = alreadyExistNumbers.split("\\,", 0);
 
 			int index = -1;
-			if(allContacts.length>0){
+			if (allContacts.length > 0) {
 				transPersons.clear();
 				count = 0;
+				SharedPreferences pre = PreferenceManager
+				.getDefaultSharedPreferences(getApplicationContext());
+				String nickname = pre.getString("warning_nickname", "");
 				for (int i = 0; i < allContacts.length; i++) {
-					
+
 					if (allContacts[i].equals("")) {
 						continue;
 					} else {
 						transPersonPhoneNumber = allContacts[i];
 						index = allContacts[i].indexOf("<");
 						if (index > -1) {
-							transPersonName = allContacts[i].substring(0, index);
+							transPersonName = allContacts[i]
+									.substring(0, index);
 							transPersonPhoneNumber = allContacts[i].substring(
 									index + 1, allContacts[i].length() - 1);
 						} else {
-							transPersonName="";
+							transPersonName = "";
 							transPersonPhoneNumber = allContacts[i];
 						}
-						if (AirenaoUtills.checkPhoneNumber(transPersonPhoneNumber)) {
-							if(!transPersonName.equals("佚名")){
+						if (AirenaoUtills
+								.checkPhoneNumber(transPersonPhoneNumber)) {
+							if (!transPersonName.equals("佚名") && !nickname.equals(transPersonName)) {
 								count++;
+								intentCount++;
 							}
-							transPersons.add(new MyPerson(transPersonName,transPersonPhoneNumber));
+							transPersons.add(new MyPerson(transPersonName,
+									transPersonPhoneNumber));
 						}
 					}
 
 				}
-				
-				
+
 			}
 			alreadyExistNumbers = null;
 		}
-		
-		btnOk = (Button) findViewById(R.id.btnAdd);
-		
-		if (positions != null) {
-			int allCount = positions.size() + count;
-			btnOk.setText("确定" + "(" + allCount + ")");
-		} else {
-			btnOk.setText("确定" + "(" + count + ")");
-		}
 
-		btnCancle = (Button) findViewById(R.id.btnCancle);
+		btnOk = (Button) findViewById(R.id.btnAdd);
+		btnOk.setText("确定" + "(" + count + ")");
+		intentCount = count;
+		btnPrivew = (Button) findViewById(R.id.btnCancle);
 		btnAll = (Button) findViewById(R.id.btnAll);
 		btnAll.setEnabled(false);
-		myHandler = new Handler(){
+		myHandler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
-				switch(msg.what){
+				switch (msg.what) {
 				case 0:
-					
-					//btnOk.setText("确定"+"("+msg.getData().getString("count")+")");
 					break;
 				}
 				super.handleMessage(msg);
 			}
-			
+
 		};
 		btnFrequent = (Button) findViewById(R.id.btnFrequent);
 
@@ -579,7 +576,7 @@ public class ContactsListActivity extends ListActivity implements
 			@Override
 			public void onClick(View v) {
 				btnAll.setEnabled(false);
-				//transPersons.clear();
+				// transPersons.clear();
 				btnFrequent.setEnabled(true);
 				tempPositions.clear();
 				tempPositions.addAll(positions);
@@ -592,7 +589,7 @@ public class ContactsListActivity extends ListActivity implements
 			@Override
 			public void onClick(View v) {
 				btnAll.setEnabled(true);
-				//transPersons.clear();
+				// transPersons.clear();
 				btnFrequent.setEnabled(false);
 				tempPositions.clear();
 				tempPositions.addAll(positions);
@@ -606,7 +603,6 @@ public class ContactsListActivity extends ListActivity implements
 			public void onClick(View v) {
 				// 查找所有的电话，在封装返回
 				// 开启一个loadingBar
-
 				showDialog(1);
 				dataLoading = new Runnable() {
 
@@ -621,13 +617,32 @@ public class ContactsListActivity extends ListActivity implements
 									personPhoneNumber);
 
 							choosedData.add(tempPerson);
-
+						}
+						List<MyPerson> deleteList = deleteSameEntity(choosedData);
+						if (SendAirenaoActivity.staticData.size() != 0) {
+							for (int i = 0; i < deleteList.size(); i++) {
+								boolean flag = false;
+								for (int j = 0; j < SendAirenaoActivity.staticData
+										.size(); j++) {
+									if (deleteList.get(i).getName().equals(
+											SendAirenaoActivity.staticData.get(
+													j).getName())) {
+										flag = true;
+									}
+								}
+								if (!flag) {
+									SendAirenaoActivity.staticData
+											.add(deleteList.get(i));
+								}
+							}
+						} else {
+							SendAirenaoActivity.staticData = deleteList;
 						}
 
 						personIntent = new Intent();
 						personIntent.putParcelableArrayListExtra(
 								Constants.FROMCONTACTSLISTTOSEND,
-								(ArrayList<? extends Parcelable>) choosedData);
+								(ArrayList<? extends Parcelable>) deleteList);
 						positions.clear();
 						tempPositions.clear();
 						tempCount = 0;
@@ -635,24 +650,68 @@ public class ContactsListActivity extends ListActivity implements
 						finish();
 
 					}
-
 				};
 				myHandler.post(dataLoading);
 			}
 		});
-		btnCancle.setOnClickListener(new OnClickListener() {
+		btnPrivew.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				positions.clear();
-				tempPositions.clear();
+				// SendAirenaoActivity.staticData.clear();
+				choosedData.clear();
+				for (MyPerson onePerson : positions) {
+					personId = onePerson.getId();
+					personName = onePerson.getName();
+					personPhoneNumber = onePerson.getPhoneNumber();
+					tempPerson = new MyPerson(personId, personName,
+							personPhoneNumber);
+
+					choosedData.add(tempPerson);
+				}
+				List<MyPerson> deleteList = deleteSameEntity(choosedData);
+
+				if (SendAirenaoActivity.staticData.size() != 0) {
+					for (int i = 0; i < deleteList.size(); i++) {
+						boolean flag = false;
+						for (int j = 0; j < SendAirenaoActivity.staticData
+								.size(); j++) {
+							if (deleteList.get(i).getName().equals(
+									SendAirenaoActivity.staticData.get(j)
+											.getName())) {
+								flag = true;
+							}
+						}
+						if (!flag) {
+							SendAirenaoActivity.staticData.add(deleteList
+									.get(i));
+						}
+					}
+				} else {
+
+					for (int i = 0; i < deleteList.size(); i++) {
+						MyPerson myPerson = deleteList.get(i);
+						SendAirenaoActivity.staticData.add(myPerson);
+					}
+
+					for (int i = 0; i < SendAirenaoActivity.staticData.size(); i++) {
+						MyPerson myPerson = SendAirenaoActivity.staticData
+								.get(i);
+						exchangeList.add(myPerson);
+						firstEnter = true;
+					}
+				}
+
+				Intent intent = new Intent(getApplicationContext(),
+						PreviewActivity.class);
+				startActivity(intent);
 				finish();
 			}
 		});
 
 		btnSwitch = (ImageButton) findViewById(R.id.button_dismiss_kb);
 		btnSwitch.setEnabled(false);
-		
+
 		setEditSearchListenner();
 	}
 
@@ -744,8 +803,6 @@ public class ContactsListActivity extends ListActivity implements
 		}
 	}
 
-	
-	
 	private void setEmptyText() {
 		if (mMode == MODE_JOIN_CONTACT) {
 			return;
@@ -777,7 +834,7 @@ public class ContactsListActivity extends ListActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		Intent it = this.getIntent();
 		mMode = it.getIntExtra("mode", MODE_DEFAULT);
 
@@ -807,14 +864,12 @@ public class ContactsListActivity extends ListActivity implements
 			// launched, as long
 			// as we aren't doing a filter.
 			startQuery();
-			
+
 		}
 		mJustCreated = false;
 
 	}
-	
-	
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -831,7 +886,7 @@ public class ContactsListActivity extends ListActivity implements
 		// filter will cause the query to happen anyway
 		if (TextUtils.isEmpty(getListView().getTextFilter())) {
 			startQuery();
-			
+
 		} else {
 			// Run the filtered query on the adapter
 			((ContactItemListAdapter) getListAdapter()).onContentChanged();
@@ -983,7 +1038,9 @@ public class ContactsListActivity extends ListActivity implements
 			// Calling contact
 			menu.add(0, MENU_ITEM_CALL, 0, getString(R.string.menu_call));
 			// Send SMS item
-			menu.add(0, MENU_ITEM_SEND_SMS, 0, getString(R.string.menu_sendSMS));
+			menu
+					.add(0, MENU_ITEM_SEND_SMS, 0,
+							getString(R.string.menu_sendSMS));
 		}
 
 		// Star toggling
@@ -1022,8 +1079,8 @@ public class ContactsListActivity extends ListActivity implements
 		case MENU_ITEM_TOGGLE_STAR: {
 			// Toggle the star
 			ContentValues values = new ContentValues(1);
-			values.put(Contacts.STARRED,
-					cursor.getInt(SUMMARY_STARRED_COLUMN_INDEX) == 0 ? 1 : 0);
+			values.put(Contacts.STARRED, cursor
+					.getInt(SUMMARY_STARRED_COLUMN_INDEX) == 0 ? 1 : 0);
 			final Uri selectedUri = this.getContactUri(info.position);
 			getContentResolver().update(selectedUri, values, null, null);
 			return true;
@@ -1063,26 +1120,27 @@ public class ContactsListActivity extends ListActivity implements
 			positions.clear();
 			tempPositions.clear();
 			tempCount = 0;
+			allcount = tempCount;
 			finish();
 			break;
-		}	
+		}
 
 		return super.onKeyDown(keyCode, event);
 	}
 
 	@Override
 	protected void onDestroy() {
+		count = 0;
+		tempCount = 0;
 		super.onDestroy();
-		// if (mPhotoLoader != null) {
-		// mPhotoLoader.stop();
-		// }
+
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		// Hide soft keyboard, if visible
-		//transPersons.clear();
-		
+		// transPersons.clear();
+
 		InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputMethodManager.hideSoftInputFromWindow(getListView()
 				.getWindowToken(), 0);
@@ -1114,9 +1172,10 @@ public class ContactsListActivity extends ListActivity implements
 						isShow = true;
 
 						personMap.get(position).setChecked(!isCheckedNow);
-
-						positions.add(new MyPerson(clickPersonId,
-								clickPersonName, clickPersonPhoneNumber));
+						MyPerson person = new MyPerson(clickPersonId,
+								clickPersonName, clickPersonPhoneNumber);
+						person.setChecked(!isCheckedNow);
+						positions.add(person);
 						tempCount++;
 					}
 				}
@@ -1130,10 +1189,12 @@ public class ContactsListActivity extends ListActivity implements
 					phoneDialog.show();
 				}
 			} else {
-				
+
 				tempCount++;
 				personMap.get(position).setChecked(!isCheckedNow);
-
+				MyPerson person = new MyPerson(clickPersonId, clickPersonName,
+						clickPersonPhoneNumber);
+				person.setChecked(!isCheckedNow);
 				positions.add(new MyPerson(clickPersonId, clickPersonName,
 						clickPersonPhoneNumber));
 			}
@@ -1147,27 +1208,41 @@ public class ContactsListActivity extends ListActivity implements
 					if (!collectionPersonId.equals(clickPersonId)) {
 						continue;
 					} else {
+						MyPerson myPerson = positions.get(i);
 						positions.remove(i);
-						tempCount--;
-					}
-				}
 
-			} else {
+						for (int k = 0; k < SendAirenaoActivity.staticData
+								.size(); k++) {
+							if (myPerson.getName().equals(
+									SendAirenaoActivity.staticData.get(k)
+											.getName())) {
+								SendAirenaoActivity.staticData.remove(k);
+								break;
+							}
+						}
+					}
+					tempCount--;
+				}
+			}
+
+			else {
 				positions.add(new MyPerson(clickPersonId, clickPersonName,
 						clickPersonPhoneNumber));
 				tempCount++;
 			}
-		}
 
-		Log.i("pos", "weizhi:" + position);
-		// 变化按钮中的统计数字
+			Log.i("pos", "weizhi:" + position);
+			// 变化按钮中的统计数字
+
+			/*
+			 * tempPositions.clear(); tempPositions.addAll(positions);
+			 */
+
+		}
 		int showCount = tempCount + count;
 		btnOk.setText(getString(R.string.btn_ok) + "(" + showCount + ")");
-		/*tempPositions.clear();
-		tempPositions.addAll(positions);*/
 		mAdapter.notifyDataSetChanged();
 		list.requestFocusFromTouch();
-
 	}
 
 	/**
@@ -1175,13 +1250,12 @@ public class ContactsListActivity extends ListActivity implements
 	 */
 	protected void doContactDelete() {
 		try {
-			new AlertDialog.Builder(this)
-					.setTitle(R.string.deleteConfirmation_title)
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setMessage(R.string.deleteConfirmation)
-					.setNegativeButton(android.R.string.cancel, null)
-					.setPositiveButton(android.R.string.ok,
-							new DeleteClickListener()).show();
+			new AlertDialog.Builder(this).setTitle(
+					R.string.deleteConfirmation_title).setIcon(
+					android.R.drawable.ic_dialog_alert).setMessage(
+					R.string.deleteConfirmation).setNegativeButton(
+					android.R.string.cancel, null).setPositiveButton(
+					android.R.string.ok, new DeleteClickListener()).show();
 		} catch (Exception e) {
 
 		}
@@ -1261,8 +1335,8 @@ public class ContactsListActivity extends ListActivity implements
 			textPaint.setTextSize(20.0f * scaleDensity);
 			textPaint.setTypeface(Typeface.DEFAULT_BOLD);
 			textPaint.setColor(r.getColor(R.color.textColorIconOverlay));
-			textPaint.setShadowLayer(3f, 1, 1,
-					r.getColor(R.color.textColorIconOverlayShadow));
+			textPaint.setShadowLayer(3f, 1, 1, r
+					.getColor(R.color.textColorIconOverlayShadow));
 			canvas.drawText(overlay, 2 * scaleDensity, 16 * scaleDensity,
 					textPaint);
 		}
@@ -1318,8 +1392,8 @@ public class ContactsListActivity extends ListActivity implements
 			return ContactsContract.CommonDataKinds.Email.CONTENT_URI;
 		case MODE_PICK_CONTACT:
 			return Uri.withAppendedPath(
-					ContactsContract.Contacts.CONTENT_FILTER_URI,
-					Uri.encode(input));
+					ContactsContract.Contacts.CONTENT_FILTER_URI, Uri
+							.encode(input));
 		case MODE_PICK_EMAIL:
 			return Uri.withAppendedPath(
 					ContactsContract.CommonDataKinds.Email.CONTENT_FILTER_URI,
@@ -1345,11 +1419,11 @@ public class ContactsListActivity extends ListActivity implements
 		}
 		case MODE_QUERY_PICK_TO_VIEW: {
 			if (mQueryMode == QUERY_MODE_MAILTO) {
-				return Uri.withAppendedPath(Email.CONTENT_FILTER_URI,
-						Uri.encode(mQueryData));
+				return Uri.withAppendedPath(Email.CONTENT_FILTER_URI, Uri
+						.encode(mQueryData));
 			} else if (mQueryMode == QUERY_MODE_TEL) {
-				return Uri.withAppendedPath(Phone.CONTENT_FILTER_URI,
-						Uri.encode(mQueryData));
+				return Uri.withAppendedPath(Phone.CONTENT_FILTER_URI, Uri
+						.encode(mQueryData));
 			}
 		}
 		case MODE_QUERY: {
@@ -1481,7 +1555,7 @@ public class ContactsListActivity extends ListActivity implements
 	 * Return the selection arguments for a default query based on
 	 * {@link #mDisplayAll} and {@link #mDisplayOnlyPhones} flags.
 	 */
-	@SuppressWarnings({ "JavadocReference" })
+	@SuppressWarnings( { "JavadocReference" })
 	private String getContactSelection() {
 		if (mDisplayOnlyPhones) {
 			return CLAUSE_ONLY_VISIBLE + "=1" + " AND " + CLAUSE_ONLY_PHONES;
@@ -1492,8 +1566,8 @@ public class ContactsListActivity extends ListActivity implements
 
 	private Uri getContactFilterUri(String filter) {
 		if (!TextUtils.isEmpty(filter)) {
-			return Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI,
-					Uri.encode(filter));
+			return Uri.withAppendedPath(Contacts.CONTENT_FILTER_URI, Uri
+					.encode(filter));
 		} else {
 			return Contacts.CONTENT_URI;
 		}
@@ -1501,8 +1575,8 @@ public class ContactsListActivity extends ListActivity implements
 
 	private Uri getPeopleFilterUri(String filter) {
 		if (!TextUtils.isEmpty(filter)) {
-			return Uri.withAppendedPath(People.CONTENT_FILTER_URI,
-					Uri.encode(filter));
+			return Uri.withAppendedPath(People.CONTENT_FILTER_URI, Uri
+					.encode(filter));
 		} else {
 			return People.CONTENT_URI;
 		}
@@ -1679,8 +1753,8 @@ public class ContactsListActivity extends ListActivity implements
 			Uri uri;
 			if (!TextUtils.isEmpty(filter)) {
 				uri = Uri.withAppendedPath(
-						Contacts.CONTENT_STREQUENT_FILTER_URI,
-						Uri.encode(filter));
+						Contacts.CONTENT_STREQUENT_FILTER_URI, Uri
+								.encode(filter));
 			} else {
 				uri = Contacts.CONTENT_STREQUENT_URI;
 			}
@@ -1690,8 +1764,8 @@ public class ContactsListActivity extends ListActivity implements
 		case MODE_PICK_PHONE: {
 			Uri uri = getUriToQuery();
 			if (!TextUtils.isEmpty(filter)) {
-				uri = Uri.withAppendedPath(Phone.CONTENT_FILTER_URI,
-						Uri.encode(filter));
+				uri = Uri.withAppendedPath(Phone.CONTENT_FILTER_URI, Uri
+						.encode(filter));
 			}
 			return resolver.query(uri, projection, null, null,
 					getSortOrder(projection));
@@ -1832,7 +1906,8 @@ public class ContactsListActivity extends ListActivity implements
 				Contacts.Data.CONTENT_DIRECTORY);
 
 		c = getContentResolver()
-				.query(dataUri,
+				.query(
+						dataUri,
 						new String[] { Phone._ID, Phone.NUMBER,
 								Phone.IS_SUPER_PRIMARY }, Data.MIMETYPE + "=?",
 						new String[] { Phone.CONTENT_ITEM_TYPE }, null);
@@ -1877,8 +1952,7 @@ public class ContactsListActivity extends ListActivity implements
 		@Override
 		// ** onQueryComplete is one of QueryHander's method
 		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-			
-			
+
 			final ContactsListActivity activity = mActivity.get();
 			if (activity != null && !activity.isFinishing()) {
 
@@ -1890,7 +1964,6 @@ public class ContactsListActivity extends ListActivity implements
 				int count = cursor.getCount();
 				personMap = new HashMap<Integer, MyPerson>();
 				positions = new ArrayList<MyPerson>();
-				
 
 				for (int i = 1; i <= count; i++) {
 					personMap.put(i, new MyPerson());
@@ -2279,7 +2352,7 @@ public class ContactsListActivity extends ListActivity implements
 
 			// to bindView
 			bindView(v, getBaseContext(), cursor);
-			
+
 			// to bind the SectionHeader
 			bindSectionHeader(v, realPosition, mDisplaySectionHeaders
 					&& !showingSuggestion);
@@ -2300,15 +2373,13 @@ public class ContactsListActivity extends ListActivity implements
 						R.string.listFoundAllContactsZero,
 						R.plurals.listFoundAllContacts);
 			} else {
-				/*if (mDisplayOnlyPhones) {
-					text = getQuantityText(count,
-							R.string.listTotalPhoneContactsZero,
-							R.plurals.listTotalPhoneContacts);
-				} else {
-					text = getQuantityText(count,
-							R.string.listTotalAllContactsZero,
-							R.plurals.listTotalAllContacts);
-				}*/
+				/*
+				 * if (mDisplayOnlyPhones) { text = getQuantityText(count,
+				 * R.string.listTotalPhoneContactsZero,
+				 * R.plurals.listTotalPhoneContacts); } else { text =
+				 * getQuantityText(count, R.string.listTotalAllContactsZero,
+				 * R.plurals.listTotalAllContacts); }
+				 */
 			}
 			totalContacts.setText("dd");
 			return totalContacts;
@@ -2367,12 +2438,11 @@ public class ContactsListActivity extends ListActivity implements
 
 			cache.labelView = (TextView) view.findViewById(R.id.label);
 			cache.idView = (TextView) view.findViewById(R.id.data);
-			//cache.presenceView = (ImageView) view.findViewById(R.id.presence);
+			// cache.presenceView = (ImageView)
+			// view.findViewById(R.id.presence);
 
 			// checkBox
 			cache.checkBox = (CheckBox) view.findViewById(R.id.cb);
-
-			
 
 			view.setTag(cache);
 
@@ -2469,6 +2539,8 @@ public class ContactsListActivity extends ListActivity implements
 
 							personMap.get(cursor.getPosition() + 1).setChecked(
 									true);
+							MyPerson myPerson = personMap.get(cursor
+									.getPosition() + 1);
 
 							break;
 						}
@@ -2477,62 +2549,68 @@ public class ContactsListActivity extends ListActivity implements
 				}
 
 			}
-			
+
 			// Set the number and first get the number
-						String myFinalNum;
-						myFinalNum = getMyFinalNumber(cursor);
-						if (personMap != null) {
-							if (phoneNumbers != null) {
-								personMap.get(position + 1).setNumbers(phoneNumbers);
-							}
-						}
-						if (personMap.get(position + 1).getPhoneNumber() != null) {
+			String myFinalNum;
+			myFinalNum = getMyFinalNumber(cursor);
+			if (personMap != null) {
+				if (phoneNumbers != null) {
+					personMap.get(position + 1).setNumbers(phoneNumbers);
+				}
+			}
+			if (personMap.get(position + 1).getPhoneNumber() != null) {
 
-							cache.labelView.setText(personMap.get(position + 1)
-									.getPhoneNumber());
+				cache.labelView.setText(personMap.get(position + 1)
+						.getPhoneNumber());
 
-						} else {
+			} else {
 
-							cache.labelView.setText(myFinalNum);
-						}
-						
-			//设置已发送的联系人的checkbox
-			if(transPersons.size()>0){
-				for(int i = 0;i<transPersons.size();i++){
+				cache.labelView.setText(myFinalNum);
+			}
+
+			// 设置已发送的联系人的checkbox
+			if (transPersons.size() > 0) {
+				for (int i = 0; i < transPersons.size(); i++) {
 					bindPerson = transPersons.get(i);
-					if(bindPerson.getName().equals(cache.nameView.getText().toString())){
-						MyPerson Person = personMap.get(cursor.getPosition() + 1);
-						if(Person!=null){
+					if (bindPerson.getName().equals(
+							cache.nameView.getText().toString())) {
+						MyPerson Person = personMap
+								.get(cursor.getPosition() + 1);
+						if (Person != null) {
 							Person.setChecked(true);
-							positions.add(new MyPerson(cache.idView.getText().toString(),
-									cache.nameView.getText().toString(),cache.labelView.getText().toString()));
+							Person = new MyPerson(cache.idView.getText()
+									.toString(), cache.nameView.getText()
+									.toString(), cache.labelView.getText()
+									.toString());
+							positions.add(Person);
+
 							transPersons.remove(i);
 							Message msg = new Message();
 							msg.what = 0;
 							Bundle bundle = new Bundle();
-							bundle.putString("count", positions.size()+"");
+							bundle.putString("count", positions.size() + "");
 							msg.setData(bundle);
 							myHandler.sendMessage(msg);
 						}
 						break;
 					}
 				}
-				
+
 			}
-			
+
 			// 设置checkbox
 			MyPerson person = personMap.get(cursor.getPosition() + 1);
 			if (cache.checkBox != null && person != null) {
 
 				if (person.isChecked()) {
 					cache.checkBox.setChecked(true);
+
 				} else {
+
 					cache.checkBox.setChecked(false);
 				}
 
 			}
-
-			
 
 			// Make the call button visible if requested.
 			if (false) {
@@ -2554,35 +2632,6 @@ public class ContactsListActivity extends ListActivity implements
 				}
 			}
 
-			// try {
-			// if (mDisplayNetworkIndication
-			// && checkIsInNetwork(CallSparkContactsListActivity.this,
-			// Long.toString(cursor
-			// .getLong(SUMMARY_ID_COLUMN_INDEX)))) {
-			// cache.imgTag.setVisibility(View.VISIBLE);
-			// } else {
-			// cache.imgTag.setVisibility(View.GONE);
-			// }
-			// } catch (Exception e) {
-			//
-			// }
-
-			// Set the photo, if requested
-
-			// if (mDisplayPhotos) {
-			// long photoId = 0;
-			// if (!cursor.isNull(SUMMARY_PHOTO_ID_COLUMN_INDEX)) {
-			// photoId = cursor.getLong(SUMMARY_PHOTO_ID_COLUMN_INDEX);
-			// }
-			//
-			// ImageView viewToUse = cache.nonQuickContactPhotoView;
-			// viewToUse.setVisibility(View.VISIBLE);
-			//
-			// viewToUse.setBackgroundResource(R.drawable.source_contacts);
-			// // mPhotoLoader.loadPhoto(viewToUse, photoId);
-			// }
-
-			// Set the photo, if requested
 			if (false) {// mDisplayPhotos
 				boolean useQuickContact = (mMode & MODE_MASK_DISABLE_QUIKCCONTACT) == 0;
 
@@ -3277,8 +3326,8 @@ public class ContactsListActivity extends ListActivity implements
 
 			// Need to show disambig dialogue.
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
-					mContext).setAdapter(mPhonesAdapter, this)
-					.setTitle("请选择电话号码").setView(setPrimaryView);
+					mContext).setAdapter(mPhonesAdapter, this).setTitle(
+					"请选择电话号码").setView(setPrimaryView);
 
 			mDialog = dialogBuilder.create();
 		}
@@ -3305,10 +3354,10 @@ public class ContactsListActivity extends ListActivity implements
 					if (mMakePrimary) {
 						ContentValues values = new ContentValues(1);
 						values.put(Data.IS_SUPER_PRIMARY, 1);
-						mContext.getContentResolver()
-								.update(ContentUris.withAppendedId(
-										Data.CONTENT_URI, id), values, null,
-										null);
+						mContext.getContentResolver().update(
+								ContentUris
+										.withAppendedId(Data.CONTENT_URI, id),
+								values, null, null);
 					}
 				} else {
 					if (mMakePrimary) {
@@ -3329,8 +3378,7 @@ public class ContactsListActivity extends ListActivity implements
 				positions.add(new MyPerson(clickPersonId, this.name, phone));
 				tempCount++;
 				int myCount = tempCount + count;
-				btnOk.setText(getString(R.string.btn_ok) + "("
-						+ myCount + ")");
+				btnOk.setText(getString(R.string.btn_ok) + "(" + myCount + ")");
 				mAdapter.notifyDataSetChanged();
 				list.requestFocusFromTouch();
 			} else {
@@ -3410,6 +3458,17 @@ public class ContactsListActivity extends ListActivity implements
 		}
 
 	}
-	
-	//标记
+
+	// 标记
+	public List<MyPerson> deleteSameEntity(List<MyPerson> myPerson) {
+
+		HashSet hashset = new HashSet(myPerson);
+		List<MyPerson> relist = new ArrayList<MyPerson>();
+		for (int i = 0; i < myPerson.size(); i++) {
+			if (hashset.contains(myPerson.get(i))) // contains:该集合不包含指定元素，返回
+				// true
+				relist.add(myPerson.get(i));
+		}
+		return relist;
+	}
 }

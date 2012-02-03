@@ -272,6 +272,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			result = AirenaoUtills.linkResult(result);
 			analyzeJson(result, type);*/
 			SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+			mData.clear();
 			if(TYPE_ALL.equals(type)){
 				ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
 				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "appliedClients", id));

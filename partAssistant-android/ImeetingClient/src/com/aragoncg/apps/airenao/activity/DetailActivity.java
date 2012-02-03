@@ -76,7 +76,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private String userId;
 	private GridView gridView;
 	private String delteUrl;
-	private String applyUrl="";
+	private String applyUrl = "";
 
 	private static final int SUCCESS = 0;
 	private static final int FAIL = 3;
@@ -218,7 +218,8 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			throw new NullPointerException("没有获得列表中的活动");
 		}
 		partyId = myAirenaoActivity.getId();
-		getClientsCountUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_CLIENTCOUNT_URL;
+		getClientsCountUrl = Constants.DOMAIN_NAME
+				+ Constants.SUB_DOMAIN_GET_CLIENTCOUNT_URL;
 	}
 
 	/**
@@ -298,7 +299,8 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						progressDialog = ProgressDialog.show(
 								DetailActivity.this, "", "删除中...", true, true);
 						// 删除
-						delteUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_DELETE_URL;
+						delteUrl = Constants.DOMAIN_NAME
+								+ Constants.SUB_DOMAIN_DELETE_URL;
 						Runnable remove = new Runnable() {
 
 							@Override
@@ -322,30 +324,40 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				case MENU_SHARE:
 					if (pw.isShowing()) {
 						pw.dismiss();
-						SharedPreferences spf = AirenaoUtills.getMySharedPreferences(DetailActivity.this);
-						String accessToken = spf.getString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, null);
-						String accessSecret = spf.getString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, null);
+						SharedPreferences spf = AirenaoUtills
+								.getMySharedPreferences(DetailActivity.this);
+						String accessToken = spf.getString(
+								WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, null);
+						String accessSecret = spf.getString(
+								WeiBoSplashActivity.EXTRA_TOKEN_SECRET, null);
 						Intent intent2 = new Intent();
 						Bundle bundle = new Bundle();
-						if(accessToken!=null && accessSecret!=null){
+						if (accessToken != null && accessSecret != null) {
 							String applyUrl = spf.getString(partyId, null);
-							if(applyUrl==null){
+							if (applyUrl == null) {
 								throw new RuntimeException("获得报名链接错误");
 							}
-							applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："+applyUrl;
-				    		bundle.putString(WeiBoSplashActivity.EXTRA_WEIBO_CONTENT, applyUrl);
-				    		bundle.putString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN, accessToken);
-				    		bundle.putString(WeiBoSplashActivity.EXTRA_TOKEN_SECRET, accessSecret);
-				    		intent2.putExtras(bundle);
-				    		intent2.setClass(DetailActivity.this, ShareActivity.class);
-				    		startActivity(intent2);
-						}else{
+							applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
+							bundle.putString(
+									WeiBoSplashActivity.EXTRA_WEIBO_CONTENT,
+									applyUrl);
+							bundle.putString(
+									WeiBoSplashActivity.EXTRA_ACCESS_TOKEN,
+									accessToken);
+							bundle.putString(
+									WeiBoSplashActivity.EXTRA_TOKEN_SECRET,
+									accessSecret);
+							intent2.putExtras(bundle);
+							intent2.setClass(DetailActivity.this,
+									ShareActivity.class);
+							startActivity(intent2);
+						} else {
 							intent2.putExtra(Constants.PARTY_ID, partyId);
-							intent2.setClass(DetailActivity.this, WeiBoSplashActivity.class);
+							intent2.setClass(DetailActivity.this,
+									WeiBoSplashActivity.class);
 							startActivity(intent2);
 						}
-						
-						
+
 					}
 					break;
 				case MENU_SETTINT:
@@ -358,9 +370,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					if (pw.isShowing()) {
 						pw.dismiss();
 						Intent intent = new Intent();
-						intent.setClass(DetailActivity.this, EditActivity.class);
+						intent
+								.setClass(DetailActivity.this,
+										EditActivity.class);
 
-						intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
+						intent.putExtra(Constants.TO_CREATE_ACTIVITY,
+								myAirenaoActivity);
 						intent.putExtra(Constants.FROMDETAIL, true);
 						startActivity(intent);
 						finish();
@@ -381,7 +396,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		public TextView peopleNum;
 
 		public TextView activityContent;
-		
+
 		public ImageView flagNew;
 
 	}
@@ -439,8 +454,8 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 				holder.activityContent = (TextView) convertView
 						.findViewById(R.id.activity_content);
-				
-				holder.flagNew  = (ImageView)convertView
+
+				holder.flagNew = (ImageView) convertView
 						.findViewById(R.id.flagNew);
 				convertView.setTag(holder);
 
@@ -456,15 +471,14 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			if (loated) {
 				holder.progressBar.setVisibility(View.GONE);
 			}
-			if(dataList.get(position).get("newCount")!=null){
-				if("0".equals(dataList.get(position).get("newCount"))){
-					holder.flagNew.setVisibility(View.INVISIBLE
-							);
-				}else{
+			if (dataList.get(position).get("newCount") != null) {
+				if ("0".equals(dataList.get(position).get("newCount"))) {
+					holder.flagNew.setVisibility(View.INVISIBLE);
+				} else {
 					holder.flagNew.setVisibility(View.VISIBLE);
 				}
 			}
-			
+
 			return convertView;
 
 		}
@@ -575,7 +589,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				Intent intent = new Intent();
 				intent.setClass(DetailActivity.this, EditActivity.class);
 
-				intent.putExtra(Constants.TO_CREATE_ACTIVITY, myAirenaoActivity);
+				intent
+						.putExtra(Constants.TO_CREATE_ACTIVITY,
+								myAirenaoActivity);
 				intent.putExtra(Constants.FROMDETAIL, true);
 				startActivity(intent);
 				finish();
@@ -700,7 +716,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			message.what = PROGRESS_GONE;
 			myHandler.sendMessage(message);
 			loated = true;
-			
+
 		}
 
 		/**
@@ -738,9 +754,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 							.getString(DONOTHING_CLIENT_COUNT);
 					newCount[0] = datasource
 							.getString(NEW_APPLIED_CLIENT_COUNT);
-					newCount[1] = 
-							datasource
-							.getString(NEW_REFUSED_CLENT_COUNT);
+					newCount[1] = datasource.getString(NEW_REFUSED_CLENT_COUNT);
 					results[0] = allClientCount;
 					results[1] = appliedClientCount;
 					results[2] = donothingClientcount;

@@ -1,72 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>  
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
-              android:orientation="vertical"    
-              android:layout_width="fill_parent"    
-              android:layout_height="fill_parent">  
-    <LinearLayout
-    	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content">
-    	<TextView android:id="@+id/activity_name"    
-              android:layout_width="wrap_content"    
-              android:layout_height="wrap_content"    
-              android:singleLine="true"  
-              android:layout_marginLeft="30dip"  
-              android:textSize="20sp"
-              android:textStyle="bold"  
-              android:paddingTop="2dip" 
-              android:layout_weight="1"
-              android:paddingLeft="2dip" 
-              android:text="活动啊打飞机啊老大了房间啊肯定是街坊邻居啊东风" 
-               />  
-             
-         <ImageView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:id="@+id/flag_new_red"
-         android:background="@drawable/flag_new_red"
-         android:layout_gravity="right"/>      
-    </LinearLayout>
-    <LinearLayout android:layout_width="fill_parent"
-    android:layout_marginLeft="30dip"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:id="@+id/activity_join"
-    	android:text="已报名:"
-    	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:id="@+id/activity_join_num"
-    	android:textColor="@color/green"
-    	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_marginLeft="10dip"
-    	android:id="@+id/activity_unjoin"
-    	android:text="未报名:"
-    	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:textColor="@color/yellow"
-    	android:id="@+id/activity_unjoin_num"
-    	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_marginLeft="10dip"
-    	android:id="@+id/activity_untake"
-    	android:text="未参加:"
-    	/>
-    <TextView
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:textColor="@color/myRed"
-    	android:id="@+id/activity_untake_num"
-    	/>
-    </LinearLayout>            
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<TextView android:id="@+id/activity_name"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:singleLine="true" android:layout_marginLeft="30dip"
+			android:textSize="20sp" android:textStyle="bold" android:paddingTop="2dip"
+			android:layout_weight="1" android:paddingLeft="2dip" android:text="" />
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/activity_scale"
+			android:text="0/0" android:layout_gravity="center" />
+
+	</LinearLayout>
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_marginLeft="30dip" android:layout_height="wrap_content"
+		android:orientation="horizontal">
+
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/activity_join"
+			android:text="" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/activity_join_num"
+			android:textColor="@color/green" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_marginLeft="10dip"
+			android:id="@+id/activity_unjoin" android:text="" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="@color/yellow"
+			android:id="@+id/activity_unjoin_num" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:layout_marginLeft="10dip"
+			android:id="@+id/activity_untake" android:text="" />
+		<TextView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:textColor="@color/myRed"
+			android:id="@+id/activity_untake_num" />
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/flag_new_red"
+			android:background="@drawable/flag_new_red"
+			android:layout_marginLeft="250dip" />
+	</LinearLayout>
 </LinearLayout>  

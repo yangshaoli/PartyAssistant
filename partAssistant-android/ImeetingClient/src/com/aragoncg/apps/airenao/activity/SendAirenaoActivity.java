@@ -28,16 +28,20 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.database.sqlite.SQLiteDatabase;
+
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.Data;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.TelephonyManager;
 import android.telephony.gsm.SmsManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -79,7 +83,19 @@ public class SendAirenaoActivity extends Activity {
 	private static final int EXCEPTION = 1;
 	private static final int SUCCESS = 3;
 	private static final int SEND_WAY_ONE = 0;
-
+	public AlertDialog pswAlertDialog;
+	public static int judgeCursor = 0;
+	public static String temp = "";
+	public static boolean activityFlag = false;
+	public static List<MyPerson> staticData = new ArrayList<MyPerson>();
+	public String nickname;
+	private static String edt = "";
+	public String phone;
+	private EditText edtPsw;
+	private TextView txtSug;
+	private Button btnOk;
+	private Button btnCancle;
+	private Button btnJoin;
 	private ImageButton btnSendReciever;
 	private EditText txtSendLableContent;
 	private boolean ckSendLableWithLink = true;
@@ -228,53 +244,90 @@ public class SendAirenaoActivity extends Activity {
 		String contactId = myCursor.getString(myCursor
 				.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
 
-		String hasPhone = myCursor.getString(myCursor
-				.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
-		if (hasPhone.equals("1")) {
+		if (judgeCursor == 0) {
+			String hasPhone = myCursor
+					.getString(myCursor
+							.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+			if (hasPhone.equals("1")) {
+				Cursor phones = getContentResolver().query(
+						ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+						null,
+						ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+								+ " = " + contactId, null, null);
 
-			// You now have the number so now query it like this
-
-			Cursor phones = getContentResolver().query(
-					ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-					null,
-					ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = "
-							+ contactId, null, null);
-
-			while (phones.moveToNext()) {
-				String phoneNumber = phones
-						.getString(phones
-								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-				if (phoneNumber.contains("-")) {
-					phoneNumber = phoneNumber.replace("-", "");
-				}
-				if (phoneNumber != null) {
-
-					if (AirenaoUtills.phoneNumberCompare(phoneNumbers,
-							phoneNumber)) {
-						continue;
-					} else {
-						phoneNumbers.add(phoneNumber);
+				while (phones.moveToNext()) {
+					String phoneNumber = phones
+							.getString(phones
+									.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+					if (phoneNumber.contains("-")) {
+						phoneNumber = phoneNumber.replace("-", "");
 					}
+					if (phoneNumber != null) {
+
+						if (AirenaoUtills.phoneNumberCompare(phoneNumbers,
+								phoneNumber)) {
+							continue;
+						} else {
+							phoneNumbers.add(phoneNumber);
+						}
+					}
+
+					// 1 == is primary
+					String isPrimary = phones
+							.getString(phones
+									.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY));
+					SharedPreferences msp = AirenaoUtills
+							.getMySharedPreferences(SendAirenaoActivity.this);
+
+					String mark = msp.getString(phoneNumber, "");
+					if (Constants.IS_SUPER_PRIMARY.equals(mark)) {
+						phoneNumbers.clear();
+						phoneNumbers.add(phoneNumber);
+						phones.close();
+						return phoneNumbers;
+					}
+
 				}
-
-				// 1 == is primary
-				String isPrimary = phones
-						.getString(phones
-								.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY));
-				SharedPreferences msp = AirenaoUtills
-						.getMySharedPreferences(SendAirenaoActivity.this);
-
-				String mark = msp.getString(phoneNumber, "");
-				if (Constants.IS_SUPER_PRIMARY.equals(mark)) {
-					phoneNumbers.clear();
-					phoneNumbers.add(phoneNumber);
-					phones.close();
-					return phoneNumbers;
-				}
-
+				phones.close();
 			}
-			phones.close();
+
 		}
+
+		if (judgeCursor == 1) {
+			String phoneNumber = myCursor
+					.getString(myCursor
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+			if (phoneNumber.contains("-")) {
+				phoneNumber = phoneNumber.replace("-", "");
+			}
+			if (phoneNumber != null) {
+
+				if (AirenaoUtills.phoneNumberCompare(phoneNumbers, phoneNumber)) {
+				} else {
+					phoneNumbers.add(phoneNumber);
+				}
+			}
+
+			String isPrimary = myCursor
+					.getString(myCursor
+							.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY));
+			SharedPreferences msp = AirenaoUtills
+					.getMySharedPreferences(SendAirenaoActivity.this);
+
+			String mark = msp.getString(phoneNumber, "");
+			if (Constants.IS_SUPER_PRIMARY.equals(mark)) {
+				phoneNumbers.clear();
+				phoneNumbers.add(phoneNumber);
+				myCursor.close();
+				return phoneNumbers;
+			}
+
+			// }
+			myCursor.close();
+
+		}
+		// You now have the number so now query it like this
+
 		return phoneNumbers;
 
 	}
@@ -310,6 +363,40 @@ public class SendAirenaoActivity extends Activity {
 
 	@Override
 	protected void onResume() {
+		if (activityFlag) {
+			names = "";
+			String beforeNames = peopleNumbers.getText().toString();
+			if (!"".equals(beforeNames)) {
+				names = beforeNames;
+			} else {
+				names = beforeNames;
+			}
+			// if(ContactsListActivity.firstEnter){
+
+			String onePhoneNumber = "";
+			if (ContactsListActivity.exchangeList != null
+					&& ContactsListActivity.exchangeList.size() > 0) {
+				for (int i = 0; i < ContactsListActivity.exchangeList.size(); i++) {
+					onePhoneNumber = ContactsListActivity.exchangeList.get(i)
+							.getPhoneNumber();
+					if (onePhoneNumber.contains("-")) {
+						onePhoneNumber = onePhoneNumber.replace("-", "");
+					}
+					clientDicts.put(onePhoneNumber,
+							ContactsListActivity.exchangeList.get(i).getName());
+					names += ContactsListActivity.exchangeList.get(i).getName()
+							+ "<" + onePhoneNumber + ">" + ",";
+				}
+				String name = deleteOnlyText(names);
+				peopleNumbers.setText(name);
+
+				peopleNumbers.setSelection(peopleNumbers.getText().toString()
+						.length());
+			}
+			activityFlag = false;
+
+		}
+
 		sendMessageB = new BroadcastReceiver() {
 
 			@Override
@@ -344,8 +431,15 @@ public class SendAirenaoActivity extends Activity {
 		if (sendMessageB != null) {
 			unregisterReceiver(sendMessageB);
 		}
-
 		super.onPause();
+	}
+
+	@Override
+	protected void onDestroy() {
+		staticData.clear();
+		ContactsListActivity.exchangeList.clear();
+		count = 0;
+		super.onDestroy();
 	}
 
 	/**
@@ -622,14 +716,14 @@ public class SendAirenaoActivity extends Activity {
 						.get(i);
 				String tempNames = String.valueOf(map
 						.get(Constants.PEOPLE_NAME));
-				clientDicts.put(
-						String.valueOf(map.get(Constants.PEOPLE_CONTACTS)),
-						tempNames);
+				clientDicts.put(String.valueOf(map
+						.get(Constants.PEOPLE_CONTACTS)), tempNames);
 				if (!"".equals(tempNames)) {
 					names = names
 							+ tempNames
 							+ "<"
-							+ String.valueOf(map.get(Constants.PEOPLE_CONTACTS))
+							+ String
+									.valueOf(map.get(Constants.PEOPLE_CONTACTS))
 							+ ">" + ",";
 				}
 				if (peopleNumbers == null) {
@@ -642,6 +736,7 @@ public class SendAirenaoActivity extends Activity {
 	}
 
 	public void init() {
+
 		createNew = true;
 		SharedPreferences mySharedPreferences = AirenaoUtills
 				.getMySharedPreferences(SendAirenaoActivity.this);
@@ -651,7 +746,7 @@ public class SendAirenaoActivity extends Activity {
 		userTitle = (TextView) findViewById(R.id.userTitle);
 		userTitle.setText(userName);
 		userLayout = (LinearLayout) findViewById(R.id.userChange);
-
+		btnJoin = (Button) findViewById(R.id.btnAddAlarm);
 		stringLink = getString(R.string.sendLableLink);
 		btnSendReciever = (ImageButton) findViewById(R.id.btnSendReciever);
 		btnSendLable = (Button) findViewById(R.id.btnSend);
@@ -660,34 +755,135 @@ public class SendAirenaoActivity extends Activity {
 		peopleNumbers = (MyMultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
 		ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(
 				this, R.array.sendWay, android.R.layout.simple_spinner_item);
-		mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		btnSendReciever.setOnTouchListener(new OnTouchListener() {
 
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
-					
+
 					Intent intent = new Intent();
 					intent.putExtra("mode", -2);// -2 是查询电话
 					String allNumbers = peopleNumbers.getText().toString();
-					intent.putExtra("AlreadyExistNumbers", allNumbers);
+
+					String all = deleteOnlyText(allNumbers);
+
+					intent.putExtra("AlreadyExistNumbers", all);
 					intent.setClass(SendAirenaoActivity.this,
 							ContactsListActivity.class);
 					startActivityForResult(intent, 24);// 24 只是一个requestCode
-														// 没有别的意义
+					// 没有别的意义
 					return false;//
 				}
 				return false;
 			}
 		});
+
+		btnJoin.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				TelephonyManager tm = (TelephonyManager) getApplication()
+						.getSystemService(Context.TELEPHONY_SERVICE);
+
+				SharedPreferences pre = PreferenceManager
+						.getDefaultSharedPreferences(getApplicationContext());
+				nickname = pre.getString("warning_nickname", userName);
+				phone = pre.getString("warning_phone", "");
+				if ("".equals(phone) && !"".equals(edt)) {
+					phone = edt;
+				}
+				String phoneNumber = tm.getLine1Number();
+				if ("".equals(phoneNumber) && "".equals(phone)) {
+					final View view = SendAirenaoActivity.this
+							.getLayoutInflater().inflate(R.layout.myjoin_alert,
+									null);
+					pswAlertDialog = new AlertDialog.Builder(
+							SendAirenaoActivity.this).setTitle(
+							R.string.admin_psw).setView(view).create();
+
+					edtPsw = (EditText) view.findViewById(R.id.edt_psw);
+					txtSug = (TextView) view.findViewById(R.id.txt_sug);
+					btnOk = (Button) view.findViewById(R.id.btn_ok);
+					btnCancle = (Button) view.findViewById(R.id.btn_cancle);
+					btnOk.setText(R.string.sure);
+					btnCancle.setText(R.string.cancle);
+					pswAlertDialog.show();
+					btnOk.setOnClickListener(new Button.OnClickListener() {
+						public void onClick(View arg0) {
+							edt = edtPsw.getText().toString();
+							if (!"".equals(edt)) {
+
+								// peopleNumbers.setSelection(peopleNumbers.getText().toString().length());
+
+								phone = edt;
+								clientDicts.put(edt, nickname);
+								peopleNumbers.replaceTextAgain(nickname + "<"
+										+ edt + ">");
+
+								pswAlertDialog.dismiss();
+							} else {
+								// if ("".equals(phone)) {
+								// txtSug.setText(R.string.psw_empty);
+								// txtSug.setTextColor(Color.RED);
+								// } else {
+								// edtPsw.setText(phone);
+								// }
+								txtSug.setText(R.string.psw_empty);
+								txtSug.setTextColor(Color.RED);
+							}
+						}
+					});
+					btnCancle.setOnClickListener(new Button.OnClickListener() {
+
+						public void onClick(View arg0) {
+							pswAlertDialog.dismiss();
+						}
+					});
+
+				} else {
+					if (!"".equals(phone)) {
+						String tempNumber = "";
+						clientDicts.put(phone, nickname);
+						// peopleNumbers.setSelection(peopleNumbers.getText()
+						// .toString().length());
+						tempNumber += nickname + "<" + phone + ">" + ",";
+						peopleNumbers.setText(peopleNumbers.getText()
+								.toString()
+								+ tempNumber);
+						peopleNumbers.setSelection(peopleNumbers.getText()
+								.toString().length());
+						// peopleNumbers.replaceTextAgain(nickname + "<" + phone
+						// + ">");
+
+					} else {
+
+						if (!"".equals(phoneNumber)) {
+							String tempNumber = "";
+							clientDicts.put(phone, nickname);
+							tempNumber += nickname + "<" + phone + ">" + ",";
+							peopleNumbers.setText(peopleNumbers.getText()
+									.toString()
+									+ tempNumber);
+							peopleNumbers.setSelection(peopleNumbers.getText()
+									.toString().length());
+						}
+					}
+
+				}
+
+			}
+		});
+
 		userLayout.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				AlertDialog dialog = new AlertDialog.Builder(
-						SendAirenaoActivity.this)
-						.setTitle(R.string.user_off)
+						SendAirenaoActivity.this).setTitle(R.string.user_off)
 						.setMessage(R.string.user_off_message)
 						.setPositiveButton(R.string.btn_ok,
 								new DialogInterface.OnClickListener() {
@@ -807,8 +1003,8 @@ public class SendAirenaoActivity extends Activity {
 				}
 
 				if (clientDicts.containsKey(onePhoneNumber)) {
-					tempClientDicts.put(onePhoneNumber,
-							clientDicts.get(onePhoneNumber));
+					tempClientDicts.put(onePhoneNumber, clientDicts
+							.get(onePhoneNumber));
 				}
 			}
 
@@ -835,24 +1031,26 @@ public class SendAirenaoActivity extends Activity {
 
 					}
 				})
-				.setNegativeButton(R.string.btn_cancle, new OnClickListener() {
+				.setNegativeButton(R.string.btn_cancle,
+						new OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (ok) {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								if (ok) {
 
-						} else {
-							/*
-							 * Intent intent = new Intent(
-							 * SendAirenaoActivity.this,
-							 * MeetingListActivity.class);
-							 * intent.putExtra(Constants.NEED_REFRESH, true);
-							 * startActivity(intent);
-							 */
-							finish();
-						}
-					}
-				}).create();
+								} else {
+									/*
+									 * Intent intent = new Intent(
+									 * SendAirenaoActivity.this,
+									 * MeetingListActivity.class);
+									 * intent.putExtra(Constants.NEED_REFRESH,
+									 * true); startActivity(intent);
+									 */
+									finish();
+								}
+							}
+						}).create();
 		aDig.show();
 
 	}
@@ -994,8 +1192,9 @@ public class SendAirenaoActivity extends Activity {
 		// 将信息绑定到控件的方法
 		public void bindView(View view, Context context, Cursor cursor) {
 			((TextView) view)
-					.setText(cursor.getString(cursor
-							.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)));
+					.setText(cursor
+							.getString(cursor
+									.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)));
 
 		}
 
@@ -1012,8 +1211,10 @@ public class SendAirenaoActivity extends Activity {
 			final LayoutInflater inflater = LayoutInflater.from(context);
 			final TextView tv = (TextView) inflater.inflate(
 					android.R.layout.simple_dropdown_item_1line, parent, false);
-			tv.setText(cursor.getString(cursor
-					.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)));
+			tv
+					.setText(cursor
+							.getString(cursor
+									.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)));
 			return tv;
 		}
 
@@ -1022,15 +1223,37 @@ public class SendAirenaoActivity extends Activity {
 			if (getFilterQueryProvider() != null) {
 				return getFilterQueryProvider().runQuery(constraint);
 			}
-
+			String tempTxt = peopleNumbers.getText().toString();
+			String tempTxt1 = peopleNumbers.getText().toString();
 			Uri uri = Uri.withAppendedPath(
-					ContactsContract.Contacts.CONTENT_FILTER_URI,
-					Uri.encode(constraint.toString()));
-			return resolver.query(uri, null, Contacts.IN_VISIBLE_GROUP + "="
-					+ "1 and " + Contacts.HAS_PHONE_NUMBER, null,
+					ContactsContract.Contacts.CONTENT_FILTER_URI, Uri
+							.encode(constraint.toString()));
+
+			Cursor cursor = resolver.query(uri, null, Contacts.IN_VISIBLE_GROUP
+					+ "=" + "1 and " + Contacts.HAS_PHONE_NUMBER, null,
 					ContactsContract.Contacts.TIMES_CONTACTED + ", "
 							+ ContactsContract.Contacts.STARRED + ", "
 							+ ContactsContract.Contacts.DISPLAY_NAME + " DESC");
+
+			if (tempTxt.contains(",")) {
+				int size1 = tempTxt.lastIndexOf(",");
+				int size = tempTxt.lastIndexOf(",") + 1;
+
+				tempTxt1 = tempTxt.substring(size).trim();
+
+			}
+			Cursor cursor1 = resolver.query(
+					ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+					ContactsContract.CommonDataKinds.Phone.NUMBER + " like '"
+							+ tempTxt1 + "%" + "'", null, null);
+
+			if (cursor.getCount() == 0) {
+				judgeCursor = 1;
+				return cursor1;
+			} else {
+				judgeCursor = 0;
+				return cursor;
+			}
 		}
 	}
 
@@ -1046,10 +1269,8 @@ public class SendAirenaoActivity extends Activity {
 		switch (item.getItemId()) {
 		case MENU_SET:
 			AlertDialog settingDialog = new AlertDialog.Builder(
-					SendAirenaoActivity.this)
-					.setTitle(R.string.btn_setting)
-					.setIcon(R.drawable.settings)
-					.setItems(R.array.setMenu,
+					SendAirenaoActivity.this).setTitle(R.string.btn_setting)
+					.setIcon(R.drawable.settings).setItems(R.array.setMenu,
 							new DialogInterface.OnClickListener() {
 
 								@Override
@@ -1074,8 +1295,7 @@ public class SendAirenaoActivity extends Activity {
 			return true;
 		case MENU_SEND_WAY:
 			AlertDialog oneDialog = new AlertDialog.Builder(
-					SendAirenaoActivity.this)
-					.setTitle(R.string.memu_send_way)
+					SendAirenaoActivity.this).setTitle(R.string.memu_send_way)
 					.setItems(R.array.sendWay,
 							new DialogInterface.OnClickListener() {
 								public void onClick(DialogInterface dialog,
@@ -1147,8 +1367,8 @@ public class SendAirenaoActivity extends Activity {
 
 			// Need to show disambig dialogue.
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
-					mContext).setAdapter(mPhonesAdapter, this)
-					.setTitle("请选择电话号码").setView(setPrimaryView);
+					mContext).setAdapter(mPhonesAdapter, this).setTitle(
+					"请选择电话号码").setView(setPrimaryView);
 
 			mDialog = dialogBuilder.create();
 		}
@@ -1175,10 +1395,10 @@ public class SendAirenaoActivity extends Activity {
 					if (mMakePrimary) {
 						ContentValues values = new ContentValues(1);
 						values.put(Data.IS_SUPER_PRIMARY, 1);
-						mContext.getContentResolver()
-								.update(ContentUris.withAppendedId(
-										Data.CONTENT_URI, id), values, null,
-										null);
+						mContext.getContentResolver().update(
+								ContentUris
+										.withAppendedId(Data.CONTENT_URI, id),
+								values, null, null);
 					}
 				} else {
 					if (mMakePrimary) {
@@ -1268,6 +1488,25 @@ public class SendAirenaoActivity extends Activity {
 			return phoneList;
 		}
 
+	}
+
+	public String deleteOnlyText(String text) {
+		String[] allContacts = text.split("\\,", 0);
+		String text1 = "";
+		List<String> list = new ArrayList<String>();
+		for (int i = 0; i < allContacts.length; i++) {
+			if (!list.contains(allContacts[i])) {
+				list.add(allContacts[i]);
+				text1 += list.get(i);
+				text1 += ",";
+			} else {
+				list.add("");
+			}
+		}
+		text1.substring(0, text1.lastIndexOf(","));
+		text = "";
+		text = text1;
+		return text;
 	}
 
 	@Override
