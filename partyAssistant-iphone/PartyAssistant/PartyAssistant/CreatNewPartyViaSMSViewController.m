@@ -92,7 +92,7 @@
     self.receipts = [NSMutableArray arrayWithCapacity:10];
     
     self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
-    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
+    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"该活动内容将被作为短信发送给参加者"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
