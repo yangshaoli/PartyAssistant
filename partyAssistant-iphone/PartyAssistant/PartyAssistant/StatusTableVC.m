@@ -15,9 +15,8 @@
 #import "UITableViewControllerExtra.h"
 #import "ResendPartyViaSMSViewController.h"
 #import "UIViewControllerExtra.h"
-
 #import "ContactData.h"
-
+#import "PartyAssistantAppDelegate.h"
 #import "pinyin.h"
 
 @implementation StatusTableVC
@@ -307,8 +306,44 @@
         [resendPartyViaSMSViewController  setSmsContent:self.partyObj.contentString  andGropID:[self.partyObj.partyId intValue]];
         [resendPartyViaSMSViewController  setNewReceipts:self.clientsArray];
     }
+}
+//通过cValue在电话簿中找到对应的cName
+- (NSString *)getNameFormCvalue:(NSString *)cValueString{
+    ClientObject *newClient = [[ClientObject alloc] init];
+    newClient.cVal =cValueString;
+    [newClient searchClientIDByPhone];
+    ABRecordRef getCard=nil;
+    if (newClient.cID == -1) {
+        NSLog(@"在1");
+        return nil;
+    } else {
+        NSLog(@"在2");
+       getCard=ABAddressBookGetPersonWithRecordID(addressBook, newClient.cID);
+    }
+            NSString *personFName = (__bridge_transfer NSString*)ABRecordCopyValue(getCard, kABPersonFirstNameProperty);
+            if (personFName == nil) {
+                personFName = @"";
+            }
+            NSString *personLName = (__bridge_transfer NSString*)ABRecordCopyValue(getCard, kABPersonLastNameProperty);
+           if (personLName == nil) {
+                personLName = @"";
+            }
+            NSString *personMName = (__bridge_transfer NSString*)ABRecordCopyValue(getCard, kABPersonMiddleNameProperty);
+            if (personMName == nil) {
+                personMName = @"";
+            }
+          NSString *getNameString=[NSString stringWithFormat:@"%@ %@ %@",personLName,personMName,personFName];
+    NSLog(@"getNameString获得后打印出来：：%@",getNameString);
+    if(getNameString){
+        NSLog(@"在3");
+        return getNameString;
+    }else{
+        NSLog(@"在4");
+        return nil;
+    }
 
 }
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -331,9 +366,6 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-    
-       
-    
     cell.accessoryType=UITableViewCellAccessoryDisclosureIndicator;
     NSDictionary *clentDic=[self.clientsArray objectAtIndex:[indexPath row]];
     self.wordString=[clentDic objectForKey:@"msg"];
@@ -367,10 +399,25 @@
     [oldLayout6 removeFromSuperview];
     UILabel *nameLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 0, 70, 20)];
     nameLb.tag=6;
+    NSLog(@"打印cName%@",[clentDic objectForKey:@"cName"]);
+    NSString *cValueString=[clentDic objectForKey:@"cValue"];
+    NSString *cNameString=[clentDic objectForKey:@"cName"];
     if([clentDic objectForKey:@"cName"]==nil||[[clentDic objectForKey:@"cName"] isEqualToString:@""]){
-        nameLb.text=[clentDic objectForKey:@"cValue"];
+       nameLb.text=cValueString;
     }else{
-        nameLb.text=[clentDic objectForKey:@"cName"];
+        if([cValueString isEqualToString:cNameString]){
+            NSString *getNameString=[self getNameFormCvalue:cValueString];
+            if(getNameString==nil||[getNameString isEqualToString:@""]||getNameString==NULL){
+                NSLog(@"zai4");
+                nameLb.text=cValueString;
+            }else{
+                NSLog(@"zai5");
+                nameLb.text=getNameString;
+            }
+        }else{
+             NSLog(@"zai6");
+          nameLb.text=cNameString;
+        }
     }
     nameLb.font=[UIFont systemFontOfSize:15];
     nameLb.textAlignment = UITextAlignmentLeft;
@@ -486,12 +533,9 @@
             }else{
                 secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
             }
-            
-            
         }else{
              secondLb.text=@"无留言";
         }
-        
         secondLb.font=[UIFont systemFontOfSize:15];
         secondLb.textAlignment = UITextAlignmentLeft;
         //secondLb.textColor = [UIColor blueColor];
@@ -510,8 +554,6 @@
             }else{
                 secondLb.text =[statusWordString substringFromIndex:1];//只去掉逗号
             }
-            
-            
         }else{
              secondLb.text=@"无留言";
         }
