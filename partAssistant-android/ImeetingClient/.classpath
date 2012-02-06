@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/Analytics_Android_SDK_2.1.jar"/>
 	<classpathentry kind="lib" path="lib/signpost-commonshttp4-1.2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/signpost-core-1.2.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/AndroidPush_v1.2.6.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

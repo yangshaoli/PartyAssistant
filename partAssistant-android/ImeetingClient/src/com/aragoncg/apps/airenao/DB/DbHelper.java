@@ -300,7 +300,9 @@ public class DbHelper {
 				clientsList.add(clientsData);
 			}
 			
-			
+			if(cursor!=null){
+				cursor.close();
+			}
 			return clientsList;
 		}
 		

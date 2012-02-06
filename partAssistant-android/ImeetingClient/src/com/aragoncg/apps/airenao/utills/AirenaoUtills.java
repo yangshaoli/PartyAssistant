@@ -458,10 +458,6 @@ public class AirenaoUtills {
 				activityList.get(i).finish();
 			}
 		}
-		ActivityManager activityManager = (ActivityManager) context
-				.getSystemService(Context.ACTIVITY_SERVICE);
-		activityManager.restartPackage("com.aragoncg.apps.airenao");
-		System.exit(0);
 	}
 
 	/**

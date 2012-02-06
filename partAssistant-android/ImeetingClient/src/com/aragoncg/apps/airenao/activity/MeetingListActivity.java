@@ -53,6 +53,7 @@ import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 import com.aragoncg.apps.airenao.weibo.ShareActivity;
+import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class MeetingListActivity extends ListActivity implements
 		OnScrollListener {
@@ -130,7 +131,11 @@ public class MeetingListActivity extends ListActivity implements
 		AirenaoUtills.activityList.add(this);
 		mContext = getBaseContext();
 		init();
-		needRefresh = false;//getIntent().getBooleanExtra(Constants.NEED_REFRESH, true);
+		needRefresh = true;//
+		if(!getIntent().getBooleanExtra("SendAirenaoActivity.needRefresh", true)){
+			needRefresh = false;
+		}
+		
 		myListView = getListView();
 		getData();
 
@@ -172,8 +177,19 @@ public class MeetingListActivity extends ListActivity implements
 		});
 		// 处理刷新事件
 		setButtonRefresh();
+		startPushServer();
+		
 	}
-
+	
+	public void startPushServer(){
+		//if(g){}else{}
+		AndroidPushService.setCustomNotification(mContext, true);
+		AndroidPushService.setNotificationTitle(mContext, "爱热闹新信息");
+		Intent intent = new Intent(this, AndroidPushService.class);
+		startService(intent);
+	}
+	
+	
 	@Override
 	protected void onRestart() {
 		startId = 0;

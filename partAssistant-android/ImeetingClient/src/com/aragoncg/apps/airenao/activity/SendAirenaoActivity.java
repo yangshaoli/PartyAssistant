@@ -153,8 +153,7 @@ public class SendAirenaoActivity extends Activity {
 		setContentView(R.layout.send_airenao_layout);
 		AirenaoUtills.activityList.add(this);
 
-		// Intent dataIntent = getIntent();
-		// getItentData(dataIntent);
+		
 		init();
 		initHandler();
 		getContacts();
@@ -456,6 +455,13 @@ public class SendAirenaoActivity extends Activity {
 					String message = (String) msg.getData().get(FAILT + "");
 					AlertDialog aDig = new AlertDialog.Builder(
 							SendAirenaoActivity.this).setMessage(message)
+							.setPositiveButton("确定", new OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									finish();
+								}
+							})
 							.create();
 					aDig.show();
 					break;
@@ -646,7 +652,9 @@ public class SendAirenaoActivity extends Activity {
 				message.setData(bundle);
 				myHandler.sendMessage(message);
 			} else {
-				progerssDialog.dismiss();
+				if(progerssDialog!=null){
+					progerssDialog.dismiss();
+				}
 				Message message = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(FAILT + "", description);
@@ -949,7 +957,7 @@ public class SendAirenaoActivity extends Activity {
 											initThreadSaveMessage("no");// no指的是收件人为空
 											myHandler.post(threadSaveMessage);
 
-											finish();
+											//finish();
 											return;
 										}
 
@@ -1023,6 +1031,7 @@ public class SendAirenaoActivity extends Activity {
 						if (ok) {
 							finish();
 							Intent intent = new Intent();
+							intent.putExtra("SendAirenaoActivity.needRefresh", false);
 							intent.setClass(SendAirenaoActivity.this, MeetingListActivity.class);
 							startActivity(intent);
 						} else {

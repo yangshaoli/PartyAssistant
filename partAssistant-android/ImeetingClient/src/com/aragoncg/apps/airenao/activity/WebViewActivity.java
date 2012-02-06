@@ -25,10 +25,8 @@ import com.mobclick.android.MobclickAgent;
  * 就是当用户认证是选择用UC、QQ浏览器第三方的浏览器进行用户认证时，当用户输入账号密码后点击授权按钮后不会跳转。
  * 只有用Android自带的浏览器才没有问题。但是大多数的用户都会用UC等第三方的浏览器了，这样导致认证不能正常进行。
  * 所以需要自己实现一个WebView
- * @author  @Cundong
- * @weibo   http://weibo.com/liucundong
- * @blog    http://www.liucundong.com
- * @date    May 12, 2011 3:13:54 PM
+ * @author  @cuiky
+ * 
  * @version 1.0
  */
 public class WebViewActivity extends BaseActivity 

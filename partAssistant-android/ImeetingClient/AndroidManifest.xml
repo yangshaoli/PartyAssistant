@@ -99,8 +99,25 @@
         </activity>
         <activity android:name=".activity.PreviewActivity">
 		</activity>
-		    
+		<receiver android:name=".push.MessageReceiver">
+        	<intent-filter>
+            	<action android:name="com.aragoncg.apps.airenao" />
+        	</intent-filter>
+   		</receiver>
+   		<service android:label="Android Push Service" 
+     android:name="com.aragoncg.apps.xmpp.service.AndroidPushService" />
+
+   		<receiver 
+     		android:name="com.aragoncg.apps.xmpp.service.ConnectionChangedReceiver"
+     		android:label="NetworkConnection">
+     			<intent-filter>
+       				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+     			</intent-filter>
+   		</receiver>
+
+   		<meta-data android:name="app_key" android:value="53fdfe87cb3131ce947bd8b8a65aa252" />    
     </application>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 	<uses-permission android:name="android.permission.ACCES_MOCK_LOCATION"></uses-permission> 
