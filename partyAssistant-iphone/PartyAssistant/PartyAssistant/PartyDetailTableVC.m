@@ -140,7 +140,7 @@
         [self.quest clearDelegatesAndCancel];
     }
     ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
-    request.timeOutSeconds = 20;
+    request.timeOutSeconds =20;
     [request setDelegate:self];
     [request setShouldAttemptPersistentConnection:NO];
     [request startAsynchronous];
@@ -205,9 +205,9 @@
 
 - (void)requestFailed:(ASIHTTPRequest *)request
 {
-    //	NSError *error = [request error];
-	//[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
+//    NSError *error = [request error];
+//	[self dismissWaiting];
+//	[self showAlertRequestFailed: error.localizedDescription];
 }
 
 
@@ -609,6 +609,7 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+   
 }
 
 #pragma mark -

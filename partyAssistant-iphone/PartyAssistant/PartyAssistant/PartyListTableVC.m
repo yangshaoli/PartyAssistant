@@ -364,6 +364,7 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+   
 }
 
 
@@ -600,7 +601,7 @@
 	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
-    _reloading = YES;
+    _reloading = YES;//开始加载数据
     [self requestDataWithLastID:0];
 	[self doneLoadingTopRefreshTableViewData];
     ////////////////////自己新增文件 
@@ -634,7 +635,7 @@
 - (void)doneLoadingTopRefreshTableViewData{
 	
 	//  model should call this when its done loading
-    _reloading = NO;
+    _reloading = NO;//加载完数据
     [self.tableView reloadData];
     
 	[topRefreshView performSelector:@selector(refreshScrollViewDataSourceDidFinishedLoading:) withObject:self.tableView afterDelay:1.0f];

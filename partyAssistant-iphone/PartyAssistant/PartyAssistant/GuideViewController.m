@@ -41,7 +41,7 @@
     
     // Do any additional setup after loading the view from its nib.
     if (!self.pageControl) {
-        self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(110, 400, 100, 30)];
+        self.pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(110, 400, 100,30)];
     }
     
     self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 20, 320, 460)];

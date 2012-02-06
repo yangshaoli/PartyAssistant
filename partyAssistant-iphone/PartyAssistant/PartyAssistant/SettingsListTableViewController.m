@@ -75,6 +75,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:6 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -277,7 +278,6 @@
     if ((alertView.tag == LogoutTag ) && ( buttonIndex == 1)) {
         _HUD = [[MBProgressHUD alloc] initWithView:self.view];
         [self.navigationController.view addSubview:_HUD];
-        
         _HUD.labelText = @"载入中";
         
         _HUD.delegate = self;
@@ -301,10 +301,15 @@
                            tag:InvalidateNetwork];
 }
 
-- (void)showRegistSuccessfulAlert {
+- (void)popToRootViewController {
     [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (void)showRegistSuccessfulAlert {
+    [self performSelectorOnMainThread:@selector(popToRootViewController) withObject:nil waitUntilDone:NO];
     [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    
 }
 
 - (void)showNotPassChekAlert {

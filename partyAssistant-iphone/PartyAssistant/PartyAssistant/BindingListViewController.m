@@ -328,6 +328,9 @@
 	NSDictionary *result = [parser objectWithString:response];
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
+    
+    [self getVersionFromRequestDic:result];
+    
     if ([request responseStatusCode] == 200) {
         if ([status isEqualToString:@"ok"]) {
             NSLog(@"dataSource :%@",[result objectForKey:@"datasource"]);

@@ -248,13 +248,17 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 - (void)getVersionFromRequestDic:(NSDictionary *)result{
     NSUserDefaults *versionDefault=[NSUserDefaults standardUserDefaults];
     NSUserDefaults *isUpdateVersionDefault=[NSUserDefaults standardUserDefaults];
-    NSString *newVersionString = [result objectForKey:@"version"];
+    NSString *newVersionString = [result objectForKey:@"iphone_version"];
     if(newVersionString==nil&&[newVersionString isEqualToString:@""]){
         return;
     }else{
         NSString *preVersionString=[versionDefault objectForKey:@"airenaoIphoneVersion"];
+        if (preVersionString == nil || [preVersionString isEqualToString:@""]) {
+            NSString *versionString = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+            [versionDefault setObject:versionString forKey:@"airenaoIphoneVersion"];
+        }
         if([newVersionString floatValue]>[preVersionString floatValue]){
-            [versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
+            //[versionDefault setObject:newVersionString forKey:@"airenaoIphoneVersion"];
             [isUpdateVersionDefault setBool:YES forKey:@"isUpdateVersion"];
         }else{
             [isUpdateVersionDefault setBool:NO forKey:@"isUpdateVersion"];
@@ -329,6 +333,8 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 	NSDictionary *result = [parser objectWithString:response];
     NSLog(@"response : %d",[request responseStatusCode]);
     
+    [self getVersionFromRequestDic:result];
+    
     if ([request responseStatusCode] == 200) {
         NSNumber *remainCount = [[result objectForKey:@"datasource"] objectForKey:@"remaining"];
         UserObjectService *us = [UserObjectService sharedUserObjectService];
@@ -357,7 +363,7 @@ void addressBookChanged(ABAddressBookRef reference, CFDictionaryRef dictionary, 
 }
 
 - (void)remainCountRequestDidFail:(ASIHTTPRequest *)request {
-    NSError *error = [request error];
+    //NSError *error = [request error];
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
      [request clearDelegatesAndCancel];
 }
