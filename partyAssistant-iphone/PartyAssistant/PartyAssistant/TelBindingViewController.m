@@ -119,7 +119,7 @@
     transition.subtype = kCATransitionFromTop;
     [self.navigationController.view.layer addAnimation:transition forKey:nil];
     
-    BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
+   // BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectTelBindingStatus];
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
     //verifyPage.pageStatus = verifyPageStatus;
     verifyPage.pageStatus = StatusVerifyBinding;

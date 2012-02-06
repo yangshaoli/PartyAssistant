@@ -989,9 +989,9 @@
 #pragma mark -
 #pragma mark less remain count error
 - (void)showLessRemainingCountAlert {
-    UIAlertView *lessAlert = [[UIAlertView alloc] initWithTitle:@"操作提示" message:@"帐户余额不足，不能完成本次发送!" delegate:self cancelButtonTitle:@"知道了" otherButtonTitles:@"去充值", nil];
-    [lessAlert setTag:10001];
-    [lessAlert show];
+//    UIAlertView *lessAlert = [[UIAlertView alloc] initWithTitle:@"操作提示" message:@"帐户余额不足，不能完成本次发送!" delegate:self cancelButtonTitle:@"知道了" otherButtonTitles:@"去充值", nil];
+//    [lessAlert setTag:10001];
+//    [lessAlert show];
 }
 
 

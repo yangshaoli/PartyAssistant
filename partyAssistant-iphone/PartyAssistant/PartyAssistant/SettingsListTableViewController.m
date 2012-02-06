@@ -278,7 +278,6 @@
     if ((alertView.tag == LogoutTag ) && ( buttonIndex == 1)) {
         _HUD = [[MBProgressHUD alloc] initWithView:self.view];
         [self.navigationController.view addSubview:_HUD];
-        
         _HUD.labelText = @"载入中";
         
         _HUD.delegate = self;
@@ -306,6 +305,7 @@
     [self.tabBarController.navigationController popToRootViewControllerAnimated:YES];
     [self showAlertWithMessage:@"登出成功！" buttonTitle:@"好的" tag:SuccessfulTag];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    
 }
 
 - (void)showNotPassChekAlert {

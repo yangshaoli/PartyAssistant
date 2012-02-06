@@ -169,8 +169,7 @@
 {
 	NSError *error = [request error];
 	[self dismissWaiting];
-	//[self showAlertRequestFailed: error.localizedDescription];
-    [self showAlertRequestFailed: @"您的网络好像有问题"];
+	[self showAlertRequestFailed: error.localizedDescription];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
