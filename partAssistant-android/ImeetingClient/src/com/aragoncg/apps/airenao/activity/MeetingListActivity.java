@@ -217,6 +217,7 @@ public class MeetingListActivity extends ListActivity implements
 
 				list.clear();
 				startId = 0;
+				separatePage = false;
 				postHandler.postDelayed(firstLoadDataThread, 1000);
 			}
 		});
@@ -910,6 +911,7 @@ public class MeetingListActivity extends ListActivity implements
 						DbHelper.delete(db, DbHelper.deleteTableDoNothingSql);
 						DbHelper.delete(db, DbHelper.deleteTableRefusedSql);
 					}
+					
 				}
 				for (int i = 0; i < myJsonArray.length(); i++) {
 					JSONObject tempActivity = myJsonArray.getJSONObject(i);
@@ -957,6 +959,11 @@ public class MeetingListActivity extends ListActivity implements
 						e.printStackTrace();
 					}
 				}
+				
+				if(db!=null && db.isOpen()){
+						db.close();
+				}
+				
 				mData = list;
 				Message message = new Message();
 				message.what = Constants.POST_MESSAGE_SUCCESS;
