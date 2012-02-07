@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.db.transaction import commit_on_success
 from django.views.decorators.csrf import csrf_exempt
  
-from apps.accounts.models import UserIPhoneToken, AccountTempPassword, UserProfile, UserBindingTemp
+from apps.accounts.models import UserIPhoneToken, AccountTempPassword, UserProfile, UserBindingTemp, UserAndroidToken
 from apps.parties.models import PartiesClients, Party
 
 from utils.structs.my_exception import myException
@@ -51,13 +51,23 @@ def accountLogin(request):
         else:
             _israndomlogin = "0"
         if user:
-            device_token = request.POST['device_token']
-            if device_token:
-#                if request.POST['device_type'] == 'iphone':
-                usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
-                if usertoken.user != user:
-                    usertoken.user = user
-                    usertoken.save()
+            if 'device_token' in request.POST:
+                device_token = request.POST['device_token']
+                if device_token:
+    #                if request.POST['device_type'] == 'iphone':
+                    usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+                    if usertoken.user != user:
+                        usertoken.user = user
+                        usertoken.save()
+                
+            if 'clientId' in request.POST:
+                clientId = request.POST['clientId']
+                if clientId:
+    #                if request.POST['device_type'] == 'iphone':
+                    clientId, created = UserAndroidToken.objects.get_or_create(device_token = clientId, defaults = {'user' : user})
+                    if clientId.user != user:
+                        clientId.user = user
+                        clientId.save()
             return {
                     'uid':user.id,
                     'name':user.userprofile.true_name,
@@ -74,10 +84,16 @@ def accountLogin(request):
 @commit_on_success
 def accountLogout(request):
     if request.method == 'POST':
-        device_token = request.POST['device_token']
-        user_token_list = UserIPhoneToken.objects.filter(device_token = device_token)
-        for user_token in user_token_list:
-            user_token.delete()
+        if 'device_token' in request.POST:
+            device_token = request.POST['device_token']
+            user_token_list = UserIPhoneToken.objects.filter(device_token = device_token)
+            for user_token in user_token_list:
+                user_token.delete()
+        if 'clientId' in request.POST:
+            clientId = request.POST['clientId']
+            user_token_list = UserAndroidToken.objects.filter(device_token = clientId)
+            for user_token in user_token_list:
+                user_token.delete()
         if request.user:
             logout(request)
         
@@ -104,12 +120,21 @@ def accountRegist(request):
             raise myException(ERROR_ACCOUNTREGIST_USER_EXIST)
         user = User.objects.create_user(username, '', password)
         if user:
-            device_token = request.POST['device_token']
-            if device_token:
-                usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
-                if usertoken.user != user:
-                    usertoken.user = user
-                    usertoken.save()
+            if "device_token" in request.POST:
+                device_token = request.POST['device_token']
+                if device_token:
+                    usertoken, created = UserIPhoneToken.objects.get_or_create(device_token = device_token, defaults = {'user' : user})
+                    if usertoken.user != user:
+                        usertoken.user = user
+                        usertoken.save()
+            if 'clientId' in request.POST:
+                clientId = request.POST['clientId']
+                if clientId:
+    #                if request.POST['device_type'] == 'iphone':
+                    clientId, created = UserAndroidToken.objects.get_or_create(device_token = clientId, defaults = {'user' : user})
+                    if clientId.user != user:
+                        clientId.user = user
+                        clientId.save()
         return {'uid':user.id}
 
 
