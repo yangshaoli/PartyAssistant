@@ -2189,6 +2189,7 @@ public class ContactsListActivity extends ListActivity implements
 			public ImageDbFetcher(long photoId, ImageView imageView) {
 				this.mPhotoId = photoId;
 				this.mImageView = imageView;
+		
 			}
 
 			public void run() {
@@ -2252,6 +2253,7 @@ public class ContactsListActivity extends ListActivity implements
 				// Reset the filter state then start an async filter operation
 				Filter filter = getFilter();
 				filter.filter(constraint);
+				System.out.println("onContentChanged");
 			} else {
 				// Start an async query
 				startQuery();

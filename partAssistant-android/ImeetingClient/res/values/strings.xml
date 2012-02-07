@@ -7,7 +7,7 @@
 	<string name="sure">确定</string>
 	<string name="cancle">取消</string>
 	<string name="psw_empty">号码不得为空,请再输入</string>
-	<string name="btn_priview">preview</string>
+	<string name="btn_priview">预览</string>
 	<string name="nickname">请填入您的昵称</string>
 	<string name="phone">请填入您的号码</string>
 	<string name="mail">请填入您的邮箱</string>
