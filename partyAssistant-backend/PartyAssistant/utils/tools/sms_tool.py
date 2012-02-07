@@ -118,11 +118,6 @@ def sms_modem_send_sms(outbox_message, message, party):
                     logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
     except:
-        userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
-        userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
-        userprofile.save()
-        logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
-        
         logger.exception('send sms error!')
     finally:
         outbox_message.delete()
