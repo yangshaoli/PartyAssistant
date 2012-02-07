@@ -21,22 +21,28 @@
 
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/activity_join"
-			android:text="" />
+			android:text="" 
+			android:visibility="gone"/>
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/activity_join_num"
-			android:textColor="@color/green" />
+			android:textColor="@color/green"
+			android:visibility="gone" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_marginLeft="10dip"
-			android:id="@+id/activity_unjoin" android:text="" />
+			android:id="@+id/activity_unjoin"
+			android:visibility="gone" android:text="" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:textColor="@color/yellow"
-			android:id="@+id/activity_unjoin_num" />
+			android:id="@+id/activity_unjoin_num"
+			android:visibility="gone" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:layout_marginLeft="10dip"
-			android:id="@+id/activity_untake" android:text="" />
+			android:id="@+id/activity_untake" android:text=""
+			android:visibility="gone" />
 		<TextView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:textColor="@color/myRed"
-			android:id="@+id/activity_untake_num" />
+			android:id="@+id/activity_untake_num"
+			android:visibility="gone" />
 		<ImageView android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/flag_new_red"
 			android:background="@drawable/flag_new_red"

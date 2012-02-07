@@ -82,8 +82,10 @@ public class MeetingListActivity extends ListActivity implements
 	private JSONArray myJsonArray;
 	private JSONObject clientData;
 	private JSONArray appliedClients;
+	private JSONArray newAppliedClients;
 	private JSONArray doNothingClients;
 	private JSONArray refusedClients;
+	private JSONArray newRefusedClients;
 	private Handler postHandler;
 	private boolean needRefresh;
 	private int tempCount;
@@ -91,8 +93,6 @@ public class MeetingListActivity extends ListActivity implements
 	private LinearLayout userLayout;
 	private AlertDialog deleteDilog;
 	private int lastItem;
-	private int refusedCount = 0;
-	private int registeredCount = 0;
 	private Dialog progressDialog;
 	private boolean separatePage = false;
 	private boolean showFlagNew = true;
@@ -137,6 +137,7 @@ public class MeetingListActivity extends ListActivity implements
 		}
 		
 		myListView = getListView();
+		startPushServer();
 		getData();
 
 		footerView = LayoutInflater.from(this).inflate(R.layout.load_layout,
@@ -177,7 +178,7 @@ public class MeetingListActivity extends ListActivity implements
 		});
 		// 处理刷新事件
 		setButtonRefresh();
-		startPushServer();
+		//startPushServer();
 		
 	}
 	
@@ -738,6 +739,11 @@ public class MeetingListActivity extends ListActivity implements
 			appliedClientcount = (String) mData.get(position).get(
 					Constants.APPLIED_CLIENT_COUNT);
 			
+			newAppliedClientcount = (String)mData.get(position).get(
+					Constants.NEW_APPLIED_CLIENT_COUNT);
+			
+			newRefusedClientcount = (String)mData.get(position).get(
+					Constants.NEW_REFUSED_CLIENT_COUNT);
 			if (appliedClientcount == null) {
 				appliedClientcount = "0";
 			}
@@ -747,11 +753,11 @@ public class MeetingListActivity extends ListActivity implements
 			holder.activityScale.setText(appliedClientcount + "/"
 					+ allClientcount);
 
-			if ((newAppliedClientcount!=null && !"0".equals(newAppliedClientcount))
-					|| (newRefusedClientcount!=null && !"0".equals(newRefusedClientcount))) {
-				showFlagNew = true;
-			} else {
+			if ((newAppliedClientcount==null || "0".equals(newAppliedClientcount))
+					&& (newRefusedClientcount==null || "0".equals(newRefusedClientcount))) {
 				showFlagNew = false;
+			} else {
+				showFlagNew = true;
 			}
 			if (showFlagNew) {
 				holder.activityFlagNew.setVisibility(View.VISIBLE);
@@ -942,6 +948,7 @@ public class MeetingListActivity extends ListActivity implements
 							}
 						}
 
+						
 						DbHelper.insertOneParty(db,
 								organizeOneActivity(tempActivity),
 								DbHelper.ACTIVITY_TABLE_NAME);
@@ -1051,7 +1058,7 @@ public class MeetingListActivity extends ListActivity implements
 			myActivity.setActivityContent(content);
 			myActivity.setInvitedPeople(allClientcount);
 			myActivity.setSignUp(appliedClientcount);
-			myActivity.setNewUnSignUP(newAppliedClientcount);
+			myActivity.setNewApplied(newAppliedClientcount);
 			myActivity.setUnJoin(donothingClientcount);
 			myActivity.setUnSignUp(refusedClientcount);
 			myActivity.setNewUnSignUP(newRefusedClientcount);

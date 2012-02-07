@@ -29,7 +29,7 @@ public class AirenaoActivity implements Serializable {
 	private String peopleLimitNum;
 	private String activityContent;
 	private String invitedPeople;
-	private String newInvitedPeople;
+	private String newApplied;
 	private String newUnSignUP;
 	private String signUp;
 	private String unSignUp;
@@ -159,12 +159,12 @@ public class AirenaoActivity implements Serializable {
 		this.unJoin = unJoin;
 	}
 
-	public String getNewInvitedPeople() {
-		return newInvitedPeople;
+	public String getNewApplied() {
+		return newApplied;
 	}
 
-	public void setNewInvitedPeople(String newInvitedPeople) {
-		this.newInvitedPeople = newInvitedPeople;
+	public void setNewApplied(String newApplied) {
+		this.newApplied = newApplied;
 	}
 
 	public String getNewUnSignUP() {

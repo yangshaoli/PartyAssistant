@@ -28,6 +28,7 @@ import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
+import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class SplashActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -230,7 +231,7 @@ public class SplashActivity extends Activity {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("username", userName);
 				params.put("password", passWord);
-				params.put("device_token", "");
+				params.put("clientId", AndroidPushService.getClientId(SplashActivity.this));
 				String loginResult = new HttpHelper().savePerformPost(loginUrl, params, SplashActivity.this);
 				String result = "";
 				result = AirenaoUtills.linkResult(loginResult);

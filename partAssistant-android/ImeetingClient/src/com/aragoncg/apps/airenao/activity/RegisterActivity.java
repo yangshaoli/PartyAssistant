@@ -34,6 +34,7 @@ import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
+import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class RegisterActivity extends Activity {
 	private String userNameReg;
@@ -140,7 +141,7 @@ public class RegisterActivity extends Activity {
 					if ("ok".equals(status)) {
 						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
 						// 注册成功后，登陆
-						params.put("device_token", "");
+						params.put("clientId", AndroidPushService.getClientId(myContext));
 						String loginResult = new HttpHelper().performPost(
 								loginUrl, userNameReg, pass1Reg, null, params,
 								RegisterActivity.this);

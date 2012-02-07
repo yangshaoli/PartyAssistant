@@ -33,6 +33,7 @@ import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
+import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class LoginActivity extends Activity {
 	private EditText userNameText;
@@ -98,10 +99,11 @@ public class LoginActivity extends Activity {
 
 					@Override
 					public void run() {
+						
 						Map<String, String> params = new HashMap<String, String>();
 						params.put("username", userName);
 						params.put("password", passWord);
-						params.put("device_token", "");
+						params.put("clientId", AndroidPushService.getClientId(myContext));
 						String loginResult = new HttpHelper().performPost(
 								loginUrl, userName, passWord, null, params,
 								LoginActivity.this);

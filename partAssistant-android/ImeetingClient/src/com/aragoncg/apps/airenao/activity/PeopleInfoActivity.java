@@ -266,11 +266,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		@Override
 		protected String[] doInBackground(String... params) {
 
-			/*HttpHelper httpHelper = new HttpHelper();
-			String result = httpHelper.performGet(params[0] + id + "/" + type
-					+ "/", null, null, null, context);
-			result = AirenaoUtills.linkResult(result);
-			analyzeJson(result, type);*/
+			
 			SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 			mData.clear();
 			if(TYPE_ALL.equals(type)){
@@ -299,9 +295,6 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.MSG, myList.get(i).getComment());
 					mData.add(map);
 				}
-				if(db!=null){
-					db.close();
-				}
 			}
 			if(TYPE_DONOTHING.equals(type)){
 				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "doNothingClients", id);
@@ -313,9 +306,6 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
 					map.put(Constants.MSG, myList.get(i).getComment());
 					mData.add(map);
-				}
-				if(db!=null){
-					db.close();
 				}
 			}
 			if(TYPE_REFUSED.equals(type)){
@@ -329,9 +319,9 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.MSG, myList.get(i).getComment());
 					mData.add(map);
 				}
-				if(db!=null){
-					db.close();
-				}
+			}
+			if(db!=null){
+				db.close();
 			}
 			return new String[3];
 		}

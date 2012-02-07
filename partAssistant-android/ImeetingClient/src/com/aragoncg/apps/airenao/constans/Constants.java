@@ -1,9 +1,5 @@
 package com.aragoncg.apps.airenao.constans;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.Activity;
 import android.os.Build;
 
 public class Constants {
@@ -127,7 +123,7 @@ public class Constants {
 	/*
 	 * 配置域名
 	 */
-	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://www.airenao.com"
+	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://192.168.3.151:8000";//"http://www.airenao.com"
 	public static final String SUB_DOMAIN_REGISTER_URL = "/a/accounts/regist/";
 	public static final String SUB_DOMAIN_LOGIN_URL = "/a/accounts/login/";
 	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/an_partylist/";//"/a/parties/partylist/"

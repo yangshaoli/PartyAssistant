@@ -154,7 +154,7 @@ public class DbHelper {
 		cv.put(FIELD_TITLE_CONTENT, airenao.getActivityContent());
 		cv.put(FIELD_TITLE_INVTD, airenao.getInvitedPeople());
 		cv.put(FIELD_TITLE_SN_UP, airenao.getSignUp());
-		cv.put(FIELD_TITLE_NEW_SN_UP, airenao.getNewUnSignUP());
+		cv.put(FIELD_TITLE_NEW_SN_UP, airenao.getNewApplied());
 		cv.put(FIELD_TITLE_UN_SN_UP, airenao.getUnSignUp());
 		cv.put(FIELD_TITLE_NEW_UN_SN_UP, airenao.getNewUnSignUP());
 		cv.put(FIELD_TITLE_UN_JOIN, airenao.getUnJoin());
@@ -279,33 +279,41 @@ public class DbHelper {
 	 * @param partyId
 	 * @return
 	 */
-	public static List<ClientsData> selectClientData(SQLiteDatabase db,String tableName,String partyId){
+	public static List<ClientsData> selectClientData(SQLiteDatabase db,
+			String tableName, String partyId) {
 		ArrayList<ClientsData> clientsList = new ArrayList<ClientsData>();
-		
-		String sql = "select * from "+tableName+" where "+PARTY_ID+"='"+partyId+"'";
+
+		String sql = "select * from " + tableName + " where " + PARTY_ID + "='"
+				+ partyId + "'";
 		Cursor cursor = null;
 		cursor = db.rawQuery(sql, null);
-		if(cursor.getCount()<1){
-			return clientsList;
-		}else{
-			//cursor.moveToFirst();
-			while(cursor.moveToNext()){
-				ClientsData clientsData = new ClientsData();
-				clientsData.setId(cursor.getString(cursor.getColumnIndex("id")));
-				clientsData.setPartyId(cursor.getString(cursor.getColumnIndex(PARTY_ID)));
-				clientsData.setPeopleName(cursor.getString(cursor.getColumnIndex("name")));
-				clientsData.setPhoneNumber(cursor.getString(cursor.getColumnIndex("phoneNumber")));
-				clientsData.setComment(cursor.getString(cursor.getColumnIndex("comment")));
-				clientsData.setIsCheck(cursor.getString(cursor.getColumnIndex("isCheck")));
-				clientsList.add(clientsData);
-			}
-			
-			if(cursor!=null){
+		if (cursor != null) {
+			if (cursor.getCount() < 1) {
+				return clientsList;
+			} else {
+				// cursor.moveToFirst();
+				while (cursor.moveToNext()) {
+					ClientsData clientsData = new ClientsData();
+					clientsData.setId(cursor.getString(cursor
+							.getColumnIndex("id")));
+					clientsData.setPartyId(cursor.getString(cursor
+							.getColumnIndex(PARTY_ID)));
+					clientsData.setPeopleName(cursor.getString(cursor
+							.getColumnIndex("name")));
+					clientsData.setPhoneNumber(cursor.getString(cursor
+							.getColumnIndex("phoneNumber")));
+					clientsData.setComment(cursor.getString(cursor
+							.getColumnIndex("comment")));
+					clientsData.setIsCheck(cursor.getString(cursor
+							.getColumnIndex("isCheck")));
+					clientsList.add(clientsData);
+				}
+
 				cursor.close();
 			}
-			return clientsList;
 		}
-		
+		return clientsList;
+
 	}
 	
 	public static AirenaoActivity selectOneParty(SQLiteDatabase db,String partyId){
@@ -317,12 +325,16 @@ public class DbHelper {
 			return null;
 		}else{
 			cursor.moveToFirst();
+			String newAppliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_SN_UP));
+			String newRefusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP));
 			String appliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP));
 			String donothingClientcount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN));
 			String refusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP));
 			String allClientCount = String.valueOf(Integer.valueOf(appliedClientCount) + Integer.valueOf(donothingClientcount) +Integer.valueOf(refusedClientCount));
 			oneParty.setInvitedPeople(allClientCount);
 			oneParty.setSignUp(appliedClientCount);
+			oneParty.setNewApplied(newAppliedClientCount);
+			oneParty.setNewUnSignUP(newRefusedClientCount);
 			oneParty.setUnSignUp(donothingClientcount);
 			oneParty.setUnJoin(refusedClientCount);
 		}
@@ -400,8 +412,7 @@ public class DbHelper {
 				}
 
 			}
-			database = SQLiteDatabase.openOrCreateDatabase(dbFile, null);
-			return database;
+			return SQLiteDatabase.openOrCreateDatabase(dbFile, null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
