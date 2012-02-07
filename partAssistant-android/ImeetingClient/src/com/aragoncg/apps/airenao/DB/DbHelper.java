@@ -321,22 +321,25 @@ public class DbHelper {
 		String sql = "select * from " + ACTIVITY_TABLE_NAME +" where "+PARTY_ID+" ='"+partyId+"'";
 		Cursor cursor = null;
 		cursor = db.rawQuery(sql, null);
-		if(cursor.getCount()<1){
-			return null;
-		}else{
-			cursor.moveToFirst();
-			String newAppliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_SN_UP));
-			String newRefusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP));
-			String appliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP));
-			String donothingClientcount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN));
-			String refusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP));
-			String allClientCount = String.valueOf(Integer.valueOf(appliedClientCount) + Integer.valueOf(donothingClientcount) +Integer.valueOf(refusedClientCount));
-			oneParty.setInvitedPeople(allClientCount);
-			oneParty.setSignUp(appliedClientCount);
-			oneParty.setNewApplied(newAppliedClientCount);
-			oneParty.setNewUnSignUP(newRefusedClientCount);
-			oneParty.setUnSignUp(donothingClientcount);
-			oneParty.setUnJoin(refusedClientCount);
+		if(cursor != null){
+			if(cursor.getCount()<1){
+				return null;
+			}else{
+				cursor.moveToFirst();
+				String newAppliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_SN_UP));
+				String newRefusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP));
+				String appliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP));
+				String donothingClientcount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN));
+				String refusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP));
+				String allClientCount = String.valueOf(Integer.valueOf(appliedClientCount) + Integer.valueOf(donothingClientcount) +Integer.valueOf(refusedClientCount));
+				oneParty.setInvitedPeople(allClientCount);
+				oneParty.setSignUp(appliedClientCount);
+				oneParty.setNewApplied(newAppliedClientCount);
+				oneParty.setNewUnSignUP(newRefusedClientCount);
+				oneParty.setUnSignUp(donothingClientcount);
+				oneParty.setUnJoin(refusedClientCount);
+			}
+			cursor.close();
 		}
 		return oneParty;
 	}

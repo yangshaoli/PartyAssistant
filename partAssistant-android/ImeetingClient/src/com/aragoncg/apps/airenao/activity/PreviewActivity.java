@@ -100,7 +100,6 @@ public class PreviewActivity extends Activity {
 	}
 
 	public List<MyPerson> deleteSameEntity(List<MyPerson> myPerson) {
-
 		HashSet hashset = new HashSet(myPerson);
 		List<MyPerson> relist = new ArrayList<MyPerson>();
 		for (int i = 0; i < myPerson.size(); i++) {
