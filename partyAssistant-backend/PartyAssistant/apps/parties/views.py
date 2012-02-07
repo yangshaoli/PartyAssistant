@@ -23,12 +23,14 @@ from django.utils import simplejson
 from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
-from utils.tools.email_tool import send_emails
+from utils.tools.email_tool import send_emails, send_apply_confirm_email
 from utils.tools.push_notification_to_apple_tool import \
     push_notification_when_enroll
-from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH
+from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH, \
+    send_apply_confirm_sms
 import datetime
 import logging
+import hashlib
 import time
 logger = logging.getLogger('airenao')
 
@@ -524,6 +526,8 @@ def _public_enroll(request, party_id):
                 party_client.apply_status = 'apply'
                 party_client.is_check = False
                 party_client.save()
+            
+            _send_apply_confirm_message(party_client)
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
                 party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
@@ -602,7 +606,7 @@ def _invite_enroll(request, party_id, invite_key):
                 
                 #向组织者的所有MoblieDevice发送推送
                 push_notification_when_enroll(party_client, 'apply')
-                
+                _send_apply_confirm_message(party_client)
                 return TemplateResponse(request, 'message.html', {'message': u'apply'})
             else:
                 party_client.apply_status = u'reject'
@@ -787,3 +791,14 @@ def _invite_list(request, party_id):
         party_clients_datas.append(party_client_data)
         
     return  party_clients_datas, party_clients_list    
+
+def _send_apply_confirm_message(party_client):
+    party_type = party_client.party.invite_type
+    
+    if party_type == 'email':
+        send_apply_confirm_email(party_client)
+    elif party_type == 'phone':
+        send_apply_confirm_sms(party_client)
+    else:
+        logger.warn('client has not email or phone')
+        
