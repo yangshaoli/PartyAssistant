@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.exceptions.MyRuntimeException;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
@@ -78,6 +79,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	String clientId;
 	Intent transIntent;
 	private TextView txtNoData;
+	private Runnable tellServiceToChangeFlag;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 
 		setContentView(R.layout.invated_people_info_layout);
 		Intent myIntent = getIntent();
@@ -130,7 +132,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 				reInvated.setClickable(false);
 			}
 		}
-		// 左上角按钮的事件添加
+		// 右上角按钮的事件添加
 		reInvated.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -177,7 +179,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		editor.putInt(Constants.PEOPLE_TAG, peopleTag);
 		editor.commit();
 		partyId = intent.getStringExtra(Constants.PARTY_ID);
-		getPeopleInfoUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_PEOPLE_INFO_URL;;
+		getPeopleInfoUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_PEOPLE_INFO_URL;
 		if (peopleTag == -1 || "-1".equals(partyId)) {
 			throw new MyRuntimeException(PeopleInfoActivity.this,
 					getString(R.string.systemMistakeTitle),
@@ -189,6 +191,8 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	}
 
 	public void getDataFromServer() {
+		getChangeFlagRunnable();
+		tellServiceToChangeFlag.run();
 		if (peopleTag == INVATED_PEOPLE) {
 
 			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId, TYPE_ALL);
@@ -244,7 +248,45 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 		};
 
 	}
-
+	
+	/**
+	 * 告诉后台我看过了，不要再显示“新”标志
+	 */
+	public void getChangeFlagRunnable(){
+		tellServiceToChangeFlag = new Runnable() {
+			
+			@Override
+			public void run() {
+				String typeName;
+				switch(peopleTag){
+				 case INVATED_PEOPLE://TYPE_ALL
+					 typeName = TYPE_ALL;
+					 break;
+				 case SIGNED_PEOPLE://TYPE_APPLIED
+					 typeName = TYPE_APPLIED;
+					 linkService(typeName);
+					 break;
+				 case UNSIGNED_PEOPLE://TYPE_DONOTHING
+					 typeName = TYPE_DONOTHING;
+					 linkService(typeName);
+					 break;
+				 case UNRESPONSED_PEOPLE://TYPE_REFUSED
+					 typeName = TYPE_REFUSED;
+					 linkService(typeName);
+					 break;
+				}
+				
+				
+			}
+		};
+	}
+	
+	public void linkService(String typeName){
+		getPeopleInfoUrl = getPeopleInfoUrl+partyId+"/"+typeName+"/?read=1/";
+		HttpHelper httpHelper = new HttpHelper();
+		String a = httpHelper.performGet(getPeopleInfoUrl,PeopleInfoActivity.this);
+	}
+	
 	/**
 	 * 异步加载数据 --- client count
 	 * 
@@ -281,6 +323,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
 					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
 					map.put(Constants.MSG, myList.get(i).getComment());
+					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
 				}
 			}
@@ -293,6 +336,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
 					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
 					map.put(Constants.MSG, myList.get(i).getComment());
+					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
 				}
 			}
@@ -305,6 +349,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
 					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
 					map.put(Constants.MSG, myList.get(i).getComment());
+					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
 				}
 			}
@@ -316,6 +361,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.PEOPLE_NAME, myList.get(i).getPeopleName());
 					map.put(Constants.PEOPLE_CONTACTS, myList.get(i).getPhoneNumber());
 					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					map.put(Constants.MSG, myList.get(i).getComment());
 					mData.add(map);
 				}
@@ -569,7 +615,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			long id) {
 		name = (String) mData.get(position).get(Constants.PEOPLE_NAME);
 		cValue = (String) mData.get(position).get(Constants.PEOPLE_CONTACTS);
-		clientId = (String) mData.get(position).get(Constants.CLIENT_ID);
+		clientId = (String) mData.get(position).get(Constants.BACK_END_ID);
 		transIntent = new Intent(PeopleInfoActivity.this,
 				DetailPeopleInfo.class);
 		transIntent.putExtra(Constants.PEOPLE_NAME, name);

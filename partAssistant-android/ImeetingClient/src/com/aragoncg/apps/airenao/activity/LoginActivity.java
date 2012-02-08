@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
@@ -57,7 +58,7 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.login);
 		myContext = this.getBaseContext();
 		initView();

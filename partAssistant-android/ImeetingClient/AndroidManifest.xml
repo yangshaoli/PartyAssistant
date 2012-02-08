@@ -45,7 +45,8 @@
         </activity>
         
 		<activity 
-		android:name=".activity.MeetingListActivity">
+		android:name=".activity.MeetingListActivity"
+		android:configChanges="orientation|keyboardHidden">
 			
 		</activity>
 		

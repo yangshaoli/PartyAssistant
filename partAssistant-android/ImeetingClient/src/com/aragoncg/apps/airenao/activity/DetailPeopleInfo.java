@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
@@ -74,7 +75,7 @@ public class DetailPeopleInfo extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -177,7 +178,7 @@ public class DetailPeopleInfo extends Activity {
 			txtMessage.setVisibility(View.GONE);
 		}
 		if (peopleTag == UNRESPONSED_PEOPLE) {
-			
+			unJoin.setVisibility(View.GONE);
 		}
 
 		sms.setOnTouchListener(new OnTouchListener() {
@@ -223,6 +224,8 @@ public class DetailPeopleInfo extends Activity {
 					action = "apply";
 					applayRunnable = getRunnable();
 					myHandler.post(applayRunnable);
+					join.setVisibility(View.GONE);
+					unJoin.setVisibility(View.VISIBLE);
 					return false;
 				}
 				return false;
@@ -240,6 +243,8 @@ public class DetailPeopleInfo extends Activity {
 					action = "";
 					applayRunnable = getRunnable();
 					myHandler.post(applayRunnable);
+					unJoin.setVisibility(View.GONE);
+					join.setVisibility(View.VISIBLE);
 					return false;
 				}
 				return false;
@@ -255,7 +260,7 @@ public class DetailPeopleInfo extends Activity {
 				HashMap<String, String> map = new HashMap<String, String>();
 				map.put("cpID", backendID);
 				map.put("cpAction", action);
-				String result = httpHelper.performPost(applayUrl, map,
+				String result = httpHelper.savePerformPost(applayUrl, map,
 						DetailPeopleInfo.this);
 				result = AirenaoUtills.linkResult(result);
 				String status;
