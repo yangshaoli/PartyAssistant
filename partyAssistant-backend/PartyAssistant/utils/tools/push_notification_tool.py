@@ -27,6 +27,6 @@ def push_notification_when_enroll_thread(party_client, operation):
         user_device_list = UserDeviceTokenBase.objects.filter(user = user)
         for user_device in user_device_list:
             if user_device.get_subclass_type() == 'iPhone':
-                push_notification_to_iphone('enroll', badge, user_device.device_token, msg)
+                push_notification_to_apple('enroll', badge, user_device.device_token, msg)
             else:
                 push_notification_to_android('enroll', badge, user_device.device_token, msg)
