@@ -4,12 +4,14 @@ import urllib2
 import urllib
 
 APP_ANDROID_STATIC_KEY = '53fdfe87cb3131ce947bd8b8a65aa252'
+APP_ANDROID_STATIC_SECRET = '58d4452d0fbce30be819caf486babd33'
 
 def push_notification_to_android(operation, badge, deviceToken, msg, **kwargs):
     param = {
              'app_key':APP_ANDROID_STATIC_KEY,
+             'secret':APP_ANDROID_STATIC_SECRET,
              'client_ids':deviceToken,
-             'msg':msg
+             'msg':msg,
              }
     
     url = 'http://www.android-push.com/api/send/?%s' % urllib.urlencode(param)
