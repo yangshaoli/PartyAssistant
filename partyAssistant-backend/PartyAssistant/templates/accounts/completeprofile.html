@@ -287,6 +287,11 @@ function validate_phone_bingding(isbind){
     保存成功 
 </div>
 {% endifequal %}
+{% ifequal profile_status 'neednickname' %}
+<div id="tips">
+    需要填写昵称 
+</div>
+{% endifequal %}
 {% ifequal password_status 'success' %}
 <div id="tips">
     密码修改成功 
@@ -299,14 +304,15 @@ function validate_phone_bingding(isbind){
         <br/>
         <br/>
         <br/>
-        <form method='post' action='{% url profile %}' class="creat_exercise">
+        <form method='post' action='{% url completeprofile %}' class="creat_exercise">
             {% csrf_token %}
             <fieldset>
                 <div class="field">
-                    <label for="true_name">姓名：</label>
+                    <label for="true_name">昵称<font color='red'>*</font>：</label>
                     <input name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}'>
                     </input>
-                    <font color='red'>{{ form.true_name.errors.0 }}</red>
+                    <font color='red'>{{ form.true_name.errors.0 }}</red><br />
+                    <font color='red'>填写昵称后，方可进入创建活动页面</red>
                 </div>
                 <div class="field">
                     <label for="email">邮箱：</label>
@@ -338,7 +344,7 @@ function validate_phone_bingding(isbind){
                 <div class="field">
                     剩余短信条数：{{ sms_count|default:'0' }}条&nbsp;<a href="{%url buy_sms %}">充值?</a>
                 </div>
-                <input type='submit' value='保存' name='save'><input type='submit' value='跳过' name='ignore'></input>
+                <input type='submit' value='保存' name='save'><!--<input type='submit' value='跳过' name='ignore'></input>#1330-->
                 </input>
                 </fieldset>
             </form>

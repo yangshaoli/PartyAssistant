@@ -49,6 +49,11 @@ iframe{
       </table>
  </div>
 </div>
+    {% if profile_status %}
+    <div id="tips">
+    {% ifequal profile_status 'success'%} 个人信息保存成功 {% endifequal %}
+    </div>
+    {% endif %}
     {% if send_status %}
     <div id="tips">
     {% ifequal send_status 'email_success'%} 邮件发送成功 {% endifequal %}

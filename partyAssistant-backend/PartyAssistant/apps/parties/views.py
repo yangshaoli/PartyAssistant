@@ -24,13 +24,14 @@ from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails, send_apply_confirm_email
+from utils.tools.nick_name_respose import nick_name_deractor
 from utils.tools.push_notification_to_apple_tool import \
     push_notification_when_enroll
 from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH, \
     send_apply_confirm_sms
 import datetime
-import logging
 import hashlib
+import logging
 import time
 logger = logging.getLogger('airenao')
 
@@ -427,6 +428,7 @@ def sms_invite(request, party_id):
         return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
 
 @login_required
+@nick_name_deractor
 def list_party(request):
     party_list = Party.objects.filter(creator = request.user).order_by('-id')
     for party in party_list:
@@ -460,6 +462,12 @@ def list_party(request):
     if 'send_status' in request.session:
         send_status = request.session['send_status']
         del request.session['send_status']  
+    
+    profile_status = ''    
+    if 'profile_status' in request.session:
+        profile_status = request.session['profile_status']
+        del request.session['profile_status']
+        
     sms_count = ''    
     if 'sms_count' in request.session:
         sms_count = request.session['sms_count']
@@ -474,7 +482,7 @@ def list_party(request):
     party_list = paginator.page(page)
     request.session['page'] = page
     
-    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
+    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count, 'profile_status':profile_status})
 
 def _public_enroll(request, party_id):
     party = get_object_or_404(Party, id = party_id)
