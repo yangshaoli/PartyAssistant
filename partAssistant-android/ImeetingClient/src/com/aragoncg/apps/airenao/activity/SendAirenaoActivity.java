@@ -35,6 +35,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
@@ -43,6 +44,7 @@ import android.provider.ContactsContract.Data;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.SmsManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -87,7 +89,6 @@ public class SendAirenaoActivity extends Activity {
 	public static int judgeCursor = 0;
 	public static String temp = "";
 	public static boolean activityFlag = false;
-	public static List<MyPerson> staticData = new ArrayList<MyPerson>();
 	public String nickname;
 	private static String edt = "";
 	public String phone;
@@ -111,10 +112,10 @@ public class SendAirenaoActivity extends Activity {
 	private boolean sendSMS = true;
 	private boolean isShow = false;
 	public static boolean fromPeopleInfo;
-
+	ArrayList<MyPerson> allList;
 	private String theContent;
 	private String string;
-	
+
 	private MyMultiAutoCompleteTextView peopleNumbers;
 	private ArrayList<MyPerson> personList;
 	private String names = "";
@@ -143,6 +144,7 @@ public class SendAirenaoActivity extends Activity {
 	private ProgressDialog progerssDialog;
 	public static boolean createNew = false;
 
+	// public ArrayList<MyPerson> allList = new ArrayList<MyPerson>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 
@@ -153,11 +155,11 @@ public class SendAirenaoActivity extends Activity {
 		setContentView(R.layout.send_airenao_layout);
 		AirenaoUtills.activityList.add(this);
 
-		
 		init();
 		initHandler();
 		getContacts();
 		getItentData();
+		allList = new ArrayList<MyPerson>();
 		// 绑定自动提示框信息
 		final ContentApdater adapter = new ContentApdater(this, cursor);
 
@@ -363,6 +365,7 @@ public class SendAirenaoActivity extends Activity {
 	@Override
 	protected void onResume() {
 		if (activityFlag) {
+
 			names = "";
 			String beforeNames = peopleNumbers.getText().toString();
 			if (!"".equals(beforeNames)) {
@@ -370,21 +373,43 @@ public class SendAirenaoActivity extends Activity {
 			} else {
 				names = beforeNames;
 			}
+
+			if (!"".equals(names)) {
+				String[] allContacts = names.split("\\,", 0);
+				names = "";
+				for (int i = 0; i < allContacts.length; i++) {
+					int index = allContacts[i].indexOf("<");
+					if (index > -1) {
+						String name = allContacts[i].substring(0, index);
+						boolean flag = false;
+						for (int j = 0; j < PreviewActivity.preList.size(); j++) {
+							if (name.equals(PreviewActivity.preList.get(j)
+									.getName())) {
+								flag = true;
+							}
+						}
+						if (!flag) {
+							names += allContacts[i];
+						}
+					}
+				}
+			}
+
 			// if(ContactsListActivity.firstEnter){
 
 			String onePhoneNumber = "";
-			if (ContactsListActivity.exchangeList != null
-					&& ContactsListActivity.exchangeList.size() > 0) {
-				for (int i = 0; i < ContactsListActivity.exchangeList.size(); i++) {
-					onePhoneNumber = ContactsListActivity.exchangeList.get(i)
+			if (PreviewActivity.preList != null
+					&& PreviewActivity.preList.size() > 0) {
+				for (int i = 0; i < PreviewActivity.preList.size(); i++) {
+					onePhoneNumber = PreviewActivity.preList.get(i)
 							.getPhoneNumber();
 					if (onePhoneNumber.contains("-")) {
 						onePhoneNumber = onePhoneNumber.replace("-", "");
 					}
-					clientDicts.put(onePhoneNumber,
-							ContactsListActivity.exchangeList.get(i).getName());
-					names += ContactsListActivity.exchangeList.get(i).getName()
-							+ "<" + onePhoneNumber + ">" + ",";
+					clientDicts.put(onePhoneNumber, PreviewActivity.preList
+							.get(i).getName());
+					names += PreviewActivity.preList.get(i).getName() + "<"
+							+ onePhoneNumber + ">" + ",";
 				}
 				String name = deleteOnlyText(names);
 				peopleNumbers.setText(name);
@@ -435,9 +460,15 @@ public class SendAirenaoActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		staticData.clear();
-		ContactsListActivity.exchangeList.clear();
+		if (personList != null)
+			personList.clear();
 		count = 0;
+		if (allList != null)
+			allList.clear();
+		phoneNumbers.clear();
+		peopleNumbers.setText("");
+		ContactsListActivity.staticList1.clear();
+		PreviewActivity.preList.clear();
 		super.onDestroy();
 	}
 
@@ -456,13 +487,13 @@ public class SendAirenaoActivity extends Activity {
 					AlertDialog aDig = new AlertDialog.Builder(
 							SendAirenaoActivity.this).setMessage(message)
 							.setPositiveButton("确定", new OnClickListener() {
-								
+
 								@Override
-								public void onClick(DialogInterface dialog, int which) {
+								public void onClick(DialogInterface dialog,
+										int which) {
 									finish();
 								}
-							})
-							.create();
+							}).create();
 					aDig.show();
 					break;
 				case EXCEPTION:
@@ -535,12 +566,12 @@ public class SendAirenaoActivity extends Activity {
 		smsContent = txtSendLableContent.getText().toString();
 		String name = "";
 		String dict = "";
-		
+
 		Constants.countId++;
 		AirenaoActivity tempActivity = new AirenaoActivity();
-		
+
 		ArrayList<ClientsData> clientDataList = new ArrayList<ClientsData>();
-		
+
 		JSONArray myDicts = new JSONArray();
 		Iterator<Entry<String, String>> iter = tempClientDicts.entrySet()
 				.iterator();
@@ -563,7 +594,7 @@ public class SendAirenaoActivity extends Activity {
 				Json.put("cValue", dict);
 				myDicts.put(Json);
 				ClientsData clientsData = new ClientsData();
-				clientsData.setPartyId("id"+Constants.countId);
+				clientsData.setPartyId("id" + Constants.countId);
 				clientsData.setPeopleName(name);
 				clientsData.setPhoneNumber(dict);
 				clientDataList.add(clientsData);
@@ -574,29 +605,28 @@ public class SendAirenaoActivity extends Activity {
 			}
 
 		}
-		
-		//将数据保存到本地数据库
+
+		// 将数据保存到本地数据库
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		tempActivity.setActivityContent(smsContent);
 		tempActivity.setActivityName(smsContent);
-		tempActivity.setInvitedPeople(tempClientDicts.size()+"");
+		tempActivity.setInvitedPeople(tempClientDicts.size() + "");
 		tempActivity.setSignUp("0");
 		tempActivity.setUnSignUp("0");
-		tempActivity.setUnJoin(tempClientDicts.size()+"");
-		
-		tempActivity.setId("id"+Constants.countId);
-		
-		DbHelper.insertOneParty(db,
-				tempActivity,
-				DbHelper.ACTIVITY_TABLE_NAME);
-		for(int j=0;j<clientDataList.size();j++){
-			DbHelper.insertOneClientData(db, clientDataList.get(j), "doNothingClients");
+		tempActivity.setUnJoin(tempClientDicts.size() + "");
+
+		tempActivity.setId("id" + Constants.countId);
+
+		DbHelper.insertOneParty(db, tempActivity, DbHelper.ACTIVITY_TABLE_NAME);
+		for (int j = 0; j < clientDataList.size(); j++) {
+			DbHelper.insertOneClientData(db, clientDataList.get(j),
+					"doNothingClients");
 		}
-		if(db != null){
+		if (db != null) {
 			db.close();
 		}
-		
-		//将数据保存到后台
+
+		// 将数据保存到后台
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put(Constants.ACTIVITY_RECEIVERS, myDicts.toString());
 		params.put(Constants.CONTENT, smsContent);
@@ -615,7 +645,7 @@ public class SendAirenaoActivity extends Activity {
 			params.put("partyID", partyId);
 		} else {
 			url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_CREATE_URL;
-			
+
 		}
 		HttpHelper httpHelper = new HttpHelper();
 		// 保存到后台，没有提示信息
@@ -638,12 +668,13 @@ public class SendAirenaoActivity extends Activity {
 				smsContent = "";
 				smsContent = "【爱热闹】" + txtSendLableContent.getText().toString()
 						+ "\n" + "快来报名：" + stringLink;
-				//保存这个报名链接
-				SharedPreferences spf = AirenaoUtills.getMySharedPreferences(this);
+				// 保存这个报名链接
+				SharedPreferences spf = AirenaoUtills
+						.getMySharedPreferences(this);
 				Editor myEditor = spf.edit();
-				myEditor.putString("id"+Constants.countId, stringLink);
+				myEditor.putString("id" + Constants.countId, stringLink);
 				myEditor.commit();
-				
+
 				Message message = new Message();
 				Bundle bundle = new Bundle();
 				bundle.putString(SUCCESS + "", description);
@@ -652,7 +683,7 @@ public class SendAirenaoActivity extends Activity {
 				message.setData(bundle);
 				myHandler.sendMessage(message);
 			} else {
-				if(progerssDialog!=null){
+				if (progerssDialog != null) {
 					progerssDialog.dismiss();
 				}
 				Message message = new Message();
@@ -783,9 +814,11 @@ public class SendAirenaoActivity extends Activity {
 							ContactsListActivity.class);
 					startActivityForResult(intent, 24);// 24 只是一个requestCode
 					// 没有别的意义
+					// finish();
 					return false;//
 				}
 				return false;
+
 			}
 		});
 
@@ -957,7 +990,7 @@ public class SendAirenaoActivity extends Activity {
 											initThreadSaveMessage("no");// no指的是收件人为空
 											myHandler.post(threadSaveMessage);
 
-											//finish();
+											// finish();
 											return;
 										}
 
@@ -1023,24 +1056,27 @@ public class SendAirenaoActivity extends Activity {
 	public void showOkOrNotDialog(String message, final boolean ok) {
 
 		AlertDialog aDig = new AlertDialog.Builder(SendAirenaoActivity.this)
-				.setMessage(message)
-				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
+				.setMessage(message).setPositiveButton(R.string.btn_ok,
+						new OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (ok) {
-							finish();
-							Intent intent = new Intent();
-							intent.putExtra("SendAirenaoActivity.needRefresh", false);
-							intent.setClass(SendAirenaoActivity.this, MeetingListActivity.class);
-							startActivity(intent);
-						} else {
-							// 还在本页
-						}
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								if (ok) {
+									finish();
+									Intent intent = new Intent();
+									intent.putExtra(
+											"SendAirenaoActivity.needRefresh",
+											false);
+									intent.setClass(SendAirenaoActivity.this,
+											MeetingListActivity.class);
+									startActivity(intent);
+								} else {
+									// 还在本页
+								}
 
-					}
-				})
-				.setNegativeButton(R.string.btn_cancle,
+							}
+						}).setNegativeButton(R.string.btn_cancle,
 						new OnClickListener() {
 
 							@Override
@@ -1164,6 +1200,8 @@ public class SendAirenaoActivity extends Activity {
 					}
 
 				}
+				// allList.clear();
+				// allList = personList;
 				peopleNumbers.setText(names);
 				string = peopleNumbers.getText().toString();
 				peopleNumbers.setSelection(string.length());

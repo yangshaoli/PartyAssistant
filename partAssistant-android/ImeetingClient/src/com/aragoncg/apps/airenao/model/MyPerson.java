@@ -21,7 +21,7 @@ public class MyPerson implements Parcelable {
 	public MyPerson(String name, String phoneNumber) {
 		
 		this.name = name;
-		this.email = phoneNumber;
+		this.phoneNumber = phoneNumber;
 	}
 	public MyPerson(String id, String email, String name, String phoneNumber) {
 		this.id = id;

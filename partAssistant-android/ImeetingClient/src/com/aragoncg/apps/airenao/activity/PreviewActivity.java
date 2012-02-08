@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -25,7 +26,9 @@ import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 public class PreviewActivity extends Activity {
 	private Intent personIntent;
 	private List<MyPerson> list;
-	private boolean flag = false;
+	
+	public static List<MyPerson> preList = new ArrayList<MyPerson>();
+
 	private int count;
 	private LinearLayout userLayout;
 	private TextView userTitle;
@@ -43,6 +46,9 @@ public class PreviewActivity extends Activity {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 		setContentView(R.layout.activity_preview);
+		preList.clear();
+		list = getIntent().getParcelableArrayListExtra("ab");
+		list.size();
 		userLayout = (LinearLayout) findViewById(R.id.userChange);
 		userTitle = (TextView)findViewById(R.id.userTitle);
 		SharedPreferences mySharedPreferences = AirenaoUtills
@@ -52,10 +58,8 @@ public class PreviewActivity extends Activity {
 		if(!"".equals(userName) && userName != null){
 			userTitle.setText(userName);
 		}
-		flag = false;
 		ListView listView = (ListView) findViewById(R.id.listviewId);
 		Button button = (Button) findViewById(R.id.btn_finish);
-		list = deleteSameEntity(SendAirenaoActivity.staticData);
 		ListViewAdapter listViewAdapter = new ListViewAdapter(this, list);
 		listView.setAdapter(listViewAdapter);
 
@@ -63,16 +67,9 @@ public class PreviewActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				if (ContactsListActivity.exchangeList != null) {
-					ContactsListActivity.exchangeList.clear();
-					for (int i = 0; i < list.size(); i++) {
-						MyPerson myPerson = SendAirenaoActivity.staticData
-								.get(i);
-						ContactsListActivity.exchangeList.add(myPerson);
-					}
-				}
+			
+				preList = deleteSameEntity(list);
 				SendAirenaoActivity.activityFlag = true;
-				flag = true;
 				finish();
 			}
 		});
@@ -80,24 +77,10 @@ public class PreviewActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		if (!flag) {
-			if (ContactsListActivity.firstEnter) {
-				ContactsListActivity.exchangeList.clear();
-				SendAirenaoActivity.staticData.clear();
-				ContactsListActivity.firstEnter = false;
-				super.onDestroy();
-				return;
-			}
-			SendAirenaoActivity.staticData.clear();
-			for (int i = 0; i < ContactsListActivity.exchangeList.size(); i++) {
-				MyPerson myPerson = ContactsListActivity.exchangeList.get(i);
-				SendAirenaoActivity.staticData.add(myPerson);
-			}
-		}
-		if (list != null)
-			list.clear();
-		super.onDestroy();
-	}
+		
+		list.clear();
+		super.onDestroy();}
+
 
 	public List<MyPerson> deleteSameEntity(List<MyPerson> myPerson) {
 		HashSet hashset = new HashSet(myPerson);
@@ -105,7 +88,6 @@ public class PreviewActivity extends Activity {
 		for (int i = 0; i < myPerson.size(); i++) {
 			if (hashset.contains(myPerson.get(i))) // contains:该集合不包含指定元素，返回
 				relist.add(myPerson.get(i));
-			System.out.println(relist.get(i).getName());
 		}
 		return relist;
 	}

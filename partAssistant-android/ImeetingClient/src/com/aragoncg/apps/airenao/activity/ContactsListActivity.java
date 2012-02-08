@@ -142,6 +142,7 @@ public class ContactsListActivity extends ListActivity implements
 	private int tempCount = 0;
 	public static int allcount = 0;
 	public int m = 0;
+	
 
 	/**
 	 * The action for the join contact activity.
@@ -435,13 +436,14 @@ public class ContactsListActivity extends ListActivity implements
 	private String bindPersonName;
 	private String bindPersonPhoneNumber;
 	private int count = 0;
-	public static boolean firstEnter = false;
-
+	public List <MyPerson> beforePositions = new ArrayList<MyPerson>();
+	
+	
 	private static List<MyPerson> transPersons = new ArrayList<MyPerson>();
 	// 用来统计被选中的电话
 	private static List<MyPerson> positions;
 	private static List<MyPerson> tempPositions = new ArrayList<MyPerson>();
-	public static List<MyPerson> exchangeList = new ArrayList<MyPerson>();
+	public static List<MyPerson> staticList1 = new ArrayList<MyPerson>();
 	private HashMap<String, SearchInfo> searchInfo = new HashMap<String, SearchInfo>();
 
 	private class DeleteClickListener implements
@@ -499,7 +501,7 @@ public class ContactsListActivity extends ListActivity implements
 
 		// We manually save/restore the listview state
 		list.setSaveEnabled(false);
-
+		beforePositions.clear();
 		mQueryHandler = new QueryHandler(this);
 		mJustCreated = true;
 		getListView().setTextFilterEnabled(false);
@@ -510,10 +512,11 @@ public class ContactsListActivity extends ListActivity implements
 		// 获得之前存在的电话
 		if (alreadyExistNumbers != null) {
 			String[] allContacts = alreadyExistNumbers.split("\\,", 0);
-
+			
 			int index = -1;
 			if (allContacts.length > 0) {
 				transPersons.clear();
+				beforePositions.clear();
 				count = 0;
 				SharedPreferences pre = PreferenceManager
 				.getDefaultSharedPreferences(getApplicationContext());
@@ -542,10 +545,17 @@ public class ContactsListActivity extends ListActivity implements
 							}
 							transPersons.add(new MyPerson(transPersonName,
 									transPersonPhoneNumber));
+							beforePositions.add(new MyPerson(transPersonName,
+									transPersonPhoneNumber));
 						}
 					}
 
 				}
+//				if(AllPersons != null){
+//					transPersons.clear();
+//					transPersons = AllPersons;
+//					AllPersons.clear();
+//				}
 
 			}
 			alreadyExistNumbers = null;
@@ -618,31 +628,11 @@ public class ContactsListActivity extends ListActivity implements
 
 							choosedData.add(tempPerson);
 						}
-						List<MyPerson> deleteList = deleteSameEntity(choosedData);
-						if (SendAirenaoActivity.staticData.size() != 0) {
-							for (int i = 0; i < deleteList.size(); i++) {
-								boolean flag = false;
-								for (int j = 0; j < SendAirenaoActivity.staticData
-										.size(); j++) {
-									if (deleteList.get(i).getName().equals(
-											SendAirenaoActivity.staticData.get(
-													j).getName())) {
-										flag = true;
-									}
-								}
-								if (!flag) {
-									SendAirenaoActivity.staticData
-											.add(deleteList.get(i));
-								}
-							}
-						} else {
-							SendAirenaoActivity.staticData = deleteList;
-						}
-
+						
 						personIntent = new Intent();
 						personIntent.putParcelableArrayListExtra(
 								Constants.FROMCONTACTSLISTTOSEND,
-								(ArrayList<? extends Parcelable>) deleteList);
+								(ArrayList<? extends Parcelable>) choosedData);
 						positions.clear();
 						tempPositions.clear();
 						tempCount = 0;
@@ -669,43 +659,37 @@ public class ContactsListActivity extends ListActivity implements
 
 					choosedData.add(tempPerson);
 				}
-				List<MyPerson> deleteList = deleteSameEntity(choosedData);
-
-				if (SendAirenaoActivity.staticData.size() != 0) {
-					for (int i = 0; i < deleteList.size(); i++) {
-						boolean flag = false;
-						for (int j = 0; j < SendAirenaoActivity.staticData
-								.size(); j++) {
-							if (deleteList.get(i).getName().equals(
-									SendAirenaoActivity.staticData.get(j)
-											.getName())) {
-								flag = true;
-							}
-						}
-						if (!flag) {
-							SendAirenaoActivity.staticData.add(deleteList
-									.get(i));
+				
+				for(int i = 0; i < beforePositions.size(); i++){
+					boolean flag = false;
+					for(int j = 0;j < choosedData.size(); j++){
+						if(beforePositions.get(i).getName().equals(choosedData.get(j).getName())){
+							flag = true;
 						}
 					}
-				} else {
-
-					for (int i = 0; i < deleteList.size(); i++) {
-						MyPerson myPerson = deleteList.get(i);
-						SendAirenaoActivity.staticData.add(myPerson);
-					}
-
-					for (int i = 0; i < SendAirenaoActivity.staticData.size(); i++) {
-						MyPerson myPerson = SendAirenaoActivity.staticData
-								.get(i);
-						exchangeList.add(myPerson);
-						firstEnter = true;
+					if(!flag){
+						
+//						for(int k =0 ; k < staticList1.size();k++){
+//							if(staticList1.get(k).getName().equals(beforePositions.get(k).getName())){
+//								beforePositions.get(k).setPhoneNumber(staticList1.get(k).getPhoneNumber());
+//								break;
+//							}
+//						}
+						choosedData.add(beforePositions.get(i));
 					}
 				}
-
-				Intent intent = new Intent(getApplicationContext(),
-						PreviewActivity.class);
-				startActivity(intent);
+						
+				//List<MyPerson> deleteList = deleteSameEntity(choosedData);
+				personIntent = new Intent(ContactsListActivity.this,PreviewActivity.class);
+				personIntent.putParcelableArrayListExtra(
+						"ab",
+						(ArrayList<? extends Parcelable>) choosedData);
+				startActivity(personIntent);
+				positions.clear();
+				tempPositions.clear();
+				tempCount = 0;
 				finish();
+
 			}
 		});
 
@@ -834,7 +818,7 @@ public class ContactsListActivity extends ListActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		
 		Intent it = this.getIntent();
 		mMode = it.getIntExtra("mode", MODE_DEFAULT);
 
@@ -878,7 +862,7 @@ public class ContactsListActivity extends ListActivity implements
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-
+		
 		// The cursor was killed off in onStop(), so we need to get a new one
 		// here
 		// We do not perform the query if a filter is set on the list because
@@ -1211,15 +1195,6 @@ public class ContactsListActivity extends ListActivity implements
 						MyPerson myPerson = positions.get(i);
 						positions.remove(i);
 
-						for (int k = 0; k < SendAirenaoActivity.staticData
-								.size(); k++) {
-							if (myPerson.getName().equals(
-									SendAirenaoActivity.staticData.get(k)
-											.getName())) {
-								SendAirenaoActivity.staticData.remove(k);
-								break;
-							}
-						}
 					}
 					tempCount--;
 				}
@@ -1967,13 +1942,19 @@ public class ContactsListActivity extends ListActivity implements
 
 				for (int i = 1; i <= count; i++) {
 					personMap.put(i, new MyPerson());
+					
 					// positions.add(-1);
 				}
+				
+				
 				if (mMode == MODE_FREQUENT || mMode == MODE_DEFAULT) {
 					positions.clear();
 					positions.addAll(tempPositions);
+					staticList1.addAll(tempPositions);
 				}
-
+				
+				
+				
 				if (cursor != null && mLoadingJoinSuggestions) {
 					mLoadingJoinSuggestions = false;
 
@@ -2253,7 +2234,6 @@ public class ContactsListActivity extends ListActivity implements
 				// Reset the filter state then start an async filter operation
 				Filter filter = getFilter();
 				filter.filter(constraint);
-				System.out.println("onContentChanged");
 			} else {
 				// Start an async query
 				startQuery();
@@ -2574,6 +2554,7 @@ public class ContactsListActivity extends ListActivity implements
 			if (transPersons.size() > 0) {
 				for (int i = 0; i < transPersons.size(); i++) {
 					bindPerson = transPersons.get(i);
+					Log.e("tran", transPersons.get(i).getName());
 					if (bindPerson.getName().equals(
 							cache.nameView.getText().toString())) {
 						MyPerson Person = personMap
@@ -2597,9 +2578,12 @@ public class ContactsListActivity extends ListActivity implements
 						break;
 					}
 				}
+				
 
 			}
 
+			
+			
 			// 设置checkbox
 			MyPerson person = personMap.get(cursor.getPosition() + 1);
 			if (cache.checkBox != null && person != null) {
