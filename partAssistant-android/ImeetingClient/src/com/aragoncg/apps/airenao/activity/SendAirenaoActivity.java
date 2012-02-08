@@ -71,6 +71,7 @@ import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.SDKimp.MyMultiAutoCompleteTextView;
 import com.aragoncg.apps.airenao.activity.Collapser.Collapsible;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.model.ClientsData;
@@ -151,7 +152,7 @@ public class SendAirenaoActivity extends Activity {
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.send_airenao_layout);
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 
 		
 		init();
@@ -716,6 +717,7 @@ public class SendAirenaoActivity extends Activity {
 			AirenaoActivity airenao = (AirenaoActivity) getIntent()
 					.getSerializableExtra(Constants.ONE_PARTY);
 			theContent = airenao.getActivityContent();
+			partyId = airenao.getId();
 			txtSendLableContent.setText(theContent);
 			List<Map<String, Object>> list = airenao.getPeopleList();
 			String names = "";

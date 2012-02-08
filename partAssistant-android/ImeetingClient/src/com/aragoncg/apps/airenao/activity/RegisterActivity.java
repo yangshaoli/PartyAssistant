@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
@@ -61,7 +62,7 @@ public class RegisterActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.register_layout);
 		myContext = getBaseContext();
 		initData();

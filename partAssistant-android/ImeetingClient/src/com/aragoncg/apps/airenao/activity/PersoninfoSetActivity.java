@@ -1,6 +1,7 @@
 package com.aragoncg.apps.airenao.activity;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -26,6 +27,7 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.addPreferencesFromResource(R.xml.setting);
+		ActivityManager.getInstance().addActivity(this);
 		number_editPreference = (EditTextPreference) findPreference("warning_phone");
 		mail_editPreference = (EditTextPreference) findPreference("warning_mail");
 		nickname_editPreference = (EditTextPreference) findPreference("warning_nickname");

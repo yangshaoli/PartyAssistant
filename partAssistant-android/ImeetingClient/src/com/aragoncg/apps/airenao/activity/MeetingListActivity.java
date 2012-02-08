@@ -1,6 +1,7 @@
 package com.aragoncg.apps.airenao.activity;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.model.ClientsData;
@@ -128,7 +130,7 @@ public class MeetingListActivity extends ListActivity implements
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_list);
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 		mContext = getBaseContext();
 		init();
 		needRefresh = true;//
@@ -178,7 +180,7 @@ public class MeetingListActivity extends ListActivity implements
 		});
 		// 处理刷新事件
 		setButtonRefresh();
-		//startPushServer();
+		startPushServer();
 		
 	}
 	
@@ -623,7 +625,7 @@ public class MeetingListActivity extends ListActivity implements
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									AirenaoUtills.exitClient(mContext);
+									ActivityManager.getInstance().exit();
 
 								}
 
@@ -876,7 +878,7 @@ public class MeetingListActivity extends ListActivity implements
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									AirenaoUtills.exitClient(mContext);
+									ActivityManager.getInstance().exit();
 
 								}
 

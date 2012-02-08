@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
+import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
@@ -190,7 +191,7 @@ public class SplashActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.splash);
 		createDb();
-		AirenaoUtills.activityList.add(this);
+		ActivityManager.getInstance().addActivity(this);
 		// 检测网络
 		netLinking = AirenaoUtills.isNetWorkExist(SplashActivity.this);
 		if (!netLinking) {
