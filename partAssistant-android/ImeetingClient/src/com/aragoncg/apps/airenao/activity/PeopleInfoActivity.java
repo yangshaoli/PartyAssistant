@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -80,6 +81,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	Intent transIntent;
 	private TextView txtNoData;
 	private Runnable tellServiceToChangeFlag;
+	private String tableName;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -191,8 +193,13 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	}
 
 	public void getDataFromServer() {
-		getChangeFlagRunnable();
-		tellServiceToChangeFlag.run();
+		
+		if(DetailActivity.showNewFlag){
+			getChangeFlagRunnable();
+			tellServiceToChangeFlag.run();
+		}
+		
+		
 		if (peopleTag == INVATED_PEOPLE) {
 
 			AsyncTaskLoad asynTask = new AsyncTaskLoad(this, partyId, TYPE_ALL);
@@ -282,10 +289,22 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	}
 	
 	public void linkService(String typeName){
+		tellDbToUpdata();
 		getPeopleInfoUrl = getPeopleInfoUrl+partyId+"/"+typeName+"/?read=1/";
 		HttpHelper httpHelper = new HttpHelper();
-		String a = httpHelper.performGet(getPeopleInfoUrl,PeopleInfoActivity.this);
+		httpHelper.performGet(getPeopleInfoUrl,PeopleInfoActivity.this);
 	}
+	
+	/**
+	 * 告诉数据库中的数据要更新，不要在显示数据了
+	 */
+	public void tellDbToUpdata(){
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DbHelper.FIELD_TITLE_NEW_SN_UP, "0");
+		contentValues.put(DbHelper.FIELD_TITLE_NEW_UN_SN_UP, "0");
+		DbHelper.upData(DbHelper.ACTIVITY_TABLE_NAME, contentValues, partyId);
+	}
+	
 	
 	/**
 	 * 异步加载数据 --- client count
@@ -338,6 +357,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.MSG, myList.get(i).getComment());
 					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
+					tableName = "appliedClients";
 				}
 			}
 			if(TYPE_DONOTHING.equals(type)){
@@ -351,6 +371,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.MSG, myList.get(i).getComment());
 					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
+					tableName = "doNothingClients";
 				}
 			}
 			if(TYPE_REFUSED.equals(type)){
@@ -364,9 +385,15 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					map.put(Constants.MSG, myList.get(i).getComment());
 					mData.add(map);
+					tableName = "refusedClients";
 				}
 			}
-			if(db!=null){
+			
+			ContentValues contentValues = new ContentValues();
+			contentValues.put("isCheck", "true");
+			DbHelper.updataOneTable(tableName, contentValues);
+			
+			if(db!=null&&db.isOpen()){
 				db.close();
 			}
 			return new String[3];

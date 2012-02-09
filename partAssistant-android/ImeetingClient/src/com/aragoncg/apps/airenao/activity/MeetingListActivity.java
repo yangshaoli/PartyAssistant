@@ -197,14 +197,14 @@ public class MeetingListActivity extends ListActivity implements
 	protected void onRestart() {
 		startId = 0;
 		needRefresh = false;
-		if (needRefresh) {
-
-			getData();
-			/*
-			 * myDaAdapter.notifyDataSetChanged();
-			 * myListView.requestFocusFromTouch();
-			 */
-		}
+		handler.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				getData();
+			}
+		});
+			
 		super.onRestart();
 	}
 

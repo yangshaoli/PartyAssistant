@@ -62,6 +62,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private int[] resImageArry;
 	private String[] resMenuNameArry;
 	private static boolean showFlag = true;
+	public static boolean showNewFlag;
 	private PopupWindow pw = null;
 	private ComponentsCache myCache;
 	private AirenaoActivity myAirenaoActivity;
@@ -72,7 +73,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private Handler myHandler;
 	private boolean loated = false;
 	private String partyId = "-1";
-	private Runnable editSaveRun;
 	private static final int PROGRESS_GONE = 1;
 	private String userId;
 	private GridView gridView;
@@ -90,7 +90,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private static final int MSG_ID_DELETE = 4;
 	private static final int MSG_ID_REFRESH = 5;
 	private ProgressDialog progressDialog;
-	private boolean fromEdit;
 
 	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 	private List<Map<String, Object>> dataList;
@@ -604,6 +603,8 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		// position start from 0;
+		ViewHolder viewCach = (ViewHolder) view.getTag();
+		showNewFlag = viewCach.flagNew.isShown();
 		switch (position) {
 		case 0: {
 			startIntentToNextActivity(position);

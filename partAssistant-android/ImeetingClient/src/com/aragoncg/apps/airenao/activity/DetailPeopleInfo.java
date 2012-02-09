@@ -113,6 +113,7 @@ public class DetailPeopleInfo extends Activity {
 								}
 							}).create();
 					aDig.show();
+					
 					break;
 				case FAIL:
 					AlertDialog aDigFail = new AlertDialog.Builder(
@@ -173,7 +174,7 @@ public class DetailPeopleInfo extends Activity {
 			join.setVisibility(View.GONE);
 		}
 		if (peopleTag == UNSIGNED_PEOPLE) {
-			unJoin.setVisibility(View.GONE);
+			
 			levMsg.setVisibility(View.GONE);
 			txtMessage.setVisibility(View.GONE);
 		}
