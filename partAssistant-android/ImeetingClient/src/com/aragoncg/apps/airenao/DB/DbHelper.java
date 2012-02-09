@@ -514,5 +514,51 @@ public class DbHelper {
 	public static void close(SQLiteDatabase db) {
 		db.close();
 	}
-
+	
+	/**
+	 * 更新某一个表种的某一条数据
+	 */
+	public static String upData(String tableName, ContentValues contentValues, String whereArg){
+		String msg="";
+		String[] whereArgs={whereArg};
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+		if(db!=null){
+			try{
+				db.update(tableName, contentValues, PARTY_ID+"=?", whereArgs);
+			}catch(Exception e){
+				msg="数据库异常";
+			}finally{
+				db.close();
+			}
+		}else{
+			msg="数据库获取异常";
+		}
+		
+		return msg;
+	}
+	/**
+	 * 更新一张表中某一字段的数据
+	 * @param tableName
+	 * @param contentValues
+	 * @return
+	 */
+	public static String updataOneTable(String tableName, ContentValues contentValues){
+		String msg="";
+		
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+		if(db!=null){
+			try{
+				db.update(tableName, contentValues, null, null);
+			}catch(Exception e){
+				msg="数据库异常";
+			}finally{
+				db.close();
+			}
+		}else{
+			msg="数据库获取异常";
+		}
+		
+		return msg;
+	}
+	
 }

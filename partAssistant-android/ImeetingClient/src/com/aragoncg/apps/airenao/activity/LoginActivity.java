@@ -241,6 +241,7 @@ public class LoginActivity extends Activity {
 							Constants.HENDLER_MESSAGE);
 					
 					Toast.makeText(LoginActivity.this, message, 2000).show();
+					break;
 				case Constants.LOGIN_SUCCESS_CASE:
 					/*
 					 * 保存用户名和密码
@@ -258,6 +259,7 @@ public class LoginActivity extends Activity {
 					editor.putString(Constants.AIRENAO_USER_ID, uId);
 					editor.commit();
 					finish();
+					break;
 				}
 				super.handleMessage(msg);
 			}

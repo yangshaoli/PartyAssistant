@@ -185,6 +185,7 @@ public class DetailPeopleInfo extends Activity {
 								}
 							}).create();
 					aDig.show();
+
 					break;
 				case FAIL:
 					AlertDialog aDigFail = new AlertDialog.Builder(
@@ -244,8 +245,10 @@ public class DetailPeopleInfo extends Activity {
 		if (peopleTag == SIGNED_PEOPLE) {
 			join.setVisibility(View.GONE);
 		}
+
 		if (peopleTag == UNRESPONSED_PEOPLE) {
 			unJoin.setVisibility(View.GONE);
+
 			levMsg.setVisibility(View.GONE);
 			txtMessage.setVisibility(View.GONE);
 		}
@@ -431,7 +434,7 @@ public class DetailPeopleInfo extends Activity {
 			String targetTable, String id) {
 		ClientsData clientData = null;
 		SQLiteDatabase db = null;
-		boolean flag ;
+		boolean flag;
 		try {
 			db = DbHelper.openOrCreateDatabase();
 			clientData = DbHelper.selectDetailPeopleInfo(db, sourceTable, id);
