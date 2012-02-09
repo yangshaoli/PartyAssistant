@@ -11,6 +11,7 @@
 #import "UserObject.h"
 #import "UserObjectService.h"
 #import "Reachability.h"
+#import "HTTPRequestErrorMSG.h"
 
 #define kMyFeatureIdentifierLevelOne @"com.airenao.productLevelOne"
 #define kMyFeatureIdentifierLevelTwo @"com.airenao.productLevelTwo"
@@ -156,7 +157,7 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      */
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"无法连接网络，请检查网络状态！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:REQUEST_INVALID_NETWORK delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
         [alert show];
         return;
     }

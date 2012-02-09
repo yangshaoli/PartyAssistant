@@ -9,6 +9,7 @@
 #import "WeiboManagerTableViewController.h"
 #import "Reachability.h"
 #import "UIViewControllerExtra.h"
+#import "HTTPRequestErrorMSG.h"
 
 #define SINA_WEIBO_LOGIN_BTN_TAG 11
 #define SINA_WEIBO_LOGOUT_BTN_TAG 12
@@ -189,7 +190,7 @@
 -(void)UserLogout
 {
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-        [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+        [self showAlertWithTitle:@"提示" Message:REQUEST_INVALID_NETWORK];
         return;
     }
     
@@ -200,7 +201,7 @@
 -(void)UserLogin
 {
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-        [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+        [self showAlertWithTitle:@"提示" Message:REQUEST_INVALID_NETWORK];
         return;
     }
     
