@@ -11,6 +11,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
@@ -22,6 +23,11 @@ public class DbHelper {
 	private final static int DATABASE_VERSION = 1;
 	public final static String LAST_TABLE_NAME = "activity_pwd";
 	public final static String ACTIVITY_TABLE_NAME = "myActivitys";
+
+	public final static String DONOTHING_TABLE_NAME = "doNothingClients";
+	public final static String REFUSED_TABLE_NAME = "refusedClients";
+	public final static String APPLIED_TABLE_NAME = "appliedClients";
+
 	public final static String PARTY_ID = "partyid";
 	public final static String FIELD_ID = "_id";
 	public final static String FIELD_TITLE_NAME = "name";
@@ -70,23 +76,23 @@ public class DbHelper {
 			+ FIELD_TITLE_UN_SN_UP + " text, " + FIELD_TITLE_NEW_UN_SN_UP
 			+ " text, " + " type text, " + FIELD_TITLE_UN_JOIN + " text, "
 			+ FLAG_NEW + " integer);";
-	
+
 	public static final String createTableAppliedSql = "Create table "
 			+ "appliedClients" + "(" + FIELD_ID
-			+ " integer primary key autoincrement, "+" id text, " + PARTY_ID + " text, "
-			+ "name" + " text, " + "phoneNumber" + " text, "
+			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
+			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
 			+ "comment" + " text, " + "isCheck" + " text);";
 	public static final String createTableDoNothingSql = "Create table "
 			+ "doNothingClients" + "(" + FIELD_ID
-			+ " integer primary key autoincrement, "+" id text, " + PARTY_ID + " text, "
-			+ "name" + " text, " + "phoneNumber" + " text, "
+			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
+			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
 			+ "comment" + " text, " + "isCheck" + " text);";
 	public static final String createTableRefusedSql = "Create table "
 			+ "refusedClients" + "(" + FIELD_ID
-			+ " integer primary key autoincrement, " +" id text, "+ PARTY_ID + " text, "
-			+ "name" + " text, " + "phoneNumber" + " text, "
+			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
+			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
 			+ "comment" + " text, " + "isCheck" + " text);";
-	
+
 	public static final String dropSql = " DROP TABLE IF EXISTS "
 			+ LAST_TABLE_NAME;
 	public static final String dropSql1 = " DROP TABLE IF EXISTS "
@@ -97,6 +103,7 @@ public class DbHelper {
 			+ "doNothingClients";
 	public static final String dropTableRefusedSql = " DROP TABLE IF EXISTS "
 			+ "refusedClients";
+
 	private DbHelper(Context context) {
 		SQLiteDatabase db = openOrCreateDatabase();
 		try {
@@ -142,8 +149,8 @@ public class DbHelper {
 		return row;
 	}
 
-	public static long insertOneParty(SQLiteDatabase db, AirenaoActivity airenao,
-			String tableName) {
+	public static long insertOneParty(SQLiteDatabase db,
+			AirenaoActivity airenao, String tableName) {
 		// SQLiteDatabase db=this.getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(PARTY_ID, airenao.getId());
@@ -169,16 +176,17 @@ public class DbHelper {
 
 		return row;
 	}
-	
+
 	/**
 	 * 插入数据ClientsData
+	 * 
 	 * @param db
 	 * @param clientsData
 	 * @param tableName
 	 * @return
 	 */
-	public static long insertOneClientData(SQLiteDatabase db, ClientsData clientsData,
-			String tableName) {
+	public static long insertOneClientData(SQLiteDatabase db,
+			ClientsData clientsData, String tableName) {
 		ContentValues cv = new ContentValues();
 		cv.put("id", clientsData.getId());
 		cv.put(PARTY_ID, clientsData.getPartyId());
@@ -197,16 +205,14 @@ public class DbHelper {
 		return row;
 	}
 
-	
-
 	public static List<Map<String, Object>> selectActivitys(SQLiteDatabase db) {
 
 		AirenaoActivity airenao = new AirenaoActivity();
 		listActivity = new ArrayList<Map<String, Object>>();
 		// SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = null;
-		String sql = "select * from " + ACTIVITY_TABLE_NAME +
-															 " order by "+PARTY_ID +" desc";
+		String sql = "select * from " + ACTIVITY_TABLE_NAME + " order by "
+				+ PARTY_ID + " desc";
 		try {
 			cursor = db.rawQuery(sql, null);
 			for (int i = 0; i < cursor.getCount(); i++) {
@@ -226,8 +232,10 @@ public class DbHelper {
 					content = cursor.getString(cursor
 							.getColumnIndex(FIELD_TITLE_CONTENT));
 					hashMap.put(Constants.PARTY_ID, partyId);
-					hashMap.put(Constants.ACTIVITY_NAME, cursor
-							.getString(cursor.getColumnIndex(FIELD_TITLE_NAME)));
+					hashMap
+							.put(Constants.ACTIVITY_NAME, cursor
+									.getString(cursor
+											.getColumnIndex(FIELD_TITLE_NAME)));
 					hashMap.put(Constants.ACTIVITY_TIME, time);
 					hashMap.put(Constants.ACTIVITY_POSITION, position);
 					hashMap.put(Constants.ACTIVITY_NUMBER, number);
@@ -250,8 +258,8 @@ public class DbHelper {
 					hashMap.put(Constants.NEW_REFUSED_CLIENT_COUNT, cursor
 							.getString(cursor
 									.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP)));
-					hashMap.put(Constants.NEW_FLAG,
-							cursor.getString(cursor.getColumnIndex(FLAG_NEW)));
+					hashMap.put(Constants.NEW_FLAG, cursor.getString(cursor
+							.getColumnIndex(FLAG_NEW)));
 					listActivity.add(hashMap);
 				} else {
 					listActivity.clear();
@@ -271,9 +279,10 @@ public class DbHelper {
 
 		return listActivity;
 	}
-	
+
 	/**
 	 * 通过partyId返回一个ClientsData的集合
+	 * 
 	 * @param db
 	 * @param tableName
 	 * @param partyId
@@ -315,23 +324,33 @@ public class DbHelper {
 		return clientsList;
 
 	}
-	
-	public static AirenaoActivity selectOneParty(SQLiteDatabase db,String partyId){
+
+	public static AirenaoActivity selectOneParty(SQLiteDatabase db,
+			String partyId) {
 		AirenaoActivity oneParty = new AirenaoActivity();
-		String sql = "select * from " + ACTIVITY_TABLE_NAME +" where "+PARTY_ID+" ='"+partyId+"'";
+		String sql = "select * from " + ACTIVITY_TABLE_NAME + " where "
+				+ PARTY_ID + " ='" + partyId + "'";
 		Cursor cursor = null;
 		cursor = db.rawQuery(sql, null);
-		if(cursor != null){
-			if(cursor.getCount()<1){
+		if (cursor != null) {
+			if (cursor.getCount() < 1) {
 				return null;
-			}else{
+			} else {
 				cursor.moveToFirst();
-				String newAppliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_SN_UP));
-				String newRefusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP));
-				String appliedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_SN_UP));
-				String donothingClientcount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_JOIN));
-				String refusedClientCount = cursor.getString(cursor.getColumnIndex(FIELD_TITLE_UN_SN_UP));
-				String allClientCount = String.valueOf(Integer.valueOf(appliedClientCount) + Integer.valueOf(donothingClientcount) +Integer.valueOf(refusedClientCount));
+				String newAppliedClientCount = cursor.getString(cursor
+						.getColumnIndex(FIELD_TITLE_NEW_SN_UP));
+				String newRefusedClientCount = cursor.getString(cursor
+						.getColumnIndex(FIELD_TITLE_NEW_UN_SN_UP));
+				String appliedClientCount = cursor.getString(cursor
+						.getColumnIndex(FIELD_TITLE_SN_UP));
+				String donothingClientcount = cursor.getString(cursor
+						.getColumnIndex(FIELD_TITLE_UN_JOIN));
+				String refusedClientCount = cursor.getString(cursor
+						.getColumnIndex(FIELD_TITLE_UN_SN_UP));
+				String allClientCount = String.valueOf(Integer
+						.valueOf(appliedClientCount)
+						+ Integer.valueOf(donothingClientcount)
+						+ Integer.valueOf(refusedClientCount));
 				oneParty.setInvitedPeople(allClientCount);
 				oneParty.setSignUp(appliedClientCount);
 				oneParty.setNewApplied(newAppliedClientCount);
@@ -343,7 +362,7 @@ public class DbHelper {
 		}
 		return oneParty;
 	}
-	
+
 	public static AirenaoActivity select(SQLiteDatabase db) {
 		AirenaoActivity airenao = new AirenaoActivity();
 		// SQLiteDatabase db = this.getReadableDatabase();
@@ -395,12 +414,16 @@ public class DbHelper {
 	}
 
 	public static SQLiteDatabase openOrCreateDatabase() {
-		SQLiteDatabase database = null;
+		// SQLiteDatabase database = null;
 		try {
-			/*String fpath = android.os.Environment.getExternalStorageDirectory()
-					.getAbsolutePath() + Constants.DATA_BASE_PATH;*/
+			/*
+			 * String fpath =
+			 * android.os.Environment.getExternalStorageDirectory()
+			 * .getAbsolutePath() + Constants.DATA_BASE_PATH;
+			 */
 			String fpath = android.os.Environment.getDataDirectory()
-					.getAbsolutePath()+Constants.DATA_BASE_PATH;
+					.getAbsolutePath()
+					+ Constants.DATA_BASE_PATH;
 			fpath = fpath + "/";
 			File fpathDir = new File(fpath);
 			File dbFile = new File(fpath + Constants.DATA_BASE_NAME);
@@ -419,7 +442,73 @@ public class DbHelper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return database;
+		return null;
+	}
+
+	public static boolean insertDetailPeopleInfo(SQLiteDatabase db,
+			String tableName, ClientsData clientData) {
+		try {
+			db.execSQL("INSERT INTO " + tableName + "(" + Constants.ID + ", "
+					+ Constants.PARTYID + ", " + Constants.NAME + ", "
+					+ Constants.PHONENUMBER + ", " + Constants.COMMENT + ", "
+					+ Constants.IS_CHECK + ") VALUES (?,?,?,?,?,?)",
+					new String[] { clientData.getId(), clientData.getPartyId(),
+							clientData.getPeopleName(),
+							clientData.getPhoneNumber(),
+							clientData.getComment(), clientData.getIsCheck() });
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static ClientsData selectDetailPeopleInfo(SQLiteDatabase db,
+			String tableName, String id) {
+		try {
+			Cursor cursor = null;
+			cursor = db.rawQuery("SELECT * FROM " + tableName + " WHERE "
+					+ Constants.ID + " = " + id, new String[] {});
+			cursor.moveToFirst();
+				String sql = "SELECT * FROM " + tableName + " WHERE "
+				+ Constants.ID + " = " + id;
+				System.out.println(cursor.getCount()+sql);
+				
+				cursor.getColumnIndex(Constants.PARTYID);
+				System.out.println("a"+cursor.getString(cursor.getColumnIndex(Constants.NAME)));
+				if (cursor != null) {
+					ClientsData clientData = new ClientsData();
+					clientData.setId(id);
+					clientData.setPartyId(cursor.getString(2));
+					clientData.setPeopleName(cursor.getString(3));
+					clientData.setPhoneNumber(cursor.getString(4));
+					clientData.setComment(cursor.getString(5));
+					clientData.setIsCheck(cursor.getString(6));
+					cursor.close();
+					return clientData;
+				}
+			
+			if (cursor != null) {
+				cursor.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public static boolean deleteDetailPeopleInfo(SQLiteDatabase db,
+			String tableName, String id) {
+		try {
+			db.execSQL("DELETE FROM " + tableName + " WHERE " + Constants.ID
+					+ " = " + id);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public static void close(SQLiteDatabase db) {

@@ -107,6 +107,12 @@ public class Constants {
 	public static final String LOCATION = "location";
 	public static final String POEPLE_MAXIMUM = "peopleMaximum";
 	public static final String NEED_REFRESH = "refresh";
+	public static final String PARTYID = "partyid";
+	public static final String ID = "id";
+	public static final String NAME = "name";
+	public static final String PHONENUMBER = "phoneNumber";
+	public static final String COMMENT = "comment";
+	public static final String ISCHECK = "isCheck";
 
 	public static final String IS_SUPER_PRIMARY = "isSuperPrimary";
 	public static final String PEOPLE_TAG = "peopleTag";

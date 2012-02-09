@@ -26,7 +26,7 @@ import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 public class PreviewActivity extends Activity {
 	private Intent personIntent;
 	private List<MyPerson> list;
-	
+
 	public static List<MyPerson> preList = new ArrayList<MyPerson>();
 
 	private int count;
@@ -50,12 +50,12 @@ public class PreviewActivity extends Activity {
 		list = getIntent().getParcelableArrayListExtra("ab");
 		list.size();
 		userLayout = (LinearLayout) findViewById(R.id.userChange);
-		userTitle = (TextView)findViewById(R.id.userTitle);
+		userTitle = (TextView) findViewById(R.id.userTitle);
 		SharedPreferences mySharedPreferences = AirenaoUtills
-		.getMySharedPreferences(this);
+				.getMySharedPreferences(this);
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
-		null);
-		if(!"".equals(userName) && userName != null){
+				null);
+		if (!"".equals(userName) && userName != null) {
 			userTitle.setText(userName);
 		}
 		ListView listView = (ListView) findViewById(R.id.listviewId);
@@ -67,7 +67,7 @@ public class PreviewActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-			
+
 				preList = deleteSameEntity(list);
 				SendAirenaoActivity.activityFlag = true;
 				finish();
@@ -77,10 +77,10 @@ public class PreviewActivity extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		
-		list.clear();
-		super.onDestroy();}
 
+		list.clear();
+		super.onDestroy();
+	}
 
 	public List<MyPerson> deleteSameEntity(List<MyPerson> myPerson) {
 		HashSet hashset = new HashSet(myPerson);

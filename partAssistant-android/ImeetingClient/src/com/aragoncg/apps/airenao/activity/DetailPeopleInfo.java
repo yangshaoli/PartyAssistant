@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.DialogInterface.OnClickListener;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,16 +33,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
+import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class DetailPeopleInfo extends Activity {
 	private final static int INVATED_PEOPLE = 0;
 	private final static int SIGNED_PEOPLE = 1;
-	private final static int UNSIGNED_PEOPLE = 2;
-	private final static int UNRESPONSED_PEOPLE = 3;
+	private final static int UNSIGNED_PEOPLE = 3;
+	private final static int UNRESPONSED_PEOPLE = 2;
 	private final static int SUCCESS = 0;
 	private final static int FAIL = 1;
 	private final static int EXCEPTION = 2;
@@ -70,6 +73,7 @@ public class DetailPeopleInfo extends Activity {
 	private PendingIntent sentPI;
 	private Handler myHandler;
 	private ProgressDialog progressDialog;
+	private int joinOrUnjoin = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +113,75 @@ public class DetailPeopleInfo extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
+									if (joinOrUnjoin == 1) {
+										switch (peopleTag) {
+										case INVATED_PEOPLE:
 
+											break;
+										case SIGNED_PEOPLE:
+											break;
+										case UNSIGNED_PEOPLE:
+											if (insertDeletetDetailPeopleInfo(
+													DbHelper.REFUSED_TABLE_NAME,
+													DbHelper.APPLIED_TABLE_NAME,
+													backendID)) {
+												Toast.makeText(
+														DetailPeopleInfo.this,
+														"sucess",
+														Toast.LENGTH_SHORT)
+														.show();
+												peopleTag = SIGNED_PEOPLE;
+											}
+											break;
+										case UNRESPONSED_PEOPLE:
+											if (insertDeletetDetailPeopleInfo(
+													DbHelper.DONOTHING_TABLE_NAME,
+													DbHelper.APPLIED_TABLE_NAME,
+													backendID)) {
+												Toast.makeText(
+														DetailPeopleInfo.this,
+														"sucess",
+														Toast.LENGTH_SHORT)
+														.show();
+												peopleTag = SIGNED_PEOPLE;
+											}
+											break;
+										}
+									}
+									if (joinOrUnjoin == 2) {
+										switch (peopleTag) {
+										case INVATED_PEOPLE:
+											break;
+										case SIGNED_PEOPLE:
+											if (insertDeletetDetailPeopleInfo(
+													DbHelper.APPLIED_TABLE_NAME,
+													DbHelper.REFUSED_TABLE_NAME,
+													backendID)) {
+												Toast.makeText(
+														DetailPeopleInfo.this,
+														"sucess",
+														Toast.LENGTH_SHORT)
+														.show();
+												peopleTag = UNSIGNED_PEOPLE;
+											}
+											break;
+										case UNSIGNED_PEOPLE:
+											break;
+										case UNRESPONSED_PEOPLE:
+											if (insertDeletetDetailPeopleInfo(
+													DbHelper.DONOTHING_TABLE_NAME,
+													DbHelper.REFUSED_TABLE_NAME,
+													backendID)) {
+												Toast.makeText(
+														DetailPeopleInfo.this,
+														"sucess",
+														Toast.LENGTH_SHORT)
+														.show();
+												peopleTag = UNSIGNED_PEOPLE;
+											}
+											break;
+										}
+									}
 								}
 							}).create();
 					aDig.show();
@@ -151,7 +223,7 @@ public class DetailPeopleInfo extends Activity {
 	public void initWedgit() {
 		applayUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_APPLAY_URL;
 		name = (TextView) findViewById(R.id.txtName);
-		phoneNumber = (TextView)findViewById(R.id.txtNumberDPI);
+		phoneNumber = (TextView) findViewById(R.id.txtNumberDPI);
 		txtMessage = (TextView) findViewById(R.id.txtMessageDetail);
 		sms = (ImageButton) findViewById(R.id.btnSMSDetail);
 		call = (ImageButton) findViewById(R.id.btnCallDetail);
@@ -172,12 +244,12 @@ public class DetailPeopleInfo extends Activity {
 		if (peopleTag == SIGNED_PEOPLE) {
 			join.setVisibility(View.GONE);
 		}
-		if (peopleTag == UNSIGNED_PEOPLE) {
+		if (peopleTag == UNRESPONSED_PEOPLE) {
 			unJoin.setVisibility(View.GONE);
 			levMsg.setVisibility(View.GONE);
 			txtMessage.setVisibility(View.GONE);
 		}
-		if (peopleTag == UNRESPONSED_PEOPLE) {
+		if (peopleTag == UNSIGNED_PEOPLE) {
 			unJoin.setVisibility(View.GONE);
 		}
 
@@ -188,7 +260,7 @@ public class DetailPeopleInfo extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 					// 发送短信
 					try {
-						
+
 						Intent intent = new Intent(Intent.ACTION_SENDTO, Uri
 								.fromParts("sms", cValue, null));
 						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -218,6 +290,7 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					joinOrUnjoin = 1;
 					progressDialog = ProgressDialog.show(DetailPeopleInfo.this,
 							"", "报名中...", true, true);
 					// 参加
@@ -237,6 +310,7 @@ public class DetailPeopleInfo extends Activity {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
+					joinOrUnjoin = 2;
 					progressDialog = ProgressDialog.show(DetailPeopleInfo.this,
 							"", "取消报名中...", true, true);
 					// 不参加
@@ -294,19 +368,20 @@ public class DetailPeopleInfo extends Activity {
 		 * initThreadSaveMessage(); myHandler.post(threadSaveMessage);
 		 */
 		AlertDialog aDig = new AlertDialog.Builder(DetailPeopleInfo.this)
-				.setMessage(message)
-				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
+				.setMessage(message).setPositiveButton(R.string.btn_ok,
+						new OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (ok) {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								if (ok) {
 
-						} else {
-							// 还在本页
-						}
+								} else {
+									// 还在本页
+								}
 
-					}
-				}).create();
+							}
+						}).create();
 		aDig.show();
 
 	}
@@ -350,6 +425,37 @@ public class DetailPeopleInfo extends Activity {
 		}
 
 		super.onDestroy();
+	}
+
+	protected boolean insertDeletetDetailPeopleInfo(String sourceTable,
+			String targetTable, String id) {
+		ClientsData clientData = null;
+		SQLiteDatabase db = null;
+		boolean flag ;
+		try {
+			db = DbHelper.openOrCreateDatabase();
+			clientData = DbHelper.selectDetailPeopleInfo(db, sourceTable, id);
+			if (clientData != null) {
+				flag = false;
+				flag = DbHelper.insertDetailPeopleInfo(db, targetTable,
+						clientData);
+				if (flag) {
+					DbHelper.deleteDetailPeopleInfo(db, sourceTable, id);
+					if (db != null) {
+						db.close();
+					}
+					return true;
+				}
+			}
+			if (db != null) {
+				db.close();
+			}
+			return false;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }
