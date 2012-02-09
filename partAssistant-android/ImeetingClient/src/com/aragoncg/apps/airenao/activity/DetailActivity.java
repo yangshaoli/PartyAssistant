@@ -127,6 +127,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case PROGRESS_GONE: {
+					if (progressDialog != null) {
+						progressDialog.cancel();
+					}
 					break;
 				}
 				case SUCCESS:
