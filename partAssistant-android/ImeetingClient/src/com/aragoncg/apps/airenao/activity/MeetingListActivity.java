@@ -428,9 +428,11 @@ public class MeetingListActivity extends ListActivity implements
 			if (accessToken != null && accessSecret != null) {
 				String applyUrl = spf.getString(partyId, null);
 				if (applyUrl == null) {
-					throw new RuntimeException("获得报名链接错误");
+					applyUrl="";
+				}else{
+					applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
 				}
-				applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
+				
 				bundle.putString(WeiBoSplashActivity.EXTRA_WEIBO_CONTENT,
 						applyUrl);
 				bundle.putString(WeiBoSplashActivity.EXTRA_ACCESS_TOKEN,
