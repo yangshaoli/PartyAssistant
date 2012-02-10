@@ -67,11 +67,13 @@
 	<string name="login_register">注册</string>
 	<string name="register_label_top">用户注册</string>
 	<string name="register_lable_pass_tip">必填项，6~16位</string>
+	<string name="register_nickname">必填项</string>
 	<string name="pass_tip">密码不能为空</string>
 	<string name="pass_tip1">密码长度最低为6位</string>
 	<string name="pass_tip2">确认密码不能为空</string>
 	<string name="pass_tip3">两次输入的密码不一样，请重新输入</string>
 	<string name="user_name_check">用户名不能为空</string>
+	<string name="nickname_check">昵称不能为空</string>
 	<string name="alert_message">当您接受安全协议后，方可注册</string>
 	<string name="find_lable_message">输入手机号或邮箱来获取临时密码</string>
 	<string name="find_lable_tip">手机号或邮箱</string>

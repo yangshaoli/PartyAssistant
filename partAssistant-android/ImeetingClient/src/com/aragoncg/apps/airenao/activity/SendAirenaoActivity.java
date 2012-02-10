@@ -834,7 +834,12 @@ public class SendAirenaoActivity extends Activity {
 
 				SharedPreferences pre = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
-				nickname = pre.getString("warning_nickname", userName);
+				nickname = pre.getString("warning_nickname", "");
+				if("".equals(nickname)){
+					SharedPreferences mySharedPreferences = AirenaoUtills
+					.getMySharedPreferences(SendAirenaoActivity.this);
+					nickname = mySharedPreferences.getString(Constants.AIRENAO_NICKNAME, "nickname");
+				}
 				phone = pre.getString("warning_phone", "");
 				if ("".equals(phone) && !"".equals(edt)) {
 					phone = edt;

@@ -471,9 +471,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					.get(Constants.PEOPLE_NAME)));
 			holder.peopleNum.setText(String.valueOf(dataList.get(position).get(
 					Constants.PEOPLE_NUM)));
-			if (loated) {
+			//.if (loated) {
 				holder.progressBar.setVisibility(View.GONE);
-			}
+			//}
 			if (dataList.get(position).get("newCount") != null) {
 				if ("0".equals(dataList.get(position).get("newCount"))) {
 					holder.flagNew.setVisibility(View.INVISIBLE);

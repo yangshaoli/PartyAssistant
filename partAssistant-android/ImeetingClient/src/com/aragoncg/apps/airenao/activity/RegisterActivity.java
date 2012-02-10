@@ -18,6 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
@@ -39,16 +40,21 @@ import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class RegisterActivity extends Activity {
 	private String userNameReg;
+	private String nicknameReg;
 	private String pass1Reg;
 	private String pass2Reg;
 	private boolean checked = false;
 	private EditText pass1;
 	private EditText pass2;
+	private EditText nickname;
 	private EditText userName;
 	private Context myContext;
 	private Thread registerThread;
+	private Thread registerSecondThread;
 	private String registerUrl;
 	private String loginUrl;
+	private int uidInt;
+	private String uId;
 	private ProgressDialog myProgressDialog;
 	private Handler myHandler;
 	private int appFlag = -1;
@@ -87,6 +93,22 @@ public class RegisterActivity extends Activity {
 					AlertDialog aDig = new AlertDialog.Builder(
 							RegisterActivity.this).setMessage(message).create();
 					aDig.show();
+				case Constants.POST_MESSAGE_SUCCESS:
+					
+					nicknameReg = (String) msg.getData().get(
+							Constants.AIRENAO_NICKNAME);
+					System.out.println("nicknameReg" + nicknameReg);
+					SharedPreferences mySharedPreferences = AirenaoUtills
+					.getMySharedPreferences(myContext);
+					Editor editor = mySharedPreferences.edit();
+					editor.putString(Constants.AIRENAO_USER_NAME, userNameReg);
+					editor.putString(Constants.AIRENAO_PASSWORD, pass2Reg);
+					editor.putString(Constants.AIRENAO_USER_ID, uId);
+					editor.putString(Constants.AIRENAO_NICKNAME, nicknameReg);
+					editor.commit();
+					Toast.makeText(RegisterActivity.this, nicknameReg, Toast.LENGTH_SHORT).show();
+					break;
+					
 				case Constants.LOGIN_SUCCESS_CASE:
 					/*
 					 * 保存用户名和密码
@@ -95,15 +117,15 @@ public class RegisterActivity extends Activity {
 							Constants.AIRENAO_USER_NAME);
 					pass2Reg = (String) msg.getData().get(
 							Constants.AIRENAO_PASSWORD);
-					String uId = (String) msg.getData().get(
+					uId = (String) msg.getData().get(
 							Constants.AIRENAO_USER_ID);
-					SharedPreferences mySharedPreferences = AirenaoUtills
-							.getMySharedPreferences(myContext);
-					Editor editor = mySharedPreferences.edit();
-					editor.putString(Constants.AIRENAO_USER_NAME, userNameReg);
-					editor.putString(Constants.AIRENAO_PASSWORD, pass2Reg);
-					editor.putString(Constants.AIRENAO_USER_ID, uId);
-					editor.commit();
+					//uidInt = Integer.valueOf(uId);
+					if(!"".equals(nicknameReg)){
+						SecondThread();
+						registerSecondThread.start();
+					}
+					break;
+				
 				}
 				super.handleMessage(msg);
 			}
@@ -142,9 +164,142 @@ public class RegisterActivity extends Activity {
 					if ("ok".equals(status)) {
 						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
 						// 注册成功后，登陆
-						params.put("clientId", AndroidPushService.getClientId(myContext));
+						
+						jsonObject = jsonObject.getJSONObject("datasource");
+						String UserId = jsonObject.getString("uid");
+						Message message = new Message();
+						message.what = 2;
+						Bundle bundle = new Bundle();
+						bundle.putString(Constants.AIRENAO_USER_NAME,
+								userNameReg);
+						bundle.putString(Constants.AIRENAO_PASSWORD,
+								pass1Reg);
+						bundle.putString(Constants.AIRENAO_USER_ID, UserId);
+						message.setData(bundle);
+						myHandler.sendMessage(message);
+						
+//						params.put("clientId", AndroidPushService.getClientId(myContext));
+//						String loginResult = new HttpHelper().performPost(
+//								loginUrl, userNameReg, pass1Reg, null, params,
+//								RegisterActivity.this);
+//
+//						result = AirenaoUtills.linkResult(loginResult);
+//						jsonObject = new JSONObject(result)
+//								.getJSONObject("output");
+//						status = jsonObject.getString("status");
+//						description = jsonObject.getString("description");
+//
+//						if ("ok".equals(status)) {
+//							jsonObject = jsonObject.getJSONObject("datasource");
+//							String UserId = jsonObject.getString("uid");
+//							Message message = new Message();
+//							message.what = 2;
+//							Bundle bundle = new Bundle();
+//							bundle.putString(Constants.AIRENAO_USER_NAME,
+//									userNameReg);
+//							bundle.putString(Constants.AIRENAO_PASSWORD,
+//									pass1Reg);
+//							bundle.putString(Constants.AIRENAO_USER_ID, UserId);
+//							message.setData(bundle);
+//							myHandler.sendMessage(message);
+
+//							// 如果不是第一次启动
+//							if (appFlag == Constants.APP_USED_FLAG_O) {
+//
+//								SQLiteDatabase db = DbHelper
+//										.openOrCreateDatabase();
+//								tempActivity = DbHelper.select(db);
+//								listActivity = (ArrayList<Map<String, Object>>) DbHelper
+//										.selectActivitys(db);
+//								if (tempActivity != null) {
+//									Intent intent = new Intent(
+//											RegisterActivity.this,
+//											MeetingListActivity.class);
+//									intent.putExtra(Constants.TRANSFER_DATA,
+//											tempActivity);
+//									startActivity(intent);
+//
+//								} else {
+//
+//									if (listActivity.size() > 0) {
+//										Intent intent = new Intent(
+//												RegisterActivity.this,
+//												MeetingListActivity.class);
+//										startActivity(intent);
+//									} else {
+//										Intent intent = new Intent(
+//												RegisterActivity.this,
+//												MeetingListActivity.class);
+//										startActivity(intent);
+//									}
+//								}
+//							}
+//							// 如果第一启动就进入创建活动
+//							if (appFlag == Constants.APP_USED_FLAG_Z) {
+//								Intent intent = new Intent(
+//										RegisterActivity.this,
+//										MeetingListActivity.class);
+//								startActivity(intent);
+//							}
+
+						//	myProgressDialog.cancel();
+				//		}
+					} else {
+
+						Message message = new Message();
+						message.what = 1;
+						Bundle bundle = new Bundle();
+						bundle.putString(Constants.HENDLER_MESSAGE, description);
+						message.setData(bundle);
+						myHandler.sendMessage(message);
+						// registerThread.stop();
+						myProgressDialog.cancel();
+					}
+				} catch (JSONException e) {
+
+					e.printStackTrace();
+				}
+
+			}
+		};
+	}
+
+	
+	public void SecondThread() {
+		registerSecondThread = new Thread() {
+
+			@Override
+			public void run() {
+				String saveRegisterUrl =Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_SAVE_NICKNAME_RUL;
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("uid", uId);
+				params.put("nickname", nicknameReg);
+				
+				
+				// 后台注册返回的结果
+				String result = new HttpHelper().savePerformPost(saveRegisterUrl,params,
+						RegisterActivity.this);
+				result = AirenaoUtills.linkResult(result);
+
+				JSONObject jsonObject;
+				try {
+					jsonObject = new JSONObject(result)
+							.getJSONObject(Constants.OUT_PUT);
+					String status;
+					String description;
+					status = jsonObject.getString(Constants.STATUS);
+					description = jsonObject.getString(Constants.DESCRIPTION);
+					if ("ok".equals(status)) {
+						
+						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
+						// 注册成功后，登陆
+						Map<String, String> params1 = new HashMap<String, String>();
+						params1.put("username", userNameReg);
+						params1.put("password", pass1Reg);
+						params1.put("device_token", "");
+						params1.put("clientId", AndroidPushService.getClientId(myContext));
 						String loginResult = new HttpHelper().performPost(
-								loginUrl, userNameReg, pass1Reg, null, params,
+								loginUrl, userNameReg, pass2Reg, null, params1,
 								RegisterActivity.this);
 
 						result = AirenaoUtills.linkResult(loginResult);
@@ -152,18 +307,25 @@ public class RegisterActivity extends Activity {
 								.getJSONObject("output");
 						status = jsonObject.getString("status");
 						description = jsonObject.getString("description");
-
+						Log.e("status", status);
 						if ("ok".equals(status)) {
-							jsonObject = jsonObject.getJSONObject("datasource");
-							String UserId = jsonObject.getString("uid");
+						
+							JSONObject jsonObject1 = jsonObject.getJSONObject("datasource");
+//							String nickname = jsonObject1.getString("nickname");
+//							String remaining_sms_count = jsonObject1.getString("remaining_sms_coun");
+//							String email = jsonObject1.getString("email");
+//							String email_binding_status = jsonObject1.getString("email_binding_status");
+//							String phone = jsonObject1.getString("phone");
+//							String phone_binding_status = jsonObject1.getString("'phone_binding_status");
+//							Log.e("nickname", nickname);
 							Message message = new Message();
-							message.what = 2;
+							message.what = 3;
 							Bundle bundle = new Bundle();
-							bundle.putString(Constants.AIRENAO_USER_NAME,
-									userNameReg);
-							bundle.putString(Constants.AIRENAO_PASSWORD,
-									pass1Reg);
-							bundle.putString(Constants.AIRENAO_USER_ID, UserId);
+							bundle.putString(Constants.AIRENAO_NICKNAME,
+									nicknameReg);
+							bundle.putString(Constants.AIRENAO_USER_ID,
+									uId);
+						//	bundle.putString(Constants.AIRENAO_USER_ID, UserId);
 							message.setData(bundle);
 							myHandler.sendMessage(message);
 
@@ -207,7 +369,7 @@ public class RegisterActivity extends Activity {
 							}
 
 							myProgressDialog.cancel();
-						}
+						
 					} else {
 
 						Message message = new Message();
@@ -219,7 +381,7 @@ public class RegisterActivity extends Activity {
 						// registerThread.stop();
 						myProgressDialog.cancel();
 					}
-				} catch (JSONException e) {
+				}} catch (JSONException e) {
 
 					e.printStackTrace();
 				}
@@ -227,7 +389,7 @@ public class RegisterActivity extends Activity {
 			}
 		};
 	}
-
+	
 	/**
 	 * 
 	 * Method:getTheWedgit: TODO(获得所有的组件并添加事件)
@@ -244,6 +406,7 @@ public class RegisterActivity extends Activity {
 		CheckBox myCheckBox = (CheckBox) findViewById(R.id.CheckBox);
 		Button saveBtn = (Button) findViewById(R.id.appect);
 		Button exitBtn = (Button) findViewById(R.id.exit);
+		nickname = (EditText) findViewById(R.id.reg_nickname);
 
 		// 获得内容或添加事件
 		checked = myCheckBox.isChecked();
@@ -265,6 +428,25 @@ public class RegisterActivity extends Activity {
 
 			}
 		});
+		
+		// 校验昵称
+		nickname.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+
+				if (!nickname.hasFocus()) {
+					nicknameReg = nickname.getText().toString();
+					if ("".equals(nicknameReg)) {
+						Toast.makeText(RegisterActivity.this,
+								R.string.nickname_check, Toast.LENGTH_LONG)
+								.show();
+						return;
+					}
+				}
+
+			}
+		});
 
 		saveBtn.setOnClickListener(new OnClickListener() {
 
@@ -274,6 +456,13 @@ public class RegisterActivity extends Activity {
 				if (userNameReg == null || userNameReg.equals("")) {
 					Toast.makeText(RegisterActivity.this,
 							R.string.user_name_check, Toast.LENGTH_SHORT)
+							.show();
+					return;
+				}
+				nicknameReg = nickname.getText().toString();
+				if (nicknameReg == null || nicknameReg.equals("")) {
+					Toast.makeText(RegisterActivity.this,
+							R.string.nickname_check, Toast.LENGTH_SHORT)
 							.show();
 					return;
 				}
@@ -323,6 +512,7 @@ public class RegisterActivity extends Activity {
 				userName.setText("");
 				pass1.setText("");
 				pass2.setText("");
+				nickname.setText("");
 				checked = true;
 
 			}

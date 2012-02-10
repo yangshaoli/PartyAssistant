@@ -2,6 +2,8 @@ package com.aragoncg.apps.airenao.activity;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.appmanager.ActivityManager;
+import com.aragoncg.apps.airenao.constans.Constants;
+import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,11 +44,14 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 		nickname_editPreference.setOnPreferenceClickListener(this);
 		nickname_editPreference.setOnPreferenceChangeListener(this);
 		pre = PreferenceManager.getDefaultSharedPreferences(this);
+		SharedPreferences mySharedPreferences = AirenaoUtills
+		.getMySharedPreferences(PersoninfoSetActivity.this);
+		
 		number_editPreference.setSummary(pre
 				.getString("warning_phone", "phone"));
-		nickname_editPreference.setSummary(pre.getString("warning_nickname",
+		nickname_editPreference.setSummary(mySharedPreferences.getString(Constants.AIRENAO_NICKNAME,
 				"nickname"));
-		mail_editPreference.setSummary(pre.getString("warning_mail", "mail"));
+		mail_editPreference.setSummary(mySharedPreferences.getString("warning_mail", "mail"));
 	}
 
 	@Override

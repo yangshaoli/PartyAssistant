@@ -69,6 +69,7 @@ public class Constants {
 	public static final String AIRENAO_USER_NAME = "airenaoUserName";
 	public static final String AIRENAO_PASSWORD = "airenaoPassword";
 	public static final String AIRENAO_USER_ID = "uid";
+	public static final String AIRENAO_NICKNAME = "nickname";
 	/**
 	 * database path
 	 */
@@ -141,4 +142,5 @@ public class Constants {
 	public static final String SUB_DOMAIN_EDIT_URL = "/a/parties/editparty/";
 	public static final String SUB_DOMAIN_GET_PARTY_MSG_URL = "/a/parties/get_party_msg/";
 	public static final String SUB_DOMAIN_PARTY_RESEND_URL = "/a/parties/resendmsg/";
+	public static final String SUB_DOMAIN_SAVE_NICKNAME_RUL = "/a/accounts/save_nickname/";
 }
