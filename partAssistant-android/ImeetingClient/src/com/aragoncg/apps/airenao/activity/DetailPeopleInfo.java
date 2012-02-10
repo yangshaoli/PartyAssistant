@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -113,75 +114,7 @@ public class DetailPeopleInfo extends Activity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									if (joinOrUnjoin == 1) {
-										switch (peopleTag) {
-										case INVATED_PEOPLE:
-
-											break;
-										case SIGNED_PEOPLE:
-											break;
-										case UNSIGNED_PEOPLE:
-											if (insertDeletetDetailPeopleInfo(
-													DbHelper.REFUSED_TABLE_NAME,
-													DbHelper.APPLIED_TABLE_NAME,
-													backendID)) {
-												Toast.makeText(
-														DetailPeopleInfo.this,
-														"sucess",
-														Toast.LENGTH_SHORT)
-														.show();
-												peopleTag = SIGNED_PEOPLE;
-											}
-											break;
-										case UNRESPONSED_PEOPLE:
-											if (insertDeletetDetailPeopleInfo(
-													DbHelper.DONOTHING_TABLE_NAME,
-													DbHelper.APPLIED_TABLE_NAME,
-													backendID)) {
-												Toast.makeText(
-														DetailPeopleInfo.this,
-														"sucess",
-														Toast.LENGTH_SHORT)
-														.show();
-												peopleTag = SIGNED_PEOPLE;
-											}
-											break;
-										}
-									}
-									if (joinOrUnjoin == 2) {
-										switch (peopleTag) {
-										case INVATED_PEOPLE:
-											break;
-										case SIGNED_PEOPLE:
-											if (insertDeletetDetailPeopleInfo(
-													DbHelper.APPLIED_TABLE_NAME,
-													DbHelper.REFUSED_TABLE_NAME,
-													backendID)) {
-												Toast.makeText(
-														DetailPeopleInfo.this,
-														"sucess",
-														Toast.LENGTH_SHORT)
-														.show();
-												peopleTag = UNSIGNED_PEOPLE;
-											}
-											break;
-										case UNSIGNED_PEOPLE:
-											break;
-										case UNRESPONSED_PEOPLE:
-											if (insertDeletetDetailPeopleInfo(
-													DbHelper.DONOTHING_TABLE_NAME,
-													DbHelper.REFUSED_TABLE_NAME,
-													backendID)) {
-												Toast.makeText(
-														DetailPeopleInfo.this,
-														"sucess",
-														Toast.LENGTH_SHORT)
-														.show();
-												peopleTag = UNSIGNED_PEOPLE;
-											}
-											break;
-										}
-									}
+							
 								}
 							}).create();
 					aDig.show();
@@ -201,8 +134,10 @@ public class DetailPeopleInfo extends Activity {
 					aDigFail.show();
 					break;
 				case EXCEPTION:
+					unJoin.setVisibility(View.VISIBLE);
+					join.setVisibility(View.VISIBLE);
 					AlertDialog aDigError = new AlertDialog.Builder(
-							DetailPeopleInfo.this).setMessage("系统错误,请重试")
+							DetailPeopleInfo.this).setMessage("数据错误，请先更新数据")
 							.setPositiveButton("OK", new OnClickListener() {
 
 								@Override
@@ -239,6 +174,8 @@ public class DetailPeopleInfo extends Activity {
 		txtMessage.setText(message);
 
 		if (peopleTag == INVATED_PEOPLE) {
+			unJoin.setVisibility(View.GONE);
+			join.setVisibility(View.GONE);
 			levMsg.setVisibility(View.GONE);
 			txtMessage.setVisibility(View.GONE);
 		}
@@ -350,6 +287,92 @@ public class DetailPeopleInfo extends Activity {
 					progressDialog.cancel();
 					// message.what = APPLAY_RESULT;
 					if ("ok".equals(status)) {
+						
+						//改变数据库中的数据
+						if (joinOrUnjoin == 1) {//1是参加
+							switch (peopleTag) {
+							case INVATED_PEOPLE:
+								break;
+							case SIGNED_PEOPLE:
+								break;
+							case UNSIGNED_PEOPLE:
+								if (insertDeletetDetailPeopleInfo(
+										DbHelper.REFUSED_TABLE_NAME,
+										DbHelper.APPLIED_TABLE_NAME,
+										backendID)) {
+									String[] files = {"unsignup","signup"};
+									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
+									
+									Toast.makeText(
+											DetailPeopleInfo.this,
+											"sucess",
+											Toast.LENGTH_SHORT)
+											.show();
+									
+									peopleTag = SIGNED_PEOPLE;
+								}
+								break;
+							case UNRESPONSED_PEOPLE:
+								if (insertDeletetDetailPeopleInfo(
+										DbHelper.DONOTHING_TABLE_NAME,
+										DbHelper.APPLIED_TABLE_NAME,
+										backendID)) {
+									String[] files = {"unjoin","signup"};
+									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
+									Toast.makeText(
+											DetailPeopleInfo.this,
+											"sucess",
+											Toast.LENGTH_SHORT)
+											.show();
+									peopleTag = SIGNED_PEOPLE;
+								}
+								break;
+							}
+						}
+						if (joinOrUnjoin == 2) {//2是不参加
+							switch (peopleTag) {
+							case INVATED_PEOPLE:
+								break;
+							case SIGNED_PEOPLE:
+								if (insertDeletetDetailPeopleInfo(
+										DbHelper.APPLIED_TABLE_NAME,
+										DbHelper.REFUSED_TABLE_NAME,
+										backendID)) {
+									String[] files = {"signup","unsignup"};
+									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
+									Toast.makeText(
+											DetailPeopleInfo.this,
+											"sucess",
+											Toast.LENGTH_SHORT)
+											.show();
+									peopleTag = UNSIGNED_PEOPLE;
+								}
+								break;
+							case UNSIGNED_PEOPLE:
+								break;
+							case UNRESPONSED_PEOPLE:
+								if (insertDeletetDetailPeopleInfo(
+										DbHelper.DONOTHING_TABLE_NAME,
+										DbHelper.REFUSED_TABLE_NAME,
+										backendID)) {
+									String[] files = {"unjoin","unsignup"};
+									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
+									Toast.makeText(
+											DetailPeopleInfo.this,
+											"sucess",
+											Toast.LENGTH_SHORT)
+											.show();
+									peopleTag = UNSIGNED_PEOPLE;
+								}
+								break;
+							}
+						}
+						
+						
+						
+						
+						
+						
 						myHandler.sendEmptyMessage(SUCCESS);
 					} else {
 						myHandler.sendEmptyMessage(FAIL);
@@ -371,20 +394,19 @@ public class DetailPeopleInfo extends Activity {
 		 * initThreadSaveMessage(); myHandler.post(threadSaveMessage);
 		 */
 		AlertDialog aDig = new AlertDialog.Builder(DetailPeopleInfo.this)
-				.setMessage(message).setPositiveButton(R.string.btn_ok,
-						new OnClickListener() {
+				.setMessage(message)
+				.setPositiveButton(R.string.btn_ok, new OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								if (ok) {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (ok) {
 
-								} else {
-									// 还在本页
-								}
+						} else {
+							// 还在本页
+						}
 
-							}
-						}).create();
+					}
+				}).create();
 		aDig.show();
 
 	}

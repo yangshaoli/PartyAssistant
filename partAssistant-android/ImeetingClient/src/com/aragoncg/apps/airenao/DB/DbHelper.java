@@ -3,6 +3,7 @@ package com.aragoncg.apps.airenao.DB;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,11 +56,11 @@ public class DbHelper {
 	public static final String deleteActivitySql = "delete from "
 			+ ACTIVITY_TABLE_NAME;
 	public static final String deleteTableAppliedSql = " delete from  "
-			+ "appliedClients";
+			+ APPLIED_TABLE_NAME;
 	public static final String deleteTableDoNothingSql = " delete from "
-			+ "doNothingClients";
+			+ DONOTHING_TABLE_NAME;
 	public static final String deleteTableRefusedSql = " delete from "
-			+ "refusedClients";
+			+ REFUSED_TABLE_NAME;
 
 	public static final String createSql = "Create table " + LAST_TABLE_NAME
 			+ "(" + FIELD_ID + " integer primary key autoincrement,"
@@ -130,6 +131,7 @@ public class DbHelper {
 
 	public static void createTables(SQLiteDatabase db, String sql) {
 		db.execSQL(sql);
+		
 	}
 
 	public static long insert(SQLiteDatabase db, AirenaoActivity airenao) {
@@ -516,7 +518,8 @@ public class DbHelper {
 	}
 	
 	/**
-	 * 更新某一个表种的某一条数据
+	 * 更新通过接口
+	 * cuiky
 	 */
 	public static String upData(String tableName, ContentValues contentValues, String whereArg){
 		String msg="";
@@ -537,18 +540,19 @@ public class DbHelper {
 		return msg;
 	}
 	/**
-	 * 更新一张表中某一字段的数据
-	 * @param tableName
-	 * @param contentValues
+	 * 更新通过数据库
+	 * cuiky
 	 * @return
 	 */
-	public static String updataOneTable(String tableName, ContentValues contentValues){
+	public static String updataBySql(String tableName,String[] Columns, String whereArg){
 		String msg="";
-		
+		//update myActivitys set signup = signup+1 , unsignup = unsignup+1 where _id=22
+
+		String sql = "update " + tableName + " set "+Columns[0]+" = "+Columns[0]+"-1,"+Columns[1]+"="+Columns[1]+"+1" + " where "+DbHelper.PARTY_ID+"="+whereArg;
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		if(db!=null){
 			try{
-				db.update(tableName, contentValues, null, null);
+				db.execSQL(sql);
 			}catch(Exception e){
 				msg="数据库异常";
 			}finally{

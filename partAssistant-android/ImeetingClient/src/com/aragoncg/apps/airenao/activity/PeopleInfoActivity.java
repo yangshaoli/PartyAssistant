@@ -163,7 +163,15 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			}
 		});
 	}
+	
+	
+	
 
+	@Override
+	protected void onRestart() {
+		getDataFromServer();
+		super.onRestart();
+	}
 
 	public void getData(Intent intent) {
 
@@ -391,7 +399,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			
 			ContentValues contentValues = new ContentValues();
 			contentValues.put("isCheck", "true");
-			DbHelper.updataOneTable(tableName, contentValues);
+			DbHelper.upData(tableName, contentValues,null);
 			
 			if(db!=null&&db.isOpen()){
 				db.close();
