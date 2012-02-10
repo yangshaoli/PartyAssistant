@@ -338,9 +338,11 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						if (accessToken != null && accessSecret != null) {
 							String applyUrl = spf.getString(partyId, null);
 							if (applyUrl == null) {
-								throw new RuntimeException("获得报名链接错误");
+								applyUrl="";
+							}else{
+								applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
 							}
-							applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
+							
 							bundle.putString(
 									WeiBoSplashActivity.EXTRA_WEIBO_CONTENT,
 									applyUrl);
@@ -788,7 +790,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId);
 		asynTask.execute(getClientsCountUrl);
 
-		Map<String, Object> map;
+		/*Map<String, Object> map;
 		map = new HashMap<String, Object>();
 		map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
 		map.put(Constants.PEOPLE_NUM, "");
@@ -806,7 +808,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		map.put(Constants.PEOPLE_NUM, "");
 		list.add(map);
 		dataList = list;
-		adapter.notifyDataSetChanged();
+		adapter.notifyDataSetChanged();*/
 		super.onRestart();
 	}
 

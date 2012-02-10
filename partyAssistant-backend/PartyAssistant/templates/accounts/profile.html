@@ -270,6 +270,9 @@ function validate_phone_bingding(isbind){
    
     }
     $(document).ready(function(){
+    
+document.getElementsByClassName('menu')[0].children[1].className = '';
+document.getElementsByClassName('menu')[1].children[0].className = 'active';
         $("#tips").delay(3000).fadeOut();
         $("#id_email, #id_phone").bind('click', function(){
            if($(this).val()=='[未绑定]'){

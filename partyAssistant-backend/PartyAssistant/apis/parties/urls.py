@@ -16,5 +16,6 @@ urlpatterns = patterns('apis.parties.views',
     url(r'^get_party_client_main_count/(?P<pid>\d+)/$', 'GetPartyClientMainCount', name = 'GetPartyClientMainCount'),
     url(r'^get_party_client_seperated_list/(?P<pid>\d+)/(?P<type>\w+)/$', 'GetPartyClientSeperatedList', name = 'GetPartyClientSeperatedList'),
     url(r'^change_client_status/$', 'ChangeClientStatus', name = 'ChangeClientStatus'),
+    url(r'^resendmsg/$', 'resendMsg', name = 'resendMsg'),
     url(r'^an_resendmsg/$', 'fullResendMsg', name = 'fullResendMsg'),
 )

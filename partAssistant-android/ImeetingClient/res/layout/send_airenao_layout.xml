@@ -19,17 +19,6 @@
             android:paddingTop="0dip" >
 
             <include layout="@layout/user_layout" />
-
-
-
-
-			"
-            
-
-            
-
-            
-
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="37sp"
@@ -93,14 +82,6 @@
                     android:background="@drawable/bg_btn_add"
                     android:paddingTop="10dp" />
 
-
-
-
-
-
-				n
-
-            
             
             </RelativeLayout>
 
@@ -123,15 +104,34 @@
                     android:text="@string/inputTip"
                     android:textColor="@color/black"
                     android:textSize="11dip" />
-
-                <Button
+            </LinearLayout>
+			<RelativeLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			android:layout_marginLeft="20dip"
+			android:layout_marginRight="20dip">
+			
+				<ImageButton
+                    android:id="@+id/btnAddTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                   	android:layout_alignParentLeft="true"
+                    android:background="@drawable/bg_btn_time" />
+                <ImageButton
+                    android:id="@+id/btnAddDestination"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/bg_btn_destination" />    
+				<ImageButton
                     android:id="@+id/btnAddAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="@string/join_me" />
-            </LinearLayout>
-
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/bg_btn_join" />
+			</RelativeLayout>
+			
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"

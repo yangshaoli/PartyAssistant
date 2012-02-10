@@ -489,8 +489,11 @@
 	
     // Launch execution in new thread
 	taskInProgress = YES;
-    [NSThread detachNewThreadSelector:@selector(launchExecution) toTarget:self withObject:nil];
-	
+    
+    //[NSThread detachNewThreadSelector:@selector(launchExecution) toTarget:self withObject:nil];
+    [self performSelectorOnMainThread:@selector(launchExecution) withObject:nil waitUntilDone:NO];//针对无法正常登出临时修改wxz 
+    
+    
 	// Show HUD view
 	[self show:animated];
 }

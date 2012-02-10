@@ -118,7 +118,7 @@
     transition.subtype = kCATransitionFromTop;
     [self.navigationController.view.layer addAnimation:transition forKey:nil];
     
-    BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectMailBindingStatus];
+    //BindingStatus verifyPageStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] detectMailBindingStatus];
     MailValidateViewController *verifyPage = [[MailValidateViewController alloc] initWithNibName:nil bundle:nil];
     //verifyPage.pageStatus = verifyPageStatus;
     verifyPage.pageStatus = StatusVerifyBinding;

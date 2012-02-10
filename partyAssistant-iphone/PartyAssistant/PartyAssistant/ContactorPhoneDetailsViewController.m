@@ -259,10 +259,6 @@
 //            statusAction = @"apply";
 //        }
 //    }
-    
-    
-    
-    
     NSError *error = [self.quest error];
     if (!error) {
         //[activity removeFromSuperview];
@@ -303,6 +299,7 @@
                // }
             } else {
                 btn.enabled = YES;
+                [self showAlertRequestFailed:description];
             }
         }else if([self.quest responseStatusCode] == 404){
             [self showAlertRequestFailed:REQUEST_ERROR_404];
@@ -348,7 +345,6 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    NSString *cvalueString=[clientDict objectForKey:@"cValue"];
     if([self.partyObj.type isEqualToString:@"email"]){
         return 1;
     }

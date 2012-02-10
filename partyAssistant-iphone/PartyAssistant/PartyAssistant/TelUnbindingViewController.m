@@ -109,7 +109,7 @@
 
 - (void)jumpToVerify {
     TelValidateViewController *verifyPage = [[TelValidateViewController alloc] initWithNibName:nil bundle:nil];
-    BindingStatus m_pageStatus = StatusVerifyUnbinding;
+    //BindingStatus m_pageStatus = StatusVerifyUnbinding;
     //verifyPage.pageStatus = m_pageStatus;
     verifyPage.pageStatus = StatusVerifyUnbinding;
     verifyPage.hidesBottomBarWhenPushed = YES;
