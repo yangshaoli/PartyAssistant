@@ -641,3 +641,23 @@
             "id":Integer,
             }
 
+12 saveNickName
+    url:"/a/accounts/save_nickname/"
+    method:"POST",
+    input:{
+        "uid":Int,
+        "nickname":"String",
+        },
+    output:{
+        "status":"ok",
+        "description":"ok",
+        "datasource":{
+                        'nickname':nickName,
+                	'remaining_sms_count':Integer,
+                	'email':email,
+                	'email_binding_status':'unbind'/'bind'/'waitingbind',
+                	'phone':phone,
+                	'phone_binding_status':'unbind'/'bind'/'waitingbind',
+                        }
+        }
+

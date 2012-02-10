@@ -335,6 +335,7 @@
             }
             [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:UpdateRemainCountFailed object:nil]];
         } else {
+           
             [self showAlertRequestFailed:description];	
         }
     } else if ([request responseStatusCode] == 404){
@@ -355,6 +356,8 @@
 	NSError *error = [request error];
 	[self dismissWaiting];
 	[self showAlertRequestFailed: error.localizedDescription];
+   
+    
 }
 
 #pragma mark -
