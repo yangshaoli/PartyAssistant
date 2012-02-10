@@ -1,6 +1,7 @@
 package com.aragoncg.apps.airenao.activity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,16 +58,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CursorAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
@@ -97,7 +101,10 @@ public class SendAirenaoActivity extends Activity {
 	private TextView txtSug;
 	private Button btnOk;
 	private Button btnCancle;
-	private Button btnJoin;
+	private ImageButton btnJoin;
+	private ImageButton btnSetTime;
+	private ImageButton btnSetDestination;
+	
 	private ImageButton btnSendReciever;
 	private EditText txtSendLableContent;
 	private boolean ckSendLableWithLink = true;
@@ -112,6 +119,7 @@ public class SendAirenaoActivity extends Activity {
 	private static final int MENU_SEND_WAY = 1;
 	private boolean sendSMS = true;
 	private boolean isShow = false;
+	private boolean firstSetTime = true;
 	public static boolean fromPeopleInfo;
 	ArrayList<MyPerson> allList;
 	private String theContent;
@@ -144,6 +152,12 @@ public class SendAirenaoActivity extends Activity {
 	private ArrayList<String> phoneNumbers = new ArrayList<String>();
 	private ProgressDialog progerssDialog;
 	public static boolean createNew = false;
+	
+	private int mYear;
+	private int mMonth;
+	private int mDay;
+	private int mHour;
+	private int mMinute;
 
 	// public ArrayList<MyPerson> allList = new ArrayList<MyPerson>();
 	@Override
@@ -157,6 +171,7 @@ public class SendAirenaoActivity extends Activity {
 		ActivityManager.getInstance().addActivity(this);
 
 		init();
+		getCurrentTime();
 		initHandler();
 		getContacts();
 		getItentData();
@@ -787,11 +802,13 @@ public class SendAirenaoActivity extends Activity {
 		userTitle = (TextView) findViewById(R.id.userTitle);
 		userTitle.setText(userName);
 		userLayout = (LinearLayout) findViewById(R.id.userChange);
-		btnJoin = (Button) findViewById(R.id.btnAddAlarm);
+		btnJoin = (ImageButton) findViewById(R.id.btnAddAlarm);
 		stringLink = getString(R.string.sendLableLink);
 		btnSendReciever = (ImageButton) findViewById(R.id.btnSendReciever);
 		btnSendLable = (Button) findViewById(R.id.btnSend);
 		txtSendLableContent = (EditText) findViewById(R.id.txtSendLable);
+		btnSetTime = (ImageButton) findViewById(R.id.btnAddTime);
+		btnSetDestination = (ImageButton) findViewById(R.id.btnAddDestination);
 
 		peopleNumbers = (MyMultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
 		ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(
@@ -946,6 +963,15 @@ public class SendAirenaoActivity extends Activity {
 
 			}
 		});
+		
+		btnSetTime.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showSetTimeDialog(firstSetTime);
+			}
+		});
+		
 		// 发送
 		btnSendLable.setOnClickListener(new View.OnClickListener() {
 
@@ -1616,6 +1642,129 @@ public class SendAirenaoActivity extends Activity {
 
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	/**
+	 * 
+	 * Method:showSetTimeDialog: TODO(show set time dialog)
+	 * 
+	 * @author cuikuangye void
+	 * @Date 2011 2011-11-3 pm 12:38:20
+	 * @throws
+	 * 
+	 */
+	public void showSetTimeDialog(boolean startTimeOrNot) {
+		LinearLayout setTimeDialogLayout = (LinearLayout) this
+				.getLayoutInflater().inflate(R.layout.show_time_picker, null);
+		final AlertDialog setTimeDialog = new AlertDialog.Builder(
+				SendAirenaoActivity.this).setCancelable(true)
+				.setTitle(R.string.set_time_title)
+				.setIcon(R.drawable.time_clock).setView(setTimeDialogLayout)
+				.create();
+		addSetTimeBtnListener(setTimeDialogLayout, setTimeDialog, firstSetTime);
+		setTimeDialog.show();
+
+	}
+
+	/**
+	 * 
+	 * Method:addSetTimeBtnListener TODO(add set time button listener)
+	 * 
+	 * @author cuikuangye
+	 * @param setTimeDialogLayout
+	 *            void
+	 * @Date 2011 2011-11-3 pm 5:06:43
+	 * @throws
+	 * 
+	 */
+	public void addSetTimeBtnListener(LinearLayout setTimeDialogLayout,
+			final AlertDialog setTimeDialog, final boolean startTimeOrNot) {
+		final Button btnOk = (Button) setTimeDialogLayout.findViewById(R.id.ok);
+		btnOk.setText(getString(R.string.btn_ok));
+		DatePicker datePicker = (DatePicker) setTimeDialogLayout
+				.findViewById(R.id.datePicker);
+		TimePicker timePicker = (TimePicker) setTimeDialogLayout
+				.findViewById(R.id.timePicker);
+		timePicker.setIs24HourView(true);
+		timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
+
+			public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+
+				mHour = hourOfDay;
+				mMinute = minute;
+				updateDisplay(false);
+			}
+		});
+		datePicker.init(mYear, mMonth, mDay,
+				new DatePicker.OnDateChangedListener() {
+
+					@Override
+					public void onDateChanged(DatePicker view, int year,
+							int monthOfYear, int dayOfMonth) {
+						mYear = year;
+						mMonth = monthOfYear;
+						mDay = dayOfMonth;
+						updateDisplay(false);
+					}
+				});
+		btnOk.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				updateDisplay(false);
+				setTimeDialog.dismiss();
+
+			}
+		});
+
+	}
+	
+	/**
+	 * 
+	 * Method:updateDisplay TODO(更新时间)
+	 */
+	private void updateDisplay(boolean startTimeOrNot) {
+		StringBuilder time = new StringBuilder()
+				// Month is 0 based so add 1
+				.append(mYear).append("-").append(mMonth + 1).append("-")
+				.append(pad(mDay)).append(" ").append(pad(mHour)).append(":")
+				.append(pad(mMinute)).append("");
+		if (startTimeOrNot == true) {
+			
+
+		} else {
+			
+			smsContent = txtSendLableContent.getText().toString();
+			smsContent = time+","+smsContent;
+			txtSendLableContent.setText(smsContent);
+			firstSetTime = false;
+		}
+
+	}
+	
+	private static String pad(int c) {
+		if (c >= 10)
+			return String.valueOf(c);
+		else
+			return "0" + String.valueOf(c);
+	}
+
+
+	/**
+	 * 
+	 * Method:getCurrentTime TODO(获得系统当前的时间)
+	 * 
+	 * @Date 2011 2011-11-3 pm 5:11:51
+	 * @throws
+	 * 
+	 */
+	public void getCurrentTime() {
+		final Calendar c = Calendar.getInstance();
+		mYear = c.get(Calendar.YEAR);
+		mMonth = c.get(Calendar.MONTH);
+		mDay = c.get(Calendar.DAY_OF_MONTH);
+		mHour = c.get(Calendar.HOUR_OF_DAY);
+		mMinute = c.get(Calendar.MINUTE);
+		updateDisplay(firstSetTime);
 	}
 
 }
