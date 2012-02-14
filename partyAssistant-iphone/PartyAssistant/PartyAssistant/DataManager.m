@@ -16,6 +16,7 @@
 #import "HTTPRequestErrorMSG.h"
 #import "NotificationSettings.h"
 #import "UserInfoBindingStatusService.h"
+#import "UserInfoBindingStatusService.h"
 
 #define INVALID_NETWORK @"无法连接网络，请检查网络状态！"
 #define SERVER_CONNECTION_ERROR @"与服务器连接异常！请稍后重试！"
@@ -318,9 +319,12 @@ static DataManager *sharedDataManager = nil;
 }
 
 - (BOOL)checkIfUserNameSaved {
-    UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
-    UserObject *userData = [userObjectService getUserObject];
-    if ([userData.nickName isEqualToString:@""] || !userData.nickName) {
+    NSString *bindedNickName = nil;
+    bindedNickName = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
+
+    //UserObjectService *userObjectService = [UserObjectService sharedUserObjectService];
+    //UserObject *userData = [userObjectService getUserObject];
+    if ([bindedNickName isEqualToString:@""] || !bindedNickName) {
         return NO;
     }
     return YES;

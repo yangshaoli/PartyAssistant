@@ -25,12 +25,14 @@
 #import "URLSettings.h"
 #import "NotificationSettings.h"
 #import "ChangePasswordRandomLoginTableVC.h"
+#import "NameBindingViewController.h"
+#import "PartyAssistantAppDelegate.h"
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3
 #define BOOLStringOutput(target) target ? @"YES" : @"NO"
+#define MyApp (PartyAssistantAppDelegate *)[[UIApplication sharedApplication] delegate]
 @interface PartyLoginViewController()
-
 - (void)cleanKeyBoard;
 - (void)showAlertWithMessage:(NSString *)message  buttonTitle:(NSString *)buttonTitle 
                          tag:(int)tagNum;
@@ -368,7 +370,7 @@
     [creat release];
     
      //add suggest user input name page here?
-//    [self checkIfUserNameSaved];
+    [self checkIfUserNameSaved];
     
     
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
@@ -452,6 +454,12 @@
         return;
     }
     //2.show viewController
+    NameBindingViewController *bindNameVC = [[NameBindingViewController alloc] initWithNibName:nil bundle:nil];
+    bindNameVC.modalView = YES;
+    if (appTab) {
+        [[MyApp nav] presentModalViewController:bindNameVC animated:YES];
+        [bindNameVC release];
+    }
 //    PartyUserNameInputViewController *vc = [[PartyUserNameInputViewController alloc] initWithNibName:nil bundle:nil];
 //    vc.delegate = self;
 //    [self presentModalViewController:vc animated:YES];

@@ -18,6 +18,9 @@
 //bind extern
 #import "UIVIewControllerExtern+Binding.h"
 
+#import "PartyAssistantAppDelegate.h"
+#define MyApp (PartyAssistantAppDelegate *)[[UIApplication sharedApplication] delegate]
+
 @interface NameBindingViewController ()
 
 - (void)beginInfoUpdate;
@@ -34,6 +37,7 @@
 @synthesize nickNameInputTextField = _nickNameInputTextField;
 //upload
 @synthesize uploadNameCell = _uploadNameCell;
+@synthesize modalView;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -107,6 +111,13 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == 1) {
+        if (self.isModalView) {
+            NSString *nickname = self.nickNameInputTextField.text;
+            if ([nickname isEqualToString:@""] || nickname == nil) {
+                [self showAlertWithTitle:@"警告" Message:@"用户姓名不能为空，请输入有效的用户姓名！"];
+                return;
+            }
+        }
         [self beginInfoUpdate];
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -153,7 +164,11 @@
         if ([status isEqualToString:@"ok"]) {
             [self saveProfileDataFromResult:result];
 //            self.IDNameTextField.text = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedNickname];
-            [self.navigationController popViewControllerAnimated:YES];
+            if (self.isModalView) {
+                [[MyApp nav] dismissModalViewControllerAnimated:YES];
+            } else {
+                [self.navigationController popViewControllerAnimated:YES];
+            }
         } else {
             [self showBindOperationFailed:description];	
         }
@@ -181,7 +196,11 @@
 #pragma mark alert delegate
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 11112) {
-        [self.navigationController popViewControllerAnimated:YES];
+        if (self.isModalView) {
+            [[MyApp nav] dismissModalViewControllerAnimated:YES];
+        } else {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
     }
 }
 @end

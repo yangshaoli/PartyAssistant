@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface NameBindingViewController : UIViewController <UITableViewDelegate, UITableViewDataSource> {
-    
+    BOOL modalView;
 }
 
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
@@ -21,4 +21,6 @@
 @property (nonatomic, strong) IBOutlet UITextField *nickNameInputTextField;
 //upload
 @property (nonatomic, strong) IBOutlet UITableViewCell *uploadNameCell;
+
+@property (nonatomic, getter = isModalView) BOOL modalView;
 @end
