@@ -205,7 +205,7 @@
         }
         
         [self showWaiting];
-        NSURL *url = [NSURL URLWithString:REQUEST_INVALID_NETWORK];
+        NSURL *url = [NSURL URLWithString:CHANGE_PASSWORD_RANDOM_LOGIN];
         //        if (self.quest) {
         //            [self.quest clearDelegatesAndCancel];
         //        }

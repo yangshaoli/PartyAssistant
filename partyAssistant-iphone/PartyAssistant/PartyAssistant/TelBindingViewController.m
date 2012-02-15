@@ -176,6 +176,7 @@
     NSString *status = [result objectForKey:@"status"];
 	NSString *description = [result objectForKey:@"description"];
     if ([request responseStatusCode] == 200) {
+        NSLog(@"%@",status);
         if ([status isEqualToString:@"ok"]) {
             BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
             userStatus.bindingTel = self.inputTelTextField.text;
@@ -186,14 +187,39 @@
             av.tag = 11001;
             [av show];
             
+        } else if ([status isEqualToString:@"error_has_binded_by_self"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self.navigationController popViewControllerAnimated:YES];
         } else if ([status isEqualToString:@"error_has_binded"]) {
             [self saveProfileDataFromResult:result];
+            
+            // handle if binded tel equals to tel number in inputTelTextField
+            // if so, pop to settings view directly with no alert.
+            BindingStatus telBindStatus = [[UserInfoBindingStatusService 
+                                                sharedUserInfoBindingStatusService] telBindingStatus];
+            if (telBindStatus == StatusBinded) {
+                BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+                NSString *bindedTel = userStatus.bindedTel;
+                
+                if (bindedTel && [bindedTel length] > 0 && self.inputTelTextField.text) {
+                    if ([bindedTel isEqualToString:self.inputTelTextField.text]) {
+                        [self.navigationController popViewControllerAnimated:YES];
+                        return;
+                    }
+                }
+            }
+            
             
             [self showNormalErrorInfo:description];
         } else if ([status isEqualToString:@"error_different_binded"]) {
             [self saveProfileDataFromResult:result];
             
             [self showBindOperationFailed:description];
+        } else if ([status isEqualToString:@"error_has_binded_by_other"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showNormalErrorInfo:description];
         } else {
             [self saveProfileDataFromResult:result];
             

@@ -10,6 +10,36 @@
 #import "UserInfoBindingStatusService.h"
 
 @implementation UIViewController (Binding) 
+- (BOOL)isExceptionOperationHappenOnTel :(NSDictionary *)result {
+    NSDictionary *dataSource = [result objectForKey:@"datasource"];
+    NSDictionary *bindInfos = [dataSource objectForKey:@"latest_status"];
+    
+    if (!bindInfos) {
+        bindInfos = dataSource;
+        if (!dataSource) {
+            return NO;
+        }
+    }
+    
+    BindingStatusObject *userObject = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+    
+    NSString *telStatus = [bindInfos objectForKey:@"phone_binding_status"];
+        
+    if (telStatus) {
+        BindingStatus telCurrentStatus = [self translateToLocalStatusFromString:telStatus];
+        
+        BindingStatus telOldStatus = [userObject telBindingStatus];
+        
+        if (telCurrentStatus == StatusBinding && telOldStatus == StatusBinded) {
+            return YES;
+        }
+        
+        if (telCurrentStatus == StatusNotBind && telOldStatus == StatusBinded) {
+            return YES;
+        }
+    }
+    return NO;
+}
 
 - (void)saveProfileDataFromResult :(NSDictionary *)result {
     NSDictionary *dataSource = [result objectForKey:@"datasource"];

@@ -829,9 +829,9 @@
 				75908E9C14BEC84F001CEFD8 /* BindingListViewController.h */,
 				7574BE9D14B2D0E3007651EE /* BindingListViewController.m */,
 				7574BE9E14B2D0E3007651EE /* BindingListViewController.xib */,
+				7574BEA114B2D716007651EE /* TelBinding */,
 				7574BEA314B2D72F007651EE /* NameBinding */,
 				7574BEA214B2D724007651EE /* MailBinding */,
-				7574BEA114B2D716007651EE /* TelBinding */,
 			);
 			name = Binding;
 			sourceTree = "<group>";

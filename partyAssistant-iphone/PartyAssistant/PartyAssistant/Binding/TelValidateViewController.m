@@ -209,7 +209,8 @@
                 if ([status isEqualToString:@"error_has_binded"]) {
                     [self saveProfileDataFromResult:result];
                     
-                    [self showBindOperationFailed:description];
+                    [self closePage];
+                    //[self showBindOperationFailed:description];
                 } else if ([status isEqualToString:@"error_different_binded"]) {
                     [self saveProfileDataFromResult:result];
                     
@@ -305,20 +306,35 @@
     NSLog(@"%@",result);
     
     if ([request responseStatusCode] == 200) {
+        if (StatusVerifyUnbinding) {
+            if ([self isExceptionOperationHappenOnTel:result]) {
+                [self showBindOperationFailed:@"解除绑定失败，请重新解除绑定"];
+                return;
+            }
+        }
+        
         if ([status isEqualToString:@"ok"]) {
             [self saveProfileDataFromResult:result];
             
             UIAlertView *av=[[UIAlertView alloc] initWithTitle:@"提示" message:@"验证成功！" delegate:self cancelButtonTitle:nil otherButtonTitles:@"确定",nil];
             av.tag = 11113;
             [av show];
+        } else if ([status isEqualToString:@"error_has_binded_by_self"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self closePage];
         } else if ([status isEqualToString:@"error_has_binded_by_other"]) {
             [self saveProfileDataFromResult:result];
             
-            [self showNormalErrorInfo:description];
+            [self showBindOperationFailed:description];
         } else if ([status isEqualToString:@"error_invalid_verifier"]) {
             [self saveProfileDataFromResult:result];
             
             [self showNormalErrorInfo:description];
+        } else if ([status isEqualToString:@"error_different_unbinded"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self showBindOperationFailed:description];
         } else {
             [self saveProfileDataFromResult:result];
             

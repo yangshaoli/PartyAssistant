@@ -10,6 +10,8 @@
 #import "UserInfoBindingStatusService.h"
 @interface UIViewController (Binding)
 
+- (BOOL)isExceptionOperationHappenOnTel :(NSDictionary *)result;
+
 - (void)saveProfileDataFromResult :(NSDictionary *)result;
 
 - (BOOL)validateEmailCheck : (NSString *)email;

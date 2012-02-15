@@ -154,7 +154,7 @@ static DataManager *sharedDataManager = nil;
         //show error info
         [pool release];
         //return NetWorkConnectionCheckDeny;
-        return SERVER_CONNECTION_ERROR;
+        return [error localizedDescription];
     }
     
     return SERVER_CONNECTION_ERROR;
@@ -229,7 +229,7 @@ static DataManager *sharedDataManager = nil;
         return SERVER_CONNECTION_ERROR;
     } else {
         [pool release];
-        return SERVER_CONNECTION_ERROR;
+        return [error localizedDescription];
     }
 }
 
@@ -314,7 +314,7 @@ static DataManager *sharedDataManager = nil;
     } else {
         [pool release];
         //return NetWorkConnectionCheckDeny;
-        return SERVER_CONNECTION_ERROR;
+        return [error localizedDescription];
     }
 }
 

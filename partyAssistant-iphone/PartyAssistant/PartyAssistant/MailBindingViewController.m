@@ -187,14 +187,34 @@
             av.tag = 11001;
             [av show];
 
+        } else if ([status isEqualToString:@"error_has_binded_by_self"]) {
+            [self saveProfileDataFromResult:result];
+            
+            [self.navigationController popViewControllerAnimated:YES];
         } else if ([status isEqualToString:@"error_has_binded"]) {
             [self saveProfileDataFromResult:result];
             
+            // handle if binded mail equals to mail address in inputTelTextField
+            // if so, pop to settings view directly with no alert.
+            BindingStatus mailBindStatus = [[UserInfoBindingStatusService 
+                                            sharedUserInfoBindingStatusService] mailBindingStatus];
+            if (mailBindStatus == StatusBinded) {
+                BindingStatusObject *userStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+                NSString *bindedMail = userStatus.bindedMail;
+                
+                if (bindedMail && [bindedMail length] > 0 && self.inputMailTextField.text) {
+                    if ([bindedMail isEqualToString:self.inputMailTextField.text]) {
+                        [self.navigationController popViewControllerAnimated:YES];
+                        return;
+                    }
+                }
+            }
+
             [self showBindOperationFailed:description];
         } else if ([status isEqualToString:@"error_different_binded"]) {
             [self saveProfileDataFromResult:result];
             
-            [self showNormalErrorInfo:description];
+            [self showBindOperationFailed:description];
         } else {
             [self saveProfileDataFromResult:result];
             
