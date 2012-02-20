@@ -126,14 +126,19 @@ public class Constants {
 	public static final String NEW_REFUSED_CLIENT_COUNT = "newRefusedClientcount";
 	public static final String NEW_FLAG = "newFlag";
 	
+	
+	public static final String STATUS_APPLIED = "applied";
+	public static final String STATUS_DONOTHING = "donothing";
+	public static final String STATUS_REFUSED = "refused";
+	
 	/*
 	 * 配置域名
 	 */
-	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://192.168.3.151:8000";//"http://www.airenao.com"
+	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://192.168.3.151:8000";//"http://www.airenao.com";
 	public static final String SUB_DOMAIN_REGISTER_URL = "/a/accounts/regist/";
 	public static final String SUB_DOMAIN_LOGIN_URL = "/a/accounts/login/";
 	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/an_partylist/";//"/a/parties/partylist/"
-	public static final String SUB_DOMAIN_PARTY_CREATE_URL = "/a/parties/createparty/";
+	public static final String SUB_DOMAIN_PARTY_CREATE_URL = "/a/parties/an_createparty/";
 	public static final String SUB_DOMAIN_GET_CLIENTCOUNT_URL = "/a/parties/get_party_client_main_count/";
 	public static final String SUB_DOMAIN_GET_PEOPLE_INFO_URL = "/a/parties/get_party_client_seperated_list/";
 	public static final String SUB_DOMAIN_APPLAY_URL = "/a/parties/change_client_status/";

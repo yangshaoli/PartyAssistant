@@ -25,9 +25,7 @@ public class DbHelper {
 	public final static String LAST_TABLE_NAME = "activity_pwd";
 	public final static String ACTIVITY_TABLE_NAME = "myActivitys";
 
-	public final static String DONOTHING_TABLE_NAME = "doNothingClients";
-	public final static String REFUSED_TABLE_NAME = "refusedClients";
-	public final static String APPLIED_TABLE_NAME = "appliedClients";
+	public final static String TABLE_CLIENTS = "clients";
 
 	public final static String PARTY_ID = "partyid";
 	public final static String FIELD_ID = "_id";
@@ -55,12 +53,9 @@ public class DbHelper {
 	public static final String deleteLastSql = "delete from " + LAST_TABLE_NAME;
 	public static final String deleteActivitySql = "delete from "
 			+ ACTIVITY_TABLE_NAME;
-	public static final String deleteTableAppliedSql = " delete from  "
-			+ APPLIED_TABLE_NAME;
-	public static final String deleteTableDoNothingSql = " delete from "
-			+ DONOTHING_TABLE_NAME;
-	public static final String deleteTableRefusedSql = " delete from "
-			+ REFUSED_TABLE_NAME;
+	public static final String deleteTableClients = " delete from  "
+			+ TABLE_CLIENTS;
+	
 
 	public static final String createSql = "Create table " + LAST_TABLE_NAME
 			+ "(" + FIELD_ID + " integer primary key autoincrement,"
@@ -78,20 +73,10 @@ public class DbHelper {
 			+ " text, " + " type text, " + FIELD_TITLE_UN_JOIN + " text, "
 			+ FLAG_NEW + " integer);";
 
-	public static final String createTableAppliedSql = "Create table "
-			+ "appliedClients" + "(" + FIELD_ID
+	public static final String createTableClients = "Create table "
+			+ TABLE_CLIENTS + "(" + FIELD_ID
 			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
-			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
-			+ "comment" + " text, " + "isCheck" + " text);";
-	public static final String createTableDoNothingSql = "Create table "
-			+ "doNothingClients" + "(" + FIELD_ID
-			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
-			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
-			+ "comment" + " text, " + "isCheck" + " text);";
-	public static final String createTableRefusedSql = "Create table "
-			+ "refusedClients" + "(" + FIELD_ID
-			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
-			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
+			+ " text, " + "name" + " text, " + "status" + " text," + "phoneNumber" + " text, "
 			+ "comment" + " text, " + "isCheck" + " text);";
 
 	public static final String dropSql = " DROP TABLE IF EXISTS "
@@ -110,9 +95,8 @@ public class DbHelper {
 		try {
 			createTables(db, createSql);
 			createTables(db, createSql1);
-			createTables(db, createTableAppliedSql);
-			createTables(db, createTableDoNothingSql);
-			createTables(db, createTableRefusedSql);
+			createTables(db, createTableClients);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -168,6 +152,7 @@ public class DbHelper {
 		cv.put(FIELD_TITLE_NEW_UN_SN_UP, airenao.getNewUnSignUP());
 		cv.put(FIELD_TITLE_UN_JOIN, airenao.getUnJoin());
 		cv.put(FLAG_NEW, airenao.getFlagNew());
+		cv.put("type", airenao.getUid());
 
 		long row = -1;
 		try {
@@ -196,6 +181,7 @@ public class DbHelper {
 		cv.put("phoneNumber", clientsData.getPhoneNumber());
 		cv.put("comment", clientsData.getComment());
 		cv.put("isCheck", clientsData.getIsCheck());
+		cv.put("status", clientsData.getStatus());
 
 		long row = -1;
 		try {
@@ -207,13 +193,13 @@ public class DbHelper {
 		return row;
 	}
 
-	public static List<Map<String, Object>> selectActivitys(SQLiteDatabase db) {
+	public static List<Map<String, Object>> selectActivitys(SQLiteDatabase db, String arg) {
 
 		AirenaoActivity airenao = new AirenaoActivity();
 		listActivity = new ArrayList<Map<String, Object>>();
 		// SQLiteDatabase db = this.getReadableDatabase();
 		Cursor cursor = null;
-		String sql = "select * from " + ACTIVITY_TABLE_NAME + " order by "
+		String sql = "select * from " + ACTIVITY_TABLE_NAME + " where type = '" +arg+ "' order by "
 				+ PARTY_ID + " desc";
 		try {
 			cursor = db.rawQuery(sql, null);
@@ -291,11 +277,17 @@ public class DbHelper {
 	 * @return
 	 */
 	public static List<ClientsData> selectClientData(SQLiteDatabase db,
-			String tableName, String partyId) {
+			String tableName, String partyId, String condition) {
+		String sql="";
 		ArrayList<ClientsData> clientsList = new ArrayList<ClientsData>();
-
-		String sql = "select * from " + tableName + " where " + PARTY_ID + "='"
-				+ partyId + "'";
+		if(condition == null || "".equals(condition)){
+			sql = "select * from " + tableName + " where " + PARTY_ID + "='"
+					+ partyId + "'";
+		}else{
+			sql = "select * from " + tableName + " where " + PARTY_ID + "='"
+					+ partyId + "'" + " and" + " status = '"+condition+"'";
+		}
+		
 		Cursor cursor = null;
 		cursor = db.rawQuery(sql, null);
 		if (cursor != null) {
@@ -317,6 +309,8 @@ public class DbHelper {
 							.getColumnIndex("comment")));
 					clientsData.setIsCheck(cursor.getString(cursor
 							.getColumnIndex("isCheck")));
+					clientsData.setStatus(cursor.getString(cursor
+							.getColumnIndex("status")));
 					clientsList.add(clientsData);
 				}
 
@@ -521,17 +515,18 @@ public class DbHelper {
 	 * 更新通过接口
 	 * cuiky
 	 */
-	public static String upData(String tableName, ContentValues contentValues, String whereArg){
+	public static String upData(String tableName, ContentValues contentValues,String whereClause, String[] whereArgs){
 		String msg="";
-		String[] whereArgs={whereArg};
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		if(db!=null){
 			try{
-				db.update(tableName, contentValues, PARTY_ID+"=?", whereArgs);
+				db.update(tableName, contentValues, whereClause, whereArgs);
 			}catch(Exception e){
+				e.printStackTrace();
 				msg="数据库异常";
 			}finally{
 				db.close();
+				msg="成功";
 			}
 		}else{
 			msg="数据库获取异常";
@@ -549,6 +544,7 @@ public class DbHelper {
 		//update myActivitys set signup = signup+1 , unsignup = unsignup+1 where _id=22
 
 		String sql = "update " + tableName + " set "+Columns[0]+" = "+Columns[0]+"-1,"+Columns[1]+"="+Columns[1]+"+1" + " where "+DbHelper.PARTY_ID+"="+whereArg;
+		
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		if(db!=null){
 			try{

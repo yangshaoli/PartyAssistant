@@ -351,7 +351,7 @@ public class ContactsListActivity extends ListActivity implements
 
 	private ContactItemListAdapter mAdapter;
 
-	public static int mMode = MODE_DEFAULT;
+	public static int mMode = MODE_FREQUENT;
 
 	private QueryHandler mQueryHandler;
 	private boolean mJustCreated;
@@ -473,7 +473,7 @@ public class ContactsListActivity extends ListActivity implements
 		Intent it = this.getIntent();
 		String transPersonName;
 		String transPersonPhoneNumber;
-		mMode = it.getIntExtra("mode", MODE_DEFAULT);
+		mMode = it.getIntExtra("mode", MODE_FREQUENT);
 		alreadyExistNumbers = it.getStringExtra("AlreadyExistNumbers");
 		mDisplayOnlyPhones = false;
 		// Setup the UI
@@ -535,9 +535,8 @@ public class ContactsListActivity extends ListActivity implements
 							transPersonName = "";
 							transPersonPhoneNumber = allContacts[i];
 						}
-						if (AirenaoUtills
-								.checkPhoneNumber(transPersonPhoneNumber)) {
-							if (!transPersonName.equals("佚名")
+						
+							if (!transPersonName.matches(AirenaoUtills.regPhoneNumber)
 									&& !nickname.equals(transPersonName)) {
 								count++;
 								intentCount++;
@@ -546,7 +545,7 @@ public class ContactsListActivity extends ListActivity implements
 									transPersonPhoneNumber));
 							beforePositions.add(new MyPerson(transPersonName,
 									transPersonPhoneNumber));
-						}
+						
 					}
 
 				}
@@ -565,7 +564,6 @@ public class ContactsListActivity extends ListActivity implements
 		intentCount = count;
 		btnPrivew = (Button) findViewById(R.id.btnCancle);
 		btnAll = (Button) findViewById(R.id.btnAll);
-		btnAll.setEnabled(false);
 		myHandler = new Handler() {
 
 			@Override
@@ -579,7 +577,7 @@ public class ContactsListActivity extends ListActivity implements
 
 		};
 		btnFrequent = (Button) findViewById(R.id.btnFrequent);
-
+		btnFrequent.setEnabled(false);
 		btnAll.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -2417,6 +2415,7 @@ public class ContactsListActivity extends ListActivity implements
 
 			cache.labelView = (TextView) view.findViewById(R.id.label);
 			cache.idView = (TextView) view.findViewById(R.id.data);
+			cache.idView.setVisibility(View.GONE);
 			// cache.presenceView = (ImageView)
 			// view.findViewById(R.id.presence);
 

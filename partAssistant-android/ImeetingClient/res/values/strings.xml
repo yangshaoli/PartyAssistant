@@ -21,7 +21,7 @@
     
 	<string name="menuEdit">编辑</string>
 	<string name="create_activity">创建活动</string>
-	<string name="detailActivity">短信内容</string>
+	<string name="detailActivity">活动内容</string>
 	<string name="meeting_list">活动列表</string>
 	<string name="send_ways">邀请方式</string>
 	<string name="send_ways_title">请选择一种发送方式</string>
@@ -30,7 +30,7 @@
 	<string name="destination">去哪：</string>
 	<string name="people_limit">几人：</string>
 	<string name="desc_activity">活动内容：</string>
-	<string name="hint">本活动内容将会作为短信发送</string>
+	<string name="hint">该活动内容将作为短信发送给参加者</string>
 	<string name="send_lable_content_tip">活动内容不能为空</string>
 	<string name="send_message">发送手机短信</string>
 	<string name="send_mail">发送电子邮件</string>

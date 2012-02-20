@@ -10,7 +10,8 @@
 	
     <application android:icon="@drawable/icon" android:label="@string/app_name">
     <meta-data android:value="matthiaskaeppler.de" android:name="UMENG_APPKEY"></meta-data>
-    	<activity android:name=".activity.SplashActivity">
+    	<activity android:name=".activity.SplashActivity"
+    		android:theme="@style/Theme.splash">
     		<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -106,7 +107,8 @@
         	</intent-filter>
    		</receiver>
    		<service android:label="Android Push Service" 
-     android:name="com.aragoncg.apps.xmpp.service.AndroidPushService" />
+     		android:name="com.aragoncg.apps.xmpp.service.AndroidPushService"
+     		android:process=":pushService"/>
 
    		<receiver 
      		android:name="com.aragoncg.apps.xmpp.service.ConnectionChangedReceiver"

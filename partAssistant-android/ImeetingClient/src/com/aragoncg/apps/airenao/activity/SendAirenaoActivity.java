@@ -45,7 +45,6 @@ import android.provider.ContactsContract.Data;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.SmsManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -114,6 +113,7 @@ public class SendAirenaoActivity extends Activity {
 	private String stringLink;
 	private String smsContent;
 	private TextView userTitle;
+	private String msgCount;
 	private LinearLayout userLayout;
 	private static final int MENU_SET = 0;
 	private static final int MENU_SEND_WAY = 1;
@@ -143,7 +143,7 @@ public class SendAirenaoActivity extends Activity {
 	private String userName;
 	private String userId;
 	static final String NAME_COLUMN = Contacts.DISPLAY_NAME;
-	private int modeTag = -2;// -2代表是查询手机号
+	private int modeTag = ContactsListActivity.MODE_FREQUENT;
 	private Handler myHandler;
 	private Dialog oneDialog;
 	private HashMap<String, String> clientDicts = new HashMap<String, String>();
@@ -209,7 +209,7 @@ public class SendAirenaoActivity extends Activity {
 				// String email = showEmail(myCursor);
 
 				// 将电话或者电子邮件加入到联系列表
-				if (modeTag == -2) {
+				if (modeTag == ContactsListActivity.MODE_FREQUENT) {
 					int phoneNumberSize = phoneNumbers.size();
 					if (phoneNumberSize <= 1) {
 						String phone = "";
@@ -378,7 +378,7 @@ public class SendAirenaoActivity extends Activity {
 		return null;
 	}
 
-	@Override
+/*	@Override
 	protected void onResume() {
 		if (activityFlag) {
 
@@ -443,7 +443,7 @@ public class SendAirenaoActivity extends Activity {
 			public void onReceive(Context context, Intent intent) {
 				// 判断短信是否发送成功
 
-				/*
+				
 				 * switch (getResultCode()) { case Activity.RESULT_OK: if (count
 				 * == 0) { showOkOrNotDialog("短信发送成功", true); } count++;
 				 * 
@@ -451,7 +451,7 @@ public class SendAirenaoActivity extends Activity {
 				 * 
 				 * if (count == 0) { showOkOrNotDialog("短信发送失败,是否重新发送？", false);
 				 * } count++; break; }
-				 */
+				 
 			}
 		};
 
@@ -464,7 +464,7 @@ public class SendAirenaoActivity extends Activity {
 				sentIntent, 0);
 
 		super.onResume();
-	}
+	}*/
 
 	@Override
 	protected void onPause() {
@@ -540,14 +540,15 @@ public class SendAirenaoActivity extends Activity {
 									progerssDialog.dismiss();
 								}
 
-								showOkOrNotDialog("短信发送成功", true);
+								showOkOrNotDialog("成功发送"+msgCount+"短信", true);
+								
 							} else {
 								Toast.makeText(SendAirenaoActivity.this,
 										"消息已发送", 1000).show();
 								if (progerssDialog != null) {
 									progerssDialog.dismiss();
 								}
-								showOkOrNotDialog("短信发送成功", true);
+								showOkOrNotDialog("成功发送"+msgCount+"短信", true);
 							}
 						}
 					}
@@ -582,13 +583,12 @@ public class SendAirenaoActivity extends Activity {
 		smsContent = txtSendLableContent.getText().toString();
 		String name = "";
 		String dict = "";
-
-		Constants.countId++;
+		
 		AirenaoActivity tempActivity = new AirenaoActivity();
 
-		ArrayList<ClientsData> clientDataList = new ArrayList<ClientsData>();
 
 		JSONArray myDicts = new JSONArray();
+		msgCount = String.valueOf(tempClientDicts.size());
 		Iterator<Entry<String, String>> iter = tempClientDicts.entrySet()
 				.iterator();
 		while (iter.hasNext()) {
@@ -609,11 +609,7 @@ public class SendAirenaoActivity extends Activity {
 				Json.put("cName", name);
 				Json.put("cValue", dict);
 				myDicts.put(Json);
-				ClientsData clientsData = new ClientsData();
-				clientsData.setPartyId("id" + Constants.countId);
-				clientsData.setPeopleName(name);
-				clientsData.setPhoneNumber(dict);
-				clientDataList.add(clientsData);
+				
 			} catch (JSONException e) {
 
 				e.printStackTrace();
@@ -622,25 +618,7 @@ public class SendAirenaoActivity extends Activity {
 
 		}
 
-		// 将数据保存到本地数据库
-		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-		tempActivity.setActivityContent(smsContent);
-		tempActivity.setActivityName(smsContent);
-		tempActivity.setInvitedPeople(tempClientDicts.size() + "");
-		tempActivity.setSignUp("0");
-		tempActivity.setUnSignUp("0");
-		tempActivity.setUnJoin(tempClientDicts.size() + "");
-
-		tempActivity.setId("id" + Constants.countId);
-
-		DbHelper.insertOneParty(db, tempActivity, DbHelper.ACTIVITY_TABLE_NAME);
-		for (int j = 0; j < clientDataList.size(); j++) {
-			DbHelper.insertOneClientData(db, clientDataList.get(j),
-					"doNothingClients");
-		}
-		if (db != null) {
-			db.close();
-		}
+		
 
 		// 将数据保存到后台
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -673,6 +651,7 @@ public class SendAirenaoActivity extends Activity {
 					.getJSONObject(Constants.OUT_PUT);
 			String status = output.getString(Constants.STATUS);
 			String description = output.getString(Constants.DESCRIPTION);
+			JSONObject dataSource = output.getJSONObject(Constants.DATA_SOURCE);
 			if ("ok".equals(status)) {
 				JSONObject data = output.getJSONObject(Constants.DATA_SOURCE);
 				partyId = data.getString("partyId");
@@ -680,7 +659,41 @@ public class SendAirenaoActivity extends Activity {
 				if (ckSendLableWithLink) {
 					stringLink = applyURL;
 				}
-
+				
+				
+				// 将数据保存到本地数据库
+				SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+				tempActivity.setActivityContent(smsContent);
+				tempActivity.setActivityName(smsContent);
+				tempActivity.setInvitedPeople(tempClientDicts.size() + "");
+				tempActivity.setSignUp("0");
+				tempActivity.setUnSignUp("0");
+				tempActivity.setUnJoin(tempClientDicts.size() + "");
+				tempActivity.setId(partyId);
+				tempActivity.setUid(userId);
+				DbHelper.insertOneParty(db, tempActivity, DbHelper.ACTIVITY_TABLE_NAME);
+				//解析返回的clients，然后插入数据库中   这是创建activity返回的clients
+				ArrayList<ClientsData> clientDataList = new ArrayList<ClientsData>();
+				JSONArray jsonClients = dataSource.getJSONArray("clients");
+				for(int a=0;a<jsonClients.length();a++){
+					JSONObject oneJsonClient = jsonClients.getJSONObject(a);
+					ClientsData clientData = new ClientsData();
+					clientData.setId(oneJsonClient.getString("id"));
+					clientData.setPartyId(partyId);
+					clientData.setStatus(Constants.STATUS_DONOTHING);
+					clientData.setPeopleName(oneJsonClient.getString("name"));
+					clientData.setPhoneNumber(oneJsonClient.getString("number"));
+					clientDataList.add(clientData);
+				}
+				for (int j = 0; j < clientDataList.size(); j++) {
+					clientDataList.get(j).setPartyId(partyId);
+					DbHelper.insertOneClientData(db, clientDataList.get(j),
+							DbHelper.TABLE_CLIENTS);
+				}
+				if (db != null) {
+					db.close();
+				}
+				
 				smsContent = "";
 				smsContent = "【爱热闹】" + txtSendLableContent.getText().toString()
 						+ "\n" + "快来报名：" + stringLink;
@@ -715,7 +728,7 @@ public class SendAirenaoActivity extends Activity {
 			// result
 			Message message = new Message();
 			Bundle bundle = new Bundle();
-			bundle.putString(EXCEPTION + "", "错误！");
+			bundle.putString(EXCEPTION + "", result);
 			message.what = EXCEPTION;
 			message.setData(bundle);
 			myHandler.sendMessage(message);
@@ -823,7 +836,7 @@ public class SendAirenaoActivity extends Activity {
 				if (event.getAction() == MotionEvent.ACTION_UP) {
 
 					Intent intent = new Intent();
-					intent.putExtra("mode", -2);// -2 是查询电话
+					intent.putExtra("mode", modeTag);// -2 是查询电话
 					String allNumbers = peopleNumbers.getText().toString();
 
 					String all = deleteOnlyText(allNumbers);
@@ -1066,7 +1079,7 @@ public class SendAirenaoActivity extends Activity {
 						continue;
 					}
 					if (!clientDicts.containsKey(onePhoneNumber)) {
-						clientDicts.put(onePhoneNumber, "佚名");
+						clientDicts.put(onePhoneNumber, onePhoneNumber);
 					}
 
 				}
@@ -1266,10 +1279,18 @@ public class SendAirenaoActivity extends Activity {
 		@Override
 		// 将信息绑定到控件的方法
 		public void bindView(View view, Context context, Cursor cursor) {
-			((TextView) view)
+			/*((TextView) view)
+					.setText(cursor
+							.getString(cursor
+									.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))+"\n"+"ddddd");*/
+			LinearLayout ln = (LinearLayout)view.findViewWithTag("myView");
+			TextView tv1 = (TextView)ln.findViewById(R.id.text1);
+			TextView tv2 = (TextView)ln.findViewById(R.id.text2);
+			tv1
 					.setText(cursor
 							.getString(cursor
 									.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)));
+			tv2.setText(getMyFinalNumber(cursor));
 
 		}
 
@@ -1284,13 +1305,20 @@ public class SendAirenaoActivity extends Activity {
 		// 创建自动绑定选项
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
 			final LayoutInflater inflater = LayoutInflater.from(context);
-			final TextView tv = (TextView) inflater.inflate(
-					android.R.layout.simple_dropdown_item_1line, parent, false);
-			tv
+			final LinearLayout ln = (LinearLayout) inflater.inflate(
+					R.layout.simple_dropdown_item_1line, parent, false);
+			TextView tv1 = (TextView)ln.findViewById(R.id.text1);
+			TextView tv2 = (TextView)ln.findViewById(R.id.text2);
+			tv1
 					.setText(cursor
 							.getString(cursor
 									.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME)));
-			return tv;
+			tv2.setText("222222");
+			/*tv2.setText(cursor
+					.getString(cursor
+							.getColumnIndexOrThrow(ContactsContract.Contacts.);*/
+			ln.setTag("myView");
+			return ln;
 		}
 
 		@Override
@@ -1311,7 +1339,6 @@ public class SendAirenaoActivity extends Activity {
 							+ ContactsContract.Contacts.DISPLAY_NAME + " DESC");
 
 			if (tempTxt.contains(",")) {
-				int size1 = tempTxt.lastIndexOf(",");
 				int size = tempTxt.lastIndexOf(",") + 1;
 
 				tempTxt1 = tempTxt.substring(size).trim();
@@ -1685,28 +1712,9 @@ public class SendAirenaoActivity extends Activity {
 				.findViewById(R.id.datePicker);
 		TimePicker timePicker = (TimePicker) setTimeDialogLayout
 				.findViewById(R.id.timePicker);
-		timePicker.setIs24HourView(true);
-		timePicker.setOnTimeChangedListener(new OnTimeChangedListener() {
-
-			public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-
-				mHour = hourOfDay;
-				mMinute = minute;
-				updateDisplay(false);
-			}
-		});
+		
 		datePicker.init(mYear, mMonth, mDay,
-				new DatePicker.OnDateChangedListener() {
-
-					@Override
-					public void onDateChanged(DatePicker view, int year,
-							int monthOfYear, int dayOfMonth) {
-						mYear = year;
-						mMonth = monthOfYear;
-						mDay = dayOfMonth;
-						updateDisplay(false);
-					}
-				});
+				null);
 		btnOk.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -1766,5 +1774,75 @@ public class SendAirenaoActivity extends Activity {
 		mMinute = c.get(Calendar.MINUTE);
 		updateDisplay(firstSetTime);
 	}
+	
+	public String getMyFinalNumber(Cursor cursor) {
+		phoneNumbers = new ArrayList<String>();
+		String myNum = "";
+		String contactId="";
+		String hasPhone = "";
+		if(judgeCursor ==1){
+			contactId = cursor.getString(cursor
+					.getColumnIndex("contact_id"));
+		}else{
+			contactId = cursor.getString(cursor
+					.getColumnIndex(ContactsContract.Contacts._ID));
+		}
+		if(judgeCursor !=1){
+			hasPhone = cursor
+					.getString(cursor
+							.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+		}else{
+			hasPhone = "1";
+		}
+			
+			if (hasPhone.equals("1")) {
 
+				// You now have the number so now query it like this
+
+				Cursor phones = getContentResolver().query(
+						ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+						null,
+						ContactsContract.CommonDataKinds.Phone.CONTACT_ID
+								+ " = " + contactId, null, null);
+
+				while (phones.moveToNext()) {
+					String phoneNumber = phones
+							.getString(phones
+									.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+					if (phoneNumber != null) {
+						myNum = phoneNumber;
+						if (AirenaoUtills.phoneNumberCompare(phoneNumbers,
+								phoneNumber)) {
+							continue;
+						} else {
+							phoneNumbers.add(phoneNumber);
+						}
+					}
+
+					int phoneType = phones
+							.getInt(phones
+									.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE));
+
+					// 1 == is primary
+					String isPrimary = phones
+							.getString(phones
+									.getColumnIndex(ContactsContract.CommonDataKinds.Phone.IS_SUPER_PRIMARY));
+					SharedPreferences msp = AirenaoUtills
+							.getMySharedPreferences(SendAirenaoActivity.this);
+
+					String mark = msp.getString(phoneNumber, "");
+					if (Constants.IS_SUPER_PRIMARY.equals(mark)) {
+						myNum = phoneNumber;
+						phoneNumbers.clear();
+						phoneNumbers.add(myNum);
+						phones.close();
+						return myNum;
+					}
+
+				}
+				phones.close();
+			}
+		
+		return myNum;
+	}
 }

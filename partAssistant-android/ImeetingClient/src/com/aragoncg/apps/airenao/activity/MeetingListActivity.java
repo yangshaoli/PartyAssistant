@@ -63,7 +63,7 @@ public class MeetingListActivity extends ListActivity implements
 	private List<Map<String, Object>> mData = new ArrayList<Map<String, Object>>();
 	private MyAdapter myDaAdapter;
 
-	private ImageButton btnAddOneActivity;
+	private Button btnAddOneActivity;
 	private View footerView;
 	private Thread mThread;
 	private Runnable firstLoadDataThread;
@@ -98,11 +98,11 @@ public class MeetingListActivity extends ListActivity implements
 	private Dialog progressDialog;
 	private boolean separatePage = false;
 	private boolean showFlagNew = true;
-
+	private boolean branchPage = false;
 	public static final String LAST_ID = "lastID";
 	private int lastID;
 	private static final int MENU_PERSON_INFO = 0;
-	private static final int MENU_EXIT = 1;
+	private static final int MENU_LOGOUT = 1;
 	public static final String PARTY_LIST = "partyList";
 	public static final String PARTY_ID = "partyId";
 	public static final String POEPLE_MAXMUM = "peopleMaximum";
@@ -167,7 +167,7 @@ public class MeetingListActivity extends ListActivity implements
 					}
 				});
 
-		btnAddOneActivity = (ImageButton) findViewById(R.id.btnAddOneActivity);
+		btnAddOneActivity = (Button) findViewById(R.id.btnAddOneActivity);
 		btnAddOneActivity.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -264,15 +264,30 @@ public class MeetingListActivity extends ListActivity implements
 							Constants.HENDLER_MESSAGE);
 					AlertDialog aDig = new AlertDialog.Builder(
 							MeetingListActivity.this).setMessage(message)
+							.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									mData = getDataFromServer();
+									myDaAdapter.notifyDataSetChanged();
+									myListView.requestFocusFromTouch();
+								}
+							})
 							.create();
 					aDig.show();
+					
+					
 				}
 				case Constants.POST_MESSAGE_SUCCESS: {
 					if (progressDialog != null) {
 						progressDialog.dismiss();
 					}
-					myDaAdapter.notifyDataSetChanged();
-					myListView.requestFocusFromTouch();
+					//2.13 
+					if(list.size()>0){
+							mData = list;
+							myDaAdapter.notifyDataSetChanged();
+					}
+					
 				}
 				}
 
@@ -285,34 +300,8 @@ public class MeetingListActivity extends ListActivity implements
 		userName = mySharedPreferences.getString(Constants.AIRENAO_USER_NAME,
 				null);
 		userId = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, null);
-		userTitle = (TextView) findViewById(R.id.userTitle);
-		userTitle.setText(userName);
-		userLayout = (LinearLayout) findViewById(R.id.userChange);
-		userLayout.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				AlertDialog dialog = new AlertDialog.Builder(
-						MeetingListActivity.this).setTitle(R.string.user_off)
-						.setMessage(R.string.user_off_message)
-						.setPositiveButton(R.string.btn_ok,
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										finish();
-										Intent intent = new Intent();
-										intent.setClass(
-												MeetingListActivity.this,
-												LoginActivity.class);
-										startActivity(intent);
-									}
-								}).create();
-				dialog.show();
-
-			}
-		});
+		
+	
 	}
 
 	// every item's menu
@@ -586,14 +575,14 @@ public class MeetingListActivity extends ListActivity implements
 	public List<Map<String, Object>> getDataFromServer() {
 		list.clear();
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db);
+		return (ArrayList<Map<String, Object>>) DbHelper.selectActivitys(db,userId);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.addSubMenu(0, MENU_PERSON_INFO, 0,
 				getString(R.string.menuPersonInfo));
-		menu.addSubMenu(0, MENU_EXIT, 1, getString(R.string.menuExit));
+		menu.addSubMenu(0, MENU_LOGOUT, 1, getString(R.string.user_off));
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -604,35 +593,25 @@ public class MeetingListActivity extends ListActivity implements
 			Intent intent = new Intent(this, PersoninfoSetActivity.class);
 			startActivity(intent);
 			break;
-		case MENU_EXIT:
-			AlertDialog noticeDialog = new AlertDialog.Builder(
-					MeetingListActivity.this)
-					.setCancelable(true)
-					.setTitle(R.string.sendLableTitle)
-					.setMessage(R.string.exitMessage)
-					.setNegativeButton(
-							R.string.btn_cancle,
-							new android.content.DialogInterface.OnClickListener() {
+		case MENU_LOGOUT:
+			AlertDialog dialog = new AlertDialog.Builder(
+					MeetingListActivity.this).setTitle(R.string.user_off)
+					.setMessage(R.string.user_off_message)
+					.setPositiveButton(R.string.btn_ok,
+							new DialogInterface.OnClickListener() {
 
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-
+									finish();
+									Intent intent = new Intent();
+									intent.setClass(
+											MeetingListActivity.this,
+											LoginActivity.class);
+									startActivity(intent);
 								}
-							})
-					.setPositiveButton(
-							R.string.btn_ok,
-							new android.content.DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									ActivityManager.getInstance().exit();
-
-								}
-
 							}).create();
-			noticeDialog.show();
+			dialog.show();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -814,6 +793,7 @@ public class MeetingListActivity extends ListActivity implements
 	 */
 	private void loadRemnantListItem() {// 滚到加载余下的数据
 		separatePage = true;
+		
 		// 开线程去下载网络数据
 		if (mThread == null || !mThread.isAlive()) {
 			mThread = new Thread() {
@@ -831,7 +811,7 @@ public class MeetingListActivity extends ListActivity implements
 							String dataResult = myHttpHelper.performGet(
 									partyListUrl, MeetingListActivity.this);
 							dataResult = AirenaoUtills.linkResult(dataResult);
-							analyzeJson(dataResult);
+							analyzeJson(dataResult); 
 							// mData.addAll(list);
 						}
 					} catch (Exception e) {
@@ -911,9 +891,7 @@ public class MeetingListActivity extends ListActivity implements
 				if (tempCount > 0) {
 					if (!separatePage) {
 						DbHelper.delete(db, DbHelper.deleteActivitySql);
-						DbHelper.delete(db, DbHelper.deleteTableAppliedSql);
-						DbHelper.delete(db, DbHelper.deleteTableDoNothingSql);
-						DbHelper.delete(db, DbHelper.deleteTableRefusedSql);
+						DbHelper.delete(db, DbHelper.deleteTableClients);
 					}
 					
 				}
@@ -933,30 +911,30 @@ public class MeetingListActivity extends ListActivity implements
 							for (int a = 0; a < appliedClients.length(); a++) {
 								clientData = (JSONObject)appliedClients.getJSONObject(a);
 								DbHelper.insertOneClientData(db,
-										organizeOneClientData(clientData),
-										"appliedClients");
+										organizeOneClientData(clientData,Constants.STATUS_APPLIED),
+										DbHelper.TABLE_CLIENTS);
 							}
 						}
 						if (doNothingClients.length() > 0) {
 							for (int d = 0; d < doNothingClients.length(); d++) {
 								clientData = (JSONObject)doNothingClients.getJSONObject(d);
 								DbHelper.insertOneClientData(db,
-										organizeOneClientData(clientData),
-										"doNothingClients");
+										organizeOneClientData(clientData,Constants.STATUS_DONOTHING),
+										DbHelper.TABLE_CLIENTS);
 							}
 						}
 						if (refusedClients.length() > 0) {
 							for (int r = 0; r < refusedClients.length(); r++) {
 								clientData = (JSONObject)refusedClients.getJSONObject(r);
 								DbHelper.insertOneClientData(db,
-										organizeOneClientData(clientData),
-										"refusedClients");
+										organizeOneClientData(clientData,Constants.STATUS_REFUSED),
+										DbHelper.TABLE_CLIENTS);
 							}
 						}
 
 						
 						DbHelper.insertOneParty(db,
-								organizeOneActivity(tempActivity),
+								organizeOneActivity(tempActivity,userId),
 								DbHelper.ACTIVITY_TABLE_NAME);
 
 					} catch (Exception e) {
@@ -968,7 +946,7 @@ public class MeetingListActivity extends ListActivity implements
 						db.close();
 				}
 				
-				mData = list;
+				//mData = list;
 				Message message = new Message();
 				message.what = Constants.POST_MESSAGE_SUCCESS;
 				Bundle bundle = new Bundle();
@@ -1052,7 +1030,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * @return
 	 */
 	
-	public AirenaoActivity organizeOneActivity(JSONObject data) {
+	public AirenaoActivity organizeOneActivity(JSONObject data,String uid) {
 		AirenaoActivity myActivity = new AirenaoActivity();
 		try {
 			
@@ -1073,6 +1051,7 @@ public class MeetingListActivity extends ListActivity implements
 			myActivity.setUnJoin(donothingClientcount);
 			myActivity.setUnSignUp(refusedClientcount);
 			myActivity.setNewUnSignUP(newRefusedClientcount);
+			myActivity.setUid(uid);
 
 		} catch (JSONException e) {
 
@@ -1088,7 +1067,7 @@ public class MeetingListActivity extends ListActivity implements
 	 * @param data
 	 * @return
 	 */
-	public ClientsData organizeOneClientData(JSONObject data) {
+	public ClientsData organizeOneClientData(JSONObject data, String status) {
 		ClientsData clientsData = new ClientsData();
 		try {
 			clientsData.setPartyId(partyId);
@@ -1097,6 +1076,7 @@ public class MeetingListActivity extends ListActivity implements
 			clientsData.setPhoneNumber(data.getString("number"));
 			clientsData.setComment(data.getString("comment"));
 			clientsData.setIsCheck(data.getString("isCheck"));
+			clientsData.setStatus(status);
 
 		} catch (JSONException e) {
 

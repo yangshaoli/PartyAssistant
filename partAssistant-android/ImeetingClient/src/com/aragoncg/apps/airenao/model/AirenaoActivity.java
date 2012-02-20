@@ -23,6 +23,7 @@ public class AirenaoActivity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private String id;
+	private String uid;
 	private String activityName;
 	private String activityTime;
 	private String activityPosition;
@@ -183,4 +184,13 @@ public class AirenaoActivity implements Serializable {
 		this.flagNew = flagNew;
 	}
 
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	
+	
 }

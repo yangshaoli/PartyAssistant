@@ -51,6 +51,7 @@
     	android:inputType="textPassword"
     />
     <!-- 登录button -->
+    <!--layout_alignRight 意思是和谁右边对齐  -->
     <Button 
     	android:id="@+id/signin_button"
     	android:layout_width="wrap_content"
@@ -58,6 +59,7 @@
     	android:layout_below="@id/password_edit"
     	android:layout_alignRight="@id/password_edit"
     	android:text="@string/login_label_signin"
+    	android:textSize="18sp"
     	android:background="@drawable/blue_button"
     />
     <!-- 注册button -->
@@ -65,9 +67,9 @@
     	android:id="@+id/register_button"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
-    	android:layout_below="@id/password_edit"
-    	android:layout_toLeftOf="@id/signin_button"
-    	android:layout_marginRight="15dip"
+    	android:layout_below="@id/signin_button"
+    	android:layout_alignRight="@id/signin_button"
+    	android:layout_marginTop="6dip"
     	android:text="@string/login_register"
     	android:background="@drawable/blue_button"
     />
@@ -86,6 +88,7 @@
 	     android:layout_marginLeft="15dp"
 	     android:textColor="#888"
 	     android:textColorLink="#FF0066CC"
+	     android:visibility="gone"
 	  />
 	  <Button 
     	android:id="@+id/find_back"

@@ -39,6 +39,7 @@ import com.aragoncg.apps.xmpp.service.AndroidPushService;
 public class LoginActivity extends Activity {
 	private EditText userNameText;
 	private EditText passWordText;
+	private static final int EXCEPTION = 0;
 	private Button loginBtn;
 	private Button findBackBtn;
 	private Button btnRegister;
@@ -74,10 +75,7 @@ public class LoginActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				myProgressDialog = AirenaoUtills.generateProgressingDialog(
-						LoginActivity.this, "", getString(R.string.logining));
-				myProgressDialog.setOwnerActivity(LoginActivity.this);
-				myProgressDialog.show();
+			
 				boolean isEmail;
 				userName = userNameText.getText().toString();
 				passWord = passWordText.getText().toString();
@@ -86,11 +84,15 @@ public class LoginActivity extends Activity {
 							R.string.user_name_check, Toast.LENGTH_LONG).show();
 					return;
 				}
-				if (userName == null || "".equals(userName)) {
+				if (passWord == null || "".equals(passWord)) {
 					Toast.makeText(LoginActivity.this, R.string.pass_tip,
 							Toast.LENGTH_LONG).show();
 					return;
 				}
+				myProgressDialog = AirenaoUtills.generateProgressingDialog(
+						LoginActivity.this, "", getString(R.string.logining));
+				myProgressDialog.setOwnerActivity(LoginActivity.this);
+				myProgressDialog.show();
 				isEmail = AirenaoUtills.matchString(AirenaoUtills.regEmail,
 						userName);
 			
@@ -105,9 +107,8 @@ public class LoginActivity extends Activity {
 						params.put("username", userName);
 						params.put("password", passWord);
 						params.put("clientId", AndroidPushService.getClientId(myContext));
-						String loginResult = new HttpHelper().performPost(
-								loginUrl, userName, passWord, null, params,
-								LoginActivity.this);
+						String loginResult = new HttpHelper().savePerformPost(loginUrl, params, LoginActivity.this);
+								
 						String result = "";
 						result = AirenaoUtills.linkResult(loginResult);
 						JSONObject jsonObject;
@@ -135,7 +136,7 @@ public class LoginActivity extends Activity {
 										.openOrCreateDatabase();
 								tempActivity = DbHelper.select(db);
 								activityList = (ArrayList<Map<String, Object>>) DbHelper
-										.selectActivitys(db);
+										.selectActivitys(db,uId);
 								if (tempActivity != null) {
 									Intent intent = new Intent(
 											LoginActivity.this,
@@ -170,7 +171,8 @@ public class LoginActivity extends Activity {
 							}
 						} catch (JSONException e) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
+							
+							myHandler.sendEmptyMessage(EXCEPTION);
 						}
 
 					}
@@ -180,7 +182,7 @@ public class LoginActivity extends Activity {
 				
 			}
 		});
-
+		findBackBtn.setVisibility(View.INVISIBLE);
 		findBackBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -259,6 +261,9 @@ public class LoginActivity extends Activity {
 					editor.putString(Constants.AIRENAO_USER_ID, uId);
 					editor.commit();
 					finish();
+					break;
+				case EXCEPTION:
+					Toast.makeText(LoginActivity.this,"后台出现异常",2000).show();
 					break;
 				}
 				super.handleMessage(msg);

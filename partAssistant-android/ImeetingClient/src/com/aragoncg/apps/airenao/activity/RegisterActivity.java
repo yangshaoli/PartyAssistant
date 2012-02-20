@@ -23,6 +23,7 @@ import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.Window;
+import android.widget.AutoCompleteTextView.Validator;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,6 +39,7 @@ import com.aragoncg.apps.airenao.utills.HttpHelper;
 import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class RegisterActivity extends Activity {
+	private static final int EXCEPTION = 0;
 	private String userNameReg;
 	private String pass1Reg;
 	private String pass2Reg;
@@ -104,7 +106,12 @@ public class RegisterActivity extends Activity {
 					editor.putString(Constants.AIRENAO_PASSWORD, pass2Reg);
 					editor.putString(Constants.AIRENAO_USER_ID, uId);
 					editor.commit();
+				case EXCEPTION:
+					Toast.makeText(RegisterActivity.this, "后台出现异常", 2000)
+							.show();
+					break;
 				}
+
 				super.handleMessage(msg);
 			}
 
@@ -121,10 +128,11 @@ public class RegisterActivity extends Activity {
 
 			@Override
 			public void run() {
+				
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("username", userNameReg);
 				params.put("password", pass1Reg);
-				params.put("device_token", "");
+				params.put("clientId", AndroidPushService.getClientId(RegisterActivity.this));
 				// 后台注册返回的结果
 				String result = new HttpHelper().performPost(registerUrl,
 						userNameReg, pass1Reg, null, params,
@@ -142,7 +150,8 @@ public class RegisterActivity extends Activity {
 					if ("ok".equals(status)) {
 						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
 						// 注册成功后，登陆
-						params.put("clientId", AndroidPushService.getClientId(myContext));
+						params.put("clientId",
+								AndroidPushService.getClientId(myContext));
 						String loginResult = new HttpHelper().performPost(
 								loginUrl, userNameReg, pass1Reg, null, params,
 								RegisterActivity.this);
@@ -167,44 +176,9 @@ public class RegisterActivity extends Activity {
 							message.setData(bundle);
 							myHandler.sendMessage(message);
 
-							// 如果不是第一次启动
-							if (appFlag == Constants.APP_USED_FLAG_O) {
-
-								SQLiteDatabase db = DbHelper
-										.openOrCreateDatabase();
-								tempActivity = DbHelper.select(db);
-								listActivity = (ArrayList<Map<String, Object>>) DbHelper
-										.selectActivitys(db);
-								if (tempActivity != null) {
-									Intent intent = new Intent(
-											RegisterActivity.this,
-											MeetingListActivity.class);
-									intent.putExtra(Constants.TRANSFER_DATA,
-											tempActivity);
-									startActivity(intent);
-
-								} else {
-
-									if (listActivity.size() > 0) {
-										Intent intent = new Intent(
-												RegisterActivity.this,
-												MeetingListActivity.class);
-										startActivity(intent);
-									} else {
-										Intent intent = new Intent(
-												RegisterActivity.this,
-												MeetingListActivity.class);
-										startActivity(intent);
-									}
-								}
-							}
-							// 如果第一启动就进入创建活动
-							if (appFlag == Constants.APP_USED_FLAG_Z) {
-								Intent intent = new Intent(
-										RegisterActivity.this,
-										MeetingListActivity.class);
-								startActivity(intent);
-							}
+							Intent intent = new Intent(RegisterActivity.this,
+									MeetingListActivity.class);
+							startActivity(intent);
 
 							myProgressDialog.cancel();
 						}
@@ -220,8 +194,7 @@ public class RegisterActivity extends Activity {
 						myProgressDialog.cancel();
 					}
 				} catch (JSONException e) {
-
-					e.printStackTrace();
+					myHandler.sendEmptyMessage(EXCEPTION);
 				}
 
 			}
@@ -243,28 +216,8 @@ public class RegisterActivity extends Activity {
 		userName = (EditText) findViewById(R.id.reg_user_name);
 		CheckBox myCheckBox = (CheckBox) findViewById(R.id.CheckBox);
 		Button saveBtn = (Button) findViewById(R.id.appect);
-		Button exitBtn = (Button) findViewById(R.id.exit);
-
 		// 获得内容或添加事件
 		checked = myCheckBox.isChecked();
-		// 校验用户名
-		userName.setOnFocusChangeListener(new OnFocusChangeListener() {
-
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-
-				if (!userName.hasFocus()) {
-					userNameReg = userName.getText().toString();
-					if ("".equals(userNameReg)) {
-						Toast.makeText(RegisterActivity.this,
-								R.string.user_name_check, Toast.LENGTH_LONG)
-								.show();
-						return;
-					}
-				}
-
-			}
-		});
 
 		saveBtn.setOnClickListener(new OnClickListener() {
 
@@ -277,6 +230,19 @@ public class RegisterActivity extends Activity {
 							.show();
 					return;
 				}
+
+				// 校验用户名
+
+				if (!userName.hasFocus()) {
+					userNameReg = userName.getText().toString();
+					if ("".equals(userNameReg)) {
+						Toast.makeText(RegisterActivity.this,
+								R.string.user_name_check, Toast.LENGTH_LONG)
+								.show();
+						return;
+					}
+				}
+
 				pass1Reg = pass1.getText().toString();
 				// pass2Reg = pass2.getText().toString();
 				if (pass1Reg.length() < 6) {
@@ -313,17 +279,6 @@ public class RegisterActivity extends Activity {
 					aDig.show();
 					return;
 				}
-
-			}
-		});
-		exitBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				userName.setText("");
-				pass1.setText("");
-				pass2.setText("");
-				checked = true;
 
 			}
 		});

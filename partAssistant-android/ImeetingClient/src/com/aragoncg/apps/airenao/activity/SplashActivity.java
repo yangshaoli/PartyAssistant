@@ -246,33 +246,10 @@ public class SplashActivity extends Activity {
 
 						String uId = jsonObject.getJSONObject("datasource")
 								.getString("uid");
-						SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-						tempActivity = DbHelper.select(db);
-						activityList = (ArrayList<Map<String, Object>>) DbHelper
-								.selectActivitys(db);
-						if (tempActivity != null) {
-
-							Message message = new Message();
-							message.what = MSG_ID_LOG_CREATE;
-							Bundle bundle = new Bundle();
-							bundle.putSerializable(Constants.ONE_PARTY,
-									tempActivity);
-							message.setData(bundle);
-							mHandler.sendMessageDelayed(message, 0);
-
-						} else {
-
-							if (activityList.size() > 0) {
-								mHandler.sendEmptyMessageDelayed(
-										MSG_ID_LOG_LIST, 0);
-
-							} else {
-								mHandler.sendEmptyMessageDelayed(
-										MSG_ID_LOG_CREATE_NULL, 0);
-							}
-
-						}
-
+						
+						Intent intent = new Intent(SplashActivity.this, MeetingListActivity.class);
+						startActivity(intent);
+						
 						// myProgressDialog.cancel();
 					} else {
 						Message message = new Message();

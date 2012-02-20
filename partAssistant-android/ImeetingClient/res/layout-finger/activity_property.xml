@@ -11,6 +11,7 @@
 			android:layout_weight="1" android:paddingLeft="2dip" android:text="" />
 
 		<TextView android:layout_width="wrap_content"
+			android:layout_marginLeft="5dip"
 			android:layout_height="wrap_content" android:id="@+id/activity_scale"
 			android:text="0/0" android:layout_gravity="center" />
 

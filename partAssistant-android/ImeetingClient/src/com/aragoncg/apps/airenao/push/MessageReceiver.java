@@ -18,7 +18,7 @@ public class MessageReceiver extends BroadcastReceiver {
 			msg = intent.getStringExtra(AndroidPushService.MESSAGE_CONTENT);
 		}
 		
-		AndroidPushService.setCustomNotificationContent(context, msg);
+		//AndroidPushService.setCustomNotificationContent(context, msg);
 		//Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
 		
 	}
