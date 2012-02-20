@@ -98,8 +98,16 @@
 		
 	  	<activity android:name=".activity.PersoninfoSetActivity" >
         </activity>
+        	<activity android:name=".activity.PlaceSearch" >
+        </activity>
+       
         <activity android:name=".activity.PreviewActivity">
 		</activity>
+		 <activity android:name=".activity.DetailAgreement">
+		</activity>
+		<activity android:name=".activity.AgainInvite"> 
+    		
+        </activity>
 		<receiver android:name=".push.MessageReceiver">
         	<intent-filter>
             	<action android:name="com.aragoncg.apps.airenao" />

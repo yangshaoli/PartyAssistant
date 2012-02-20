@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="fill_parent" >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -22,6 +22,7 @@
         <!-- Background & Center -->
 
         <LinearLayout
+            android:id="@+id/reg_layout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal"
@@ -96,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingBottom="10sp"
-                    android:text="@string/login_label_password"
+                    android:text="@string/login_label_nickname"
                     android:textColor="#000000"
                     android:textSize="18sp" />
 
@@ -141,69 +142,74 @@
             <!-- android:background="#ded8f9"提示框 -->
             <!-- android:focusable="false" 就不会出现 软键盘，但要是出现滚动条是不是还要删掉 -->
 
-            <EditText
-                android:id="@+id/text_view"
+  <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="160dip"
-                android:layout_marginBottom="15dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/biankuang_hong"
-                android:enabled="false"
-                android:focusable="false"
-                android:gravity="top"
-                android:maxLines="6"
-                android:paddingLeft="14dp"
-                android:paddingRight="5dp"
-                android:paddingTop="14dp"
-                android:scrollbars="horizontal"
-                android:singleLine="false"
-                android:text="爱热闹服务涉及到的产品的所有权以及相关软件的知识产权归华美汉盛软件公司所有"
-                android:textColor="#000000"
-                android:textSize="24px" />
-            <!-- 复选框 -->
-
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal" >
             <CheckBox
                 android:id="@+id/CheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:checked="true"
-                android:text="是否同意本协议" >
+                android:text="" >
             </CheckBox>
+            
+              <TextView
+                    android:id="@+id/textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                     android:layout_marginTop="10dp"
+                    android:text="是否同意"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:visibility="visible" />
             <!-- Button Center -->
-
+  </LinearLayout>
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingTop="30sp" >
+                android:paddingTop="15sp" >
 
                 <Button
                     android:id="@+id/appect"
-                    android:layout_width="wrap_content"
+                    android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
+                    android:layout_gravity="center_horizontal"
                     android:background="@drawable/button_red"
-                    android:paddingLeft="10sp"
-                    android:paddingRight="10sp"
+                   
                     android:text="@string/save"
                     android:textColor="#FFFFFF" />
 
-                <Button
-                    android:id="@+id/exit"
+             
+            </LinearLayout>
+            
+                <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:orientation="horizontal" >
+            
+              <TextView
+                   android:gravity="center"
+                    android:id="@+id/textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:background="@drawable/button_red"
-                    android:paddingLeft="10sp"
-                    android:paddingRight="10sp"
-                    android:text="@string/btn_cancle"
-                    android:textColor="#FFFFFF" />
-            </LinearLayout>
+                    android:layout_marginLeft="20dp"
+                     android:layout_marginTop="10dp"
+                    android:text="密码将以短信"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:visibility="visible" />
+            <!-- Button Center -->
+  </LinearLayout>
+                
         </LinearLayout>
     </LinearLayout>
 

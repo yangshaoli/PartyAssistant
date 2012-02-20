@@ -28,6 +28,7 @@ public class DbHelper {
 	public final static String DONOTHING_TABLE_NAME = "doNothingClients";
 	public final static String REFUSED_TABLE_NAME = "refusedClients";
 	public final static String APPLIED_TABLE_NAME = "appliedClients";
+	public final static String PLACE_TABLE_NAME = "place";
 
 	public final static String PARTY_ID = "partyid";
 	public final static String FIELD_ID = "_id";
@@ -44,6 +45,8 @@ public class DbHelper {
 	public final static String FIELD_TITLE_NEW_UN_SN_UP = "newunsignup";
 	public final static String FIELD_TITLE_UN_JOIN = "unjoin";
 	public final static String FLAG_NEW = "flagnew";
+	public final static String FIELD_TITLE_PLACE = "place";
+	public final static String FIELD_TITLE_ITEMCOUNT = "itemcount";
 
 	private static DbHelper myDbHelper;
 	private static List<Map<String, Object>> listActivity;
@@ -62,10 +65,13 @@ public class DbHelper {
 	public static final String deleteTableRefusedSql = " delete from "
 			+ REFUSED_TABLE_NAME;
 
-	public static final String createSql = "Create table " + LAST_TABLE_NAME
-			+ "(" + FIELD_ID + " integer primary key autoincrement,"
-			+ FIELD_TITLE_TIME + " text, " + FIELD_TITLE_POSITION + " text, "
-			+ FIELD_TITLE_NUMBER + " text, " + FIELD_TITLE_CONTENT + " text);";
+	public static final String deletePlaceSql = " delete from "
+			+ PLACE_TABLE_NAME;
+
+	public static final String createPlaceSql = "Create table if not exists "
+			+ PLACE_TABLE_NAME + "(" + FIELD_ID
+			+ " integer primary key autoincrement," + FIELD_TITLE_PLACE
+			+ " text unique, " + FIELD_TITLE_ITEMCOUNT + " integer " + ")";
 
 	public static final String createSql1 = "Create table "
 			+ ACTIVITY_TABLE_NAME + "(" + FIELD_ID
@@ -93,6 +99,11 @@ public class DbHelper {
 			+ " integer primary key autoincrement, " + " id text, " + PARTY_ID
 			+ " text, " + "name" + " text, " + "phoneNumber" + " text, "
 			+ "comment" + " text, " + "isCheck" + " text);";
+
+	public static final String createSql = "Create table " + LAST_TABLE_NAME
+			+ "(" + FIELD_ID + " integer primary key autoincrement,"
+			+ FIELD_TITLE_TIME + " text, " + FIELD_TITLE_POSITION + " text, "
+			+ FIELD_TITLE_NUMBER + " text, " + FIELD_TITLE_CONTENT + " text);";
 
 	public static final String dropSql = " DROP TABLE IF EXISTS "
 			+ LAST_TABLE_NAME;
@@ -131,7 +142,7 @@ public class DbHelper {
 
 	public static void createTables(SQLiteDatabase db, String sql) {
 		db.execSQL(sql);
-		
+
 	}
 
 	public static long insert(SQLiteDatabase db, AirenaoActivity airenao) {
@@ -300,6 +311,7 @@ public class DbHelper {
 		cursor = db.rawQuery(sql, null);
 		if (cursor != null) {
 			if (cursor.getCount() < 1) {
+				cursor.close();
 				return clientsList;
 			} else {
 				// cursor.moveToFirst();
@@ -403,6 +415,28 @@ public class DbHelper {
 		return airenao;
 	}
 
+	public static boolean updateAirenaoActivity(SQLiteDatabase db, String tableName,
+			String partyId,String content) {
+		try {
+			
+			db.execSQL("UPDATE " + tableName + " SET "
+					+ FIELD_TITLE_NAME + "=? " +
+					 " where " 
+					+ PARTY_ID + "=? ", new String[] { partyId, content
+					});
+					
+	
+			return true;
+
+		}
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	
 	public static void delete(SQLiteDatabase db, String sql) {
 
 		// SQLiteDatabase db=this.getWritableDatabase();
@@ -447,6 +481,144 @@ public class DbHelper {
 		return null;
 	}
 
+	public static boolean insertPlace(SQLiteDatabase db, String tableName,
+			String place, int count) {
+		try {
+			db.execSQL("INSERT INTO " + tableName + "(" + FIELD_TITLE_PLACE + " , "
+					+ FIELD_TITLE_ITEMCOUNT + ") VALUES (?,?)", new Object[] {
+					place, count });
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static Cursor selectPlace(SQLiteDatabase db, String tableName,
+			String where) {
+		Cursor cursor = null;
+		try {
+			if ("".equals(where)) {
+				cursor = db.rawQuery("SELECT * FROM " + tableName
+						+ " Order By " + FIELD_TITLE_ITEMCOUNT + " DESC "
+						+ " limit 0,10 ", new String[] {});
+				System.out.println("second" + cursor.getCount());
+			} else {
+				cursor = db.rawQuery("SELECT * FROM " + tableName + " WHERE "
+						+ FIELD_TITLE_PLACE + " like '" + where + "%" + "'"
+						+ " Order By " + FIELD_TITLE_ITEMCOUNT + " DESC "
+						+ " limit 0,10 ", new String[] {});
+			}
+			// cursor.moveToFirst();
+			// String sql = "SELECT * FROM " + tableName + " WHERE "
+			// + Constants.ID + " = " + id;
+			// System.out.println(cursor.getCount()+sql);
+			//				
+			// cursor.getColumnIndex(Constants.PARTYID);
+			// System.out.println("a"+cursor.getString(cursor.getColumnIndex(Constants.NAME)));
+			// if (cursor != null) {
+			// ClientsData clientData = new ClientsData();
+			// clientData.setId(id);
+			// clientData.setPartyId(cursor.getString(2));
+			// clientData.setPeopleName(cursor.getString(3));
+			// clientData.setPhoneNumber(cursor.getString(4));
+			// clientData.setComment(cursor.getString(5));
+			// clientData.setIsCheck(cursor.getString(6));
+			// cursor.close();
+			// return clientData;
+			// }
+
+			// if (cursor != null) {
+			// cursor.close();
+			// }
+			return cursor;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return cursor;
+	}
+
+	public static boolean updatePlace(SQLiteDatabase db, String tableName,
+			int itemCount,int fieldId) {
+		Cursor cursor = null;
+		try {
+			
+			db.execSQL("UPDATE " + tableName + " SET "
+					+ FIELD_TITLE_ITEMCOUNT + "=? " +
+					 " where " 
+					+ FIELD_ID + "=? ", new Integer[] { itemCount, fieldId
+					});
+			
+//			db.execSQL("UPDATE " + tableName + " SET "
+//					+ FIELD_TITLE_ITEMCOUNT + "=? where " 
+//					+ FIELD_ID + "=? ", new Integer[] { itemCount, fieldId
+//					});
+			
+			
+			//int addId = id + 1;
+//			cursor = db.rawQuery(" UPDATE " + tableName + " SET " + FIELD_TITLE_ITEMCOUNT
+//					+ " = " + itemCount +  " WHERE " + FIELD_ID + " = " + fieldId,
+//					new String[] {});
+			cursor = db.rawQuery("SELECT * FROM " + tableName
+					+ " Order By " + FIELD_TITLE_ITEMCOUNT + " DESC "
+					+ " limit 0,10 ", new String[] {});
+			cursor.moveToFirst();
+			
+			do{
+				int tempcount = cursor.getColumnIndexOrThrow(DbHelper.FIELD_TITLE_ITEMCOUNT);
+				int itemCount1 = cursor.getInt(tempcount);
+				
+				int tempId = cursor.getColumnIndexOrThrow(DbHelper.FIELD_ID);
+				int fieldId1 = cursor.getInt(tempId);
+				
+				System.out.println(itemCount1+"item"+fieldId1);
+			}while(cursor.moveToNext());
+				
+			
+			
+//			while(cursor.moveToNext()){
+//				int tempcount = cursor.getColumnIndexOrThrow(DbHelper.FIELD_TITLE_ITEMCOUNT);
+//				int itemCount1 = cursor.getInt(tempcount);
+//				
+//				int tempId = cursor.getColumnIndexOrThrow(DbHelper.FIELD_ID);
+//				int fieldId1 = cursor.getInt(tempId);
+//				
+//				System.out.println(itemCount1+"item"+fieldId1);
+//			}
+			if(cursor != null)
+			return true;
+
+		}
+		// cursor.moveToFirst();
+		// String sql = "SELECT * FROM " + tableName + " WHERE "
+		// + Constants.ID + " = " + id;
+		// System.out.println(cursor.getCount()+sql);
+		//				
+		// cursor.getColumnIndex(Constants.PARTYID);
+		// System.out.println("a"+cursor.getString(cursor.getColumnIndex(Constants.NAME)));
+		// if (cursor != null) {
+		// ClientsData clientData = new ClientsData();
+		// clientData.setId(id);
+		// clientData.setPartyId(cursor.getString(2));
+		// clientData.setPeopleName(cursor.getString(3));
+		// clientData.setPhoneNumber(cursor.getString(4));
+		// clientData.setComment(cursor.getString(5));
+		// clientData.setIsCheck(cursor.getString(6));
+		// cursor.close();
+		// return clientData;
+		// }
+
+		// if (cursor != null) {
+		// cursor.close();
+		// }
+
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 	public static boolean insertDetailPeopleInfo(SQLiteDatabase db,
 			String tableName, ClientsData clientData) {
 		try {
@@ -473,24 +645,25 @@ public class DbHelper {
 			cursor = db.rawQuery("SELECT * FROM " + tableName + " WHERE "
 					+ Constants.ID + " = " + id, new String[] {});
 			cursor.moveToFirst();
-				String sql = "SELECT * FROM " + tableName + " WHERE "
-				+ Constants.ID + " = " + id;
-				System.out.println(cursor.getCount()+sql);
-				
-				cursor.getColumnIndex(Constants.PARTYID);
-				System.out.println("a"+cursor.getString(cursor.getColumnIndex(Constants.NAME)));
-				if (cursor != null) {
-					ClientsData clientData = new ClientsData();
-					clientData.setId(id);
-					clientData.setPartyId(cursor.getString(2));
-					clientData.setPeopleName(cursor.getString(3));
-					clientData.setPhoneNumber(cursor.getString(4));
-					clientData.setComment(cursor.getString(5));
-					clientData.setIsCheck(cursor.getString(6));
-					cursor.close();
-					return clientData;
-				}
-			
+			String sql = "SELECT * FROM " + tableName + " WHERE "
+					+ Constants.ID + " = " + id;
+			System.out.println(cursor.getCount() + sql);
+
+			cursor.getColumnIndex(Constants.PARTYID);
+			System.out.println("a"
+					+ cursor.getString(cursor.getColumnIndex(Constants.NAME)));
+			if (cursor != null) {
+				ClientsData clientData = new ClientsData();
+				clientData.setId(id);
+				clientData.setPartyId(cursor.getString(2));
+				clientData.setPeopleName(cursor.getString(3));
+				clientData.setPhoneNumber(cursor.getString(4));
+				clientData.setComment(cursor.getString(5));
+				clientData.setIsCheck(cursor.getString(6));
+				cursor.close();
+				return clientData;
+			}
+
 			if (cursor != null) {
 				cursor.close();
 			}
@@ -516,53 +689,58 @@ public class DbHelper {
 	public static void close(SQLiteDatabase db) {
 		db.close();
 	}
-	
+
 	/**
-	 * 更新通过接口
-	 * cuiky
+	 * 更新通过接口 cuiky
 	 */
-	public static String upData(String tableName, ContentValues contentValues, String whereArg){
-		String msg="";
-		String[] whereArgs={whereArg};
+	public static String upData(String tableName, ContentValues contentValues,
+			String whereArg) {
+		String msg = "";
+		String[] whereArgs = { whereArg };
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-		if(db!=null){
-			try{
-				db.update(tableName, contentValues, PARTY_ID+"=?", whereArgs);
-			}catch(Exception e){
-				msg="数据库异常";
-			}finally{
+		if (db != null) {
+			try {
+				db.update(tableName, contentValues, PARTY_ID + "=?", whereArgs);
+			} catch (Exception e) {
+				msg = "数据库异常";
+			} finally {
 				db.close();
 			}
-		}else{
-			msg="数据库获取异常";
+		} else {
+			msg = "数据库获取异常";
 		}
-		
+
 		return msg;
 	}
+
 	/**
-	 * 更新通过数据库
-	 * cuiky
+	 * 更新通过数据库 cuiky
+	 * 
 	 * @return
 	 */
-	public static String updataBySql(String tableName,String[] Columns, String whereArg){
-		String msg="";
-		//update myActivitys set signup = signup+1 , unsignup = unsignup+1 where _id=22
+	public static String updataBySql(String tableName, String[] Columns,
+			String whereArg) {
+		String msg = "";
+		// update myActivitys set signup = signup+1 , unsignup = unsignup+1
+		// where _id=22
 
-		String sql = "update " + tableName + " set "+Columns[0]+" = "+Columns[0]+"-1,"+Columns[1]+"="+Columns[1]+"+1" + " where "+DbHelper.PARTY_ID+"="+whereArg;
+		String sql = "update " + tableName + " set " + Columns[0] + " = "
+				+ Columns[0] + "-1," + Columns[1] + "=" + Columns[1] + "+1"
+				+ " where " + DbHelper.PARTY_ID + "=" + whereArg;
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-		if(db!=null){
-			try{
+		if (db != null) {
+			try {
 				db.execSQL(sql);
-			}catch(Exception e){
-				msg="数据库异常";
-			}finally{
+			} catch (Exception e) {
+				msg = "数据库异常";
+			} finally {
 				db.close();
 			}
-		}else{
-			msg="数据库获取异常";
+		} else {
+			msg = "数据库获取异常";
 		}
-		
+
 		return msg;
 	}
-	
+
 }

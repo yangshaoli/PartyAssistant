@@ -56,46 +56,51 @@
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:layout_below="@id/password_edit"
-    	android:layout_alignRight="@id/password_edit"
+    	
+    	
     	android:text="@string/login_label_signin"
     	android:background="@drawable/blue_button"
+    	
     />
     <!-- 注册button -->
-    <Button 
-    	android:id="@+id/register_button"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_below="@id/password_edit"
-    	android:layout_toLeftOf="@id/signin_button"
-    	android:layout_marginRight="15dip"
-    	android:text="@string/login_register"
-    	android:background="@drawable/blue_button"
-    />
+   
   </RelativeLayout>
   
   
-  <RelativeLayout 
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      >
-	 <TextView  android:id="@+id/register_link"
-	     android:text="@string/login_register_link"
-	     android:layout_width="wrap_content"
-	     android:layout_height="wrap_content"
-	     android:layout_marginTop="8dp"
-	     android:layout_marginLeft="15dp"
-	     android:textColor="#888"
-	     android:textColorLink="#FF0066CC"
-	  />
+  
+	 <LinearLayout
+                android:id="@+id/sendLinout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"                     
+                android:orientation="horizontal" >
 	  <Button 
     	android:id="@+id/find_back"
     	android:layout_centerHorizontal="true"
 	  	android:layout_width="wrap_content"
 	  	android:layout_height="wrap_content"
-	  	android:layout_toRightOf="@id/register_link"
+	  
+	  	android:layout_marginLeft="80dp"
+	  	android:layout_marginRight="50dp"
     	android:text="@string/login_label_find_back"
     	android:background="@drawable/blue_button"
      />
+	  
+	   <Button 
+    	android:id="@+id/register_button"
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_marginRight="80dp"	
+    	android:text="@string/login_register"
+    	android:background="@drawable/blue_button"
+    />
+	  </LinearLayout>
+	  
+	      <LinearLayout
+                android:id="@+id/sendLinout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" 
+                android:layout_marginTop="50dp"                    
+                android:orientation="horizontal" >
 	    <ImageView android:id="@+id/airenao_logo"
 	        android:src="@drawable/cat"
 	        android:layout_width="wrap_content"
@@ -111,8 +116,7 @@
 	     android:layout_height="wrap_content"
 	     android:layout_toLeftOf="@id/airenao_logo"
 	     android:layout_alignBottom="@id/airenao_logo"
-	     android:paddingBottom="8dp"
-	      />
-	    </RelativeLayout>
+	     android:paddingBottom="8dp"></ImageView>
+	</LinearLayout>
  
 </LinearLayout>

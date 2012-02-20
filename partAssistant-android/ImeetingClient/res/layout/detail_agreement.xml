@@ -1,0 +1,44 @@
+ <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        >
+       
+    
+	 <RelativeLayout
+		android:layout_width="fill_parent"
+		android:layout_height="60dip"
+		android:layout_gravity="center_horizontal"
+		android:background="@drawable/red_button"
+		android:layout_alignParentBottom="true"
+		>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			 android:layout_centerInParent="true" 
+			
+			android:text="@string/app_agreement"
+			android:id="@+id/btnagree"/>
+	
+	</RelativeLayout>
+
+    <ScrollView android:id="@android:id/empty"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+       
+    >
+        <TextView android:id="@+id/emptyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+           
+            android:text="No Contacts"
+           
+            android:textSize="20sp"
+            android:textColor="?android:attr/textColorSecondary"
+           
+            android:lineSpacingMultiplier="0.92"
+        />
+    </ScrollView>
+   
+</RelativeLayout>

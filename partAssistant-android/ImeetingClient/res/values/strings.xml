@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">爱热闹</string>
-	  
+	<string name="app_agreement">同意此协议</string>  
 	<string name="join_me">我要参加</string> 
 	<string name="admin_psw">请填入号码</string>
 	<string name="sure">确定</string>
@@ -20,6 +20,7 @@
     <string name="send_failed">分享失败！</string>
     
 	<string name="menuEdit">编辑</string>
+	<string name="menuinvite">再次邀请</string>
 	<string name="create_activity">创建活动</string>
 	<string name="detailActivity">短信内容</string>
 	<string name="meeting_list">活动列表</string>
@@ -41,6 +42,9 @@
 	<string name="btn_ok">确定</string>
 	<string name="btn_cancle">取消</string>
 	<string name="btn_setting">设置</string>
+	<string name="btn_invite">邀请</string>
+	<string name="btn_edit">编辑</string>
+	<string name="btn_sendornot">是否再次发送</string>
 	<string name="memu_send_way">发送方式</string>
 	<string name="sendLableTime">时间待定</string>
 	<string name="sendLablePosition">地点待定</string>
@@ -58,6 +62,7 @@
 	<string name="menuExit">登出</string>
 	<string name="login_label_username">帐号:</string>
 	<string name="login_label_password">密码:</string>
+	<string name="login_label_nickname">昵称:</string>
 	<string name="register_label_pass_insure">确认:</string>
 	<string name="login_label_signin">登 录</string>
 	<string name="login_label_find_back">找回</string>

@@ -90,6 +90,7 @@ public class SendAirenaoActivity extends Activity {
 	private static final int EXCEPTION = 1;
 	private static final int SUCCESS = 3;
 	private static final int SEND_WAY_ONE = 0;
+	public static JSONArray staticMyDicts = new JSONArray();
 	public AlertDialog pswAlertDialog;
 	public static int judgeCursor = 0;
 	public static String temp = "";
@@ -104,6 +105,7 @@ public class SendAirenaoActivity extends Activity {
 	private ImageButton btnJoin;
 	private ImageButton btnSetTime;
 	private ImageButton btnSetDestination;
+	private ArrayList<ClientsData> clientDataList;
 	
 	private ImageButton btnSendReciever;
 	private EditText txtSendLableContent;
@@ -120,6 +122,8 @@ public class SendAirenaoActivity extends Activity {
 	private boolean sendSMS = true;
 	private boolean isShow = false;
 	private boolean firstSetTime = true;
+	private String nameAndPhone= "";
+	private boolean detailFlag = false;
 	public static boolean fromPeopleInfo;
 	ArrayList<MyPerson> allList;
 	private String theContent;
@@ -169,7 +173,7 @@ public class SendAirenaoActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.send_airenao_layout);
 		ActivityManager.getInstance().addActivity(this);
-
+		System.out.println("oncreat");
 		init();
 		getCurrentTime();
 		initHandler();
@@ -380,6 +384,23 @@ public class SendAirenaoActivity extends Activity {
 
 	@Override
 	protected void onResume() {
+		//Bundle bundle = getIntent().getExtras();
+		
+		System.out.println("onresume");
+		if(DetailActivity.DetailActivityFlag){
+			nameAndPhone = getIntent().getStringExtra(Constants.NAMEANDPHONE);
+			smsContent = getIntent().getStringExtra(Constants.SEND_CONTENT);
+			partyId = getIntent().getStringExtra(Constants.PARTY_ID);
+			//String nameAndPhone = bundle.getString(Constants.NAMEANDPHONE);
+			if(!"".equals(smsContent)){
+				txtSendLableContent.setText(smsContent);
+				txtSendLableContent.setFocusable(false); 
+				txtSendLableContent.setClickable(false);
+			}
+			detailFlag = true;
+			DetailActivity.DetailActivityFlag = false;
+		}
+		
 		if (activityFlag) {
 
 			names = "";
@@ -570,7 +591,7 @@ public class SendAirenaoActivity extends Activity {
 				if (sendSMS) {
 					saveToPcAndSaveDicts(noContacts);
 				}
-
+				
 			}
 		};
 	}
@@ -586,7 +607,7 @@ public class SendAirenaoActivity extends Activity {
 		Constants.countId++;
 		AirenaoActivity tempActivity = new AirenaoActivity();
 
-		ArrayList<ClientsData> clientDataList = new ArrayList<ClientsData>();
+		clientDataList = new ArrayList<ClientsData>();
 
 		JSONArray myDicts = new JSONArray();
 		Iterator<Entry<String, String>> iter = tempClientDicts.entrySet()
@@ -621,7 +642,7 @@ public class SendAirenaoActivity extends Activity {
 			}
 
 		}
-
+		
 		// 将数据保存到本地数据库
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		tempActivity.setActivityContent(smsContent);
@@ -969,6 +990,16 @@ public class SendAirenaoActivity extends Activity {
 			}
 		});
 		
+		btnSetDestination.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(SendAirenaoActivity.this,PlaceSearch.class);
+				startActivityForResult(intent, 30);
+			}
+		});
+		
+		
 		btnSetTime.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -1030,13 +1061,24 @@ public class SendAirenaoActivity extends Activity {
 									}).create();
 					noticeDialog.show();
 				} else {
-					progerssDialog = ProgressDialog.show(
-							SendAirenaoActivity.this, "", "发送中...", true, true);
-					initThreadSaveMessage(null);
-					myHandler.postDelayed(threadSaveMessage, 2000);
+					if(!detailFlag){
+						progerssDialog = ProgressDialog.show(
+								SendAirenaoActivity.this, "", "发送中...", true, true);
+						initThreadSaveMessage(null);
+						myHandler.postDelayed(threadSaveMessage, 2000);
+					}
+					else{
+						progerssDialog = ProgressDialog.show(
+								SendAirenaoActivity.this, "", "发送中...", true, true);
+						initThreadSaveMessage(null);
+						myHandler.postDelayed(threadSaveMessage, 2000);
+						detailFlag = false;
+						Toast.makeText(SendAirenaoActivity.this, "detailFlag", Toast.LENGTH_SHORT).show();
+					}
+					
 
 				}
-
+			
 			}
 		});
 
@@ -1206,7 +1248,7 @@ public class SendAirenaoActivity extends Activity {
 	// 获得返回的数据
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+		System.out.println("onactivity");
 		super.onActivityResult(requestCode, resultCode, data);
 		if (21 == resultCode) {
 			names = "";
@@ -1236,9 +1278,19 @@ public class SendAirenaoActivity extends Activity {
 				// allList.clear();
 				// allList = personList;
 				peopleNumbers.setText(names);
-				string = peopleNumbers.getText().toString();
-				peopleNumbers.setSelection(string.length());
+				
+				peopleNumbers.setSelection(names.length());
 			}
+		}
+		if(31 == resultCode){
+			String txt = txtSendLableContent.getText().toString();
+			String nam = data.getStringExtra("nam");
+			if(!"".equals(nam)){
+				txtSendLableContent.setText(txt+nam);
+			}
+			//txtSendLableContent.setText(PlaceSearch.placeName);
+			
+			txtSendLableContent.setSelection((txt+nam).length());
 		}
 
 	}
