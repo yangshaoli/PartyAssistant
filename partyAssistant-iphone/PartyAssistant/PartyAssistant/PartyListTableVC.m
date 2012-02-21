@@ -76,7 +76,6 @@
         partyModel.type=[partyDict objectForKey:@"type"];
         [self.partyList addObject:partyModel];
     }
-
     self.title=@"活动列表";
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
@@ -598,7 +597,6 @@
 #pragma mark Data Source Loading / Reloading Methods
 
 - (void)reloadTableViewDataSource{
-	
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
     _reloading = YES;//开始加载数据
@@ -628,7 +626,7 @@
 	//  should be calling your tableviews data source model to reload
 	//  put here just for demo
     _reloading = YES;
-   [self requestDataWithLastID:self.lastID];
+    [self requestDataWithLastID:self.lastID];
 	[self doneLoadingBottomRefreshTableViewData];
 }
 
@@ -642,7 +640,6 @@
 }
 
 - (void)doneLoadingBottomRefreshTableViewData{
-	
 	//  model should call this when its done loading
 	_reloading = NO;
     [self.tableView reloadData];
@@ -673,13 +670,11 @@
 }
 
 - (BOOL)refreshTableHeaderDataSourceIsLoading:(id<RefreshTableViewProtocol>)view{
-	
 	return _reloading; // should return if data source model is reloading
 	
 }
 
 - (NSDate*)refreshTableHeaderDataSourceLastUpdated:(id<RefreshTableViewProtocol>)view{
-	
 	return [NSDate date]; // should return date data source was last changed
 }
 

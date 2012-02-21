@@ -133,8 +133,8 @@
         }
     }
     
-    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
-    
+//    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+//    
     self.sendModeNameLabel.clipsToBounds = YES;
     self.leftCountLabel.clipsToBounds = YES;
     
