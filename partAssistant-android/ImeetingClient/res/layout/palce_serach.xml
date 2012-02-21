@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
         android:background="@drawable/bj"
         android:orientation="vertical"
         android:weightSum="1" >
@@ -18,13 +15,11 @@
             android:orientation="horizontal"
             android:paddingTop="0dip" >
 
-            <include layout="@layout/user_layout" />
-
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="37sp"
                 android:gravity="center|center_horizontal"
-                android:text="@string/send_airenao_title"
+                android:text="@string/send_airenao_place"
                 android:textColor="#FFFFFF"
                 android:textSize="25sp" />
         </RelativeLayout>
@@ -42,7 +37,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="15dp"
-                android:text="@string/send_airenao_reciever"
+                android:text="@string/send_airenao_selectplace"
                 android:textColor="@color/black" />
 
             <RelativeLayout
@@ -85,5 +80,3 @@
             </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
-
-</ScrollView>

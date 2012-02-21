@@ -20,35 +20,33 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
@@ -92,10 +90,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private static final int FAIL = 3;
 	private static final int EXCEPTION = 2;
 	private static final int MENU_DELETE = 0;
-	private static final int MENU_REFRESH = 1;
-	private static final int MENU_SHARE = 2;
-	private static final int MENU_SETTINT = 3;
-	private static final int MENU_EDIT = 4;
+	private static final int MENU_SHARE = 1;
+	private static final int MENU_EDIT = 2;
+	private static final int MENU_INVITE = 3;
 	private static final int MSG_ID_DELETE = 4;
 	private static final int MSG_ID_REFRESH = 5;
 	private static final int MSG_ID_SETTING = 6;
@@ -220,11 +217,11 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		myCache = new ComponentsCache();
 		// 获得menu data
 		resImageArry = new int[] { R.drawable.delete_detail,
-				R.drawable.btn_synchronize, R.drawable.share_detail,
-				R.drawable.btn_setting, R.drawable.menu_edit };
+				 R.drawable.share_detail,
+				 R.drawable.menu_edit,R.drawable.invite};
 		resMenuNameArry = new String[] { getString(R.string.delete),
-				getString(R.string.refresh), getString(R.string.share),
-				getString(R.string.btn_invite), getString(R.string.menuEdit) };
+				getString(R.string.share),
+				getString(R.string.menuEdit),getString(R.string.menuinvite)};
 
 		/**
 		 * 得到menu的样式属性
@@ -268,21 +265,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			@Override
 			public void run() {
 				myDicts = new JSONArray();
-				// Intent myIntent = getIntent();
-				// myAirenaoActivity = (AirenaoActivity) myIntent
-				// .getSerializableExtra(Constants.TO_DETAIL_ACTIVITY);
-				// if (myAirenaoActivity != null) {
-				// partyId = myAirenaoActivity.getId();
 				mData = new ArrayList<Map<String, Object>>();
 				ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
 				SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 				myList.addAll((ArrayList<ClientsData>) DbHelper
-						.selectClientData(db, "appliedClients", partyId));
-				myList.addAll((ArrayList<ClientsData>) DbHelper
-						.selectClientData(db, "doNothingClients", partyId));
-				myList.addAll((ArrayList<ClientsData>) DbHelper
-						.selectClientData(db, "refusedClients", partyId));
-				db.close();
+						.selectClientData(db, 
+								DbHelper.TABLE_CLIENTS, partyId,null));
 				for (int i = 0; i < myList.size(); i++) {
 
 					HashMap<String, Object> map = new HashMap<String, Object>();
@@ -321,8 +309,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						dict = dict.replace("-", "");
 					}
 					nameAndPhone += name + "<" + dict + ">" + ",";
-					System.out.println(name + dict);
-					System.out.println(nameAndPhone);
 					JSONObject Json = new JSONObject();
 					try {
 						Json.put("cName", name);
@@ -342,46 +328,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 				msg.what = MSG_ID_SETTING;
 				myHandler.sendMessage(msg);
 			}
-			// SharedPreferences mySharedPreferences = AirenaoUtills
-			// .getMySharedPreferences(EditActivity.this);
-			// userId = mySharedPreferences.getString(
-			// Constants.AIRENAO_USER_ID, "");
-			// // 将数据保存到后台
-			// HashMap<String, String> params = new HashMap<String, String>();
-			// params.put(Constants.ACTIVITY_RECEIVERS, myDicts.toString());
-			// params.put(Constants.CONTENT, edtActivityDes.getText()
-			// .toString());
-			//
-			// params.put(Constants.ACTIVITY_SEND_BYSELF, 0 + "");
-			//
-			// params.put("uID", userId);
-			// params.put(Constants.ADDRESS_TYPE, "android");
-			// String url = "";
-			// url = Constants.DOMAIN_NAME
-			// + Constants.SUB_DOMAIN_PARTY_RESEND_URL;
-			// params.put("partyID", partyId);
-			// HttpHelper httpHelper = new HttpHelper();
-			// // 保存到后台，没有提示信息
-			// String result = httpHelper.savePerformPost(url, params,
-			// EditActivity.this);
-			// String resultOut = AirenaoUtills.linkResult(result);
-			// try {
-			// JSONObject output = new JSONObject(resultOut)
-			// .getJSONObject(Constants.OUT_PUT);
-			// String status = output.getString(Constants.STATUS);
-			// String description = output
-			// .getString(Constants.DESCRIPTION);
-			// JSONObject dataSource = output.getJSONObject("datasource");
-			// if ("ok".equals(status)) {
-			// int count = dataSource.getInt("sms_count_remaining");
-			// int partyId = dataSource.getInt("partyId");
-			// System.out.println(count + "a" + partyId);
-			// Message msg = new Message();
-			// msg.what = againSend;
-			// myHandler.sendMessage(msg);
-			//
-			// }
-
 		};
 	}
 
@@ -475,15 +421,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						new Handler().post(remove);
 					}
 					break;
-				case MENU_REFRESH:
-					if (pw.isShowing()) {
-						pw.dismiss();
-						progressDialog = ProgressDialog.show(
-								DetailActivity.this, "", "loading...", true,
-								true);
-						dataList = getDataFromServer();
-					}
-					break;
+				
 				case MENU_SHARE:
 					if (pw.isShowing()) {
 						pw.dismiss();
@@ -526,16 +464,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 					}
 					break;
-				case MENU_SETTINT:
-					if (pw.isShowing()) {
-						pw.dismiss();
-					}
-					initRunable();
-					myHandler.post(AgainInviteTask);
-					// Thread t = new Thread(AgainInviteTask);
-					// t.start();
-					
-					break;
 				case MENU_EDIT:
 					if (pw.isShowing()) {
 						pw.dismiss();
@@ -550,6 +478,13 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						startActivity(intent);
 						finish();
 					}
+					break;
+				case MENU_INVITE:
+					if (pw.isShowing()) {
+						pw.dismiss();
+					}
+					initRunable();
+					myHandler.post(AgainInviteTask);						
 					break;
 
 				}
@@ -989,8 +924,7 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						DbHelper.ACTIVITY_TABLE_NAME, partyId, description);
 				db.close();
 				if (flag) {
-					Toast.makeText(DetailActivity.this, "請更新",
-							Toast.LENGTH_SHORT).show();
+	
 				}
 			}
 

@@ -162,7 +162,7 @@ public class HttpHelper {
 				null, params, HttpHelper.POST_TYPE, context);
 	}
 
-	public String savePerformPost(final String url,
+	public synchronized String savePerformPost(final String url,
 			final Map<String, String> params, final Context ctx) {
 		String response = "";
 		int respondCode = 0;

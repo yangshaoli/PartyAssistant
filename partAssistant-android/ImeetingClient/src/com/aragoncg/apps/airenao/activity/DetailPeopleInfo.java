@@ -43,9 +43,9 @@ import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class DetailPeopleInfo extends Activity {
 	private final static int INVATED_PEOPLE = 0;
-	private final static int SIGNED_PEOPLE = 1;
-	private final static int UNSIGNED_PEOPLE = 3;
-	private final static int UNRESPONSED_PEOPLE = 2;
+	private final static int SIGNED_PEOPLE = 1;//已报名
+	private final static int UNSIGNED_PEOPLE = 3;//已拒绝
+	private final static int UNRESPONSED_PEOPLE = 2;//未响应
 	private final static int SUCCESS = 0;
 	private final static int FAIL = 1;
 	private final static int EXCEPTION = 2;
@@ -184,7 +184,6 @@ public class DetailPeopleInfo extends Activity {
 		}
 
 		if (peopleTag == UNRESPONSED_PEOPLE) {
-			unJoin.setVisibility(View.GONE);
 
 			levMsg.setVisibility(View.GONE);
 			txtMessage.setVisibility(View.GONE);
@@ -287,92 +286,112 @@ public class DetailPeopleInfo extends Activity {
 					progressDialog.cancel();
 					// message.what = APPLAY_RESULT;
 					if ("ok".equals(status)) {
-						
-						//改变数据库中的数据
-						if (joinOrUnjoin == 1) {//1是参加
+
+						// 改变数据库中的数据
+						if (joinOrUnjoin == 1) {// 1是参加
 							switch (peopleTag) {
 							case INVATED_PEOPLE:
 								break;
 							case SIGNED_PEOPLE:
 								break;
 							case UNSIGNED_PEOPLE:
-								if (insertDeletetDetailPeopleInfo(
-										DbHelper.REFUSED_TABLE_NAME,
-										DbHelper.APPLIED_TABLE_NAME,
-										backendID)) {
-									String[] files = {"unsignup","signup"};
-									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
-									
-									Toast.makeText(
-											DetailPeopleInfo.this,
-											"sucess",
-											Toast.LENGTH_SHORT)
-											.show();
-									
-									peopleTag = SIGNED_PEOPLE;
+								ContentValues doContentValues = new ContentValues();
+								doContentValues.put("status",
+										Constants.STATUS_APPLIED);
+								StringBuffer dosp = new StringBuffer()
+										.append("id=?");
+								String[] doWhereArgs = { backendID };
+								String[] dofiles = { "unsignup", "signup" };
+								try {
+									DbHelper.upData(DbHelper.TABLE_CLIENTS,
+											doContentValues, dosp.toString(),
+											doWhereArgs);
+									DbHelper.updataBySql(
+											DbHelper.ACTIVITY_TABLE_NAME,
+											dofiles, partyIdValue);
+								} catch (Exception e) {
+
 								}
+								peopleTag = SIGNED_PEOPLE;
+
 								break;
 							case UNRESPONSED_PEOPLE:
-								if (insertDeletetDetailPeopleInfo(
-										DbHelper.DONOTHING_TABLE_NAME,
-										DbHelper.APPLIED_TABLE_NAME,
-										backendID)) {
-									String[] files = {"unjoin","signup"};
-									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
-									Toast.makeText(
-											DetailPeopleInfo.this,
-											"sucess",
-											Toast.LENGTH_SHORT)
-											.show();
-									peopleTag = SIGNED_PEOPLE;
+								ContentValues reContentValues = new ContentValues();
+								reContentValues.put("status",
+										Constants.STATUS_APPLIED);
+								StringBuffer resp = new StringBuffer()
+										.append("id=?");
+								String[] reWhereArgs = { backendID };
+								String[] refiles = { "unjoin", "signup" };//unjoin 是为响应
+								try {
+									DbHelper.upData(DbHelper.TABLE_CLIENTS,
+											reContentValues, resp.toString(),
+											reWhereArgs);
+									DbHelper.updataBySql(
+											DbHelper.ACTIVITY_TABLE_NAME,
+											refiles, partyIdValue);
+								} catch (Exception e) {
+
 								}
+
+								peopleTag = SIGNED_PEOPLE;
+
 								break;
 							}
 						}
-						if (joinOrUnjoin == 2) {//2是不参加
+						if (joinOrUnjoin == 2) {// 2是不参加
 							switch (peopleTag) {
 							case INVATED_PEOPLE:
 								break;
 							case SIGNED_PEOPLE:
-								if (insertDeletetDetailPeopleInfo(
-										DbHelper.APPLIED_TABLE_NAME,
-										DbHelper.REFUSED_TABLE_NAME,
-										backendID)) {
-									String[] files = {"signup","unsignup"};
-									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
-									Toast.makeText(
-											DetailPeopleInfo.this,
-											"sucess",
-											Toast.LENGTH_SHORT)
-											.show();
-									peopleTag = UNSIGNED_PEOPLE;
+								ContentValues siContentValues = new ContentValues();
+								siContentValues.put("status",
+										Constants.STATUS_REFUSED);
+								StringBuffer sisp = new StringBuffer()
+										.append("id=?");
+								String[] siWhereArgs = { backendID };
+								String[] sifiles = { "signup", "unsignup" };
+								try {
+									DbHelper.upData(DbHelper.TABLE_CLIENTS,
+											siContentValues, sisp.toString(),
+											siWhereArgs);
+									DbHelper.updataBySql(
+											DbHelper.ACTIVITY_TABLE_NAME,
+											sifiles, partyIdValue);
+								} catch (Exception e) {
+
 								}
+
+								peopleTag = UNSIGNED_PEOPLE;
+
 								break;
 							case UNSIGNED_PEOPLE:
+								ContentValues unContentValues = new ContentValues();
+								unContentValues.put("status",
+										Constants.STATUS_REFUSED);
+								StringBuffer unsp = new StringBuffer()
+										.append("id=?");
+								String[] unWhereArgs = { backendID };
+								String[] unfiles = { "unjoin", "unsignup" };
+								try {
+									DbHelper.upData(DbHelper.TABLE_CLIENTS,
+											unContentValues, unsp.toString(),
+											unWhereArgs);
+									DbHelper.updataBySql(
+											DbHelper.ACTIVITY_TABLE_NAME,
+											unfiles, partyIdValue);
+								} catch (Exception e) {
+
+								}
+
+								peopleTag = UNSIGNED_PEOPLE;
 								break;
 							case UNRESPONSED_PEOPLE:
-								if (insertDeletetDetailPeopleInfo(
-										DbHelper.DONOTHING_TABLE_NAME,
-										DbHelper.REFUSED_TABLE_NAME,
-										backendID)) {
-									String[] files = {"unjoin","unsignup"};
-									DbHelper.updataBySql(DbHelper.ACTIVITY_TABLE_NAME, files, partyIdValue);
-									Toast.makeText(
-											DetailPeopleInfo.this,
-											"sucess",
-											Toast.LENGTH_SHORT)
-											.show();
-									peopleTag = UNSIGNED_PEOPLE;
-								}
+
 								break;
 							}
 						}
-						
-						
-						
-						
-						
-						
+
 						myHandler.sendEmptyMessage(SUCCESS);
 					} else {
 						myHandler.sendEmptyMessage(FAIL);
@@ -452,7 +471,7 @@ public class DetailPeopleInfo extends Activity {
 		super.onDestroy();
 	}
 
-	protected boolean insertDeletetDetailPeopleInfo(String sourceTable,
+	/*protected boolean insertDeletetDetailPeopleInfo(String sourceTable,
 			String targetTable, String id) {
 		ClientsData clientData = null;
 		SQLiteDatabase db = null;
@@ -481,6 +500,6 @@ public class DetailPeopleInfo extends Activity {
 			e.printStackTrace();
 		}
 		return false;
-	}
+	}*/
 
 }

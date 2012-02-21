@@ -1,157 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.aragoncg.apps.airenao"
-      android:versionCode="1"
-      android:versionName="1.0">
+    package="com.aragoncg.apps.airenao"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
     <uses-sdk android:minSdkVersion="7" />
-	
-	<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> 
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> 
-	
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-    <meta-data android:value="matthiaskaeppler.de" android:name="UMENG_APPKEY"></meta-data>
-    	<activity android:name=".activity.SplashActivity">
-    		<intent-filter>
+
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:icon="@drawable/icon"
+        android:label="@string/app_name" >
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="matthiaskaeppler.de" >
+        </meta-data>
+
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/Theme.splash" >
+            <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-    	</activity>
-    	<activity android:name=".activity.ContactsListActivity">
-    		<intent-filter>
-				<action android:name="android.intent.action.SEARCH_LONG_PRESS" />
-				<category android:name="android.intent.category.DEFAULT" />
-			</intent-filter>
-    	</activity>
-    	<activity android:name=".activity.SendAirenaoActivity" >
-    		
-    	</activity>
-    	<activity android:name=".activity.DetailActivity">
-    		<intent-filter>
-        		<action android:name="toDetailActivity"></action>
-        		<category android:name="android.intent.category.DEFAULT"/>
-        	</intent-filter>
-    	</activity>
-    	<activity android:name=".activity.RegisterActivity"> 
-    		
         </activity>
-    	<activity android:name=".activity.LoginActivity"> 
-    		
+        <activity android:name=".activity.ContactsListActivity" >
+            <intent-filter >
+                <action android:name="android.intent.action.SEARCH_LONG_PRESS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
-    	<activity android:name=".activity.ImeetingClientActivity">
-    	</activity>
-    		
-        <activity android:name=".activity.CreateActivity"> 
-        	
+        <activity android:name=".activity.SendAirenaoActivity" >
         </activity>
-        
-		<activity 
-		android:name=".activity.MeetingListActivity"
-		android:configChanges="orientation|keyboardHidden">
-			
-		</activity>
-		
-		<activity android:name=".activity.PeopleInfoActivity">
-			
-		</activity>
-		<activity android:name=".activity.DetailPeopleInfo">
-			
-		</activity>
-		<activity android:name=".activity.EditActivity">
-			
-		</activity>
-		
-		
-		<activity android:name=".activity.WeiBoSplashActivity"
-			android:label="@string/app_name"
-                  android:configChanges="keyboardHidden|orientation"
-                  android:screenOrientation="portrait" 
-                  android:launchMode="singleTask"
-                  >
- 			<intent-filter>
-            	<action android:name="android.intent.action.SEND"></action> 
-				<category android:name="android.intent.category.DEFAULT"></category>
-				<data android:mimeType="image/*"></data>
-			</intent-filter>
-			<intent-filter>
+        <activity android:name=".activity.DetailActivity" >
+            <intent-filter >
+                <action android:name="toDetailActivity" >
+                </action>
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.RegisterActivity" >
+        </activity>
+        <activity android:name=".activity.LoginActivity" >
+        </activity>
+        <activity android:name=".activity.ImeetingClientActivity" >
+        </activity>
+        <activity android:name=".activity.CreateActivity" >
+        </activity>
+        <activity
+            android:configChanges="orientation|keyboardHidden"
+            android:name=".activity.MeetingListActivity" >
+        </activity>
+        <activity android:name=".activity.PeopleInfoActivity" >
+        </activity>
+        <activity android:name=".activity.DetailPeopleInfo" >
+        </activity>
+        <activity android:name=".activity.EditActivity" >
+        </activity>
+        <activity
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:name=".activity.WeiBoSplashActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter >
+                <action android:name="android.intent.action.SEND" >
+                </action>
+
+                <category android:name="android.intent.category.DEFAULT" >
+                </category>
+
+                <data android:mimeType="image/*" >
+                </data>
+            </intent-filter>
+            <intent-filter >
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="founderapp" android:host="WeiBoSplashActivity" /> 
+
+                <data
+                    android:host="WeiBoSplashActivity"
+                    android:scheme="founderapp" />
             </intent-filter>
-            
-		</activity>
-		
-		<activity android:name=".activity.WebViewActivity"
-				 android:label="@string/app_name"
-                 android:configChanges="keyboardHidden|orientation"
-                 android:screenOrientation="portrait" >
-		</activity>
-		
-		<activity 
-		android:name=".weibo.ShareActivity"
-		android:theme="@style/ContentOverlay"
-        	android:launchMode="singleTask"
-			android:configChanges="keyboardHidden|orientation"                           
-			android:windowSoftInputMode="adjustPan|stateAlwaysVisible" 
-				 android:label="@string/app_name">
-		</activity>
-		
-	  	<activity android:name=".activity.PersoninfoSetActivity" >
         </activity>
-        	<activity android:name=".activity.PlaceSearch" >
+        <activity
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:name=".activity.WebViewActivity"
+            android:screenOrientation="portrait" >
         </activity>
-       
-        <activity android:name=".activity.PreviewActivity">
-		</activity>
-		 <activity android:name=".activity.DetailAgreement">
-		</activity>
-		<activity android:name=".activity.AgainInvite"> 
-    		
+        <activity
+            android:configChanges="keyboardHidden|orientation"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:name=".weibo.ShareActivity"
+            android:theme="@style/ContentOverlay"
+            android:windowSoftInputMode="adjustPan|stateAlwaysVisible" >
         </activity>
-		<receiver android:name=".push.MessageReceiver">
-        	<intent-filter>
-            	<action android:name="com.aragoncg.apps.airenao" />
-        	</intent-filter>
-   		</receiver>
-   		<service android:label="Android Push Service" 
-     android:name="com.aragoncg.apps.xmpp.service.AndroidPushService" />
+        <activity android:name=".activity.PersoninfoSetActivity" >
+        </activity>
+        <activity
+            android:name=".activity.PlaceSearch"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity android:name=".activity.PreviewActivity" >
+        </activity>
+        <activity
+            android:name=".activity.DetailAgreement"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
 
-   		<receiver 
-     		android:name="com.aragoncg.apps.xmpp.service.ConnectionChangedReceiver"
-     		android:label="NetworkConnection">
-     			<intent-filter>
-       				<action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-     			</intent-filter>
-   		</receiver>
+        <receiver android:name=".push.MessageReceiver" >
+            <intent-filter >
+                <action android:name="com.aragoncg.apps.airenao" />
+            </intent-filter>
+        </receiver>
 
-   		<meta-data android:name="app_key" android:value="53fdfe87cb3131ce947bd8b8a65aa252" />    
+        <service
+            android:label="Android Push Service"
+            android:name="com.aragoncg.apps.xmpp.service.AndroidPushService"
+            android:process=":pushService" />
+
+        <receiver
+            android:label="NetworkConnection"
+            android:name="com.aragoncg.apps.xmpp.service.ConnectionChangedReceiver" >
+            <intent-filter >
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="app_key"
+            android:value="53fdfe87cb3131ce947bd8b8a65aa252" />
     </application>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-  	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
-	<uses-permission android:name="android.permission.ACCES_MOCK_LOCATION"></uses-permission> 
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission> 
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.READ_CONTACTS" />
-	<uses-permission android:name="android.permission.CALL" />
-	<uses-permission android:name="android.permission.CALL_PHONE" />
-	<uses-permission android:name="android.permission.DIAL" />
-	<uses-permission android:name="android.permission.WRITE_CONTACTS" />
-	<uses-permission android:name="android.permission.SEND_SMS" />
-	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-	<uses-permission android:name="android.permission.CAMERA" />
-	<uses-permission android:name="android.permission.RESTART_PACKAGES" />
-	<uses-permission android:name="android.permission.WRITE_APN_SETTINGS"></uses-permission>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
-	<uses-feature android:name="android.hardware.camera" />
-	<uses-feature android:name="android.hardware.camera.autofocus"
-		android:required="false" />
 
-	<uses-permission android:name="android.permission.RECORD_AUDIO" />
-	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="android.permission.SET_WALLPAPER" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCES_MOCK_LOCATION" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.CALL" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.DIAL" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.WRITE_APN_SETTINGS" >
+    </uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
+    </uses-permission>
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+
 </manifest>

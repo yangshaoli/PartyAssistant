@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,20 +25,19 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.aragoncg.apps.airenao.R;
-import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
@@ -48,6 +46,7 @@ import com.aragoncg.apps.airenao.utills.HttpHelper;
 import com.aragoncg.apps.xmpp.service.AndroidPushService;
 
 public class RegisterActivity extends Activity {
+	private static final int EXCEPTION = 0;
 	private String userNameReg;
 	private String nicknameReg;
 	private String pass1Reg;
@@ -69,7 +68,7 @@ public class RegisterActivity extends Activity {
 	private int appFlag = -1;
 	ArrayList<Map<String, Object>> listActivity;
 	private AirenaoActivity tempActivity;
-	private LinearLayout layout; 
+	private LinearLayout layout;
 	private TextView textView;
 	private static Context ctx;
 	CheckBox myCheckBox;
@@ -84,19 +83,10 @@ public class RegisterActivity extends Activity {
 		ActivityManager.getInstance().addActivity(this);
 		setContentView(R.layout.register_layout);
 		ctx = this;
-//		LayoutInflater inflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
-//
-//		layout = (LinearLayout) findViewById(R.id.reg_layout); //layout定义是: View layout
-//		
-//		final LinearLayout.LayoutParams followParams = new LinearLayout.LayoutParams(
-//				LinearLayout.LayoutParams.WRAP_CONTENT,
-//				LinearLayout.LayoutParams.WRAP_CONTENT);
-//		followParams.setMargins(0, 10, 0, 0);
-//		TextView t = new TextView(this);
-//		layout.addView(t,followParams);
 		textView = (TextView) findViewById(R.id.textview);
 		String htmlLinkText = "我是超链接"
-			+ "<a style=\"color:red;\" href='lianjie'>是否参加</a>";;
+				+ "<a style=\"color:red;\" href='lianjie'>是否参加</a>";
+		;
 		textView.setText(Html.fromHtml(htmlLinkText));
 		textView.setMovementMethod(LinkMovementMethod.getInstance());
 		CharSequence text = textView.getText();
@@ -114,8 +104,7 @@ public class RegisterActivity extends Activity {
 			}
 			textView.setText(style);
 		}
-		
-		
+
 		myContext = getBaseContext();
 		initData();
 		getTheWedgit();
@@ -131,16 +120,12 @@ public class RegisterActivity extends Activity {
 
 		@Override
 		public void onClick(View widget) {
-			//if (mUrl.equal(lianjie)) {
-				Toast.makeText(ctx, mUrl, Toast.LENGTH_LONG).show();
-				widget.setBackgroundColor(Color.parseColor("#00000000"));
-				Intent intent = new Intent(ctx,DetailAgreement.class);
-				((Activity) ctx).startActivityForResult(intent, 40);
-		//	}
+			widget.setBackgroundColor(Color.parseColor("#00000000"));
+			Intent intent = new Intent(ctx, DetailAgreement.class);
+			((Activity) ctx).startActivityForResult(intent, 40);
 		}
 	}
-	
-	
+
 	public void initData() {
 		SharedPreferences mySharedPreferences = AirenaoUtills
 				.getMySharedPreferences(RegisterActivity.this);
@@ -188,9 +173,14 @@ public class RegisterActivity extends Activity {
 						SecondThread();
 						registerSecondThread.start();
 					}
-					break;
 
+					break;
+				case EXCEPTION:
+					Toast.makeText(RegisterActivity.this, "后台出现异常", 2000)
+							.show();
+					break;
 				}
+
 				super.handleMessage(msg);
 			}
 
@@ -207,10 +197,12 @@ public class RegisterActivity extends Activity {
 
 			@Override
 			public void run() {
+
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("username", userNameReg);
 				params.put("password", pass1Reg);
-				params.put("device_token", "");
+				params.put("clientId", AndroidPushService
+						.getClientId(RegisterActivity.this));
 				// 后台注册返回的结果
 				String result = new HttpHelper().performPost(registerUrl,
 						userNameReg, pass1Reg, null, params,
@@ -226,8 +218,6 @@ public class RegisterActivity extends Activity {
 					status = jsonObject.getString(Constants.STATUS);
 					description = jsonObject.getString(Constants.DESCRIPTION);
 					if ("ok".equals(status)) {
-						// myProgressDialog.setMessage(getString(R.string.rgVictoryMessage));
-
 						jsonObject = jsonObject.getJSONObject("datasource");
 						String UserId = jsonObject.getString("uid");
 						Message message = new Message();
@@ -239,75 +229,6 @@ public class RegisterActivity extends Activity {
 						bundle.putString(Constants.AIRENAO_USER_ID, UserId);
 						message.setData(bundle);
 						myHandler.sendMessage(message);
-
-						// params.put("clientId",
-						// AndroidPushService.getClientId(myContext));
-						// String loginResult = new HttpHelper().performPost(
-						// loginUrl, userNameReg, pass1Reg, null, params,
-						// RegisterActivity.this);
-						//
-						// result = AirenaoUtills.linkResult(loginResult);
-						// jsonObject = new JSONObject(result)
-						// .getJSONObject("output");
-						// status = jsonObject.getString("status");
-						// description = jsonObject.getString("description");
-						//
-						// if ("ok".equals(status)) {
-						// jsonObject = jsonObject.getJSONObject("datasource");
-						// String UserId = jsonObject.getString("uid");
-						// Message message = new Message();
-						// message.what = 2;
-						// Bundle bundle = new Bundle();
-						// bundle.putString(Constants.AIRENAO_USER_NAME,
-						// userNameReg);
-						// bundle.putString(Constants.AIRENAO_PASSWORD,
-						// pass1Reg);
-						// bundle.putString(Constants.AIRENAO_USER_ID, UserId);
-						// message.setData(bundle);
-						// myHandler.sendMessage(message);
-
-						// // 如果不是第一次启动
-						// if (appFlag == Constants.APP_USED_FLAG_O) {
-						//
-						// SQLiteDatabase db = DbHelper
-						// .openOrCreateDatabase();
-						// tempActivity = DbHelper.select(db);
-						// listActivity = (ArrayList<Map<String, Object>>)
-						// DbHelper
-						// .selectActivitys(db);
-						// if (tempActivity != null) {
-						// Intent intent = new Intent(
-						// RegisterActivity.this,
-						// MeetingListActivity.class);
-						// intent.putExtra(Constants.TRANSFER_DATA,
-						// tempActivity);
-						// startActivity(intent);
-						//
-						// } else {
-						//
-						// if (listActivity.size() > 0) {
-						// Intent intent = new Intent(
-						// RegisterActivity.this,
-						// MeetingListActivity.class);
-						// startActivity(intent);
-						// } else {
-						// Intent intent = new Intent(
-						// RegisterActivity.this,
-						// MeetingListActivity.class);
-						// startActivity(intent);
-						// }
-						// }
-						// }
-						// // 如果第一启动就进入创建活动
-						// if (appFlag == Constants.APP_USED_FLAG_Z) {
-						// Intent intent = new Intent(
-						// RegisterActivity.this,
-						// MeetingListActivity.class);
-						// startActivity(intent);
-						// }
-
-						// myProgressDialog.cancel();
-						// }
 					} else {
 
 						Message message = new Message();
@@ -318,14 +239,12 @@ public class RegisterActivity extends Activity {
 										description);
 						message.setData(bundle);
 						myHandler.sendMessage(message);
-						// registerThread.stop();
 						myProgressDialog.cancel();
 					}
 				} catch (JSONException e) {
 
 					e.printStackTrace();
 				}
-
 			}
 		};
 	}
@@ -378,66 +297,18 @@ public class RegisterActivity extends Activity {
 
 							JSONObject jsonObject1 = jsonObject
 									.getJSONObject("datasource");
-							// String nickname =
-							// jsonObject1.getString("nickname");
-							// String remaining_sms_count =
-							// jsonObject1.getString("remaining_sms_coun");
-							// String email = jsonObject1.getString("email");
-							// String email_binding_status =
-							// jsonObject1.getString("email_binding_status");
-							// String phone = jsonObject1.getString("phone");
-							// String phone_binding_status =
-							// jsonObject1.getString("'phone_binding_status");
-							// Log.e("nickname", nickname);
 							Message message = new Message();
 							message.what = 3;
 							Bundle bundle = new Bundle();
 							bundle.putString(Constants.AIRENAO_NICKNAME,
 									nicknameReg);
 							bundle.putString(Constants.AIRENAO_USER_ID, uId);
-							// bundle.putString(Constants.AIRENAO_USER_ID,
-							// UserId);
 							message.setData(bundle);
 							myHandler.sendMessage(message);
 
-							// 如果不是第一次启动
-							if (appFlag == Constants.APP_USED_FLAG_O) {
-
-								SQLiteDatabase db = DbHelper
-										.openOrCreateDatabase();
-								tempActivity = DbHelper.select(db);
-								listActivity = (ArrayList<Map<String, Object>>) DbHelper
-										.selectActivitys(db);
-								if (tempActivity != null) {
-									Intent intent = new Intent(
-											RegisterActivity.this,
-											MeetingListActivity.class);
-									intent.putExtra(Constants.TRANSFER_DATA,
-											tempActivity);
-									startActivity(intent);
-
-								} else {
-
-									if (listActivity.size() > 0) {
-										Intent intent = new Intent(
-												RegisterActivity.this,
-												MeetingListActivity.class);
-										startActivity(intent);
-									} else {
-										Intent intent = new Intent(
-												RegisterActivity.this,
-												MeetingListActivity.class);
-										startActivity(intent);
-									}
-								}
-							}
-							// 如果第一启动就进入创建活动
-							if (appFlag == Constants.APP_USED_FLAG_Z) {
-								Intent intent = new Intent(
-										RegisterActivity.this,
-										MeetingListActivity.class);
-								startActivity(intent);
-							}
+							Intent intent = new Intent(RegisterActivity.this,
+									MeetingListActivity.class);
+							startActivity(intent);
 
 							myProgressDialog.cancel();
 
@@ -450,13 +321,11 @@ public class RegisterActivity extends Activity {
 									description);
 							message.setData(bundle);
 							myHandler.sendMessage(message);
-							// registerThread.stop();
 							myProgressDialog.cancel();
 						}
 					}
 				} catch (JSONException e) {
-
-					e.printStackTrace();
+					myHandler.sendEmptyMessage(EXCEPTION);
 				}
 
 			}
@@ -478,16 +347,24 @@ public class RegisterActivity extends Activity {
 		userName = (EditText) findViewById(R.id.reg_user_name);
 		myCheckBox = (CheckBox) findViewById(R.id.CheckBox);
 		Button saveBtn = (Button) findViewById(R.id.appect);
-		//Button exitBtn = (Button) findViewById(R.id.exit);
+		// Button exitBtn = (Button) findViewById(R.id.exit);
 		nickname = (EditText) findViewById(R.id.reg_nickname);
-
 		// 获得内容或添加事件
 		checked = myCheckBox.isChecked();
-		// 校验用户名
-		userName.setOnFocusChangeListener(new OnFocusChangeListener() {
+
+		saveBtn.setOnClickListener(new OnClickListener() {
 
 			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
+			public void onClick(View v) {
+				userNameReg = userName.getText().toString();
+				if (userNameReg == null || userNameReg.equals("")) {
+					Toast.makeText(RegisterActivity.this,
+							R.string.user_name_check, Toast.LENGTH_SHORT)
+							.show();
+					return;
+				}
+
+				// 校验用户名
 
 				if (!userName.hasFocus()) {
 					userNameReg = userName.getText().toString();
@@ -577,26 +454,13 @@ public class RegisterActivity extends Activity {
 
 			}
 		});
-//		exitBtn.setOnClickListener(new OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				userName.setText("");
-//				pass1.setText("");
-//				pass2.setText("");
-//				nickname.setText("");
-//				checked = true;
-//
-//			}
-//		});
-
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		if(resultCode == 41){
+		if (resultCode == 41) {
 			myCheckBox.setChecked(true);
 		}
 	}

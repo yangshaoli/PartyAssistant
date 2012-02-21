@@ -16,15 +16,15 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentLeft="true"
-			android:background="@drawable/btn_all_style"
-			android:id="@+id/btnAll"/>
+			android:background="@drawable/btn_frequent_style"
+			android:id="@+id/btnFrequent"
+		/>
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentRight="true"
-			android:background="@drawable/btn_frequent_style"
-			android:id="@+id/btnFrequent"
-		/>
+			android:background="@drawable/btn_all_style"
+			android:id="@+id/btnAll"/>
 	</RelativeLayout>  
  <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"

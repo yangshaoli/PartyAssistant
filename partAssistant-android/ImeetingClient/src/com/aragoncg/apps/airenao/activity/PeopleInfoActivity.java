@@ -81,8 +81,8 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	Intent transIntent;
 	private TextView txtNoData;
 	private Runnable tellServiceToChangeFlag;
-	private String tableName;
-
+	private String status;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -304,13 +304,15 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 	}
 	
 	/**
-	 * 告诉数据库中的数据要更新，不要在显示数据了
+	 * 告诉数据库中的数据要更新，不要在显示new了
 	 */
 	public void tellDbToUpdata(){
 		ContentValues contentValues = new ContentValues();
 		contentValues.put(DbHelper.FIELD_TITLE_NEW_SN_UP, "0");
 		contentValues.put(DbHelper.FIELD_TITLE_NEW_UN_SN_UP, "0");
-		DbHelper.upData(DbHelper.ACTIVITY_TABLE_NAME, contentValues, partyId);
+		String[] whereArgs = {partyId};
+		StringBuffer sb = new StringBuffer().append(DbHelper.PARTY_ID+"=?");
+		DbHelper.upData(DbHelper.ACTIVITY_TABLE_NAME, contentValues, sb.toString(), whereArgs);
 	}
 	
 	
@@ -340,9 +342,8 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 			mData.clear();
 			if(TYPE_ALL.equals(type)){
 				ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
-				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "appliedClients", id));
-				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "doNothingClients", id));
-				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, "refusedClients", id));
+				myList.addAll((ArrayList<ClientsData>) DbHelper.selectClientData(db, DbHelper.TABLE_CLIENTS, id, null));
+				
 				for(int i=0;i<myList.size();i++){
 					
 					HashMap<String, Object> map = new HashMap<String, Object>();
@@ -355,7 +356,7 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 				}
 			}
 			if(TYPE_APPLIED.equals(type)){
-				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "appliedClients", id);
+				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, DbHelper.TABLE_CLIENTS, id, Constants.STATUS_APPLIED);
 				for(int i=0;i<myList.size();i++){
 					
 					HashMap<String, Object> map = new HashMap<String, Object>();
@@ -365,11 +366,11 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.MSG, myList.get(i).getComment());
 					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
-					tableName = "appliedClients";
+					status = Constants.STATUS_APPLIED;
 				}
 			}
 			if(TYPE_DONOTHING.equals(type)){
-				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "doNothingClients", id);
+				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, DbHelper.TABLE_CLIENTS, id, Constants.STATUS_DONOTHING);
 				for(int i=0;i<myList.size();i++){
 					
 					HashMap<String, Object> map = new HashMap<String, Object>();
@@ -379,11 +380,11 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.MSG, myList.get(i).getComment());
 					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					mData.add(map);
-					tableName = "doNothingClients";
+					status = Constants.STATUS_DONOTHING;
 				}
 			}
 			if(TYPE_REFUSED.equals(type)){
-				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, "refusedClients", id);
+				ArrayList<ClientsData> myList = (ArrayList<ClientsData>) DbHelper.selectClientData(db, DbHelper.TABLE_CLIENTS, id, Constants.STATUS_REFUSED);
 				for(int i=0;i<myList.size();i++){
 					
 					HashMap<String, Object> map = new HashMap<String, Object>();
@@ -393,13 +394,18 @@ public class PeopleInfoActivity extends Activity implements OnItemClickListener 
 					map.put(Constants.BACK_END_ID, myList.get(i).getId());
 					map.put(Constants.MSG, myList.get(i).getComment());
 					mData.add(map);
-					tableName = "refusedClients";
+					status = Constants.STATUS_REFUSED;
 				}
 			}
 			
 			ContentValues contentValues = new ContentValues();
 			contentValues.put("isCheck", "true");
-			DbHelper.upData(tableName, contentValues,null);
+			String[] whereArgs = new String[2];
+			whereArgs[0] = id;
+			whereArgs[1] = status;
+			StringBuffer sb = new StringBuffer().append(DbHelper.PARTY_ID+"=?").append(" and ")
+					.append("status=?");
+			DbHelper.upData(DbHelper.TABLE_CLIENTS, contentValues, sb.toString(), whereArgs);
 			
 			if(db!=null&&db.isOpen()){
 				db.close();

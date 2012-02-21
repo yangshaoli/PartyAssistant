@@ -107,7 +107,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:hint="@string/register_nickname"
-                    android:password="true" >
+                    >
                 </EditText>
             </LinearLayout>
 

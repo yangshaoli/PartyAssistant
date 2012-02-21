@@ -58,8 +58,6 @@ public class EditActivity extends Activity {
 	private String partyId = "";
 	private String sendWithOwn = "1"; // 1表示用自己的手机发送 0表示用服务器
 	private AirenaoActivity myAirenaoActivity;
-	private TextView userTitle;
-	private LinearLayout userLayout;
 	private EditText edtActivityDes;
 	private Button btnOver;
 	private Runnable editSaveTask;
@@ -126,14 +124,14 @@ public class EditActivity extends Activity {
 
 					break;
 				case againSend:
-					Toast.makeText(EditActivity.this, "sucess11",
+					Toast.makeText(EditActivity.this, "成功发送",
 							Toast.LENGTH_SHORT).show();
 					if (progressDialog != null) {
 						progressDialog.dismiss();
 					}
 
 					Intent intent1 = new Intent(EditActivity.this,
-							DetailActivity.class);
+							MeetingListActivity.class);
 					intent1.putExtra(Constants.ACTIVITY_FLAG,
 							Constants.EditActivity);
 					intent1.putExtra(Constants.PARTY_ID, partyId);
@@ -245,11 +243,8 @@ public class EditActivity extends Activity {
 					ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
 					SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 					myList.addAll((ArrayList<ClientsData>) DbHelper
-							.selectClientData(db, "appliedClients", partyId));
-					myList.addAll((ArrayList<ClientsData>) DbHelper
-							.selectClientData(db, "doNothingClients", partyId));
-					myList.addAll((ArrayList<ClientsData>) DbHelper
-							.selectClientData(db, "refusedClients", partyId));
+							.selectClientData(db, DbHelper.TABLE_CLIENTS,
+									partyId, null));
 					db.close();
 					for (int i = 0; i < myList.size(); i++) {
 
@@ -425,109 +420,6 @@ public class EditActivity extends Activity {
 							msg.what = SUCCESS;
 							myHandler.sendMessage(msg);
 
-							// HttpHelper httpHelper = new HttpHelper();
-							// String url = Constants.DOMAIN_NAME +
-							// Constants.SUB_DOMAIN_GET_PEOPLE_INFO_URL;;
-							// url = url + activityFromDetail.getId() + "/" +
-							// "all/";
-							// // myAirenaoActivity
-							// String result = httpHelper.performGet(url,
-							// EditActivity.this);
-							// result = AirenaoUtills.linkResult(result);
-							//
-							// try {
-							// JSONObject output = new JSONObject(result)
-							// .getJSONObject(Constants.OUT_PUT);
-							// String status =
-							// output.getString(Constants.STATUS);
-							// String description = output
-							// .getString(Constants.DESCRIPTION);
-							// if ("ok".equals(status)) {
-							//
-							// clientMap = new JSONArray();
-							// JSONObject dataSource = output
-							// .getJSONObject("datasource");
-							// // '_isApplyTips':BOOL,
-							// // '_isSendBySelf':BOOL
-							// // msgType = dataSource.getString("msgType");
-							// JSONArray receiverArray = dataSource
-							// .getJSONArray("clientList");
-							// JSONObject client;
-							// tempContactNumbers.clear();
-							// for (int i = 0; i < receiverArray.length(); i++)
-							// {
-							// client = new JSONObject();
-							// tempContactNumbers.add(receiverArray.getJSONObject(
-							// i).getString("cValue"));
-							// client.put("cName",
-							// receiverArray.getJSONObject(i)
-							// .getString("cName"));
-							// client.put("cValue",
-							// receiverArray.getJSONObject(i)
-							// .getString("cValue"));
-							// clientMap.put(client);
-							//
-							// }
-							//
-							// String reSendUrl = Constants.DOMAIN_NAME +
-							// Constants.SUB_DOMAIN_PARTY_RESEND_URL;
-							// HashMap<String, String> params = new
-							// HashMap<String, String>();
-							// params.put("receivers", clientMap.toString());
-							// params.put(Constants.CONTENT,
-							// edtActivityDes.getText()
-							// .toString());
-							// params.put("_issendbyself", sendWithOwn);
-							// params.put("uID", userId);
-							// params.put("addressType", "android");
-							// params.put("partyID", partyId);
-							// String respond =
-							// httpHelper.savePerformPost(reSendUrl,
-							// params, EditActivity.this);
-							// respond = AirenaoUtills.linkResult(respond);
-							// output = new JSONObject(respond)
-							// .getJSONObject(Constants.OUT_PUT);
-							// status = output.getString(Constants.STATUS);
-							// if ("ok".equals(status)) {
-							// link =
-							// output.getJSONObject(Constants.DATA_SOURCE)
-							// .getString("applyURL");
-							// Message message = new Message();
-							// Bundle bundle = new Bundle();
-							// bundle.putString(MSG_ID_SEND + "", description);
-							// message.what = MSG_ID_SEND;
-							// message.setData(bundle);
-							// myHandler.sendMessage(message);
-							// progressDialog.cancel();
-							// } else {
-							// Message message = new Message();
-							// Bundle bundle = new Bundle();
-							// bundle.putString(MSG_ID_FAIL + "", description);
-							// message.what = MSG_ID_FAIL;
-							// message.setData(bundle);
-							// myHandler.sendMessage(message);
-							// progressDialog.cancel();
-							// }
-							// } else {
-							// Message message = new Message();
-							// Bundle bundle = new Bundle();
-							// bundle.putString(MSG_ID_FAIL + "", description);
-							// message.what = MSG_ID_FAIL;
-							// message.setData(bundle);
-							// myHandler.sendMessage(message);
-							// progressDialog.cancel();
-							// }
-							//
-							// } catch (JSONException e) {
-							// progressDialog.cancel();
-							// // result
-							// Message message = new Message();
-							// Bundle bundle = new Bundle();
-							// bundle.putString(EXCEPTION + "", result);
-							// message.what = EXCEPTION;
-							// message.setData(bundle);
-							// myHandler.sendMessage(message);
-							// }
 						}
 					} catch (Exception e) {
 					}
@@ -539,39 +431,13 @@ public class EditActivity extends Activity {
 
 	// 获得UI控件
 	public void initWedgit() {
-		userTitle = (TextView) findViewById(R.id.userTitle);
 		edtActivityDes = (EditText) findViewById(R.id.edtActivityDes);
-		userLayout = (LinearLayout) findViewById(R.id.userChange);
 		btnOver = (Button) findViewById(R.id.btn_ok_edit);
 
 	}
 
 	public void setWidget() {
-		userTitle.setText(userName);
-		userLayout.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				AlertDialog dialog = new AlertDialog.Builder(EditActivity.this)
-						.setTitle(R.string.user_off).setMessage(
-								R.string.user_off_message).setPositiveButton(
-								R.string.btn_ok,
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										finish();
-										Intent intent = new Intent();
-										intent.setClass(EditActivity.this,
-												LoginActivity.class);
-										startActivity(intent);
-									}
-								}).create();
-				dialog.show();
-
-			}
-		});
 		btnOver.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -581,7 +447,7 @@ public class EditActivity extends Activity {
 						EditActivity.this).setCancelable(true).setTitle(
 						R.string.btn_sendornot).setMessage(
 						R.string.btn_sendornot).setNegativeButton(
-						R.string.btn_cancle,
+						R.string.btn_no,
 						new android.content.DialogInterface.OnClickListener() {
 
 							@Override
@@ -592,7 +458,7 @@ public class EditActivity extends Activity {
 								myHandler.sendMessage(msg);
 								myHandler.post(getClientTask);
 							}
-						}).setPositiveButton(R.string.btn_ok,
+						}).setPositiveButton(R.string.btn_yes,
 						new android.content.DialogInterface.OnClickListener() {
 
 							@Override
@@ -606,20 +472,6 @@ public class EditActivity extends Activity {
 
 						}).create();
 				noticeDialog.show();
-
-				// // 保存并发送
-				// progressDialog = ProgressDialog.show(EditActivity.this, "",
-				// "保存并发送中...");
-				// myHandler.post(editSaveTask);
-				// myHandler.post(getClientTask);
-				// Intent intent = new Intent();
-				// intent.setClass(EditActivity.this, DetailActivity.class);
-				// activityFromDetail.setActivityContent(edtActivityDes.getText()
-				// .toString());
-				// intent.putExtra(Constants.TO_DETAIL_ACTIVITY,
-				// activityFromDetail);
-				// startActivity(intent);
-				// finish();
 
 			}
 		});

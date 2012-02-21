@@ -6,12 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.ContactsContract.Contacts;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
@@ -36,7 +39,10 @@ public class PlaceSearch extends Activity implements OnClickListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.palce_serach);
+		this.setTitle("地点选择");
+		this.setTitleColor(Color.RED);
 		txtSendReciever = (MyMultiAutoCompleteTextView) findViewById(R.id.txtSendReciever);
 		imageButton = (ImageButton) findViewById(R.id.btnSendReciever);
 		imageButton.setOnClickListener(this);
@@ -86,7 +92,7 @@ public class PlaceSearch extends Activity implements OnClickListener {
 				System.out.println(flag);
 				// 通过获得的Id去查询电话号码
 				txtSendReciever.setText(placeName);
-				txtSendReciever.setSelection(placeName.length()-1);
+				txtSendReciever.setSelection(placeName.length());
 			
 			}
 		});

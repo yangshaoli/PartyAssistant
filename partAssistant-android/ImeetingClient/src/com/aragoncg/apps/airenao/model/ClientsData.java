@@ -7,7 +7,15 @@ public class ClientsData {
 	private String PhoneNumber;
 	private String comment;
 	private String isCheck;
+	private String status;
 	
+	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	public String getId() {
 		return id;
 	}

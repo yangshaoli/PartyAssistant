@@ -67,49 +67,52 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 		nickname_editPreference.setOnPreferenceChangeListener(this);
 		pre = PreferenceManager.getDefaultSharedPreferences(this);
 		mySharedPreferences = AirenaoUtills
-		.getMySharedPreferences(PersoninfoSetActivity.this);
-		
+				.getMySharedPreferences(PersoninfoSetActivity.this);
+
 		number_editPreference.setSummary(pre
 				.getString("warning_phone", "phone"));
 		beforeName = mySharedPreferences.getString(Constants.AIRENAO_NICKNAME,
-		"nickname");
+				"nickname");
 		nickname = beforeName;
 		nickname_editPreference.setSummary(nickname);
 		nickname_editPreference.setText(nickname);
 		mail_editPreference.setSummary(pre.getString("warning_mail", "mail"));
-		
-		myHandler = new Handler(){
+
+		myHandler = new Handler() {
 
 			@Override
 			public void handleMessage(Message msg) {
-				switch(msg.what){
+				switch (msg.what) {
 				case 1:
-					if(progressDialog != null)
-					progressDialog.dismiss();
-					mySharedPreferences.edit().putString(Constants.AIRENAO_NICKNAME,nickname).commit();
-					nickname_editPreference.setText(mySharedPreferences.getString(Constants.AIRENAO_NICKNAME, ""));
-					nickname_editPreference.setSummary((mySharedPreferences.getString(Constants.AIRENAO_NICKNAME, "")));
-					Toast.makeText(getApplicationContext(), "sucess", Toast.LENGTH_SHORT).show();
+					if (progressDialog != null)
+						progressDialog.dismiss();
+					mySharedPreferences.edit().putString(
+							Constants.AIRENAO_NICKNAME, nickname).commit();
+					nickname_editPreference.setText(mySharedPreferences
+							.getString(Constants.AIRENAO_NICKNAME, ""));
+					nickname_editPreference.setSummary((mySharedPreferences
+							.getString(Constants.AIRENAO_NICKNAME, "")));
+					Toast.makeText(getApplicationContext(), "sucess",
+							Toast.LENGTH_SHORT).show();
 					break;
 				case 2:
-					if(progressDialog != null)
+					if (progressDialog != null)
 						progressDialog.dismiss();
 					nickname = beforeName;
-					Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "fail",
+							Toast.LENGTH_SHORT).show();
 					break;
 				case 3:
-					progressDialog = ProgressDialog.show(PersoninfoSetActivity.this,
-							"刷新", getString(R.string.loadAirenao), true, true);
+					progressDialog = ProgressDialog.show(
+							PersoninfoSetActivity.this, "刷新",
+							getString(R.string.loadAirenao), true, true);
 				}
 				super.handleMessage(msg);
 			}
-			
+
 		};
 	}
 
-	
-	
-	
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
 			Preference preference) {
@@ -138,26 +141,26 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 			return true;
 		}
 		if (preference == nickname_editPreference) {
-//			nickname_editPreference.setText(mySharedPreferences.getString(Constants.AIRENAO_NICKNAME,
-//			"nickname"));
-//			pre.edit().putString("warning_nickname", newValue.toString())
-//					.commit();
-//			mySharedPreferences.edit().putString(Constants.AIRENAO_NICKNAME,newValue.toString() );
-//			nickname_editPreference.setSummary(mySharedPreferences.getString(Constants.AIRENAO_NICKNAME,
-//			"nickname"));
+			// nickname_editPreference.setText(mySharedPreferences.getString(Constants.AIRENAO_NICKNAME,
+			// "nickname"));
+			// pre.edit().putString("warning_nickname", newValue.toString())
+			// .commit();
+			// mySharedPreferences.edit().putString(Constants.AIRENAO_NICKNAME,newValue.toString()
+			// );
+			// nickname_editPreference.setSummary(mySharedPreferences.getString(Constants.AIRENAO_NICKNAME,
+			// "nickname"));
 			nickname = newValue.toString();
 			SharedPreferences mySharedPreferences = AirenaoUtills
-			.getMySharedPreferences(PersoninfoSetActivity.this);
+					.getMySharedPreferences(PersoninfoSetActivity.this);
 			uid = mySharedPreferences.getString(Constants.AIRENAO_USER_ID, "");
-			if(!"".equals(uid) && !"".equals(nickname)){
+			if (!"".equals(uid) && !"".equals(nickname)) {
 				Message msg = new Message();
 				msg.what = 3;
 				myHandler.sendMessage(msg);
 				SecondThread();
 				registerSecondThread.start();
 			}
-			
-			
+
 			return true;
 		}
 		return false;
@@ -170,21 +173,21 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 		}
 		return false;
 	}
-	
-	
+
 	public void SecondThread() {
 		registerSecondThread = new Thread() {
 
 			@Override
 			public void run() {
-				String saveRegisterUrl =Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_SAVE_NICKNAME_RUL;
+				String saveRegisterUrl = Constants.DOMAIN_NAME
+						+ Constants.SUB_DOMAIN_SAVE_NICKNAME_RUL;
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("uid", uid);
 				params.put("nickname", nickname);
-					
+
 				// 后台注册返回的结果
-				String result = new HttpHelper().savePerformPost(saveRegisterUrl,params,
-						PersoninfoSetActivity.this);
+				String result = new HttpHelper().savePerformPost(
+						saveRegisterUrl, params, PersoninfoSetActivity.this);
 				result = AirenaoUtills.linkResult(result);
 
 				JSONObject jsonObject;
@@ -196,22 +199,23 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 					status = jsonObject.getString(Constants.STATUS);
 					description = jsonObject.getString(Constants.DESCRIPTION);
 					if ("ok".equals(status)) {
-						
-						JSONObject jsonObject1 = jsonObject.getJSONObject("datasource");
+
+						JSONObject jsonObject1 = jsonObject
+								.getJSONObject("datasource");
 						String tempNickname = jsonObject1.getString("nickname");
-						if(tempNickname.equals(nickname)){
+						if (tempNickname.equals(nickname)) {
 							Message msg = new Message();
 							msg.what = 1;
 							myHandler.sendMessage(msg);
-							
-						}	
-				}
-					else{
+
+						}
+					} else {
 						Message msg = new Message();
 						msg.what = 2;
 						myHandler.sendMessage(msg);
-				
-					}} catch (JSONException e) {
+
+					}
+				} catch (JSONException e) {
 
 					e.printStackTrace();
 				}
@@ -219,7 +223,5 @@ public class PersoninfoSetActivity extends PreferenceActivity implements
 			}
 		};
 	}
-	
-	
 
 }

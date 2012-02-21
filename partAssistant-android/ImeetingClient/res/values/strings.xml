@@ -20,9 +20,9 @@
     <string name="send_failed">分享失败！</string>
     
 	<string name="menuEdit">编辑</string>
-	<string name="menuinvite">再次邀请</string>
+	<string name="menuinvite">邀请</string>
 	<string name="create_activity">创建活动</string>
-	<string name="detailActivity">短信内容</string>
+	<string name="detailActivity">活动内容</string>
 	<string name="meeting_list">活动列表</string>
 	<string name="send_ways">邀请方式</string>
 	<string name="send_ways_title">请选择一种发送方式</string>
@@ -31,7 +31,7 @@
 	<string name="destination">去哪：</string>
 	<string name="people_limit">几人：</string>
 	<string name="desc_activity">活动内容：</string>
-	<string name="hint">本活动内容将会作为短信发送</string>
+	<string name="hint">该活动内容将作为短信发送给参加者</string>
 	<string name="send_lable_content_tip">活动内容不能为空</string>
 	<string name="send_message">发送手机短信</string>
 	<string name="send_mail">发送电子邮件</string>
@@ -41,6 +41,8 @@
 	<string name="inputTip">联系人之间请用<b>,</b>隔开</string>
 	<string name="btn_ok">确定</string>
 	<string name="btn_cancle">取消</string>
+	<string name="btn_yes">是</string>
+	<string name="btn_no">否</string>
 	<string name="btn_setting">设置</string>
 	<string name="btn_invite">邀请</string>
 	<string name="btn_edit">编辑</string>
@@ -53,6 +55,7 @@
 	<string name="wrong_num">您不能输入其他字符，请输入数字:0~999</string>
 	<string name="operate">操作</string>
 	<string name="delete">删除</string>
+	<string name="invite">邀请</string>
 	<string name="deleteMenu">删除不可恢复，是否确认删除？</string>
 	<string name="copy">复制</string>
 	<string name="share">分享</string>
@@ -84,7 +87,9 @@
 	<string name="find_lable_tip">手机号或邮箱</string>
 	<string name="error_email">输入的邮件格式不正确</string>
 	<string name="send_airenao_reciever">参加者</string>
+	<string name="send_airenao_selectplace">请输入选择活动地点</string>
 	<string name="send_airenao_title">发送邀请</string>
+	<string name="send_airenao_place">地点</string>
 	<string name="reinvate">重新邀请</string>
 	<string name="sendTip">发送提醒</string>
 	<string name="btn_back">返回</string>
