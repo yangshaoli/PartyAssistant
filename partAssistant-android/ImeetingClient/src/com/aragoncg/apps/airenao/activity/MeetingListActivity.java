@@ -101,7 +101,7 @@ public class MeetingListActivity extends ListActivity implements
 	private boolean branchPage = false;
 	public static final String LAST_ID = "lastID";
 	private int lastID;
-	private static final int MENU_PERSON_INFO = 0;
+	private static final int MENU_SETTING = 0;
 	private static final int MENU_LOGOUT = 1;
 	public static final String PARTY_LIST = "partyList";
 	public static final String PARTY_ID = "partyId";
@@ -580,8 +580,8 @@ public class MeetingListActivity extends ListActivity implements
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.addSubMenu(0, MENU_PERSON_INFO, 0,
-				getString(R.string.menuPersonInfo));
+		menu.addSubMenu(0, MENU_SETTING, 0,
+				getString(R.string.menuSetting));
 		menu.addSubMenu(0, MENU_LOGOUT, 1, getString(R.string.user_off));
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -589,8 +589,8 @@ public class MeetingListActivity extends ListActivity implements
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case MENU_PERSON_INFO:
-			Intent intent = new Intent(this, PersoninfoSetActivity.class);
+		case MENU_SETTING:
+			Intent intent = new Intent(this, SettingActivity.class);
 			startActivity(intent);
 			break;
 		case MENU_LOGOUT:

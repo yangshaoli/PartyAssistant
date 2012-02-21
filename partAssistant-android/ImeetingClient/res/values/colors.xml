@@ -17,4 +17,6 @@
   <color name="myWeiboziti">#d07018</color>
   <color name="transparent">#00ffffff</color>
   <color name="text_num_gray">#333</color>
+  <color name="button_unselected">#ff54acea</color>
+  <color name="info_panel_bg">#ffeeeeee</color>
 </resources>

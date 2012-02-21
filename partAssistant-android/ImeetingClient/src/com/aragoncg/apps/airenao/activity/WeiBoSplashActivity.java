@@ -44,6 +44,7 @@ public class WeiBoSplashActivity extends Activity {
 	public final static String SDCARD_MNT = "/mnt/sdcard";
 	public final static String SDCARD = "/sdcard";
 	private final static String callBackUrl="founderapp://WeiBoSplashActivity";
+	private boolean loginDirectly;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class WeiBoSplashActivity extends Activity {
 		setContentView(R.layout.weibo_splash);
 		MobclickAgent.onError(this);
 		partyId = getIntent().getStringExtra(Constants.PARTY_ID);
-		
+		loginDirectly = getIntent().getBooleanExtra("LoginDireDirectly", false);
 		//弹出一个自定义dialog
 		View diaView=View.inflate(this, R.layout.weibo_dialog, null);
 		final Dialog dialog=new Dialog(WeiBoSplashActivity.this,R.style.dialog);
@@ -87,6 +88,7 @@ public class WeiBoSplashActivity extends Activity {
 	    		Intent intent = new Intent();
 	    		Bundle bundle = new Bundle();
 	    		bundle.putString("url", authUrl);
+	    		bundle.putBoolean("loginDirectly", loginDirectly);
 	    		intent.putExtras(bundle);
 	    		intent.setClass(WeiBoSplashActivity.this , WebViewActivity.class);
 	    		startActivity(intent);
@@ -148,23 +150,32 @@ public class WeiBoSplashActivity extends Activity {
             eidt.putString(EXTRA_ACCESS_TOKEN, accessToken);
             eidt.putString(EXTRA_TOKEN_SECRET, accessSecret);
             eidt.commit();
-            Intent intent2 = new Intent();
-    		Bundle bundle = new Bundle();
-    		
-    		String backUrl = spf.getString(partyId, null);
-    		if(backUrl==null){
-    			throw new RuntimeException("获得邀请链接错误");
-    		}
-    		backUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："+backUrl;
-    		bundle.putString(EXTRA_WEIBO_CONTENT, backUrl);
-    		bundle.putString(EXTRA_PIC_URI, getImgPathByCaptureSendFilter());
-    		bundle.putString(EXTRA_ACCESS_TOKEN, accessToken);
-    		bundle.putString(EXTRA_TOKEN_SECRET, accessSecret);
-    		intent2.putExtras(bundle);
-    		intent2.setClass(WeiBoSplashActivity.this, ShareActivity.class);
-    		startActivity(intent2);
-    		
-    		WebViewActivity.webInstance.finish();
+            
+            if(loginDirectly){
+            	Intent intent3 = new Intent();
+            	intent3.putExtra("loginSuccess", true);
+            	intent3.setClass(WeiBoSplashActivity.this, WeiboSetActivity.class);
+            	startActivity(intent3);
+            }else{
+            	Intent intent2 = new Intent();
+        		Bundle bundle = new Bundle();
+        		
+        		String backUrl = spf.getString(partyId, null);
+        		if(backUrl==null){
+        			throw new RuntimeException("获得邀请链接错误");
+        		}
+        		backUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："+backUrl;
+        		bundle.putString(EXTRA_WEIBO_CONTENT, backUrl);
+        		bundle.putString(EXTRA_PIC_URI, getImgPathByCaptureSendFilter());
+        		bundle.putString(EXTRA_ACCESS_TOKEN, accessToken);
+        		bundle.putString(EXTRA_TOKEN_SECRET, accessSecret);
+        		intent2.putExtras(bundle);
+        		intent2.setClass(WeiBoSplashActivity.this, ShareActivity.class);
+        		startActivity(intent2);
+        		
+        		WebViewActivity.webInstance.finish();
+            }
+            
     		finish();
         }
     }

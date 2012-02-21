@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen
+xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:defaultValue="true"
-        android:key="sounds"
-        android:summary="显示您的信息"
-        android:title="个人信息" >
-    </Preference>
+	<PreferenceCategory android:title="微博">
+			<PreferenceScreen
+				android:title="绑定微博"
+				android:summary="绑定微博，分享活动">
+				<intent android:targetPackage="com.aragoncg.apps.airenao"
+				android:targetClass="com.aragoncg.apps.airenao.activity.WeiboSetActivity"/>
+			</PreferenceScreen>
+	</PreferenceCategory>
 
-    <PreferenceCategory android:title="可修改您的个人信息" >
-    </PreferenceCategory>
+	<PreferenceCategory android:title="个人信息">
     <EditTextPreference
         android:defaultValue=""
-        android:digits="0123456789"
-        android:inputType="phone"
         android:key="warning_nickname"
         android:summary="warning_time_summary"
         android:title="@string/nickname" >
@@ -36,5 +36,5 @@
         android:summary="warning_time_summary"
         android:title="@string/mail" >
     </EditTextPreference>
-
+	</PreferenceCategory>
 </PreferenceScreen>

@@ -32,6 +32,7 @@ import com.mobclick.android.MobclickAgent;
 public class WebViewActivity extends BaseActivity 
 {
 	private WebView webView;
+	private boolean loginDirectly = false;
 	private Intent intent = null;
 	public static WebViewActivity webInstance = null;
 	
@@ -67,6 +68,7 @@ public class WebViewActivity extends BaseActivity
 			Bundle b=intent.getExtras();
 		    if(b!=null&&b.containsKey("url"))
 		    {  
+		    	loginDirectly = b.getBoolean("loginDirectly");
 		    	webView.loadUrl(b.getString("url"));
 		    	webView.setWebChromeClient(new WebChromeClient() {            
 		    		  public void onProgressChanged(WebView view, int progress)               

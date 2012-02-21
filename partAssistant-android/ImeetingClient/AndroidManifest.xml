@@ -26,6 +26,10 @@
     	<activity android:name=".activity.SendAirenaoActivity" >
     		
     	</activity>
+    	<activity android:name=".activity.WeiboSetActivity"
+    			  android:launchMode="singleTask">
+    	
+    	</activity>
     	<activity android:name=".activity.DetailActivity">
     		<intent-filter>
         		<action android:name="toDetailActivity"></action>
@@ -96,7 +100,8 @@
 			android:windowSoftInputMode="adjustPan|stateAlwaysVisible" 
 				 android:label="@string/app_name">
 		</activity>
-		
+		<activity android:name=".activity.SettingActivity">
+		</activity>
 	  	<activity android:name=".activity.PersoninfoSetActivity" >
         </activity>
         <activity android:name=".activity.PreviewActivity">

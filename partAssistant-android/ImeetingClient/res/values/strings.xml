@@ -8,7 +8,7 @@
 	<string name="cancle">取消</string>
 	<string name="psw_empty">号码不得为空,请再输入</string>
 	<string name="btn_priview">预览</string>
-	<string name="nickname">请填入您的昵称</string>
+	<string name="nickname">点击可修改您的昵称</string>
 	<string name="phone">请填入您的号码</string>
 	<string name="mail">请填入您的邮箱</string>
 	    
@@ -54,7 +54,7 @@
 	<string name="share">分享</string>
 	<string name="save">保存</string>
 	<string name="refresh">刷新</string>
-	<string name="menuPersonInfo">个人信息</string>
+	<string name="menuSetting">设置</string>
 	<string name="menuExit">登出</string>
 	<string name="login_label_username">帐号:</string>
 	<string name="login_label_password">密码:</string>
@@ -100,6 +100,7 @@
 	<string name="sendLableTitle">提示</string>
 	<string name="exitMessage">是否要离开“爱热闹”？</string>
 	<string name="clickSetTime">点击设置时间</string>
+	<string name="exitWeiboMsg">确定要退出新浪微博？</string>
 	<string name="netdown">网络故障</string>
 	<string name="netdownTip">网络故障，请先配置网络</string>
 	<string name="chkSdcard">sdcard不存在，请先插入sdcard</string>
@@ -213,6 +214,7 @@
 	<string name="rgVictoryMessage">注册成功，登陆中...</string>
 	<string name="logining">登陆中...</string>
 	<string name="loginFalse">登陆失败</string>
+	<string name="btnLogin">登陆</string>
 	<string name="respondMsg">服务器返回错误代码:</string>
 	
 	

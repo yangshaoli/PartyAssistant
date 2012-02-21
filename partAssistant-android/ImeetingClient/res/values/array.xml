@@ -20,4 +20,15 @@
 		<item>所有联系人</item>
 		<item>常用联系人</item>
 	</array>
+	<string-array name="entries_list_preference">
+		<item>test1</item>
+		<item>test2</item>
+		<item>test3</item>
+	</string-array>
+
+	<string-array name="entriesvalue_list_preference">
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
 </resources>
