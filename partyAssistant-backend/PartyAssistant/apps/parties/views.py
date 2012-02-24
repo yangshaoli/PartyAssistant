@@ -23,11 +23,14 @@ from django.utils import simplejson
 from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
-from utils.tools.email_tool import send_emails
+from utils.tools.email_tool import send_emails, send_apply_confirm_email
+from utils.tools.nick_name_respose import nick_name_deractor
 from utils.tools.push_notification_tool import \
     push_notification_when_enroll
-from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH
+from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH, \
+    send_apply_confirm_sms
 import datetime
+import hashlib
 import logging
 import time
 logger = logging.getLogger('airenao')
@@ -425,6 +428,7 @@ def sms_invite(request, party_id):
         return TemplateResponse(request, 'parties/sms_invite.html', {'form': form, 'party': party, 'client_data':simplejson.dumps(client_data), 'quickadd_client':quickadd_client, 'recent_parties':recent_parties})
 
 @login_required
+@nick_name_deractor
 def list_party(request):
     party_list = Party.objects.filter(creator = request.user).order_by('-id')
     for party in party_list:
@@ -458,6 +462,12 @@ def list_party(request):
     if 'send_status' in request.session:
         send_status = request.session['send_status']
         del request.session['send_status']  
+    
+    profile_status = ''    
+    if 'profile_status' in request.session:
+        profile_status = request.session['profile_status']
+        del request.session['profile_status']
+        
     sms_count = ''    
     if 'sms_count' in request.session:
         sms_count = request.session['sms_count']
@@ -472,7 +482,7 @@ def list_party(request):
     party_list = paginator.page(page)
     request.session['page'] = page
     
-    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count})
+    return TemplateResponse(request, 'parties/list.html', {'party_list': party_list, 'send_status':send_status, 'sms_count':sms_count, 'profile_status':profile_status})
 
 def _public_enroll(request, party_id):
     party = get_object_or_404(Party, id = party_id)
@@ -524,6 +534,8 @@ def _public_enroll(request, party_id):
                 party_client.apply_status = 'apply'
                 party_client.is_check = False
                 party_client.save()
+            
+            _send_apply_confirm_message(party_client)
             leave_message = form.cleaned_data['leave_message']
             if leave_message:
                 party_client.leave_message = party_client.leave_message + '\n' + leave_message + ' ' + time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
@@ -602,7 +614,7 @@ def _invite_enroll(request, party_id, invite_key):
                 
                 #向组织者的所有MoblieDevice发送推送
                 push_notification_when_enroll(party_client, 'apply')
-                
+                _send_apply_confirm_message(party_client)
                 return TemplateResponse(request, 'message.html', {'message': u'apply'})
             else:
                 party_client.apply_status = u'reject'
@@ -787,3 +799,14 @@ def _invite_list(request, party_id):
         party_clients_datas.append(party_client_data)
         
     return  party_clients_datas, party_clients_list    
+
+def _send_apply_confirm_message(party_client):
+    party_type = party_client.party.invite_type
+    
+    if party_type == 'email':
+        send_apply_confirm_email(party_client)
+    elif party_type == 'phone':
+        send_apply_confirm_sms(party_client)
+    else:
+        logger.warn('client has not email or phone')
+        

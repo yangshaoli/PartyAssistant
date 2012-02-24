@@ -293,6 +293,11 @@ document.getElementsByClassName('menu')[1].children[0].className = 'active';
     保存成功 
 </div>
 {% endifequal %}
+{% ifequal profile_status 'neednickname' %}
+<div id="tips">
+    需要填写昵称 
+</div>
+{% endifequal %}
 {% ifequal password_status 'success' %}
 <div id="tips">
     密码修改成功 
@@ -309,7 +314,7 @@ document.getElementsByClassName('menu')[1].children[0].className = 'active';
             {% csrf_token %}
             <fieldset>
                 <div class="field">
-                    <label for="true_name">姓名：</label>
+                    <label for="true_name">昵称<font color='red'>*</font>：</label>
                     <input name='true_name' id='id_true_name' value='{{ form.true_name.value|default:'' }}'>
                     </input>
                     <font color='red'>{{ form.true_name.errors.0 }}</red>

@@ -77,3 +77,18 @@ def send_forget_pwd_email(instance):
         send_emails(subject, content, SYS_EMAIL_ADDRESS, [email])
     except:
         logger.exception('send temp password error! username:%s', instance.user.username)
+
+def send_apply_confirm_email(party_client):
+    party = party_client.party
+    client = party_client.client
+#    尊敬的xxx，您刚刚报名参加了xxx发布的活动，请点击以下链查看该活动：
+#     http://www.airenao.com/accounts/email_handle_url/binding/?key=3e328929d2bef50cd2c8e0b626c639d7
+    content = u'尊敬的' + client.name=='' and client.email or client.name + u'，您刚刚报名参加了' + party.creator.username + u'发布的活动，请点击以下链查看该活动：'
+    enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, client.email)).hexdigest())
+    content = content + u'\r\n快来报名：<a href="%s">%s</a>' % (enroll_link, enroll_link)
+    subject = u'【爱热闹】报名提醒邮件'
+    email = client.email
+    try:
+        send_emails(subject, content, SYS_EMAIL_ADDRESS, [email])
+    except:
+        logger.exception('send send_apply_confirm_email error!')

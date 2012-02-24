@@ -1,0 +1,10 @@
+[
+  {
+    "model": "common.ShortLink",
+    "pk": 1,
+    "fields": {
+      "short_link": "aaaa",
+      "long_link": "http://www.airenao.com"
+    }
+  }
+]

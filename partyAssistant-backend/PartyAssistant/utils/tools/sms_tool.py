@@ -126,11 +126,6 @@ def sms_modem_send_sms(outbox_message, message, party):
                     logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
                     logger.exception('send sms error!')
     except:
-        userprofile.used_sms_count = userprofile.used_sms_count - number_of_message
-        userprofile.available_sms_count = userprofile.available_sms_count + number_of_message
-        userprofile.save()
-        logger.info('return avalibale sms count ,user:' + str(party.creator.id) + 'number:' + str(number_of_message))
-        
         logger.exception('send sms error!')
     finally:
         outbox_message.delete()
@@ -161,7 +156,7 @@ def sendsmsMessage(message):
         if res != '1':
             logger.error(res)
     except:
-        logger.exception('send sendsmsBingdingmessage error!')        
+        logger.exception('send sendsmsMessage error!')        
 
 def send_forget_pwd_sms(instance):
     phone = instance.user.userprofile.phone
@@ -172,4 +167,20 @@ def send_forget_pwd_sms(instance):
         if res != '1':
             logger.error(res)
     except:
-        logger.exception('send sendsmsBindingmessage error!')
+        logger.exception('send send_forget_pwd_sms error!')
+
+def send_apply_confirm_sms(party_client):
+    party = party_client.party
+    client = party_client.client
+    enroll_link = DOMAIN_NAME + '/parties/%d/enroll/?key=%s' % (party.id, hashlib.md5('%d:%s' % (party.id, client.phone)).hexdigest())
+    short_link = transfer_to_shortlink(enroll_link)
+    content = u'【爱热闹】' + client.name=='' and client.phone or client.name + u', 您报名参加了' + party.creator.username + u'发布的活动，点击链接查看该活动：'
+    content = '%s%s' % (content, short_link)
+    phone = client.phone
+    data = {'Mobile':regPhoneNum(phone) , 'Content':content.encode('gbk')}
+    try:
+        res = _post_api_request_sendSMS(data)
+        if res != '1':
+            logger.error(res)
+    except:
+        logger.exception('send send_apply_confirm_sms error!')

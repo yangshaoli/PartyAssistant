@@ -63,12 +63,23 @@ def profile(request, template_name = 'accounts/profile.html', redirected = 'prof
                 userprofile.true_name = true_name
                 userprofile.save()
             
+            if userprofile.true_name == '':
+                profile_status = 'neednickname'
+                return redirect('completeprofile')
+            
+            
+            request.session['profile_status'] = profile_status
+            
+            if template_name != 'accounts/profile.html':
+                return redirect('list_party')
+            
             return TemplateResponse(request, 'accounts/profile.html', {'form':form,
                                                                        'sms_count':userprofile.available_sms_count,
                                                                        'profile_status':profile_status,
                                                                        'userprofile':userprofile
                                                                        })
-            return redirect('profile')
+            
+#            return redirect('list_party')
         else:
             user = request.user
             userprofile = user.get_profile()
@@ -89,10 +100,18 @@ def profile(request, template_name = 'accounts/profile.html', redirected = 'prof
               }
         form = UserProfileForm(data)
         profile_status = ''
+        if 'profile_status' in request.session:
+            profile_status = request.session['profile_status']
+            del request.session['profile_status']
+         
         password_status = ''
         if 'password_status' in request.session:
             password_status = request.session['password_status']
-            del request.session['password_status']          
+            del request.session['password_status']   
+        
+        if profile_status == '' and userprofile.true_name=='':
+            profile_status = 'neednickname'
+            
         return TemplateResponse(request, template_name, {'form':form, 'userprofile':userprofile, 'sms_count':sms_count, 'profile_status':profile_status, 'password_status':password_status})
 
 @login_required
