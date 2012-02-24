@@ -4,32 +4,32 @@
 	input:{
 		"receivers":Array of Client Dict,
 		"content":String of SMS Content,
-		"_issendbyself":"0" or "1",
-		"uID":Int,
-		"addressType":"iphone" or "android"
+		"_issendbyself":"0" or "1",  #通过自己的手机发送（1） 还是通过服务器发送（0）
+		"uID":Int,   #user ID
+		"addressType":"iphone" or "android" #记录这是通过何种设备创建的
 		}
 	output:Success- {
 			"status":'ok',
 			"description":"ok",
 			"data":{
                 		'partyId':Integer,
-                		'applyURL':String,
-				'sms_count_remaining':Integer,
+                		'applyURL':String,（报名网页short URL）
+				'sms_count_remaining':Integer,#剩余短信条数
                 		},
-			'iphone_version':IPHONE_APP_VERSION(String),
-        	'android_version':ANDROID_APP_VERSION(String),
+			'iphone_version':IPHONE_APP_VERSION(String),#（如1.0 1.1 etc）
+        		'android_version':ANDROID_APP_VERSION(String),#（如1.0 1.1 etc）
 			}
 		Error - {
 			"status":'error',
-			"description":Error Msg,
+			"description":Error Msg, #多用于Alert显示
 			"data":{},
 			'iphone_version':IPHONE_APP_VERSION(String),
-            'android_version':ANDROID_APP_VERSION(String),
+            		'android_version':ANDROID_APP_VERSION(String),
 			}
 	ClientDict:{
 			"cName":String,
 			"cVal":Email/Phone Num
-			"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")
+			"cId":Integer(iphone中Client的Id，需记录其ID，存在位置："iPhone")#现在没有用到，可删除
 			}
 			
 2. PartyList
@@ -42,11 +42,11 @@
 		"status":"ok",
 		"description":"ok",
 		"dataSource":{
-				"lastID":Integer,
+				"lastID":Integer,#最后一条数据的party ID
 				"partyList":PartyDictArray,
 				},
 		'iphone_version':IPHONE_APP_VERSION(String),
-        'android_version':ANDROID_APP_VERSION(String),
+        	'android_version':ANDROID_APP_VERSION(String),
 		}
 
 	PartyDict:{
@@ -57,15 +57,15 @@
 			}
 
 #1	start_id is the ID of the start query id, it will return the parties whose id is smaller than the start_id
-	and it will also return the smallest id of the parties
+	and it will also return the smallest id of the parties. Default is 0, and it will return the latest 20 parties
 
 #2	every party dict has a attr：
 		clientsData{
-			appliedClientcount:Integer,
-			newAppliedClientcount:Integer,
-			donothingClientcount:Integer,
-			refusedClientcount:Integer,
-			newRefusedClientcount:Integer,
+			appliedClientcount:Integer,#已报名人数
+			newAppliedClientcount:Integer,#新报名人数
+			donothingClientcount:Integer,#未操作人数
+			refusedClientcount:Integer,#拒绝报名人数
+			newRefusedClientcount:Integer,#新拒绝报名人数
 		}
 		
 4. GetClientsCount:
@@ -78,7 +78,7 @@
 		"status":"ok",
 		"description":"ok",
 		"datasource":{
-				"allClientcount": Integer,
+				"allClientcount": Integer,#所有相关人数
 				"appliedClientcount": Integer,
 				"newAppliedClientcount":Integer,
 				'refusedClientcount': Integer,
@@ -94,7 +94,7 @@
 	input:{
 		"username":String(not null),
 		"password":String(not null),
-                "device_token":String(not null)
+                "device_token":String(not null)#如果取不到就置为空字符串
 		}
 	output:{
 		"status":"ok",
@@ -113,7 +113,7 @@
                 "device_token":String(not null)
 		}
 	output:{
-                "_israndomlogin":"0" or "1",
+                "_israndomlogin":"0" or "1",（是否用临时密码登陆的）
 		"status":"ok",
 		"description":"ok",
 		"datasource":{
@@ -168,9 +168,9 @@
                    	'cName':clientparty.client.name,
                    	'cValue':cValue,
                    	'backendID':clientparty.id,
-                   	'status':clientparty.apply_status,
+                   	'status':clientparty.apply_status,  #"apply","refuse","noanswer "
 			'msg':String,
-			'isCheck':BOOL,
+			'isCheck':BOOL,#是否被查看过（是否需要标注新），True是被查看（不标注新），False是未被查看（标注新）
                    	}
 			]
 			
@@ -204,11 +204,11 @@
 		"datasource":{
                 		'partyId':Integer,
                 		'applyURL':String,
-				        'sms_count_remaining':Integer,
+				'sms_count_remaining':Integer,
                 		}
 		}
 		
-12. GetBadgeNumber:
+12. GetBadgeNumber:（查询有多少未读消息/提醒的方法）
         url:"/a/accounts/get_badge_num/?id=xx",
         method:"GET",
         input:{
@@ -221,7 +221,7 @@
                                 }
                 }
                 
-13. getAccountRemaining:
+13. getAccountRemaining:（查询有多少余额）
         url:"/a/accounts/get_account_remaining/?id=xx",
         method:"GET",
         input:{
@@ -238,7 +238,7 @@
 	url:"/a/accounts/forget_password/",
 	method:"POST",
 	input:{
-		"value":String(not null) 
+		"value":String(not null) #Email/手机号/用户名 均可
 		}
 	output:{
 		"status":"ok",
@@ -251,8 +251,8 @@
 	method:"POST",
 	input:{
 		"uID":Int,
-                "originalpassword":String(not null), 
-                "newpassword":String(not null)  
+                "originalpassword":String(not null), #原始密码
+                "newpassword":String(not null)  #新密码
 		}
 	output:{
 		"status":"ok",
@@ -261,7 +261,7 @@
 		}
 
 
-14. changePasswordrandomlogin:
+14. changePasswordrandomlogin:#使用临时密码时的修改密码
 	url:"/a/accounts/change_password_random_login/",
 	method:"POST",
 	input:{
@@ -294,8 +294,8 @@
         url:"/a/accounts/bind/phone/",
         method:"POST",
         input:{
-        "uid":Integer,
-        "value":String(phone num),
+        	"uid":Integer,
+        	"value":String(phone num),
                 }
         output:{
                 "status":"ok",
@@ -309,7 +309,7 @@
                 }
                 {
                 "status":"error",
-                "description":String to Show,
+                "description":String to Show,#用于显示的字符串
                 "datasource":{
                                 "latest_status":{'email':user.userprofile.email,
                                                 'email_binding_status':'bind'/'unbind'/'waitingbind',
@@ -340,9 +340,9 @@
 17. bindEmail:
         url:"/a/accounts/bind/email/",
         method:"POST",
-        input:{
-        "uid":Integer,
-        "value":String(email),
+        	input:{
+        	"uid":Integer,
+        	"value":String(email),
                 }
         output:{
                 "status":"ok",
@@ -388,8 +388,8 @@
         url:"/a/accounts/unbind/phone/",
         method:"POST",
         input:{
-        "uid":Integer,
-        "value":String(phone num),
+        	"uid":Integer,
+        	"value":String(phone num),
                 }
         output:{
                 "status":"ok",
@@ -426,8 +426,8 @@
         url:"/a/accounts/unbind/email/",
         method:"POST",
         input:{
-        "uid":Integer,
-        "value":String(Email),
+        	"uid":Integer,
+        	"value":String(Email),
                 }
         output:{
                 "status":"ok",
@@ -518,18 +518,19 @@
                                 }
                 }
 
-21. bindDevice:
+21. bindDevice:#记录用户的device_token用于push notification
         url:"/a/accounts/bind_device/",
         method:"POST",
         input:{
-        "uid":Integer,
-        "device_token":String,
+        	"uid":Integer,
+        	"device_token":String,
                 }
         output:{
                 "status":"ok",
                 "description":"ok",
                 "datasource":{}
                 }
+
 22. getFullPartyListInfoForAndroid:
     url:"/a/parties/an_partylist/(userid)/(start_id)/"
     method:GET
