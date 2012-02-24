@@ -76,6 +76,14 @@ def sms_modem_send_sms(outbox_message, message, party):
     userprofile = party.creator.get_profile()
     try:
         phone_list = outbox_message.address.split(',')
+        
+        #排除创建者的手机号
+        try:
+            u_index = phone_list.index(userprofile.phone)
+            phone_list.pop(u_index)
+        except Excepiton:
+            pass
+        
         if message.is_apply_tips:
             for phone in phone_list:
                 content = message.content

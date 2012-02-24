@@ -384,6 +384,11 @@ def verifyContact(request, type):
         elif  type == 'phone' and UserProfile.objects.filter(phone = value, phone_binding_status = 'bind').exclude(user = user).count() != 0:
             raise myException(ERROR_VERIFYING_BY_PHONE_HAS_BINDED_BY_OTHER, status = ERROR_STATUS_HAS_BINDED_BY_OTHER, data = data)
         
+        # 确定app端绑定操作是否已经被正常操作过了
+        if (type == 'email' and user.userprofile.email_binding_status == 'bind' and user.userprofile.email == value)\
+            or (type == 'phone' and user.userprofile.phone_binding_status == 'bind' and user.userprofile.phone == value):
+            return data
+        
         #开始解绑
         binding_temp = UserBindingTemp.objects.filter(user = user, binding_type = type, binding_address = value, key = userkey)
         if not binding_temp:

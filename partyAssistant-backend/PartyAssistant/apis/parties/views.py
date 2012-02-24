@@ -90,6 +90,11 @@ def createParty(request):
                                          limit_count = peopleMaximum,
                                          invite_type = (msgType == "SMS" and 'phone' or 'email')
                                          )
+            creator_client, is_new = Client.objects.get_or_create(phone = user.userprofile.phone, creator = user)
+            if creator_client.name != user.userprofile.nickname:
+                creator_client.name = user.userprofile.nickname
+                creator_client.save()
+            PartiesClients.objects.create(party = party, client = creator_client, apply_status = u'apply')
             addressArray = []
             for i in range(len(receivers)):
                 receiver = receivers[i]
