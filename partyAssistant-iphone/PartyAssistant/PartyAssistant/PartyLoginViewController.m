@@ -286,7 +286,7 @@
 }
 
 - (void)showInvalidateNetworkalert {
-    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+    [self showAlertWithMessage:REQUEST_INVALID_NETWORK 
                    buttonTitle:@"OK" 
                            tag:InvalidateNetwork];
 }

@@ -91,7 +91,7 @@ static DataManager *sharedDataManager = nil;
     //1.check network status
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
         [pool release];
-        return INVALID_NETWORK;
+        return REQUEST_INVALID_NETWORK;
         //return NetworkConnectionInvalidate;
     }
     //2.post name and pwd

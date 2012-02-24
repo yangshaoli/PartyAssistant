@@ -577,7 +577,8 @@ static BOOL WBIsDeviceIPad() {
 	
 	int wordcount = [self calculateTextNumber:_weiboContentTextView.text];
 	NSInteger count  = 140 - wordcount;
-	if (count < 0) {
+	
+    if (count < 0) {
 		_wordCountLabel.textColor = [UIColor redColor];
 		_sendWeiboButton.enabled = NO;
 		[_sendWeiboButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];

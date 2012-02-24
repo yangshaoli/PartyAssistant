@@ -296,7 +296,7 @@
 }
 
 - (void)showInvalidateNetworkalert {
-    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+    [self showAlertWithMessage:REQUEST_INVALID_NETWORK 
                    buttonTitle:@"好的" 
                            tag:InvalidateNetwork];
 }
@@ -348,7 +348,7 @@
 
 - (void)checkPurchaseValidStatus {
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"无法连接网络，请检查网络状态！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:REQUEST_INVALID_NETWORK delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];
         return;
     }

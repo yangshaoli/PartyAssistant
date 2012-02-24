@@ -10,6 +10,7 @@
 #import "PartyUserRegisterViewController.h"
 #import "PartyLoginViewController.h"
 #import "UserInfoValidator.h"
+#import "HTTPRequestErrorMSG.h"
 
 #define NullTextFieldTag            100
 #define UserNameTextFieldTag        101
@@ -214,7 +215,7 @@
 }
 
 - (void)showInvalidateNetworkalert {
-    [self showAlertWithMessage:@"无法连接网络，请检查网络状态！" 
+    [self showAlertWithMessage:REQUEST_INVALID_NETWORK 
                    buttonTitle:@"好的" 
                            tag:InvalidateNetwork];
 }

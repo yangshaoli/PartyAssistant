@@ -92,7 +92,7 @@
     self.receipts = [NSMutableArray arrayWithCapacity:10];
     
     self.editingTableViewCell = [[EditableTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];\
-    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"请在这里输入要组织活动的内容"];
+    [(CustomTextView *)self.editingTableViewCell.textView setPlaceholder:@"该活动内容将被作为短信发送给参加者"];
     _editingTableViewCell.delegate = self;
     _editingTableViewCell.text = [NSMutableString stringWithCapacity:10];
     // Do any additional setup after loading the view from its nib.
@@ -461,7 +461,7 @@
     }else{
         //1.check network status
         if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            [self showAlertWithTitle:@"提示" Message:REQUEST_INVALID_NETWORK];
             return;
         }
         
@@ -1018,7 +1018,7 @@
 
 - (void)checkPurchaseValidStatus {
     if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:@"无法连接网络，请检查网络状态！" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"提示" message:REQUEST_INVALID_NETWORK delegate:nil cancelButtonTitle:@"确定" otherButtonTitles: nil];
         [alertView show];
         return;
     }

@@ -200,12 +200,12 @@
     }else{
         //1.check network status
         if([[Reachability reachabilityForInternetConnection] currentReachabilityStatus] == kNotReachable) {
-            [self showAlertWithTitle:@"提示" Message:@"无法连接网络，请检查网络状态！"];
+            [self showAlertWithTitle:@"提示" Message:REQUEST_INVALID_NETWORK];
             return;
         }
         
         [self showWaiting];
-        NSURL *url = [NSURL URLWithString:CHANGE_PASSWORD_RANDOM_LOGIN];
+        NSURL *url = [NSURL URLWithString:REQUEST_INVALID_NETWORK];
         //        if (self.quest) {
         //            [self.quest clearDelegatesAndCancel];
         //        }
