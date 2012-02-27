@@ -210,7 +210,6 @@
                 }
             }
             
-            
             [self showNormalErrorInfo:description];
         } else if ([status isEqualToString:@"error_different_binded"]) {
             [self saveProfileDataFromResult:result];

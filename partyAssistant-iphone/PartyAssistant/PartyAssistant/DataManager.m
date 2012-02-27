@@ -340,6 +340,9 @@ static DataManager *sharedDataManager = nil;
     
     NSString *name = [datasource objectForKey:@"name"];
     if (name) {
+        BindingStatusObject *bindingStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+        [bindingStatus setBindedNickname:name];
+        [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] saveBindingStatusObject];
         userData.nickName = name;
     } else {
         
@@ -370,6 +373,9 @@ static DataManager *sharedDataManager = nil;
     
     NSString *name = [datasource objectForKey:@"name"];
     if (name) {
+        BindingStatusObject *bindingStatus = [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] getBindingStatusObject];
+        [bindingStatus setBindedNickname:name];
+        [[UserInfoBindingStatusService sharedUserInfoBindingStatusService] saveBindingStatusObject];
         userData.nickName = name;
     } else {
         
