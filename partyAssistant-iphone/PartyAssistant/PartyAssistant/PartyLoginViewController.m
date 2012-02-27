@@ -27,6 +27,9 @@
 #import "ChangePasswordRandomLoginTableVC.h"
 #import "NameBindingViewController.h"
 #import "PartyAssistantAppDelegate.h"
+
+#import "LocationSearchAndHistoryViewController.h"
+
 #define NotLegalTag         1
 #define NotPassTag          2
 #define InvalidateNetwork   3

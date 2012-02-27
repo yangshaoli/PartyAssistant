@@ -35,6 +35,8 @@ ABAddressBookRef addressBook;
 
 - (void)gotoLoginView;
 
+- (NSString *)applicationDocumentsDirectory;
+
 void addressBookChanged (ABAddressBookRef addressBook,
                          CFDictionaryRef info,
                          void *context);
