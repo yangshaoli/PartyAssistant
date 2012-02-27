@@ -447,7 +447,7 @@
     oldLayout2=[cell viewWithTag:5];
     [oldLayout2 removeFromSuperview];
     
-    if([self.title isEqualToString:@"已报名"]){
+    if([self.navigationItem.title isEqualToString:@"已报名"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
@@ -480,7 +480,7 @@
         //secondLb.textColor = [UIColor blueColor];
         secondLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:secondLb];
-    }else if([self.title isEqualToString:@"不参加"]){
+    }else if([self.navigationItem.title isEqualToString:@"不参加"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
@@ -512,7 +512,7 @@
         //secondLb.textColor = [UIColor blueColor];
         secondLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:secondLb];
-    }else if([self.title isEqualToString:@"已邀请"]){
+    }else if([self.navigationItem.title isEqualToString:@"已邀请"]){
         BOOL isCheck=[[clentDic  objectForKey:@"isCheck"] boolValue];//不可少boolvalue
         if(!isCheck){
             UIImageView *cellImageView=[[UIImageView alloc] initWithFrame:CGRectMake(5, 10, 20, 20)];
@@ -541,7 +541,7 @@
         //secondLb.textColor = [UIColor blueColor];
         secondLb.backgroundColor = [UIColor clearColor];
         [cell addSubview:secondLb];
-    }else if([self.title isEqualToString:@"未响应"]){
+    }else if([self.navigationItem.title isEqualToString:@"未响应"]){
         UILabel *secondLb= [[UILabel alloc] initWithFrame:CGRectMake(30, 22, 280, 20)];
         secondLb.tag=8;
         secondLb.textColor=[UIColor grayColor];

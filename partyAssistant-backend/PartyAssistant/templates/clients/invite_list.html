@@ -82,7 +82,11 @@ function ajaxGetClients(applystatus){
                 if( leave_message.replace(/^\s+|\s+$/g, "") != ""){
                 	leave_message_tag="<a href='#' onclick=\"bubblepopup(\'"+leave_message+"\');\"><img src=\"/static/images/bubble.png\" width=\"18\" style=\"margin-left:5px;\"/></a>";
                 }
-                row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+leave_message_tag+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
+                if(clients[i].name==''){
+                	row = "<tr><td>"+new_status+"</td><th>"+clients[i].address+leave_message_tag+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
+                }else{
+                	row = "<tr><td>"+new_status+"</td><th>"+clients[i].name+leave_message_tag+"</th><td>"+clients[i].address+"</td><td>"+action+"</td></tr>"
+                }
                 $('.accordion_content table tbody').append(row);    
             }
             //修改重新邀请的链接

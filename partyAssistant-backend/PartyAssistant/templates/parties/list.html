@@ -78,11 +78,11 @@ iframe{
       <div class="function_share clearfix">
        <!--p class="statistics"><a href="{% url invite_list party.id %}?apply=noanswer">未响应</a>：<strong class="important"><i class="icon_new"></i>{{ party.client_counts.noanswer }}</strong> <a href="{% url invite_list party.id %}?apply=apply">已报名</a>：<strong class="important">{{ party.client_counts.apply }}</strong> <a href="{% url invite_list party.id %}?apply=reject">不参加</a>：<strong class="important">{{ party.client_counts.reject }}</strong></p!-->
        <p class="statistics"><a href="{% url invite_list party.id %}?apply=apply">来的：<strong class="important">{% if party.client_counts.new_add_apply %}<i class="icon_new"></i>{% endif %}{{ party.client_counts.apply }}</strong></a> <a href="{%url invite_list party.id %}?apply=noanswer">待定的：<strong class="important">{{ party.client_counts.noanswer }}</strong></a> <a href="{% url invite_list party.id %}?apply=reject">不来的：<strong class="important">{% if party.client_counts.new_add_reject %}<i class="icon_new"></i>{% endif %}{{ party.client_counts.reject }}</strong></p></a>
-       <p class="share"><a href="#">分享到：</a><script type="text/javascript" charset="utf-8">     
+       <p class="share"><input name='_title{{party.id}}' id='id__title{{party.id}}' type='hidden' value='{{party.description|truncatestring:"140"|escape}}'/><a href="#">分享到：</a><script type="text/javascript" charset="utf-8">     
 (function(){
   var _w = 72 , _h = 16;
   var uu = '{{ party.enroll_url }}';
-  var _title = '{{ party.description|escapejs }}';
+  var _title = $('#id__title{{party.id}}').val();
   var param = {
     url:uu,
     type:'3',

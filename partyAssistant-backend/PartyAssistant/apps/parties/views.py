@@ -24,8 +24,9 @@ from forms import PartyForm
 from models import Party
 from settings import DOMAIN_NAME
 from utils.tools.email_tool import send_emails
-from utils.tools.push_notification_to_apple_tool import \
+from utils.tools.push_notification_tool import \
     push_notification_when_enroll
+from utils.tools.sms_tool import SHORT_LINK_LENGTH, BASIC_MESSAGE_LENGTH
 import datetime
 import logging
 import time
@@ -262,7 +263,8 @@ def sms_invite(request, party_id):
                     sms_message.content = form.cleaned_data['content']
                     sms_message.is_apply_tips = form.cleaned_data['is_apply_tips']
                     sms_message.save()
-
+                    
+                number_of_message = (len(sms_message.content) + (SHORT_LINK_LENGTH if sms_message.is_apply_tips else 0) + BASIC_MESSAGE_LENGTH - 1) / BASIC_MESSAGE_LENGTH    
                 client_phone_list = form.cleaned_data['client_phone_list'].split(',')
                 parties_clients = PartiesClients.objects.select_related('client').filter(party = party)
                 clients = Client.objects.filter(creator = request.user)
@@ -733,11 +735,11 @@ def _create_default_content(creator, start_date, start_time , address, descripti
         if address == "":
             content += u'，' + u'具体安排待定'
         else:
-            content += address_content + u'，' + u'日期暂定，地点待定'
+            content += address_content + u'，' + u'日期待定，地点待定'
     if start_date != None and start_time == None:
-        content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间暂定'
+        content += address_content + u'，' + u'日期:' + datetime.date.strftime(start_date, '%Y-%m-%d') + u'，时间待定'
     if start_date == None and start_time != None:
-        content += address_content + u'，' + u'日期暂定' + u'，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
+        content += address_content + u'，' + u'日期待定' + u'，' + u'时间:' + datetime.time.strftime(start_time, '%H:%M')
     if start_date != None and start_time != None:
         content += address_content + u'，' + u'具体时间：' + datetime.date.strftime(start_date, '%Y-%m-%d') + ' ' + datetime.time.strftime(start_time, '%H:%M')        
     content += u'。'

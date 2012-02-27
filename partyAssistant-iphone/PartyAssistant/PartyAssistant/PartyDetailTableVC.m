@@ -39,7 +39,7 @@
     [super viewDidLoad];
         
     [self performSelectorOnMainThread:@selector(loadClientCount) withObject:nil waitUntilDone:NO];
-    self.title=@"活动详情";
+    self.navigationItem.title=@"活动详情";
     
     self.navigationController.toolbar.tintColor = [UIColor colorWithRed:117/255 green:4/255 blue:32/255 alpha:1];
     [self.navigationController.toolbar setBarStyle:UIBarStyleBlackTranslucent];

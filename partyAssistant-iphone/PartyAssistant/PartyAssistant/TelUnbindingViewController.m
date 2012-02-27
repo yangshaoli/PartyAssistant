@@ -55,7 +55,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title=@"手机解绑";
+    self.navigationItem.title=@"手机解绑";
     [[self telTextField] setText:[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedTel]];
     // Do any additional setup after loading the view from its nib.
 }

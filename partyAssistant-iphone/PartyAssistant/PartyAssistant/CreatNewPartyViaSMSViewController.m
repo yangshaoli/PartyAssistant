@@ -82,11 +82,34 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.title = @"活动邀请";
-    self.navigationController.navigationBar.tintColor = [UIColor redColor];
+    UIImage *bg = [UIImage imageNamed:@"background"];
+    [bg stretchableImageWithLeftCapWidth:1 topCapHeight:1];
+    self.view.backgroundColor = [UIColor colorWithPatternImage:bg];
+    UILabel *titleLabel=[[UILabel alloc] initWithFrame:CGRectMake(110,0, 100, 44)];
+    titleLabel.text= @"创建活动";
+    titleLabel.textColor=[UIColor whiteColor];
+    titleLabel.backgroundColor=[UIColor clearColor];
+    titleLabel.font=[UIFont systemFontOfSize:20];
+    //self.navigationController.navigationBar.tintColor = [UIColor redColor];
+    UIImageView *statusBarImageView=[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320,44)];
+    statusBarImageView.backgroundColor=[UIColor blackColor];
+    statusBarImageView.image=[UIImage imageNamed:@"statusBar"];
+    [self.navigationController.navigationBar addSubview:statusBarImageView];
+    [self.navigationController.navigationBar addSubview:titleLabel];
     [self.tableView setScrollEnabled:NO];
-    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
+//    UIBarButtonItem *right = [[UIBarButtonItem alloc] initWithTitle:@"完成" style:UIBarButtonItemStyleDone target:self action:@selector(SMSContentInputDidFinish)];
+    UILabel *buttonLabel=[[UILabel alloc] initWithFrame:CGRectMake(8,3, 36, 24)];
+    buttonLabel.text= @"完成";
+    buttonLabel.textColor=[UIColor whiteColor];
+    buttonLabel.backgroundColor=[UIColor clearColor];
+    buttonLabel.font=[UIFont systemFontOfSize:13];
+    //build right bar button using a custome background button
+    UIButton *doneButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 44, 30)];
+    [doneButton setImage:[UIImage imageNamed:@"navIcon"] forState:UIControlStateNormal];
+    [doneButton setImage:[UIImage imageNamed:@"navIcon_on"] forState:UIControlStateHighlighted];
+    [doneButton addTarget:self action:@selector(SMSContentInputDidFinish) forControlEvents:UIControlEventTouchUpInside];
+    [doneButton addSubview:buttonLabel];
+    UIBarButtonItem *right=[[UIBarButtonItem alloc] initWithCustomView:doneButton];
     self.navigationItem.rightBarButtonItem = right;
     self.rightItem = right;
     self.receipts = [NSMutableArray arrayWithCapacity:10];
@@ -111,8 +134,8 @@
             self.editingTableViewCell.text = [NSMutableString stringWithString:smsObject.smsContent];
         }
         
-        NSLog(@"%@",smsObject.receiversArray);
-        NSLog(@"%@",smsObject.smsContent);
+//        NSLog(@"%@",smsObject.receiversArray);
+//        NSLog(@"%@",smsObject.smsContent);
         
         [self rearrangeContactNameTFContent];
     }
@@ -145,8 +168,17 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(leftCountRefreshFailed:) name:UpdateRemainCountFailed object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-
+    
 }
+
+
+- (IBAction)clockButton:(id)sender{
+    NSLog(@"CLOCK ---button");
+}
+- (IBAction)mapButton:(id)sender{
+    NSLog(@"map--button");
+}
+
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -207,12 +239,16 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
+//            UIImage *inputUpImage=[UIImage imageNamed:@"input_up"];
+//            self.addContactCell.backgroundColor=[UIColor colorWithPatternImage:inputUpImage];
             return self.addContactCell;
         }
 //        else if (indexPath.row == 1) {
 //            return self.sendModelSelectCell;
 //        }
     } else {
+//        UIImage *inputDoneImage=[UIImage imageNamed:@"input_down"];
+//        self.editingTableViewCell.backgroundColor=[UIColor colorWithPatternImage:inputDoneImage];
         return self.editingTableViewCell;
     }
     
@@ -285,6 +321,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if (section == 1) {
+        
         return self.sectionOneHeader;
     }
     return nil;
@@ -434,6 +471,7 @@
 }
 
 - (NSMutableArray *)getCurrentContactDataSource {
+    NSLog(@"self.receipts ----> :%@",self.receipts);
     return self.receipts;
 }
 #pragma mark -
@@ -969,7 +1007,7 @@
 #pragma mark -
 #pragma mark segment contact delegate
 - (NSArray *)getCurrentContactData {
-    NSLog(@"%@",self.receipts);
+    NSLog(@"self.receipts ----> :%@",self.receipts);
     return self.receipts;
 }
 
@@ -1100,7 +1138,7 @@
 - (void)leftCountRefreshed:(NSNotification *)notify {
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
-    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
+//    self.leftCountLabel.text = [NSString stringWithFormat:@"帐户剩余:%@条", [[NSNumber numberWithInt:[user.leftSMSCount intValue]] stringValue]];
 }
 
 - (void)leftCountRefreshFailed:(NSNotification *)notify {

@@ -32,7 +32,7 @@
 - (id)initWithParentViewController:(UIViewController *)aViewController {
     if (self = [super init]) {
         self.managingViewController = aViewController;
-        self.title = @"所有联系人";
+        self.navigationItem.title = @"所有联系人";
     }
     return self;
 }
@@ -794,5 +794,9 @@
 - (void)addressBookHasBeenUpdated {
     isAddressBookDataNeedUpdate = YES;
     [self.tableView reloadData];
+}
+
+- (NSString *)title{
+    return @"所有联系人";
 }
 @end

@@ -41,7 +41,7 @@
     [goButton setTitle:@"找回" forState:UIControlStateNormal];
     [goButton addTarget:self action:@selector(getPassword) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:goButton];
-    self.title=@"忘记密码";
+    self.navigationItem.title=@"忘记密码";
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  

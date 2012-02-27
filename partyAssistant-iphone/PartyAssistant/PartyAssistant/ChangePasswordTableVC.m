@@ -45,7 +45,7 @@
     [super viewDidLoad];
     UIBarButtonItem *doneBtn = [[UIBarButtonItem alloc] initWithTitle:@"保存" style:UIBarButtonItemStyleDone target:self action:@selector(doneBtnAction)];
     self.navigationItem.rightBarButtonItem = doneBtn;
-    self.title=@"修改密码";
+    self.navigationItem.title=@"修改密码";
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

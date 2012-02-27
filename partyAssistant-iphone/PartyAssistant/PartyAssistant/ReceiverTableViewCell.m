@@ -29,7 +29,6 @@
     if (self) {
         // Initialization code
         self.textLabel.text = @"收件人:";
-        
         self.receiversScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(SCROLL_VIEW_X, SCROLL_VIEW_Y, SCROLL_VIEW_WIDTH, SCROLL_VIEW_HEIGHT)];
         receiversScrollView.backgroundColor = [UIColor clearColor];
         receiversScrollView.scrollEnabled = YES;

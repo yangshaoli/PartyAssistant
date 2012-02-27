@@ -20,7 +20,7 @@
 - (id)initWithParentViewController:(UIViewController *)aViewController {
     if (self = [super init]) {
         self.managingViewController = aViewController;
-        self.title = @"常用联系人";
+        self.navigationItem.title = @"常用联系人";
     }
     return self;
 }
@@ -260,5 +260,9 @@
     if (clientObject) {
         [self.selectedContactorsArray removeObject:clientObject];
     }
+}
+
+- (NSString *)title {
+    return @"常用联系人";
 }
 @end

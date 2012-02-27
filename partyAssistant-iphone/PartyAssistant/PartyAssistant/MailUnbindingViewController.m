@@ -57,7 +57,7 @@
 {
     [super viewDidLoad];
     [[self mailTextField] setText:[[UserInfoBindingStatusService sharedUserInfoBindingStatusService] bindedMail]];
-    self.title=@"邮箱解绑";
+    self.navigationItem.title=@"邮箱解绑";
     // Do any additional setup after loading the view from its nib.
 }
 

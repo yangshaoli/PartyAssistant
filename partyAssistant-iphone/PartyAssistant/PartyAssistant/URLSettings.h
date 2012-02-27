@@ -12,6 +12,7 @@
 //#define DOMAIN_NAME @"http://127.0.0.1"
 
 //#define DOMAIN_NAME @"http://192.168.1.15:43401"
+
 #define GET_USER_BADGE_NUM [NSString stringWithFormat:@"%@/a/accounts/get_badge_num/",DOMAIN_NAME]
 #define CREATE_PARTY [NSString stringWithFormat:@"%@/a/parties/createparty/",DOMAIN_NAME]
 #define DELETE_PARTY [NSString stringWithFormat:@"%@/a/parties/deleteparty/",DOMAIN_NAME]

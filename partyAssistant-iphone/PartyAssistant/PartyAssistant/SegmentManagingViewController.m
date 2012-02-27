@@ -31,6 +31,7 @@
     
     self.currentContactData = [NSMutableArray arrayWithArray:[self.contactDataDelegate getCurrentContactData]];
     
+    
     self.segmentedViewControllers = [self segmentedViewControllerContent];
 
     NSArray * segmentTitles = [self.segmentedViewControllers arrayByPerformingSelector:@selector(title)];

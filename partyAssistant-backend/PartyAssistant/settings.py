@@ -203,7 +203,7 @@ LOGGING = {
 }
 
 SYS_EMAIL_ADDRESS = 'airenao@cn-acg.com'
-DOMAIN_NAME = 'http://airenao.com'
+DOMAIN_NAME = 'http://www.airenao.com'
 SHORT_DOMAIN_NAME = 'http://arn.bz'
 LOGIN_REDIRECT_URL = '/parties/list/'
 

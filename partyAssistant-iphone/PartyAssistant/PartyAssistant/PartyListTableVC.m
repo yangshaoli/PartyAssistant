@@ -76,7 +76,7 @@
         partyModel.type=[partyDict objectForKey:@"type"];
         [self.partyList addObject:partyModel];
     }
-    self.title=@"活动列表";
+    self.navigationItem.title=@"活动列表";
     UIBarButtonItem *refreshBtn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshBtnAction)];
     self.navigationItem.rightBarButtonItem = refreshBtn;
     self.navigationController.navigationBar.tintColor = [UIColor redColor];//设置背景色  一句永逸

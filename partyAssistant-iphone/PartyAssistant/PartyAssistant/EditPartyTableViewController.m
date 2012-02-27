@@ -49,7 +49,7 @@
         titleString = baseInfoObject.description;
     }
     
-    self.title=titleString;
+    self.navigationItem.title=titleString;
     buttonIndexInteger=1;//默认为时间待定
     peoplebuttonIndex=1;//默认人数无限制
 }

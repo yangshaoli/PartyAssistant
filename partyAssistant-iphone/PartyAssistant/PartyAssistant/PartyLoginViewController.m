@@ -56,6 +56,13 @@
 @synthesize parentVC = _parentVC;
 @synthesize partyList;
 @synthesize appTab;
+@synthesize creatTabButton;
+@synthesize listTabButton;
+@synthesize setTabButton;
+@synthesize creatPageBarImageView;
+@synthesize creatLabel;
+@synthesize listPageBarImageView;
+@synthesize setPageBarImageView;
 
 - (void)dealloc {
     [super dealloc];
@@ -119,22 +126,15 @@
     
     self.navigationItem.leftBarButtonItem = registerButton;
     
-    
     UIBarButtonItem *forgetPasswordButton = [[UIBarButtonItem alloc] initWithTitle:@"忘记密码" style:UIBarButtonItemStylePlain target:self action:@selector(forgetPassword)];
     
     self.navigationItem.rightBarButtonItem = forgetPasswordButton;
 
-    
-    
     [registerButton release];
     [forgetPasswordButton release];
     [tableFooterView release];
    
-    
-    
     //wxz  如果本地有登陆数据  则跳过登陆页面 自动登陆
-    
-    
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
 //    NSString *keyString=[[NSString alloc] initWithFormat:@"%@defaultUserID",user.userName];
@@ -318,8 +318,6 @@
     
     self.navigationController.navigationBarHidden = YES;
     PartyListTableVC  *pattyListTableVC=[[PartyListTableVC alloc] initWithNibName:@"PartyListTableVC" bundle:nil];
-    
-    
     //PartyListTableViewController *list = [[PartyListTableViewController alloc] initWithNibName:nil bundle:nil];
     
 //    AddNewPartyBaseInfoTableViewController *addPage = [[AddNewPartyBaseInfoTableViewController alloc] initWithNibName:@"AddNewPartyBaseInfoTableViewController" bundle:nil];
@@ -333,27 +331,66 @@
     UINavigationController *creatNav = [[UINavigationController alloc] 
         initWithRootViewController:creat];
     
+    creatPageBarImageView=[[UIImageView alloc] initWithFrame:CGRectMake(33, 5, 33, 25)];
+    listPageBarImageView=[[UIImageView alloc] initWithFrame:CGRectMake(33, 5, 50, 40)];
+    setPageBarImageView=[[UIImageView alloc] initWithFrame:CGRectMake(33, 5, 50, 40)];
+    UIImage *listBarImage = [UIImage imageNamed:@"listIcon_word"];
+    UIImage *creatPageBarImage = [UIImage imageNamed:@"creatIcon"];
+    UIImage *settingBarImage = [UIImage imageNamed:@"setting_word"];
     
-    UIImage *listBarImage = [UIImage imageNamed:@"list_icon"];
-    UIImage *creatPageBarImage = [UIImage imageNamed:@"new_icon"];
-    UIImage *settingBarImage = [UIImage imageNamed:@"setting_icon"];
+    creatPageBarImageView.image=creatPageBarImage;
+    listPageBarImageView.image=listBarImage;
+    setPageBarImageView.image=settingBarImage;
     
-    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:listBarImage tag:1];
-    UITabBarItem *creatPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:creatPageBarImage tag:2];
-    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:settingBarImage tag:3];
+    creatLabel=[[UILabel alloc] initWithFrame:CGRectMake(27, 30, 60, 15)];
+    creatLabel.text=@"创建活动";
+    creatLabel.textColor=[UIColor whiteColor];
+    creatLabel.backgroundColor=[UIColor clearColor];
+    creatLabel.font=[UIFont systemFontOfSize:11];
     
+//    UITabBarItem *listBarItem = [[UITabBarItem alloc] initWithTitle:@"活动列表" image:nil tag:1];
+   //UITabBarItem *creatPageBarItem = [[UITabBarItem alloc] initWithTitle:@"创建活动" image:nil tag:2];
+//    UITabBarItem *settingBarItem = [[UITabBarItem alloc] initWithTitle:@"设置" image:nil tag:3];
+    
+    UITabBarItem *listBarItem = [[UITabBarItem alloc] init];
+    UITabBarItem *creatPageBarItem = [[UITabBarItem alloc] init];
+    UITabBarItem *settingBarItem = [[UITabBarItem alloc] init];
     listNav.tabBarItem = listBarItem;
     creatNav.tabBarItem = creatPageBarItem;
     settingNav.tabBarItem = settingBarItem;
     
+    //custom Tab button
+    creatTabButton=[[UIButton alloc] initWithFrame:CGRectMake(0, 0, 106, 50)];
+    [creatTabButton addTarget:self action:@selector(pressCreatButtonTab) forControlEvents:UIControlEventTouchUpInside];
+    
+    [creatTabButton addSubview:creatPageBarImageView];
+    [creatTabButton addSubview:creatLabel];
+   
+    listTabButton=[[UIButton alloc] initWithFrame:CGRectMake(107, 0, 106, 50)];
+    [listTabButton addTarget:self action:@selector(pressListButtonTab) forControlEvents:UIControlEventTouchUpInside];
+    [listTabButton addSubview:listPageBarImageView];
+
+    setTabButton=[[UIButton alloc] initWithFrame:CGRectMake(214, 0, 106, 50)];
+    [setTabButton addTarget:self action:@selector(pressSettingButtonTab) forControlEvents:UIControlEventTouchUpInside];
+    [setTabButton addSubview:setPageBarImageView];
+
     [listBarItem release];
     [creatPageBarItem release];
     [settingBarItem release];
-    
+    //花了很长时间
+    UIImageView *tabBackView=[[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 50)];
+    tabBackView.image=[UIImage imageNamed:@"tabBar.png"];
     UITabBarController *tab = [[UITabBarController alloc] init];
     self.appTab = tab;
-//    tab.viewControllers = [NSArray arrayWithObjects: addPageNav, listNav, settingNav, nil];
+    [[tab tabBar] addSubview:tabBackView];//关键找准给谁添加subview
+   
     tab.viewControllers = [NSArray arrayWithObjects:creatNav, listNav, settingNav,nil];
+    
+    //[[tab tabBar] setBackgroundColor:[UIColor clearColor]];
+
+    [[tab tabBar] addSubview:creatTabButton];
+    [[tab tabBar] addSubview:listTabButton];
+    [[tab tabBar] addSubview:setTabButton];
     [self.navigationController pushViewController:tab animated:YES];
 
     [listNav release];
@@ -369,8 +406,7 @@
     
      //add suggest user input name page here?
 //    [self checkIfUserNameSaved];
-    
-    
+
     //如果有趴列表  则直接跳到“趴列表”tab，否则跳到"开新趴”tab
     UserObjectService *us = [UserObjectService sharedUserObjectService];
     UserObject *user = [us getUserObject];
@@ -381,16 +417,73 @@
         tab.selectedIndex=1;
     }else{
         tab.selectedIndex=0;
-        
     }
     [keyString release];
-    NSLog(@"打印isRandomLoginSelf  %@",BOOLStringOutput([DataManager sharedDataManager].isRandomLoginSelf));
+    //NSLog(@"打印isRandomLoginSelf  %@",BOOLStringOutput([DataManager sharedDataManager].isRandomLoginSelf));
     
 }
 //wxz
 - (void)autoLogin{
     [self pushToContentVC];
 
+}
+
+-(void)pressCreatButtonTab{
+    self.appTab.selectedIndex=0;
+    creatLabel.textColor=[UIColor colorWithRed:200 green:166 blue:222 alpha:0.7];
+    UIImage *currentSelectImage=[UIImage imageNamed:@"current"];
+    
+    UIGraphicsBeginImageContextWithOptions(creatTabButton.frame.size, NO, 0.0);
+    [[currentSelectImage stretchableImageWithLeftCapWidth:20 topCapHeight:10] drawInRect:CGRectMake(1, 1, creatTabButton.frame.size.width-2, creatTabButton.frame.size.height-4)];
+    UIImage *newSelectImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    creatPageBarImageView.image=[UIImage imageNamed:@"CreatIcon_on"];
+    self.creatTabButton.backgroundColor=[UIColor colorWithPatternImage:newSelectImage];
+    self.listTabButton.backgroundColor=[UIColor clearColor];
+    self.setTabButton.backgroundColor=[UIColor clearColor];
+    setPageBarImageView.image=[UIImage imageNamed:@"setting_word"];
+    listPageBarImageView.image=[UIImage imageNamed:@"listIcon_word"];
+    NSLog(@"tab0");
+}
+-(void)pressListButtonTab{
+    self.appTab.selectedIndex=1;
+    UIImage *currentSelectImage=[UIImage imageNamed:@"current"];
+    
+    UIGraphicsBeginImageContextWithOptions(listTabButton.frame.size, NO, 0.0);
+    
+    [[currentSelectImage stretchableImageWithLeftCapWidth:20 topCapHeight:10] drawInRect:CGRectMake(1, 1, listTabButton.frame.size.width-2, listTabButton.frame.size.height-4)];
+    UIImage *newSelectImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+
+    listPageBarImageView.image=[UIImage imageNamed:@"listIcon_on_word"];
+    self.listTabButton.backgroundColor=[UIColor colorWithPatternImage:newSelectImage];
+    self.creatTabButton.backgroundColor=[UIColor clearColor];
+    self.setTabButton.backgroundColor=[UIColor clearColor];
+    setPageBarImageView.image=[UIImage imageNamed:@"setting_word"];
+    creatPageBarImageView.image=[UIImage imageNamed:@"creatIcon"];
+    creatLabel.textColor=[UIColor whiteColor];
+    NSLog(@"tab1");
+}
+-(void)pressSettingButtonTab{
+    self.appTab.selectedIndex=2;
+    UIImage *currentSelectImage=[UIImage imageNamed:@"current"];
+    UIGraphicsBeginImageContextWithOptions(setTabButton.frame.size, NO, 0.0);
+    
+    [[currentSelectImage stretchableImageWithLeftCapWidth:20 topCapHeight:10] drawInRect:CGRectMake(1, 1, setTabButton.frame.size.width-2, setTabButton.frame.size.height-4)];
+    UIImage *newSelectImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    setPageBarImageView.image=[UIImage imageNamed:@"setting_on_word"];
+    self.setTabButton.backgroundColor=[UIColor colorWithPatternImage:newSelectImage];
+    self.creatTabButton.backgroundColor=[UIColor clearColor];
+    self.listTabButton.backgroundColor=[UIColor clearColor];
+    listPageBarImageView.image=[UIImage imageNamed:@"listIcon_word"];
+    creatPageBarImageView.image=[UIImage imageNamed:@"creatIcon"];
+    creatLabel.textColor=[UIColor whiteColor];
+    NSLog(@"tab2");
 }
 #pragma mark -
 #pragma tableViewDelegate

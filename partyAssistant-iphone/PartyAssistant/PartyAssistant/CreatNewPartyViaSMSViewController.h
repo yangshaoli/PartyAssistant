@@ -47,4 +47,7 @@
 - (IBAction)callContactList;
 - (void)saveSMSInfo;
 - (void)sendCreateRequest;
+- (IBAction)clockButton:(id)sender;
+- (IBAction)mapButton:(id)sender;
+
 @end

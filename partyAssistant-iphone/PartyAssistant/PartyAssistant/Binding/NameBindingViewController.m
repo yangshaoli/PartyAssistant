@@ -57,7 +57,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title=@"真实姓名";
+    self.navigationItem.title=@"真实姓名";
     [self.nickNameInputTextField becomeFirstResponder];
     
     NSString *bindedNickName = nil;
