@@ -287,12 +287,19 @@ public class MeetingListActivity extends ListActivity implements
 					}
 					// 2.13
 					if(!goneToLast){
-						synchronized (this){
-							if (list.size() > 0) {
-								mData = list;
-								myDaAdapter.notifyDataSetChanged();
+						if(separatePage){
+							mData.addAll(list);
+							myDaAdapter.notifyDataSetChanged();
+						}else{
+							synchronized (this){
+								if (list.size() > 0) {
+									mData = list;
+									myDaAdapter.notifyDataSetChanged();
+									
+								}
 							}
 						}
+						
 					}
 					
 					break;
@@ -891,7 +898,10 @@ public class MeetingListActivity extends ListActivity implements
 	 * 解析Json
 	 */
 	public synchronized void analyzeJson(String result) {
-
+		if(separatePage){
+			list = new ArrayList<Map<String,Object>>();
+		}
+		
 		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
 		try {
 			JSONObject output = new JSONObject(result)
@@ -997,7 +1007,7 @@ public class MeetingListActivity extends ListActivity implements
 		}
 
 	}
-
+	
 	/**
 	 * 将Json解析出来的数据装到MAP
 	 * 
