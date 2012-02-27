@@ -516,12 +516,12 @@ public class ContactsListActivity extends ListActivity implements
 				transPersons.clear();
 				beforePositions.clear();
 				count = 0;
-				SharedPreferences pre = PreferenceManager
+				/*SharedPreferences pre = PreferenceManager
 						.getDefaultSharedPreferences(getApplicationContext());
-				String nickname = pre.getString("warning_nickname", "");
+				String nickname = pre.getString("warning_nickname", "");*/
 				for (int i = 0; i < allContacts.length; i++) {
 
-					if (allContacts[i].equals("")) {
+					if (allContacts[i].equals(" ")) {
 						continue;
 					} else {
 						transPersonPhoneNumber = allContacts[i];
@@ -532,20 +532,21 @@ public class ContactsListActivity extends ListActivity implements
 							transPersonPhoneNumber = allContacts[i].substring(
 									index + 1, allContacts[i].length() - 1);
 						} else {
-							transPersonName = "";
+							transPersonName = allContacts[i];
 							transPersonPhoneNumber = allContacts[i];
 						}
-						
-							if (!transPersonName.matches(AirenaoUtills.regPhoneNumber)
-									&& !nickname.equals(transPersonName)) {
-								count++;
-								intentCount++;
-							}
-							transPersons.add(new MyPerson(transPersonName,
-									transPersonPhoneNumber));
-							beforePositions.add(new MyPerson(transPersonName,
-									transPersonPhoneNumber));
-						
+
+						if (!transPersonName
+								.matches(AirenaoUtills.regPhoneNumber)
+								) {//&& !nickname.equals(transPersonName)
+							count++;
+							intentCount++;
+						}
+						transPersons.add(new MyPerson(transPersonName,
+								transPersonPhoneNumber));
+						beforePositions.add(new MyPerson(transPersonName,
+								transPersonPhoneNumber));
+
 					}
 
 				}

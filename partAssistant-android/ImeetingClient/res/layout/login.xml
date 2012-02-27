@@ -51,54 +51,53 @@
     	android:inputType="textPassword"
     />
     <!-- 登录button -->
-    <!--layout_alignRight 意思是和谁右边对齐  -->
     <Button 
     	android:id="@+id/signin_button"
     	android:layout_width="wrap_content"
     	android:layout_height="wrap_content"
     	android:layout_below="@id/password_edit"
-    	android:layout_alignRight="@id/password_edit"
+    	android:layout_centerHorizontal="true"
+    	
     	android:text="@string/login_label_signin"
-    	android:textSize="18sp"
     	android:background="@drawable/blue_button"
+    	
     />
     <!-- 注册button -->
-    <Button 
-    	android:id="@+id/register_button"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_below="@id/signin_button"
-    	android:layout_alignRight="@id/signin_button"
-    	android:layout_marginTop="6dip"
-    	android:text="@string/login_register"
-    	android:background="@drawable/blue_button"
-    />
-  </RelativeLayout>
-  
-  
-  <RelativeLayout 
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content"
-      >
-	 <TextView  android:id="@+id/register_link"
-	     android:text="@string/login_register_link"
-	     android:layout_width="wrap_content"
-	     android:layout_height="wrap_content"
-	     android:layout_marginTop="8dp"
-	     android:layout_marginLeft="15dp"
-	     android:textColor="#888"
-	     android:textColorLink="#FF0066CC"
-	     android:visibility="gone"
-	  />
-	  <Button 
-    	android:id="@+id/find_back"
-    	android:layout_centerHorizontal="true"
-	  	android:layout_width="wrap_content"
-	  	android:layout_height="wrap_content"
-	  	android:layout_toRightOf="@id/register_link"
-    	android:text="@string/login_label_find_back"
-    	android:background="@drawable/blue_button"
-     />
+   
+  </RelativeLayout>   
+	 <RelativeLayout
+      	android:id="@+id/switchButton"
+		android:layout_width="fill_parent"
+		android:layout_height="60dip"
+		android:layout_gravity="center_horizontal"
+		
+		android:layout_alignParentTop="true"
+		>
+		<Button
+			android:layout_marginLeft="20dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentLeft="true"
+			android:background="@drawable/blue_button"
+			android:text="@string/login_label_find_back"
+			android:id="@+id/find_back"
+		/>
+		<Button
+		    android:layout_marginRight="20dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentRight="true"
+			android:text="@string/login_register"
+			android:background="@drawable/blue_button"
+			android:id="@+id/register_button"/>
+	</RelativeLayout> 
+	           
+	      <LinearLayout
+                android:id="@+id/sendLinout1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" 
+                android:layout_marginTop="50dp"                    
+                android:orientation="horizontal" >
 	    <ImageView android:id="@+id/airenao_logo"
 	        android:src="@drawable/cat"
 	        android:layout_width="wrap_content"
@@ -114,8 +113,7 @@
 	     android:layout_height="wrap_content"
 	     android:layout_toLeftOf="@id/airenao_logo"
 	     android:layout_alignBottom="@id/airenao_logo"
-	     android:paddingBottom="8dp"
-	      />
-	    </RelativeLayout>
+	     android:paddingBottom="8dp"></ImageView>
+	</LinearLayout>
  
 </LinearLayout>

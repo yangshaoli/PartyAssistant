@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">爱热闹</string>
-	  
+	<string name="app_agreement">同意此协议</string>  
 	<string name="join_me">我要参加</string> 
 	<string name="admin_psw">请填入号码</string>
 	<string name="sure">确定</string>
@@ -20,6 +20,7 @@
     <string name="send_failed">分享失败！</string>
     
 	<string name="menuEdit">编辑</string>
+	<string name="menuinvite">邀请</string>
 	<string name="create_activity">创建活动</string>
 	<string name="detailActivity">活动内容</string>
 	<string name="meeting_list">活动列表</string>
@@ -40,7 +41,12 @@
 	<string name="inputTip">联系人之间请用<b>,</b>隔开</string>
 	<string name="btn_ok">确定</string>
 	<string name="btn_cancle">取消</string>
+	<string name="btn_yes">是</string>
+	<string name="btn_no">否</string>
 	<string name="btn_setting">设置</string>
+	<string name="btn_invite">邀请</string>
+	<string name="btn_edit">编辑</string>
+	<string name="btn_sendornot">是否再次发送</string>
 	<string name="memu_send_way">发送方式</string>
 	<string name="sendLableTime">时间待定</string>
 	<string name="sendLablePosition">地点待定</string>
@@ -49,15 +55,17 @@
 	<string name="wrong_num">您不能输入其他字符，请输入数字:0~999</string>
 	<string name="operate">操作</string>
 	<string name="delete">删除</string>
+	<string name="invite">邀请</string>
 	<string name="deleteMenu">删除不可恢复，是否确认删除？</string>
 	<string name="copy">复制</string>
 	<string name="share">分享</string>
-	<string name="save">保存</string>
+	<string name="save">注册</string>
 	<string name="refresh">刷新</string>
 	<string name="menuSetting">设置</string>
 	<string name="menuExit">登出</string>
 	<string name="login_label_username">帐号:</string>
 	<string name="login_label_password">密码:</string>
+	<string name="login_label_nickname">昵称:</string>
 	<string name="register_label_pass_insure">确认:</string>
 	<string name="login_label_signin">登 录</string>
 	<string name="login_label_find_back">找回</string>
@@ -67,17 +75,21 @@
 	<string name="login_register">注册</string>
 	<string name="register_label_top">用户注册</string>
 	<string name="register_lable_pass_tip">必填项，6~16位</string>
+	<string name="register_nickname">必填项</string>
 	<string name="pass_tip">密码不能为空</string>
 	<string name="pass_tip1">密码长度最低为6位</string>
 	<string name="pass_tip2">确认密码不能为空</string>
 	<string name="pass_tip3">两次输入的密码不一样，请重新输入</string>
 	<string name="user_name_check">用户名不能为空</string>
+	<string name="nickname_check">昵称不能为空</string>
 	<string name="alert_message">当您接受安全协议后，方可注册</string>
 	<string name="find_lable_message">输入手机号或邮箱来获取临时密码</string>
 	<string name="find_lable_tip">手机号或邮箱</string>
 	<string name="error_email">输入的邮件格式不正确</string>
 	<string name="send_airenao_reciever">参加者</string>
+	<string name="send_airenao_selectplace">请输入选择活动地点</string>
 	<string name="send_airenao_title">发送邀请</string>
+	<string name="send_airenao_place">地点</string>
 	<string name="reinvate">重新邀请</string>
 	<string name="sendTip">发送提醒</string>
 	<string name="btn_back">返回</string>
@@ -216,6 +228,9 @@
 	<string name="loginFalse">登陆失败</string>
 	<string name="btnLogin">登陆</string>
 	<string name="respondMsg">服务器返回错误代码:</string>
+	<string name="setSuccess">更改成功</string>
+	<string name="setFail">更改失败</string>
+	<string name="setError">错误</string>
 	
 	
 

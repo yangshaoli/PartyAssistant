@@ -2,6 +2,10 @@ package com.aragoncg.apps.airenao.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,10 +18,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.telephony.gsm.SmsManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,24 +37,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aragoncg.apps.airenao.R;
+import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 
 public class EditActivity extends Activity {
 	private String userName;
 	private String userId;
+	private JSONArray myDicts;
+	private String description = "";
+	private List<Map<String, Object>> mData;
 	private AirenaoActivity activityFromDetail;
 	private boolean fromDetail;
 	private AirenaoActivity activityDb;
 	private String link;
 	private String partyId = "";
 	private String sendWithOwn = "1"; // 1表示用自己的手机发送 0表示用服务器
-
-	private TextView userTitle;
-	private LinearLayout userLayout;
+	private AirenaoActivity myAirenaoActivity;
 	private EditText edtActivityDes;
 	private Button btnOver;
 	private Runnable editSaveTask;
@@ -64,7 +73,9 @@ public class EditActivity extends Activity {
 	private static final int MSG_ID_SUCC = 5;
 	private static final int MSG_ID_FAIL = 6;
 	private static final int MSG_ID_SEND = 7;
-	
+	private static final int PrograssBar = 8;
+	private static final int againSend = 9;
+
 	private static final int MENU_FALG_SET_WAY = 0;
 	private static final int SEND_WAY_ONE = 0;
 
@@ -92,6 +103,46 @@ public class EditActivity extends Activity {
 			public void handleMessage(Message msg) {
 				switch (msg.what) {
 				case SUCCESS:
+					if (progressDialog != null) {
+						progressDialog.dismiss();
+					}
+					Toast.makeText(EditActivity.this, "sucess",
+							Toast.LENGTH_SHORT).show();
+					Intent intent = new Intent(EditActivity.this,
+							DetailActivity.class);
+					intent.putExtra(Constants.ACTIVITY_FLAG,
+							Constants.EditActivity);
+					intent.putExtra(Constants.PARTY_ID, partyId);
+					intent.putExtra(Constants.DESCRIPTION, edtActivityDes
+							.getText().toString());
+					activityFromDetail.setActivityContent(edtActivityDes
+							.getText().toString());
+					intent.putExtra(Constants.TO_DETAIL_ACTIVITY,
+							activityFromDetail);
+					startActivity(intent);
+					finish();
+
+					break;
+				case againSend:
+					Toast.makeText(EditActivity.this, "成功发送",
+							Toast.LENGTH_SHORT).show();
+					if (progressDialog != null) {
+						progressDialog.dismiss();
+					}
+
+					Intent intent1 = new Intent(EditActivity.this,
+							MeetingListActivity.class);
+					intent1.putExtra(Constants.ACTIVITY_FLAG,
+							Constants.EditActivity);
+					intent1.putExtra(Constants.PARTY_ID, partyId);
+					intent1.putExtra(Constants.DESCRIPTION, edtActivityDes
+							.getText().toString());
+					activityFromDetail.setActivityContent(edtActivityDes
+							.getText().toString());
+					intent1.putExtra(Constants.TO_DETAIL_ACTIVITY,
+							activityFromDetail);
+					startActivity(intent1);
+					finish();
 
 					break;
 				case FAIL:
@@ -118,6 +169,10 @@ public class EditActivity extends Activity {
 					 * mIntent.putExtra("mode", -2);// -2发送短信
 					 * startActivity(mIntent);
 					 */
+					break;
+				case PrograssBar:
+					progressDialog = ProgressDialog.show(EditActivity.this,
+							"刷新", getString(R.string.loadAirenao), true, true);
 					break;
 				case MSG_ID_SEND:
 					// 发送短信
@@ -152,10 +207,9 @@ public class EditActivity extends Activity {
 			try {
 				SmsManager mySmsManager = SmsManager.getDefault();
 				// 如果短信内容超过70个字符 将这条短信拆成多条短信发送出去
-				String msgsContent = 
-						"【爱热闹】"+ edtActivityDes.getText()
-						.toString() + "\n"
-						+"快来报名："+link;
+				String msgsContent = "【爱热闹】"
+						+ edtActivityDes.getText().toString() + "\n" + "快来报名："
+						+ link;
 				if (msgsContent.length() > 70) {
 					ArrayList<String> msgs = mySmsManager
 							.divideMessage(msgsContent);
@@ -165,8 +219,7 @@ public class EditActivity extends Activity {
 					}
 				} else {
 					mySmsManager.sendTextMessage(tempContactNumbers.get(i),
-							null, msgsContent,
-							null, null);
+							null, msgsContent, null, null);
 				}
 
 			} catch (Exception e) {
@@ -181,48 +234,143 @@ public class EditActivity extends Activity {
 
 			@Override
 			public void run() {
-				HttpHelper httpHelper = new HttpHelper();
-				String url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_EDIT_URL;
+				Intent myIntent = getIntent();
+				myAirenaoActivity = (AirenaoActivity) myIntent
+						.getSerializableExtra(Constants.TO_CREATE_ACTIVITY);
+				if (myAirenaoActivity != null) {
+					partyId = myAirenaoActivity.getId();
+					mData = new ArrayList<Map<String, Object>>();
+					ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
+					SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+					myList.addAll((ArrayList<ClientsData>) DbHelper
+							.selectClientData(db, DbHelper.TABLE_CLIENTS,
+									partyId, null));
+					db.close();
+					for (int i = 0; i < myList.size(); i++) {
+
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map.put(Constants.PEOPLE_NAME, myList.get(i)
+								.getPeopleName());
+						map.put(Constants.PEOPLE_CONTACTS, myList.get(i)
+								.getPhoneNumber());
+						map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+						map.put(Constants.MSG, myList.get(i).getComment());
+						map.put(Constants.BACK_END_ID, myList.get(i).getId());
+						mData.add(map);
+					}
+
+					String dict = "";
+					String name = "";
+					AirenaoActivity tempActivity = new AirenaoActivity();
+
+					List<ClientsData> clientDataList = new ArrayList<ClientsData>();
+
+					myDicts = new JSONArray();
+					for (int i = 0; i < mData.size(); i++) {
+						HashMap<String, Object> map = new HashMap<String, Object>();
+						map = (HashMap<String, Object>) mData.get(i);
+						name = (String) map.get(Constants.PEOPLE_NAME);
+						dict = (String) map.get(Constants.PEOPLE_CONTACTS);
+
+						if (dict.startsWith("+86")) {
+							dict = dict.substring(3);
+						}
+						if (dict.startsWith("12593")) {
+							dict = dict.substring(5);
+						}
+						if (dict.startsWith("86")) {
+							dict = dict.substring(2);
+						}
+						System.out.println(name + dict);
+						JSONObject Json = new JSONObject();
+						try {
+							Json.put("cName", name);
+							Json.put("cValue", dict);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						myDicts.put(Json);
+
+					}
+
+				}
+				SharedPreferences mySharedPreferences = AirenaoUtills
+						.getMySharedPreferences(EditActivity.this);
+				userId = mySharedPreferences.getString(
+						Constants.AIRENAO_USER_ID, "");
+				// 将数据保存到后台
 				HashMap<String, String> params = new HashMap<String, String>();
-				partyId = activityFromDetail.getId();
-				params.put("partyID", partyId);
-				params.put(Constants.DESCRIPTION, edtActivityDes.getText()
+				params.put(Constants.ACTIVITY_RECEIVERS, myDicts.toString());
+				params.put(Constants.CONTENT, edtActivityDes.getText()
 						.toString());
+
+				params.put(Constants.ACTIVITY_SEND_BYSELF, 0 + "");
+
 				params.put("uID", userId);
-				// myAirenaoActivity
-				String result = httpHelper.performPost(url, params,
+				params.put(Constants.ADDRESS_TYPE, "android");
+				String url = "";
+				url = Constants.DOMAIN_NAME
+						+ Constants.SUB_DOMAIN_PARTY_RESEND_URL;
+				params.put("partyID", partyId);
+				HttpHelper httpHelper = new HttpHelper();
+				// 保存到后台，没有提示信息
+				String result = httpHelper.savePerformPost(url, params,
 						EditActivity.this);
-				result = AirenaoUtills.linkResult(result);
+				String resultOut = AirenaoUtills.linkResult(result);
 				try {
-					JSONObject output = new JSONObject(result)
+					JSONObject output = new JSONObject(resultOut)
 							.getJSONObject(Constants.OUT_PUT);
 					String status = output.getString(Constants.STATUS);
 					String description = output
 							.getString(Constants.DESCRIPTION);
+					JSONObject dataSource = output.getJSONObject("datasource");
 					if ("ok".equals(status)) {
-						Message message = new Message();
-						Bundle bundle = new Bundle();
-						bundle.putString(SUCCESS + "", description);
-						message.what = SUCCESS;
-						message.setData(bundle);
-						myHandler.sendMessage(message);
-					} else {
-						Message message = new Message();
-						Bundle bundle = new Bundle();
-						bundle.putString(FAIL + "", description);
-						message.what = FAIL;
-						message.setData(bundle);
-						myHandler.sendMessage(message);
-					}
+						int count = dataSource.getInt("sms_count_remaining");
+						int partyIdInt = dataSource.getInt("partyId");
 
-				} catch (JSONException e) {
-					// result
-					Message message = new Message();
-					Bundle bundle = new Bundle();
-					bundle.putString(EXCEPTION + "", result);
-					message.what = EXCEPTION;
-					message.setData(bundle);
-					myHandler.sendMessage(message);
+						String saveRegisterUrl = Constants.DOMAIN_NAME
+								+ Constants.SUB_DOMAIN_EDIT_URL;
+						Map<String, String> params2 = new HashMap<String, String>();
+
+						params2.put("uID", userId);
+
+						params2.put("partyID", partyId);
+						params2.put("description", edtActivityDes.getText()
+								.toString());
+
+						// 后台注册返回的结果
+						String result2 = new HttpHelper().savePerformPost(
+								saveRegisterUrl, params2, EditActivity.this);
+						result2 = AirenaoUtills.linkResult(result2);
+
+						JSONObject jsonObject;
+						try {
+							jsonObject = new JSONObject(result2)
+									.getJSONObject(Constants.OUT_PUT);
+							String status2;
+							String descriptionReturn = "";
+							status2 = jsonObject.getString(Constants.STATUS);
+							descriptionReturn = jsonObject
+									.getString(Constants.DESCRIPTION);
+							if ("ok".equals(status2)
+									&& "ok".equals(descriptionReturn)) {
+								System.out.println(count + "a" + partyId);
+								Message msg = new Message();
+								msg.what = againSend;
+								myHandler.sendMessage(msg);
+							}
+						} catch (JSONException e) {
+							// result
+							Message message = new Message();
+							Bundle bundle = new Bundle();
+							bundle.putString(EXCEPTION + "", result);
+							message.what = EXCEPTION;
+							message.setData(bundle);
+							myHandler.sendMessage(message);
+						}
+					}
+				} catch (Exception e) {
 				}
 			}
 		};
@@ -231,155 +379,100 @@ public class EditActivity extends Activity {
 
 			@Override
 			public void run() {
-				HttpHelper httpHelper = new HttpHelper();
-				String url = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_GET_PEOPLE_INFO_URL;;
-				url = url + activityFromDetail.getId() + "/" + "all/";
-				// myAirenaoActivity
-				String result = httpHelper.performGet(url, EditActivity.this);
-				result = AirenaoUtills.linkResult(result);
+				Intent myIntent = getIntent();
+				myAirenaoActivity = (AirenaoActivity) myIntent
+						.getSerializableExtra(Constants.TO_CREATE_ACTIVITY);
+				if (myAirenaoActivity != null) {
+					partyId = myAirenaoActivity.getId();
+					SharedPreferences mySharedPreferences = AirenaoUtills
+							.getMySharedPreferences(EditActivity.this);
+					userId = mySharedPreferences.getString(
+							Constants.AIRENAO_USER_ID, "");
+					String description = edtActivityDes.getText().toString();
 
-				try {
-					JSONObject output = new JSONObject(result)
-							.getJSONObject(Constants.OUT_PUT);
-					String status = output.getString(Constants.STATUS);
-					String description = output
-							.getString(Constants.DESCRIPTION);
-					if ("ok".equals(status)) {
+					Log.e("tag", "tag");
+					String saveRegisterUrl = Constants.DOMAIN_NAME
+							+ Constants.SUB_DOMAIN_EDIT_URL;
+					Map<String, String> params = new HashMap<String, String>();
 
-						clientMap = new JSONArray();
-						JSONObject dataSource = output
-								.getJSONObject("datasource");
-						// '_isApplyTips':BOOL,
-						// '_isSendBySelf':BOOL
-						// msgType = dataSource.getString("msgType");
-						JSONArray receiverArray = dataSource
-								.getJSONArray("clientList");
-						JSONObject client;
-						tempContactNumbers.clear();
-						for (int i = 0; i < receiverArray.length(); i++) {
-							client = new JSONObject();
-							tempContactNumbers.add(receiverArray.getJSONObject(
-									i).getString("cValue"));
-							client.put("cName", receiverArray.getJSONObject(i)
-									.getString("cName"));
-							client.put("cValue", receiverArray.getJSONObject(i)
-									.getString("cValue"));
-							clientMap.put(client);
+					params.put("uID", userId);
+					params.put("partyID", partyId);
+					params.put("description", description);
 
-						}
+					// 后台注册返回的结果
+					String result = new HttpHelper().savePerformPost(
+							saveRegisterUrl, params, EditActivity.this);
+					result = AirenaoUtills.linkResult(result);
 
-						String reSendUrl = Constants.DOMAIN_NAME + Constants.SUB_DOMAIN_PARTY_RESEND_URL;
-						HashMap<String, String> params = new HashMap<String, String>();
-						params.put("receivers", clientMap.toString());
-						params.put(Constants.CONTENT, edtActivityDes.getText()
-								.toString());
-						params.put("_issendbyself", sendWithOwn);
-						params.put("uID", userId);
-						params.put("addressType", "android");
-						params.put("partyID", partyId);
-						String respond = httpHelper.savePerformPost(reSendUrl,
-								params, EditActivity.this);
-						respond = AirenaoUtills.linkResult(respond);
-						output = new JSONObject(respond)
+					JSONObject jsonObject;
+					try {
+						jsonObject = new JSONObject(result)
 								.getJSONObject(Constants.OUT_PUT);
-						status = output.getString(Constants.STATUS);
-						if ("ok".equals(status)) {
-							link = output.getJSONObject(Constants.DATA_SOURCE)
-									.getString("applyURL");
-							Message message = new Message();
-							Bundle bundle = new Bundle();
-							bundle.putString(MSG_ID_SEND + "", description);
-							message.what = MSG_ID_SEND;
-							message.setData(bundle);
-							myHandler.sendMessage(message);
-							progressDialog.cancel();
-						} else {
-							Message message = new Message();
-							Bundle bundle = new Bundle();
-							bundle.putString(MSG_ID_FAIL + "", description);
-							message.what = MSG_ID_FAIL;
-							message.setData(bundle);
-							myHandler.sendMessage(message);
-							progressDialog.cancel();
+						String status;
+						String descriptionReturn = "";
+						status = jsonObject.getString(Constants.STATUS);
+						descriptionReturn = jsonObject
+								.getString(Constants.DESCRIPTION);
+						if ("ok".equals(status)
+								&& "ok".equals(descriptionReturn)) {
+
+							Message msg = new Message();
+							msg.what = SUCCESS;
+							myHandler.sendMessage(msg);
+
 						}
-					} else {
-						Message message = new Message();
-						Bundle bundle = new Bundle();
-						bundle.putString(MSG_ID_FAIL + "", description);
-						message.what = MSG_ID_FAIL;
-						message.setData(bundle);
-						myHandler.sendMessage(message);
-						progressDialog.cancel();
+					} catch (Exception e) {
 					}
-
-				} catch (JSONException e) {
-					progressDialog.cancel();
-					// result
-					Message message = new Message();
-					Bundle bundle = new Bundle();
-					bundle.putString(EXCEPTION + "", result);
-					message.what = EXCEPTION;
-					message.setData(bundle);
-					myHandler.sendMessage(message);
 				}
+
 			}
-
 		};
-
 	}
 
 	// 获得UI控件
 	public void initWedgit() {
-		userTitle = (TextView) findViewById(R.id.userTitle);
 		edtActivityDes = (EditText) findViewById(R.id.edtActivityDes);
-		userLayout = (LinearLayout) findViewById(R.id.userChange);
 		btnOver = (Button) findViewById(R.id.btn_ok_edit);
 
 	}
 
 	public void setWidget() {
-		userTitle.setText(userName);
-		userLayout.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				AlertDialog dialog = new AlertDialog.Builder(EditActivity.this)
-						.setTitle(R.string.user_off)
-						.setMessage(R.string.user_off_message)
-						.setPositiveButton(R.string.btn_ok,
-								new DialogInterface.OnClickListener() {
-
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										finish();
-										Intent intent = new Intent();
-										intent.setClass(EditActivity.this,
-												LoginActivity.class);
-										startActivity(intent);
-									}
-								}).create();
-				dialog.show();
-
-			}
-		});
 		btnOver.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				// 保存并发送
-				progressDialog = ProgressDialog.show(EditActivity.this, "",
-						"保存并发送中...");
-				myHandler.post(editSaveTask);
-				myHandler.post(getClientTask);
-				Intent intent = new Intent();
-				intent.setClass(EditActivity.this, DetailActivity.class);
-				activityFromDetail.setActivityContent(edtActivityDes.getText()
-						.toString());
-				intent.putExtra(Constants.TO_DETAIL_ACTIVITY, activityFromDetail);
-				startActivity(intent);
-				finish();
-				
+
+				AlertDialog noticeDialog = new AlertDialog.Builder(
+						EditActivity.this).setCancelable(true).setTitle(
+						R.string.btn_sendornot).setMessage(
+						R.string.btn_sendornot).setNegativeButton(
+						R.string.btn_no,
+						new android.content.DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Message msg = new Message();
+								msg.what = PrograssBar;
+								myHandler.sendMessage(msg);
+								myHandler.post(getClientTask);
+							}
+						}).setPositiveButton(R.string.btn_yes,
+						new android.content.DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								Message msg = new Message();
+								msg.what = PrograssBar;
+								myHandler.sendMessage(msg);
+								myHandler.post(editSaveTask);
+							}
+
+						}).create();
+				noticeDialog.show();
+
 			}
 		});
 	}
@@ -408,7 +501,8 @@ public class EditActivity extends Activity {
 		if (activityFromDetail != null && fromDetail == true) {
 			this.edtActivityDes
 					.setText(activityFromDetail.getActivityContent());
-			this.edtActivityDes.setSelection(activityFromDetail.getActivityContent().length());
+			this.edtActivityDes.setSelection(activityFromDetail
+					.getActivityContent().length());
 		}
 
 	}
@@ -421,29 +515,25 @@ public class EditActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId()){
-			case MENU_FALG_SET_WAY:
-				AlertDialog oneDialog = new AlertDialog.Builder(
-						EditActivity.this)
-						.setTitle(R.string.memu_send_way)
-						.setItems(R.array.sendWay,
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int whichButton) {
-										if (whichButton == SEND_WAY_ONE) {
-											sendWithOwn = "1";
-										} else {
-											sendWithOwn = "0";
-										}
-
+		switch (item.getItemId()) {
+		case MENU_FALG_SET_WAY:
+			AlertDialog oneDialog = new AlertDialog.Builder(EditActivity.this)
+					.setTitle(R.string.memu_send_way).setItems(R.array.sendWay,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									if (whichButton == SEND_WAY_ONE) {
+										sendWithOwn = "1";
+									} else {
+										sendWithOwn = "0";
 									}
-								}).create();
-				oneDialog.show();
-				break;
+
+								}
+							}).create();
+			oneDialog.show();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
 
 }

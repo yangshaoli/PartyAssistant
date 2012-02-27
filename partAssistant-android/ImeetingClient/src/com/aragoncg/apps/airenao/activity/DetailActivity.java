@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,32 +27,33 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.aragoncg.apps.airenao.R;
 import com.aragoncg.apps.airenao.DB.DbHelper;
 import com.aragoncg.apps.airenao.appmanager.ActivityManager;
 import com.aragoncg.apps.airenao.constans.Constants;
 import com.aragoncg.apps.airenao.model.AirenaoActivity;
+import com.aragoncg.apps.airenao.model.ClientsData;
 import com.aragoncg.apps.airenao.utills.AirenaoUtills;
 import com.aragoncg.apps.airenao.utills.HttpHelper;
 import com.aragoncg.apps.airenao.utills.Utility;
@@ -61,6 +63,10 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 	private int[] resImageArry;
 	private String[] resMenuNameArry;
+	private Runnable AgainInviteTask;
+	private List<Map<String, Object>> mData;
+	private JSONArray myDicts;
+	private String nameAndPhone = "";
 	private static boolean showFlag = true;
 	public static boolean showNewFlag;
 	private PopupWindow pw = null;
@@ -73,20 +79,25 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 	private Handler myHandler;
 	private boolean loated = false;
 	private String partyId = "-1";
+	private String smsContent = "";
 	private static final int PROGRESS_GONE = 1;
 	private String userId;
 	private GridView gridView;
 	private String delteUrl;
 	private String applyUrl = "";
-
+	public static JSONArray jsonArray;
 	private static final int SUCCESS = 0;
 	private static final int FAIL = 3;
 	private static final int EXCEPTION = 2;
 	private static final int MENU_DELETE = 0;
 	private static final int MENU_SHARE = 1;
 	private static final int MENU_EDIT = 2;
+	private static final int MENU_INVITE = 3;
 	private static final int MSG_ID_DELETE = 4;
 	private static final int MSG_ID_REFRESH = 5;
+	private static final int MSG_ID_SETTING = 6;
+	public static boolean DetailActivityFlag = false;
+	
 	private ProgressDialog progressDialog;
 
 	List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
@@ -160,12 +171,36 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					}
 					Toast.makeText(DetailActivity.this, "获得数据失败",
 							Toast.LENGTH_SHORT);
+					break;
+				case MSG_ID_SETTING:
+					if (progressDialog != null) {
+						progressDialog.cancel();
+					}
+					Intent it = new Intent(DetailActivity.this,
+							SendAirenaoActivity.class);
+					it.putExtra(Constants.NAMEANDPHONE, nameAndPhone);
+					it.putExtra(Constants.SEND_CONTENT, smsContent);
+					it.putExtra(Constants.PARTY_ID, partyId);
+					
+					DetailActivityFlag = true;
+				
+					startActivityForResult(it, Constants.DETAIL_SENDAIENAO_RESULT_CODE);
 				}
+				
 
 				super.handleMessage(msg);
 			}
 
 		};
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode == Constants.DETAIL_SENDAIENAO_RESULT_CODE){
+			
+		}
+		
 	}
 
 	/**
@@ -183,10 +218,10 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		// 获得menu data
 		resImageArry = new int[] { R.drawable.delete_detail,
 				 R.drawable.share_detail,
-				 R.drawable.menu_edit };
+				 R.drawable.menu_edit,R.drawable.invite};
 		resMenuNameArry = new String[] { getString(R.string.delete),
 				getString(R.string.share),
-				getString(R.string.menuEdit) };
+				getString(R.string.menuEdit),getString(R.string.menuinvite)};
 
 		/**
 		 * 得到menu的样式属性
@@ -219,8 +254,81 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 			throw new NullPointerException("没有获得列表中的活动");
 		}
 		partyId = myAirenaoActivity.getId();
+		smsContent = myAirenaoActivity.getActivityContent();
 		getClientsCountUrl = Constants.DOMAIN_NAME
 				+ Constants.SUB_DOMAIN_GET_CLIENTCOUNT_URL;
+	}
+
+	public void initRunable() {
+		AgainInviteTask = new Runnable() {
+
+			@Override
+			public void run() {
+				myDicts = new JSONArray();
+				mData = new ArrayList<Map<String, Object>>();
+				ArrayList<ClientsData> myList = new ArrayList<ClientsData>();
+				SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+				myList.addAll((ArrayList<ClientsData>) DbHelper
+						.selectClientData(db, 
+								DbHelper.TABLE_CLIENTS, partyId,null));
+				for (int i = 0; i < myList.size(); i++) {
+
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map.put(Constants.PEOPLE_NAME, myList.get(i)
+							.getPeopleName());
+					map.put(Constants.PEOPLE_CONTACTS, myList.get(i)
+							.getPhoneNumber());
+					map.put(Constants.IS_CHECK, myList.get(i).getIsCheck());
+					map.put(Constants.MSG, myList.get(i).getComment());
+					map.put(Constants.BACK_END_ID, myList.get(i).getId());
+					mData.add(map);
+				}
+
+				String dict = "";
+				String name = "";
+				AirenaoActivity tempActivity = new AirenaoActivity();
+
+				List<ClientsData> clientDataList = new ArrayList<ClientsData>();
+
+				for (int i = 0; i < mData.size(); i++) {
+					HashMap<String, Object> map = new HashMap<String, Object>();
+					map = (HashMap<String, Object>) mData.get(i);
+					name = (String) map.get(Constants.PEOPLE_NAME);
+					dict = (String) map.get(Constants.PEOPLE_CONTACTS);
+
+					if (dict.startsWith("+86")) {
+						dict = dict.substring(3);
+					}
+					if (dict.startsWith("12593")) {
+						dict = dict.substring(5);
+					}
+					if (dict.startsWith("86")) {
+						dict = dict.substring(2);
+					}
+					if (dict.contains("-")) {
+						dict = dict.replace("-", "");
+					}
+					nameAndPhone += name + "<" + dict + ">" + ",";
+					JSONObject Json = new JSONObject();
+					try {
+						Json.put("cName", name);
+						Json.put("cValue", dict);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					myDicts.put(Json);
+
+				}
+				if (jsonArray != null) {
+					jsonArray = null;
+				}
+				jsonArray = myDicts;
+				Message msg = new Message();
+				msg.what = MSG_ID_SETTING;
+				myHandler.sendMessage(msg);
+			}
+		};
 	}
 
 	/**
@@ -328,11 +436,12 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						if (accessToken != null && accessSecret != null) {
 							String applyUrl = spf.getString(partyId, null);
 							if (applyUrl == null) {
-								applyUrl="";
-							}else{
-								applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名：" + applyUrl;
+								applyUrl = "";
+							} else {
+								applyUrl = "我使用@我们爱热闹 发布了一个活动！大家快来报名："
+										+ applyUrl;
 							}
-							
+
 							bundle.putString(
 									WeiBoSplashActivity.EXTRA_WEIBO_CONTENT,
 									applyUrl);
@@ -355,7 +464,6 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 					}
 					break;
-				
 				case MENU_EDIT:
 					if (pw.isShowing()) {
 						pw.dismiss();
@@ -371,6 +479,14 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 						finish();
 					}
 					break;
+				case MENU_INVITE:
+					if (pw.isShowing()) {
+						pw.dismiss();
+					}
+					initRunable();
+					myHandler.post(AgainInviteTask);						
+					break;
+
 				}
 
 			}
@@ -458,9 +574,9 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 					.get(Constants.PEOPLE_NAME)));
 			holder.peopleNum.setText(String.valueOf(dataList.get(position).get(
 					Constants.PEOPLE_NUM)));
-			if (loated) {
-				holder.progressBar.setVisibility(View.GONE);
-			}
+			// .if (loated) {
+			holder.progressBar.setVisibility(View.GONE);
+			// }
 			if (dataList.get(position).get("newCount") != null) {
 				if ("0".equals(dataList.get(position).get("newCount"))) {
 					holder.flagNew.setVisibility(View.INVISIBLE);
@@ -642,33 +758,35 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 
 		@Override
 		protected String[] doInBackground(String... params) {
-			
+
 			String[] results = new String[4];
 			SQLiteDatabase db = DbHelper.openOrCreateDatabase();
-			AirenaoActivity oneParyActivity ;
-			try{oneParyActivity = DbHelper.selectOneParty(db, partyId);
-			if(oneParyActivity==null){
-				results[0]="0";
-				results[1]="0";
-				results[2]="0";
-				results[3]="0";
-				newCount[0]="0";
-				newCount[1]="0";
-			}else{
-				results[0]=oneParyActivity.getInvitedPeople();
-				results[1]=oneParyActivity.getSignUp();
-				results[2]=oneParyActivity.getUnSignUp();
-				results[3]=oneParyActivity.getUnJoin();
-				newCount[0]=oneParyActivity.getNewApplied();
-				newCount[1]=oneParyActivity.getNewUnSignUP();
-			}}catch(Exception e){
-				
-			}finally{
-				if(db!=null){
+			AirenaoActivity oneParyActivity;
+			try {
+				oneParyActivity = DbHelper.selectOneParty(db, partyId);
+				if (oneParyActivity == null) {
+					results[0] = "0";
+					results[1] = "0";
+					results[2] = "0";
+					results[3] = "0";
+					newCount[0] = "0";
+					newCount[1] = "0";
+				} else {
+					results[0] = oneParyActivity.getInvitedPeople();
+					results[1] = oneParyActivity.getSignUp();
+					results[2] = oneParyActivity.getUnSignUp();
+					results[3] = oneParyActivity.getUnJoin();
+					newCount[0] = oneParyActivity.getNewApplied();
+					newCount[1] = oneParyActivity.getNewUnSignUP();
+				}
+			} catch (Exception e) {
+
+			} finally {
+				if (db != null) {
 					db.close();
 				}
 			}
-			
+
 			return results;
 		}
 
@@ -775,26 +893,51 @@ public class DetailActivity extends Activity implements OnItemClickListener {
 		AsyncTaskLoad asynTask = new AsyncTaskLoad(DetailActivity.this, partyId);
 		asynTask.execute(getClientsCountUrl);
 
-		/*Map<String, Object> map;
-		map = new HashMap<String, Object>();
-		map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
-		map.put(Constants.PEOPLE_NUM, "");
-		list.add(map);
-		map = new HashMap<String, Object>();
-		map.put(Constants.PEOPLE_NAME, getString(R.string.signed_number));
-		map.put(Constants.PEOPLE_NUM, "");
-		list.add(map);
-		map = new HashMap<String, Object>();
-		map.put(Constants.PEOPLE_NAME, getString(R.string.unsiged_number));
-		map.put(Constants.PEOPLE_NUM, "");
-		list.add(map);
-		map = new HashMap<String, Object>();
-		map.put(Constants.PEOPLE_NAME, getString(R.string.unjion));
-		map.put(Constants.PEOPLE_NUM, "");
-		list.add(map);
-		dataList = list;
-		adapter.notifyDataSetChanged();*/
+		/*
+		 * Map<String, Object> map; map = new HashMap<String, Object>();
+		 * map.put(Constants.PEOPLE_NAME, getString(R.string.invited_number));
+		 * map.put(Constants.PEOPLE_NUM, ""); list.add(map); map = new
+		 * HashMap<String, Object>(); map.put(Constants.PEOPLE_NAME,
+		 * getString(R.string.signed_number)); map.put(Constants.PEOPLE_NUM,
+		 * ""); list.add(map); map = new HashMap<String, Object>();
+		 * map.put(Constants.PEOPLE_NAME, getString(R.string.unsiged_number));
+		 * map.put(Constants.PEOPLE_NUM, ""); list.add(map); map = new
+		 * HashMap<String, Object>(); map.put(Constants.PEOPLE_NAME,
+		 * getString(R.string.unjion)); map.put(Constants.PEOPLE_NUM, "");
+		 * list.add(map); dataList = list; adapter.notifyDataSetChanged();
+		 */
 		super.onRestart();
+	}
+
+	@Override
+	protected void onResume() {
+		int activityFlag = getIntent().getIntExtra(Constants.ACTIVITY_FLAG, 0);
+		SQLiteDatabase db = DbHelper.openOrCreateDatabase();
+		switch (activityFlag) {
+		case Constants.EditActivity:
+			String partyId = getIntent().getStringExtra(Constants.PARTY_ID);
+			String description = getIntent().getStringExtra(
+					Constants.DESCRIPTION);
+			boolean flag = false;
+			if (!"".equals(description)) {
+				flag = DbHelper.updateAirenaoActivity(db,
+						DbHelper.ACTIVITY_TABLE_NAME, partyId, description);
+				db.close();
+				if (flag) {
+	
+				}
+			}
+
+			break;
+		}
+		db.close();
+		super.onResume();
+	}
+
+	@Override
+	protected void onDestroy() {
+
+		super.onDestroy();
 	}
 
 	/**

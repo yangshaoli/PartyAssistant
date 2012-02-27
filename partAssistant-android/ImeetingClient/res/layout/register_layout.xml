@@ -1,138 +1,216 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_height="fill_parent"
-	android:layout_width="fill_parent">
-	<!-- Top -->
-	
-	<TextView android:layout_width="fill_parent"
-		android:textColor="#FFFFFF" android:layout_height="37sp" android:text="@string/register_label_top"
-		android:background="@drawable/blue_button" android:gravity="center" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
 
-	<!-- Background & Center -->
-	<LinearLayout 
-		android:orientation="vertical" android:layout_height="fill_parent"
-		android:layout_width="fill_parent" android:background="@drawable/blue_button"
-		android:layout_gravity="center_horizontal">
-		<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:src="@drawable/logo"
-		android:layout_marginTop="10dp"
-		android:layout_gravity="center_horizontal"
-		/>	
-		<!-- 用户名 -->
-		<LinearLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:layout_marginTop="25dp">
-		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="@string/login_label_username"
-		    android:textColor="#000000"
-			android:textSize="18sp"
-			 />
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
 
-		<EditText android:id="@+id/reg_user_name"
-			android:hint="@string/login_username_hint"
-			android:layout_marginLeft="8dp"
-			android:layout_width="200sp" 
-			android:layout_height="wrap_content" 
-			></EditText>
-		</LinearLayout>
-		
-		<LinearLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:layout_marginTop="15dp">
-			<!-- 密码 -->
-		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="@string/login_label_password"
-			android:textColor="#000000"
-			android:textSize="18sp" 
-			android:paddingBottom="10sp" />
+        <!-- Top -->
 
-		<EditText android:id="@+id/reg_pass1"
-			android:hint="@string/register_lable_pass_tip"
-			android:password="true"
-			android:layout_marginLeft="8dp"
-			android:layout_width="200sp"
-			android:layout_height="wrap_content"
-			></EditText>
-		</LinearLayout>
-		<LinearLayout
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:orientation="horizontal"
-		android:layout_marginTop="15dp">
-			<!-- 密码确认 -->
-		<TextView android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="@string/register_label_pass_insure"
-			android:textColor="#000000"
-			android:textSize="18sp" 
-			android:paddingBottom="10sp" 
-			android:visibility="gone"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="37sp"
+            android:background="@drawable/blue_button"
+            android:gravity="center"
+            android:text="@string/register_label_top"
+            android:textColor="#FFFFFF" />
 
-		<EditText android:id="@+id/reg_pass2" 
-			android:hint="@string/register_lable_pass_tip"
-			android:password="true"
-			android:layout_marginLeft="8dp"
-			android:layout_width="200sp"
-			android:layout_height="wrap_content"
-			android:visibility="gone"
-			></EditText>
-		</LinearLayout>
-		
-			<!-- android:background="#ded8f9"提示框 --><!-- android:focusable="false" 就不会出现 软键盘，但要是出现滚动条是不是还要删掉 -->
-		<EditText  
-    		android:id="@+id/text_view"  
-    		android:background="@drawable/biankuang_hong"
-    		android:layout_width="fill_parent"  
-    		android:layout_height="160dip"  
-    		android:singleLine="false"  
-    		android:maxLines="6" 
-    		android:focusable="false"
-    		android:textColor="#000000"
-    		android:layout_marginLeft="20dp"
-    		android:layout_marginTop="15dp"
-    		android:layout_marginRight="20dp"
-    		android:layout_marginBottom="15dp"
-    		android:gravity="top"
-    		android:paddingLeft="14dp"
-    		android:paddingRight="5dp"
-    		android:paddingTop="14dp"
-    		android:enabled="false" 
-    		android:scrollbars="horizontal" 
-    		android:textSize="24px"
-    		android:text="爱热闹服务涉及到的产品的所有权以及相关软件的知识产权归华美汉盛软件公司所有"
-        />  	
-			<!-- 复选框 -->
-		<CheckBox android:text="是否同意本协议" 
-			android:id="@+id/CheckBox" 
-			android:checked="true"
-			android:layout_width="wrap_content" 
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_horizontal">
-		</CheckBox> 	
-		<!-- Button Center -->
-		<LinearLayout 
-			android:orientation="horizontal" android:layout_height="wrap_content"
-			android:layout_width="fill_parent" android:paddingTop="30sp"
-			android:layout_gravity="center_horizontal" android:gravity="center_horizontal">
+        <!-- Background & Center -->
 
-			<Button android:layout_width="wrap_content" android:text="注册"
-				android:textColor="#FFFFFF" android:paddingRight="10sp"
-				android:layout_marginRight="15dp"
-				android:paddingLeft="10sp" android:layout_height="wrap_content"
-				android:background="@drawable/button_red" android:id="@+id/appect" />
-		</LinearLayout>
+        <LinearLayout
+            android:id="@+id/reg_layout"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/blue_button"
+            android:orientation="vertical" >
 
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/logo" />
+            <!-- 用户名 -->
 
-	</LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:orientation="horizontal" >
 
-</LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_label_username"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/reg_user_name"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:hint="@string/login_username_hint" >
+                </EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal" >
+
+                <!-- 密码 -->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10sp"
+                    android:text="@string/login_label_password"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/reg_pass1"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:hint="@string/register_lable_pass_tip"
+                    android:password="true" >
+                </EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:orientation="horizontal" >
+
+                <!-- 昵称 -->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10sp"
+                    android:text="@string/login_label_nickname"
+                    android:textColor="#000000"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/reg_nickname"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:hint="@string/register_nickname"
+                    >
+                </EditText>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal" >
+
+                <!-- 密码确认 -->
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10sp"
+                    android:text="@string/register_label_pass_insure"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/reg_pass2"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:hint="@string/register_lable_pass_tip"
+                    android:password="true"
+                    android:visibility="gone" >
+                </EditText>
+            </LinearLayout>
+
+            <!-- android:background="#ded8f9"提示框 -->
+            <!-- android:focusable="false" 就不会出现 软键盘，但要是出现滚动条是不是还要删掉 -->
+
+  <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal" >
+            <CheckBox
+                android:id="@+id/CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:checked="true"
+                android:text="" >
+            </CheckBox>
+            
+              <TextView
+                    android:id="@+id/textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                     android:layout_marginTop="10dp"
+                    android:text="是否同意"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:visibility="visible" />
+            <!-- Button Center -->
+  </LinearLayout>
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingTop="15sp" >
+
+                <Button
+                    android:id="@+id/appect"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/button_red"
+                   
+                    android:text="@string/save"
+                    android:textColor="#FFFFFF" />
+
+             
+            </LinearLayout>
+            
+                <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:orientation="horizontal" >
+            
+              <TextView
+                   android:gravity="center"
+                    android:id="@+id/textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                     android:layout_marginTop="10dp"
+                    android:text="密码将以短信"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:visibility="visible" />
+            <!-- Button Center -->
+  </LinearLayout>
+                
+        </LinearLayout>
+    </LinearLayout>
+
 </ScrollView>

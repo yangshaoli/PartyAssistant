@@ -25,6 +25,11 @@ public class Constants {
 	public static final String SEND_CONTENT = "sendContent";
 	public static int countId = 1;
 
+	public static final String ACTIVITY_FLAG = "activityFlag";
+	public static final int EditActivity = 1;
+	public static final int DETAIL_SENDAIENAO_RESULT_CODE = 100;
+	
+	
 	public static final String TO_SEND_ACTIVITY = "toSendActivity";
 	public static final String TO_DETAIL_ACTIVITY = "toDetailActivity";
 	public static final String TO_CREATE_ACTIVITY = "toCreateActivity";
@@ -69,6 +74,7 @@ public class Constants {
 	public static final String AIRENAO_USER_NAME = "airenaoUserName";
 	public static final String AIRENAO_PASSWORD = "airenaoPassword";
 	public static final String AIRENAO_USER_ID = "uid";
+	public static final String AIRENAO_NICKNAME = "nickname";
 	/**
 	 * database path
 	 */
@@ -134,7 +140,7 @@ public class Constants {
 	/*
 	 * 配置域名
 	 */
-	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://192.168.3.151:8000";//"http://www.airenao.com";
+	public static final String DOMAIN_NAME = "http://192.168.1.15:43401";//"http://www.airenao.com";//"http://192.168.3.151:8000";//"http://www.airenao.com"
 	public static final String SUB_DOMAIN_REGISTER_URL = "/a/accounts/regist/";
 	public static final String SUB_DOMAIN_LOGIN_URL = "/a/accounts/login/";
 	public static final String SUB_DOMAIN_PARTY_LIST_URL = "/a/parties/an_partylist/";//"/a/parties/partylist/"
@@ -146,4 +152,9 @@ public class Constants {
 	public static final String SUB_DOMAIN_EDIT_URL = "/a/parties/editparty/";
 	public static final String SUB_DOMAIN_GET_PARTY_MSG_URL = "/a/parties/get_party_msg/";
 	public static final String SUB_DOMAIN_PARTY_RESEND_URL = "/a/parties/resendmsg/";
+	public static final String SUB_DOMAIN_SAVE_NICKNAME_RUL = "/a/accounts/save_nickname/";
+	
+	public static final String JOSONARRAY = "josonarray";
+	public static final String NAMEANDPHONE = "nameAndPhone";
+	public static final String AGAINList = "againList";
 }

@@ -45,6 +45,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.protocol.HttpContext;
@@ -82,13 +83,12 @@ public class HttpHelper {
 
 	static {
 		HttpParams params = new BasicHttpParams();
-
 		params.setParameter(CoreProtocolPNames.PROTOCOL_VERSION,
 				HttpVersion.HTTP_1_1);
 		params.setParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, HTTP.UTF_8);
 		params.setParameter(CoreProtocolPNames.USER_AGENT,
 				"Apache-HttpClient/Android");
-		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 15000);
+		params.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);
 		params.setParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, false);
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
 		schemeRegistry.register(new Scheme("http", PlainSocketFactory
